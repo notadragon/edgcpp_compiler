@@ -1,3 +1,4 @@
+harness/gxx_exceptions.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:gxx configuration: catch an exception thrown by libstdc++
 sema/c23_va_start.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: the C++26 va_start of GCC 16+ <cstdarg> (EDG-67)
 sema/constexpr_member_before_construction.sft.cpp:fn:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:constant evaluation rejects referring to a member of a member whose constructor has not begun
 sema/constexpr_object_lifetime.sft.cpp:fn:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:constant evaluation rejects destroying an object twice and writing to an object after its destruction

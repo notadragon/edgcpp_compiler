@@ -1,0 +1,3 @@
+# Most of the contracts suite's tests run programs through g++, so recordings
+# made under the edg_x86_64_gxx configuration are the default ones.
+export RUN_TEST_DEFAULT_CONFIG=edg_x86_64_gxx

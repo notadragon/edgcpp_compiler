@@ -30,18 +30,41 @@
           "name": "edg_x86_32_cp"
         }
       ]
+    },
+    "gxx": {
+      "bin_path_env": [
+        "CPFE_CP"
+      ],
+      "variants": [
+        {
+          "name": "edg_x86_64_gxx",
+          "suites": [
+            "contracts"
+          ]
+        }
+      ]
     }
   },
   "config_sets": {
     "default": [
       "edg_x86_64",
-      "edg_x86_64_cp"
+      "edg_x86_64_cp",
+      "edg_x86_64_gxx"
+    ],
+    "gxx": [
+      "edg_x86_64_gxx"
     ],
     "x86": [
       "edg_x86_64",
       "edg_x86_64_cp",
       "edg_x86_32",
       "edg_x86_32_cp"
+    ]
+  },
+  "suite_configs": {
+    "contracts": [
+      "edg_x86_64",
+      "edg_x86_64_gxx"
     ]
   },
   "test_suites": {
@@ -54,7 +77,8 @@
       "stdlib",
       "modules",
       "reflections",
-      "imported"
+      "imported",
+      "contracts"
     ],
     "secondary": [
     ]

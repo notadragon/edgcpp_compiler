@@ -1,0 +1,118 @@
+#!/bin/bash
+
+# Part of the EDG Compiler Project, under the Apache License v2.0 with LLVM
+# Exceptions.
+# See https://edgcpp.org/LICENSE.txt for license information.
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+
+# Test harness adapter: accept the eccp command lines that edgy issues and
+# compile through util/edg_gxx.sh (the C++-generating front end followed by
+# a GNU g++) instead.  edgy's gxx configurations point ECCP here.
+#
+# usage: eccp-gxx [eccp-style options...] source...
+#
+# The harness issues one of three forms:
+#   eccp --cpfe_only ...    front end only (fp/fn/fc tests)
+#   eccp -c ...             compile to an object (cp/cn/cc tests)
+#   eccp ...                compile and link to a.out (link and run tests)
+#
+# Translation:
+#   --cpfe_only, -S              -> -fsyntax-only
+#   -c, --compile                -> -c
+#   -o X, --output=X             -> -o X
+#   --c++NN                      -> -std=c++NN (front end and g++)
+#   --[no_]exceptions, --[no_]rtti, --no_warnings
+#                                -> the g++ spellings (front end and g++)
+#   -D, -U, -I, -l, -L, -Wl,...  -> unchanged (edg_gxx.sh routes them)
+#   --verbose_driver_debug       -> dropped
+#   --pch_test_mode              -> compile twice, as eccp does: the first
+#                                   compilation (output discarded) creates
+#                                   the PCH file that the second one uses
+#   a C or C++ source            -> compiled as C++ by the front end
+#   any other option             -> front end only (-Xedg)
+# EDG options whose value is a separate word are recognized only for the
+# list in two_word_options below; use the --option=value form otherwise.
+#
+# A link adds an rpath to the paired g++'s library directory, so the program
+# loads that g++'s libstdc++ rather than the system's.
+#
+# Environment:
+#   EDG_GXX_DRIVER  edg_gxx.sh to run (default: util/edg_gxx.sh in this tree)
+#   CPFE_CP, EDG_GXX, EDG_BASE
+#                   as for edg_gxx.sh
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+DRIVER=${EDG_GXX_DRIVER:-$SCRIPT_DIR/../../util/edg_gxx.sh}
+
+two_word_options=" --sys_include --include_directory --header_unit \
+--preinclude --define_macro --undefine_macro --diag_suppress --diag_remark \
+--diag_warning --diag_error "
+
+args=()
+link=1
+pch_test_mode=0
+
+while [ $# -gt 0 ] ; do
+  arg=$1
+  shift
+  case $arg in
+    --cpfe_only|-S)
+      args+=(-fsyntax-only); link=0 ;;
+    -c|--compile)
+      args+=(-c); link=0 ;;
+    -o|--output)
+      args+=(-o "$1"); shift ;;
+    --output=*)
+      args+=(-o "${arg#--output=}") ;;
+    --c++[0-9][0-9])
+      args+=("-std=c++${arg#--c++}") ;;
+    --exceptions)
+      args+=(-fexceptions) ;;
+    --no_exceptions)
+      args+=(-fno-exceptions) ;;
+    --rtti)
+      args+=(-frtti) ;;
+    --no_rtti)
+      args+=(-fno-rtti) ;;
+    --no_warnings|-w)
+      args+=(-w) ;;
+    --verbose_driver_debug|--driver_debug)
+      ;;
+    --pch_test_mode)
+      pch_test_mode=1 ;;
+    -D*|-U*|-I*|-l*|-L*|-Wl,*)
+      args+=("$arg") ;;
+    -*)
+      args+=(-Xedg "$arg")
+      case $two_word_options in
+        *" $arg "*)
+          args+=(-Xedg "$1"); shift ;;
+      esac ;;
+    *.c|*.C|*.cc|*.cpp|*.cxx|*.c++|*.ixx|*.cppm)
+      # The harness copies every test to Test_name.c; edg_gxx.sh would hand
+      # a .c file straight to g++, so name the language.
+      args+=(-x c++ "$arg") ;;
+    *)
+      args+=(-x none "$arg") ;;
+  esac
+done
+
+if [ $link = 1 ] ; then
+  gxx=${EDG_GXX:-g++}
+  libstdcxx=$("$gxx" -print-file-name=libstdc++.so)
+  case $libstdcxx in
+    /*) args+=("-Wl,-rpath,$(dirname "$libstdcxx")") ;;
+  esac
+fi
+
+if [ $pch_test_mode = 1 ] ; then
+  # As eccp does: compile twice, discarding the output of the first
+  # compilation, which creates the PCH file that the second one uses.
+  "$DRIVER" "${args[@]}" > /dev/null 2>&1
+  "$DRIVER" "${args[@]}"
+  status=$?
+  rm -f ./*.pch
+  exit $status
+fi
+
+exec "$DRIVER" "${args[@]}"
