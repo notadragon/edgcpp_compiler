@@ -35,6 +35,9 @@
 # go to both: g++ chooses the semantics of the checks with them, and the front
 # end the semantics of constant evaluation.  -Wno-contract-configuration
 # also silences the front end's warnings about the configuration.
+# -f[no-]contracts-p3850 (every extension paper) goes to both; g++ gets it
+# unchanged, so it enables there even the papers the front end does not
+# implement yet.
 #
 # Environment:
 #   EDG_GXX           the g++ to pair with
@@ -159,6 +162,10 @@ while [ $# -gt 0 ] ; do
     -Wno-contract-configuration)
       edg_args+=("--diag_suppress=contract_configuration")
       gxx_args+=("$arg") ;;
+    -fcontracts-p3850)
+      edg_args+=("--contracts_p3850"); gxx_args+=("$arg") ;;
+    -fno-contracts-p3850)
+      edg_args+=("--no_contracts_p3850"); gxx_args+=("$arg") ;;
     -E)
       edg_only_mode=preprocess; stop_after_edg=1 ;;
     -fsyntax-only)

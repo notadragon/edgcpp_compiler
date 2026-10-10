@@ -505,6 +505,20 @@ imported_p3595/gcc/p3595-dynamic-selector-overload/test.mft.cpp:rp:-DTEST_NUMBER
 imported_p3595/gcc/p3595-dynamic-selector-wrong-type-quiet/test.mft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_configuration_file=p3595-dynamic-selector-wrong-type.json:REQUIREMENTS NOT MET:imported from gcc:p3595-dynamic-selector-wrong-type-quiet.C
 imported_p3595/gcc/p3595-header-template/test.mft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_configuration_file=p3595-header-template.json:REQUIREMENTS NOT MET:imported from gcc:p3595-header-template.C
 imported_p3595/gcc/p3595-unsupported-criterion/test.mft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_configuration_file=p3595-unsupported-criterion.json:REQUIREMENTS NOT MET:imported from gcc:p3595-unsupported-criterion.C
+imported_p3850/clang/Runnable/postcondition-throw-escapes-try.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3850 --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from clang:Runnable/postcondition-throw-escapes-try.cpp
+imported_p3850/clang/contract-friend-deferred-mismatch.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3850:REQUIREMENTS NOT MET:imported from clang:Contracts/contract-friend-deferred-mismatch.cpp
+imported_p3850/clang/contract-on-non-function.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3850:REQUIREMENTS NOT MET:imported from clang:contract-on-non-function.cpp
+imported_p3850/clang/contract-reentrancy-p3850.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts_p3850:REQUIREMENTS NOT MET:imported from clang:contract-reentrancy-p3850.cpp
+imported_p3850/gcc/contract-constexpr-multi-observe.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3850 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:contract-constexpr-multi-observe.C
+imported_p3850/gcc/contract-constexpr-observe-cap.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3850 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:contract-constexpr-observe-cap.C
+imported_p3850/gcc/contract-friend-deferred-mismatch.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3850:REQUIREMENTS NOT MET:imported from gcc:contract-friend-deferred-mismatch.C
+imported_p3850/gcc/contract-reentrancy-p3850.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts_p3850:REQUIREMENTS NOT MET:imported from gcc:contract-reentrancy-p3850.C
+imported_p3850/gcc/postcondition-throw-escapes-try.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts_p3850 --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:postcondition-throw-escapes-try.C
+imported_p3850/gcc/postcondition-throw-noexcept-terminate.sft.cpp:ra:-DTEST_NUMBER=1 --c++26 --contracts_p3850 --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:postcondition-throw-noexcept-terminate.C
+p3850/implies.sft.cpp:fp:-DTEST_NUMBER=1 --c++23 --contracts_p3850:REQUIREMENTS NOT MET:contracts: --contracts_p3850 enables contracts, unless --[no_]contracts is given
+p3850/implies.sft.cpp:fp:-DTEST_NUMBER=2 --c++23 --contracts_p3850 --no_contracts:REQUIREMENTS NOT MET:contracts: --contracts_p3850 enables contracts, unless --[no_]contracts is given
+p3850/implies.sft.cpp:fp:-DTEST_NUMBER=3 --c++23 --contracts_p3850 --no_contracts_p3850:REQUIREMENTS NOT MET:contracts: --contracts_p3850 enables contracts, unless --[no_]contracts is given
+p3850/implies.sft.cpp:fp:-DTEST_NUMBER=4 --c++26 --no_contracts_p3850:REQUIREMENTS NOT MET:contracts: --contracts_p3850 enables contracts, unless --[no_]contracts is given
 parse/attributes.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: attributes on contract assertions and result names
 parse/param_operands.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: a precondition's parameters in nested operands (new[] bound, dependent typeid)
 parse/semantic_option_cp_gen_be.sft.cpp:fp:-DTEST_NUMBER=1 --contract_evaluation_semantic=ignore:REQUIREMENTS NOT MET:contracts: every evaluation semantic with the C++-generating back end

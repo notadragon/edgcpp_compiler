@@ -1,6 +1,15 @@
 Version 7.0, September 28, 2026
 
 10/3/26  []
+Contracts (P3850): --contracts_p3850
+
+The new --[no_]contracts_p3850 option enables contracts (unless
+--[no_]contracts is given) and every P3850 extension paper the front end
+implements (each unless its own option is given): so far P3290.
+edg_gxx.sh passes -f[no-]contracts-p3850 to both the front end and g++.
+
+
+10/3/26  []
 Contracts (P3595): configuration of contract evaluation semantics
 
 The evaluation semantic of each contract assertion can be chosen by an

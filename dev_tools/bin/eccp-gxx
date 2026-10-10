@@ -28,6 +28,7 @@
 #   --contract_configuration=X, --contract_configuration_file=X,
 #   --contract_group_evaluation_semantic=X
 #                                -> the g++ spellings (front end and g++)
+#   --[no_]contracts_p3850       -> the g++ spelling (front end and g++)
 #   -D, -U, -I, -l, -L, -Wl,...  -> unchanged (edg_gxx.sh routes them)
 #   --verbose_driver_debug       -> dropped
 #   --pch_test_mode              -> compile twice, as eccp does: the first
@@ -97,6 +98,10 @@ while [ $# -gt 0 ] ; do
       args+=("-fcontract-configuration-file=${arg#*=}") ;;
     --contract_group_evaluation_semantic=*)
       args+=("-fcontract-group-evaluation-semantic=${arg#*=}") ;;
+    --contracts_p3850)
+      args+=(-fcontracts-p3850) ;;
+    --no_contracts_p3850)
+      args+=(-fno-contracts-p3850) ;;
     -D*|-U*|-I*|-l*|-L*|-Wl,*)
       args+=("$arg") ;;
     -*)
