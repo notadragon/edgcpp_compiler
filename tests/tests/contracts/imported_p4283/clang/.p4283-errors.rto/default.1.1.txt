@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p4283 Test_name.c
+"Test_name.c", line 13: error: requires clause on contract assertion only allowed on templated functions
+    pre requires(true) (x > 0); // expected-error {{requires clause on contract assertion is only allowed on templated functions}}
+        ^
+
+"Test_name.c", line 17: error: requires clause on contract assertion only allowed on templated functions
+    contract_assert requires(true) (x > 0); // expected-error {{requires clause on contract assertion is only allowed on templated functions}}
+                    ^
+
+2 errors detected in the compilation of "Test_name.c".

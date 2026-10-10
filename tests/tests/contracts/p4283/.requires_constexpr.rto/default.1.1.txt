@@ -1,0 +1,86 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contracts_p4283 --contracts_p3400 --contract_evaluation_semantic=quick_enforce Test_name.c
+"Test_name.c", line 25: error: contract predicate is false in constant expression
+  constexpr T f1(T x) pre requires Int<T> (x > 0) { return x; }
+                      ^
+
+"Test_name.c", line 31: error: contract predicate is false in constant expression
+    pre requires (Int<T> && requires { x + 1; }) (x > 0) { return x; }
+    ^
+
+"Test_name.c", line 43: error: contract predicate is false in constant expression
+  constexpr int s3(T t) pre requires (!Big<T> || T::value > 0) (t < 0) { return 1; }
+                        ^
+
+"Test_name.c", line 51: error: contract predicate is false in constant expression
+    if (t) contract_assert requires Int<T> (t > 0);
+           ^
+
+"Test_name.c", line 66: warning: attribute "maybe_unused" does not apply here
+      post <lbl> requires Int<T> [[maybe_unused]] (r: r > 0) { return x; }
+                                   ^
+
+"Test_name.c", line 62: error: contract predicate is false in constant expression
+      pre requires (sizeof(x) <= 4 && requires { x + 1; }) (x > 0) { return 1; }
+      ^
+
+"Test_name.c", line 64: error: contract predicate is false in constant expression
+    constexpr int pre2(U y) const pre requires Int<U> (y > 0) { return 1; }
+                                  ^
+
+"Test_name.c", line 66: error: contract predicate is false in constant expression
+      post <lbl> requires Int<T> [[maybe_unused]] (r: r > 0) { return x; }
+      ^
+
+"Test_name.c", line 78: error: contract predicate is false in constant expression
+    auto a = [](T x) pre requires Int<T> (x > 0) { return 1; };
+                     ^
+
+"Test_name.c", line 83: error: contract predicate is false in constant expression
+  constexpr auto gl = [](auto y) pre requires Int<decltype(y)> (y > 0) {
+                                 ^
+
+"Test_name.c", line 92: error: contract predicate is false in constant expression
+    struct L { constexpr int m(T x) pre requires Int<T> (x > 0) { return 1; } };
+                                    ^
+
+"Test_name.c", line 27: warning: variable "e1" was declared but never referenced
+  constexpr int e1 = f1(-1);       // Error
+                ^
+
+"Test_name.c", line 33: warning: variable "e2" was declared but never referenced
+  constexpr int e2 = f2(-1);       // Error
+                ^
+
+"Test_name.c", line 45: warning: variable "e10" was declared but never referenced
+  constexpr int e10 = s3(1);           // Error, kept: !Big<int> holds
+                ^
+
+"Test_name.c", line 55: warning: variable "e3" was declared but never referenced
+  constexpr int e3 = m1(-1);       // Error
+                ^
+
+"Test_name.c", line 69: warning: variable "e4" was declared but never referenced
+  constexpr int e4 = S<int>().pre1(-1);        // Error
+                ^
+
+"Test_name.c", line 71: warning: variable "e5" was declared but never referenced
+  constexpr int e5 = S<int>().pre2(-1);        // Error
+                ^
+
+"Test_name.c", line 73: warning: variable "e6" was declared but never referenced
+  constexpr int e6 = S<int>().post1(-1);       // Error
+                ^
+
+"Test_name.c", line 82: warning: variable "e7" was declared but never referenced
+  constexpr int e7 = l1(-1);       // Error
+                ^
+
+"Test_name.c", line 87: warning: variable "e8" was declared but never referenced
+  constexpr int e8 = gl(-1);       // Error
+                ^
+
+"Test_name.c", line 96: warning: variable "e9" was declared but never referenced
+  constexpr int e9 = c1(-1);       // Error
+                ^
+
+10 errors detected in the compilation of "Test_name.c".

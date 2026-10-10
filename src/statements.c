@@ -6716,6 +6716,30 @@ GNU allows a syntax similar to Fortran's assigned goto:
   db_exit();
 }  /* goto_statement */
 
+
+static void add_discarded_contract_assert_statement(void)
+/*
+The current token begins the operand (after the parenthesis) of a
+contract_assert statement that is dropped, after an error in its
+requires-clause, or discarded from an instance that does not satisfy its
+requires-clause (P4283; see contract_assert_statement).  Skip the operand and
+the final semicolon, and add an empty statement in its place, so that
+"if (c) contract_assert requires C<T> (p);" keeps its substatement.
+*/
+{
+  a_statement_ptr  sp;
+
+  skip_contract_operand();
+  (void)required_token(tok_rparen, ec_exp_rparen);
+  sp = add_statement(stmk_empty, /*compiler_generated=*/FALSE);
+#if EXTRA_SOURCE_POSITIONS_IN_IL
+  curr_construct_end_position = end_pos_curr_token;
+  sp->end_position = curr_construct_end_position;
+#endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
+  stmt_update_source_sequence_list(sp);
+  (void)required_token(tok_semicolon, ec_exp_semicolon);
+}  /* add_discarded_contract_assert_statement */
+
 #if MICROSOFT_EXTENSIONS_ALLOWED
 
 static a_boolean has_nested_finally_clause(a_struct_stmt_stack_entry_ptr sssep)
@@ -7884,6 +7908,11 @@ sequence.  The syntax is:
     /* An assertion-control specifier (P3400). */
     cache_contract_label(csp, /*skip=*/FALSE);
   }  /* if */
+  if (curr_token == tok_requires &&
+      cache_contract_requires_clause(csp, /*skip=*/FALSE)) {
+    /* A requires-clause (P4283) in error: the assertion is dropped. */
+    csp->discarded = TRUE;
+  }  /* if */
   scan_contract_assertion_attributes();
   if (curr_token == tok_lbracket) {
     /* A capture list (P3098) is for postconditions only: skip it. */
@@ -7900,6 +7929,14 @@ sequence.  The syntax is:
              curr_token != tok_end_of_source);
   }  /* if */
   if (required_token(tok_lparen, ec_exp_lparen)) {
+    if (csp->discarded ||
+        (csp->requires_token_cache != NULL &&
+         !scan_cached_contract_requires_clause(csp))) {
+      /* Dropped, or discarded from this instance (P4283). */
+      add_discarded_contract_assert_statement();
+      db_exit();
+      return;
+    }  /* if */
     if (csp->label_token_cache != NULL) {
       /* The label, in the scope of the predicate. */
       scan_cached_contract_label(csp);

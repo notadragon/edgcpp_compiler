@@ -5074,6 +5074,11 @@ region, initialize its fields, and return a pointer to it.
   csp->capture_token_cache = NULL;
   csp->label = NULL;
   csp->label_token_cache = NULL;
+  csp->requires_constraint = NULL;
+  csp->requires_token_cache = NULL;
+  csp->requires_sexpr = NULL;
+  csp->local_requires_clause = FALSE;
+  csp->discarded = FALSE;
   csp->label_allowed_semantics = 0;
   (void)memset(csp->label_computed_semantics, 0,
                sizeof(csp->label_computed_semantics));

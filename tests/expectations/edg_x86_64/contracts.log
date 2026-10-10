@@ -1077,6 +1077,52 @@ imported_p3850/gcc/contract-friend-deferred-mismatch.sft.cpp:fn:-DTEST_NUMBER=1 
 imported_p3850/gcc/contract-reentrancy-p3850.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts_p3850:REQUIREMENTS NOT MET:imported from gcc:contract-reentrancy-p3850.C
 imported_p3850/gcc/postcondition-throw-escapes-try.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts_p3850 --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:postcondition-throw-escapes-try.C
 imported_p3850/gcc/postcondition-throw-noexcept-terminate.sft.cpp:ra:-DTEST_NUMBER=1 --c++26 --contracts_p3850 --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:postcondition-throw-noexcept-terminate.C
+imported_p4283/clang/Runnable/p3595-dynamic-template-requires/test.mft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3400 --contracts_p4283 --contract_configuration_file=p3595-dynamic-template-requires.json:REQUIREMENTS NOT MET:imported from clang:Runnable/p3595-dynamic-template-requires.cpp
+imported_p4283/clang/Runnable/p4283-captures-discard.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p4283 --contracts_p3098 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:Runnable/p4283-captures-discard.cpp
+imported_p4283/clang/Runnable/p4283-constraint-forms.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p4283 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:Runnable/p4283-constraint-forms.cpp
+imported_p4283/clang/Runnable/p4283-label-requires.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3400 --contracts_p4283 --contract_evaluation_semantic=ignore:REQUIREMENTS NOT MET:imported from clang:Runnable/p4283-label-requires.cpp
+imported_p4283/clang/Runnable/p4283-template.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p4283 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:Contracts/Runnable/p4283-template.cpp
+imported_p4283/clang/Runnable/p4283-virtual-requires-discard.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3097 --contracts_p4283 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:Runnable/p4283-virtual-requires-discard.cpp
+imported_p4283/clang/matrix-sfinae-p4283-errors.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p4283:REQUIREMENTS NOT MET:imported from clang:matrix-sfinae-p4283-errors.cpp
+imported_p4283/clang/matrix-sfinae-p4283-run.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p4283 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:matrix-sfinae-p4283-run.cpp
+imported_p4283/clang/matrix-sfinae-p4283.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p4283:REQUIREMENTS NOT MET:imported from clang:matrix-sfinae-p4283.cpp
+imported_p4283/clang/p3400-label-late-parsed.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3400 --contracts_p4283 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:p3400-label-late-parsed.cpp
+imported_p4283/clang/p4283-errors.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p4283:REQUIREMENTS NOT MET:imported from clang:p4283-errors.cpp
+imported_p4283/clang/p4283-ftm.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p4283:REQUIREMENTS NOT MET:imported from clang:p4283-ftm.cpp
+imported_p4283/clang/p4283-no-flag.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:p4283-no-flag.cpp
+imported_p4283/clang/p4283-non-template-dropped.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p4283 --contract_evaluation_semantic=quick_enforce:REQUIREMENTS NOT MET:imported from clang:Contracts/p4283-non-template-dropped.cpp
+imported_p4283/clang/p4283-non-template-recovery.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p4283:REQUIREMENTS NOT MET:imported from clang:p4283-non-template-recovery.cpp
+imported_p4283/clang/p4283-requires-grammar.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3850 --contracts_p4283:REQUIREMENTS NOT MET:imported from clang:p4283-requires-grammar.cpp
+imported_p4283/clang/p4283-requires-member.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3850 --contracts_p4283 --contracts_p3097 --contracts_p3098 --contracts_p3400:REQUIREMENTS NOT MET:imported from clang:p4283-requires-member.cpp
+imported_p4283/clang/p4283-substitution-failure.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p4283:REQUIREMENTS NOT MET:imported from clang:p4283-substitution-failure.cpp
+imported_p4283/gcc/matrix-sfinae-p4283-errors.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p4283:REQUIREMENTS NOT MET:imported from gcc:matrix-sfinae-p4283-errors.C
+imported_p4283/gcc/matrix-sfinae-p4283-run.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p4283 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:matrix-sfinae-p4283-run.C
+imported_p4283/gcc/matrix-sfinae-p4283.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p4283:REQUIREMENTS NOT MET:imported from gcc:matrix-sfinae-p4283.C
+imported_p4283/gcc/p3098-requires-capture.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3098 --contracts_p4283 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:p3098-requires-capture.C
+imported_p4283/gcc/p3400-label-complex-expression.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3400 --contracts_p4283 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:p3400-label-complex-expression.C
+imported_p4283/gcc/p3595-dynamic-template-requires/test.mft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3400 --contracts_p4283 --contract_configuration_file=p3595-dynamic-template-requires.json:REQUIREMENTS NOT MET:imported from gcc:p3595-dynamic-template-requires.C
+imported_p4283/gcc/p4283-basic.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p4283:REQUIREMENTS NOT MET:imported from gcc:p4283-basic.C
+imported_p4283/gcc/p4283-captures-discard.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p4283 --contracts_p3098 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:p4283-captures-discard.C
+imported_p4283/gcc/p4283-config/test.mft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p4283 --contract_configuration_file=p4283-config.json:REQUIREMENTS NOT MET:imported from gcc:p4283-config.C
+imported_p4283/gcc/p4283-consteval-requires.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p4283 --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:p4283-consteval-requires.C
+imported_p4283/gcc/p4283-constrained-predicate.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p4283 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:p4283-constrained-predicate.C
+imported_p4283/gcc/p4283-constraint-forms.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p4283 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:p4283-constraint-forms.C
+imported_p4283/gcc/p4283-discard.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p4283 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:p4283-discard.C
+imported_p4283/gcc/p4283-errors.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p4283:REQUIREMENTS NOT MET:imported from gcc:p4283-errors.C
+imported_p4283/gcc/p4283-ftm.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p4283:REQUIREMENTS NOT MET:imported from gcc:p4283-ftm.C
+imported_p4283/gcc/p4283-label-requires.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3400 --contracts_p4283 --contract_evaluation_semantic=ignore:REQUIREMENTS NOT MET:imported from gcc:p4283-label-requires.C
+imported_p4283/gcc/p4283-lambda-only-contract-discarded.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p4283 --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:p4283-lambda-only-contract-discarded.C
+imported_p4283/gcc/p4283-malformed.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p4283:REQUIREMENTS NOT MET:imported from gcc:p4283-malformed.C
+imported_p4283/gcc/p4283-no-flag.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:p4283-no-flag.C
+imported_p4283/gcc/p4283-non-template-recovery.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p4283:REQUIREMENTS NOT MET:imported from gcc:p4283-non-template-recovery.C
+imported_p4283/gcc/p4283-partial-spec-nested.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p4283 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:p4283-partial-spec-nested.C
+imported_p4283/gcc/p4283-redecl-def.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p4283:REQUIREMENTS NOT MET:imported from gcc:p4283-redecl-def.C
+imported_p4283/gcc/p4283-redecl.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p4283:REQUIREMENTS NOT MET:imported from gcc:p4283-redecl.C
+imported_p4283/gcc/p4283-requires-constexpr.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p4283:REQUIREMENTS NOT MET:imported from gcc:p4283-requires-constexpr.C
+imported_p4283/gcc/p4283-requires-with-attribute.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p4283:REQUIREMENTS NOT MET:imported from gcc:p4283-requires-with-attribute.C
+imported_p4283/gcc/p4283-substitution-failure.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p4283:REQUIREMENTS NOT MET:imported from gcc:p4283-substitution-failure.C
+imported_p4283/gcc/p4283-template.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p4283 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:p4283-template.C
+imported_p4283/gcc/p4283-virtual-discard.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3097 --contracts_p4283 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:p4283-virtual-discard.C
 p3098/constexpr_captures.sft.cpp:fn:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: P3098 in constant evaluation: captures are initialized with the preconditions and used by the postcondition
 p3098/constexpr_ignore.sft.cpp:fp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: P3098 in constant evaluation under ignore: the captures are not initialized, and the predicate is not evaluated
 p3098/handler_captures.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: P3098 through edg-gxx: g++ checks the captures as written, on members, templates and classes passed by value
@@ -1100,6 +1146,7 @@ p3850/implies.sft.cpp:fp:-DTEST_NUMBER=1 --c++23 --contracts_p3850:REQUIREMENTS 
 p3850/implies.sft.cpp:fp:-DTEST_NUMBER=2 --c++23 --contracts_p3850 --no_contracts:REQUIREMENTS NOT MET:contracts: --contracts_p3850 enables contracts, unless --[no_]contracts is given
 p3850/implies.sft.cpp:fp:-DTEST_NUMBER=3 --c++23 --contracts_p3850 --no_contracts_p3850:REQUIREMENTS NOT MET:contracts: --contracts_p3850 enables contracts, unless --[no_]contracts is given
 p3850/implies.sft.cpp:fp:-DTEST_NUMBER=4 --c++26 --no_contracts_p3850:REQUIREMENTS NOT MET:contracts: --contracts_p3850 enables contracts, unless --[no_]contracts is given
+p4283/requires_run.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: P4283 requires-clauses are put out for g++ (templates as written), which discards the same assertions at run time, on every route; with labels, attributes and captures
 parse/attributes.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: attributes on contract assertions and result names
 parse/param_operands.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: a precondition's parameters in nested operands (new[] bound, dependent typeid)
 parse/semantic_option_cp_gen_be.sft.cpp:fp:-DTEST_NUMBER=1 --contract_evaluation_semantic=ignore:REQUIREMENTS NOT MET:contracts: every evaluation semantic with the C++-generating back end

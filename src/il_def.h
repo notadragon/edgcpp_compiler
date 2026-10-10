@@ -12340,6 +12340,29 @@ typedef struct a_contract_specifier {
 			   the angle brackets), from which the label is
 			   scanned with the operand (for an instance, from
 			   the template's).  For front-end use only. */
+  an_expr_node_ptr
+		requires_constraint;
+			/* The constraint of the requires-clause of an
+			   assertion of a templated function (P4283), as
+			   written, in the template: an instance whose
+			   template arguments do not satisfy it does not have
+			   the assertion, and an instance has none.  NULL if
+			   there is none, or if local_requires_clause is
+			   TRUE. */
+  struct a_token_cache
+		*requires_token_cache;
+			/* An opaque pointer to the token cache holding the
+			   requires-clause, from "requires" to the end of the
+			   constraint, from which it is scanned with the
+			   operand (for an instance, from the template's).
+			   For front-end use only. */
+  a_scoped_expression_ptr
+		requires_sexpr;
+			/* When local_requires_clause is TRUE, the referrer
+			   of a local expression node reference to the
+			   constraint of the requires-clause (see
+			   contract_specifier_requires_constraint); NULL
+			   otherwise. */
   a_byte	label_allowed_semantics;
 			/* The label's allowed_semantics facet (P3400): bit
 			   1 << v for each value v of
@@ -12373,6 +12396,20 @@ typedef struct a_contract_specifier {
 			/* TRUE once an error about the semantic the label's
 			   facets give has been issued (see
 			   contract_semantic_for), so that it is issued once. */
+  a_bit_field	local_requires_clause:1;
+			/* TRUE if the specifier is in file-scope memory but
+			   the constraint of its requires-clause is in a
+			   function's memory region, as it names an entity
+			   local to that function: requires_constraint is
+			   NULL, and requires_sexpr refers to the constraint
+			   (as for local_predicate). */
+  a_bit_field	discarded:1;
+			/* TRUE if the requires-clause of the assertion
+			   (P4283) is not satisfied by the instance it
+			   belongs to: neither its label, captures nor
+			   predicate were scanned, and it is removed from
+			   the instance's specifiers.  For front-end use
+			   only. */
   a_bit_field	local_predicate:1;
 			/* TRUE if the specifier is in file-scope memory but
 			   its predicate is in a function's memory region, as

@@ -3750,6 +3750,9 @@ ec_contract_label_allows_no_semantics;;"assertion-control label allows no evalua
 ec_contract_computed_semantic_not_allowed;;"compute_semantic result is not in the allowed evaluation semantics"
 ec_contract_no_valid_semantic;;"no valid evaluation semantic for contract assertion"
 ec_contract_label_comment_not_constant;;"the compute_comment facet of assertion-control object %t must be usable in a constant expression"
+ec_contract_requires_needs_option;;"requires clause on contract assertions requires --contracts_p4283"
+ec_contract_requires_not_templated;;"requires clause on contract assertion only allowed on templated functions"
+ec_contract_redecl_requires_mismatch;;"mismatched requires clause on contract assertion in declaration (previous contract specifier declared %p)"
 ec_contract_result_name_shadows_init_capture;;"the result name of a postcondition cannot have the same name as an init-capture of the lambda"
  ###############################################################################
 

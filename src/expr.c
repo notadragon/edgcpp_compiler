@@ -55827,6 +55827,64 @@ If discard is FALSE, return a pointer to the scanned representation.
 }  /* scan_requires_clause */
 
 
+an_expr_node_ptr scan_contract_requires_constraint(a_boolean  dependent)
+/*
+The current token is the "requires" of the requires-clause of a contract
+assertion (P4283), at the start of the token cache that holds it.  Scan the
+clause as scan_requires_clause does, to the end of the cache, and return its
+constraint, which belongs to the assertion: No requires-clause entry is made
+(its entries are in file-scope memory, and an assertion may be in a
+function's).  If dependent is TRUE (a template-dependent context), record the
+constraint in requires_ranges, with the sequence number of the "requires"
+token.  Otherwise, if a constraint is recorded there (the clause belongs to an
+instance, whose tokens are its template's), skip the clause and return that
+constraint, as written in the template.
+*/
+{
+  a_token_sequence_number  requires_tsn = curr_token_sequence_number;
+  a_requires_range_descr   rrd = requires_ranges->get(requires_tsn);
+  an_expr_node_ptr         constraint;
+
+  check_assertion(curr_token == tok_requires);
+  (void)get_token();
+  if (!dependent && rrd.next_tsn != a_token_sequence_number()) {
+    while (curr_token != tok_end_of_source) (void)get_token();
+    constraint = rrd.requires_expr;
+  } else {
+    an_expr_stack_entry_ptr  saved_expr_stack;
+    an_expr_stack_entry      expr_stack_entry;
+    an_operand               opnd;
+    a_boolean                saved_implicit_typename =
+                                          scope_stack_top().implicit_typename;
+    scope_stack_top().implicit_typename = FALSE;
+    save_expr_stack(&saved_expr_stack);
+    push_expr_stack((an_expression_kind)ek_sizeof, &expr_stack_entry,
+                    /*force_object_lifetime=*/FALSE,
+                    /*suppress_object_lifetime=*/TRUE);
+    expr_stack_entry.possible_rescan_context = TRUE;
+    if (!token_starts_primary_expression(curr_token) &&
+        (!token_is_trait_name(curr_token) || strict_ansi_mode)) {
+      pos_error(ec_invalid_start_of_requires_clause_expr, &pos_curr_token);
+    }  /* if */
+    scan_expr(&opnd, PREC_QUEST_MARK,
+              EOPT_CONSTRAINT_EXPR | EOPT_REQUIRES_CLAUSE);
+    constraint = make_node_from_operand(&opnd);
+    check_and_adjust_constraint_expression(constraint);
+    pop_expr_stack();
+    restore_expr_stack(saved_expr_stack);
+    scope_stack_top().implicit_typename = saved_implicit_typename;
+    if (dependent) {
+      rrd.next_tsn = curr_token_sequence_number;
+      rrd.is_friend_template = FALSE;
+      rrd.packs_referenced = NULL;
+      rrd.requires_expr = constraint;
+      (void)requires_ranges->map_or_replace(requires_tsn, rrd);
+    }  /* if */
+  }  /* if */
+  return constraint;
+}  /* scan_contract_requires_constraint */
+
+
 an_expr_node_ptr scan_concept_expression(void)
 /*
 Scan an (unevaluated but rescannable) expression that is the right-hand side of

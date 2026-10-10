@@ -9298,6 +9298,26 @@ contract_specifier_predicate).
     csp->label = copy_expr_tree(csp->label, CE_ALWAYS_COPY_BACKING_EXPRESSIONS);
     switch_back_to_original_region(region_to_switch_back_to);
   }  /* if */
+  if (csp->requires_constraint != NULL && in_file_scope(csp) &&
+      !in_file_scope(csp->requires_constraint)) {
+    /* The constraint of the requires-clause (P4283), likewise. */
+    an_expr_node_ptr  constraint = csp->requires_constraint;
+    switch_to_file_scope_region(&region_to_switch_back_to);
+    if (!expr_has_reference_to_local_entity(constraint) &&
+        !expr_has_local_capturing_lambda(constraint)) {
+      csp->requires_constraint =
+               copy_expr_tree(constraint, CE_ALWAYS_COPY_BACKING_EXPRESSIONS);
+    } else {
+      a_scope_ptr  function_scope = get_innermost_function_scope();
+      check_assertion(function_scope != NULL);
+      csp->requires_sexpr = alloc_scoped_expression();
+      make_local_expr_node_ref(constraint, lerk_scoped_expr,
+                               (char*)csp->requires_sexpr, function_scope);
+      csp->requires_constraint = NULL;
+      csp->local_requires_clause = TRUE;
+    }  /* if */
+    switch_back_to_original_region(region_to_switch_back_to);
+  }  /* if */
   if (pred == NULL || !in_file_scope(csp) || in_file_scope(pred)) return;
   switch_to_file_scope_region(&region_to_switch_back_to);
   if (csp->comment != NULL && !in_file_scope(csp->comment)) {
@@ -9352,6 +9372,14 @@ name), or NULL if there is none (see remove_contract_operand_symbols).
   a_variable_ptr            saved_captures;
   a_contract_specifier_ptr  saved_proxy_owner;
 
+  if (csp->requires_token_cache != NULL &&
+      !scan_cached_contract_requires_clause(csp)) {
+    /* P4283: an instance that does not satisfy the requires-clause; the
+       rest of the assertion is not scanned. */
+    csp->discarded = TRUE;
+    skip_contract_operand();
+    return NULL;
+  }  /* if */
   /* A lambda in a capture's initializer or in the predicate may name the
      parameters (see contract_param_proxy). */
   saved_proxy_owner = set_contract_param_proxy_owner(csp);
@@ -9576,6 +9604,12 @@ a template-dependent context, and scanned in the body of its call operator
       /* An assertion-control specifier (P3400). */
       cache_contract_label(csp, skip);
     }  /* if */
+    if (curr_token == tok_requires &&
+        cache_contract_requires_clause(csp, skip)) {
+      /* A requires-clause (P4283) in error: the assertion is dropped. */
+      skip_rest_of_contract_specifier();
+      continue;
+    }  /* if */
     scan_contract_assertion_attributes();
     if (curr_token == tok_lbracket) {
       /* A capture list (P3098). */
@@ -9672,6 +9706,7 @@ a template-dependent context, and scanned in the body of its call operator
     }  /* if */
 next_specifier:
     (void)required_token(tok_rparen, ec_exp_rparen);
+    if (csp->discarded) continue;
     *p_next = csp;
     p_next = &csp->next;
   }  /* while */
@@ -9733,6 +9768,10 @@ member of a class template), the token caches are kept, for instantiation
       remove_contract_operand_symbols(result_sym, prototype_scope_symbols);
     }  /* if */
   }  /* for */
+  if (csps == rp->contract_specifiers) {
+    /* Those an instance discards (P4283). */
+    remove_discarded_contract_specifiers(&rp->contract_specifiers);
+  }  /* if */
   ssep->decl_parse_state = NULL;
 #if EXTRA_SOURCE_POSITIONS_IN_IL
   curr_construct_end_position = saved_curr_construct_end_position;
@@ -9921,6 +9960,17 @@ the symbols prototype_scope_symbols, is the top scope.
       expect_error();
       continue;
     }  /* if */
+    if (templ_csp->requires_constraint != NULL ?
+            !contract_requires_clause_satisfied(
+                                         templ_csp->requires_constraint) :
+            templ_csp->requires_token_cache != NULL &&
+            !scan_cached_contract_requires_clause(templ_csp)) {
+      /* The instance does not satisfy the requires-clause (P4283; one
+         naming a local entity is scanned again for the constraint as
+         written): the assertion is discarded, and nothing else of it is
+         scanned. */
+      continue;
+    }  /* if */
     csp = alloc_contract_specifier(templ_csp->kind);
     csp->position = templ_csp->position;
     /* The label (P3400) is scanned with the operand, from the template's
@@ -9978,6 +10028,273 @@ If we are in such a context, update the types in the decl_parse_state.
     }  /* if */
   }  /* if */
 }  /* use_nonreal_type_for_nested_prototype_type */
+
+
+/*
+Requires-clauses on contract assertions (P4283).
+*/
+
+static a_boolean cached_token_is_contract_intro(const a_shared_token  &tok)
+/*
+Return TRUE if tok, a cached token, is an identifier spelled "pre" or "post",
+which begins the next function contract specifier.
+*/
+{
+  a_const_char  *id;
+
+  if (!tok->is(tok_identifier) || !tok->is_identifier()) return FALSE;
+  id = tok->get_locator().symbol_header->identifier;
+  return strcmp(id, "pre") == 0 || strcmp(id, "post") == 0;
+}  /* cached_token_is_contract_intro */
+
+
+static sizeof_t contract_requires_clause_length(a_token_cache  *cache,
+                                                a_boolean      *after_requires)
+/*
+cache holds the tokens of the requires-clause of a contract assertion, from
+"requires", and of what follows it (see cache_contract_requires_clause).
+Return the number of tokens of the clause: the constraint ends before the
+operand, the last parenthesized group before the next contract specifier or a
+"," that follows one, and before any bracketed group just before the operand
+(an attribute-specifier-seq or a capture list); a parenthesized group or a
+brace-enclosed one after a "requires" (a requires-expression's parameter list
+and requirement-body) is part of the constraint.  Without an operand after the
+constraint (an operand is required), return the length of the cache.  Set
+*after_requires to TRUE if the cache ends where a requirement-body would begin.
+This is GCC's rule (cp_skip_contract_requires_clause), without its fallback
+for a "," in a template argument list, which the caching does not stop at.
+*/
+{
+  sizeof_t   n = 1, length = cache->length(), cend = 1, pred = 0,
+             pred_cend = 0;
+  a_boolean  after_req = FALSE, stopped = FALSE;
+
+  while (n < length) {
+    const a_shared_token  &tok = *(cache->begin() + (int)n);
+    if (tok->is_pragma()) {
+      n++;
+    } else if (tok->is(tok_lparen) || tok->is(tok_lbracket) ||
+               tok->is(tok_lbrace)) {
+      sizeof_t   start = n;
+      int        depth = 0;
+      a_boolean  is_paren = tok->is(tok_lparen),
+                 is_brace = tok->is(tok_lbrace);
+      do {
+        const a_shared_token  &t = *(cache->begin() + (int)n);
+        if (t->is(tok_lparen) || t->is(tok_lbracket) || t->is(tok_lbrace)) {
+          depth++;
+        } else if (t->is(tok_rparen) || t->is(tok_rbracket) ||
+                   t->is(tok_rbrace)) {
+          depth--;
+        }  /* if */
+        n++;
+      } while (depth > 0 && n < length);
+      if (is_paren) {
+        if (!after_req) {
+          pred = start;
+          pred_cend = cend;
+        }  /* if */
+        /* Else a requires-expression's parameter list: its
+           requirement-body follows. */
+        cend = n;
+      } else {
+        if (is_brace) cend = n;
+        after_req = FALSE;
+      }  /* if */
+    } else if (tok->is(tok_requires)) {
+      after_req = TRUE;
+      cend = ++n;
+    } else if (pred != 0 &&
+               (tok->is(tok_comma) || cached_token_is_contract_intro(tok))) {
+      stopped = TRUE;
+      break;
+    } else {
+      after_req = FALSE;
+      cend = ++n;
+    }  /* if */
+  }  /* while */
+  *after_requires = after_req && !stopped;
+  return pred_cend > 1 ? pred_cend : length;
+}  /* contract_requires_clause_length */
+
+
+void skip_contract_operand(void)
+/*
+Skip the tokens of the operand of a contract assertion (between its
+parentheses), up to the closing parenthesis or the end of the token cache
+holding them: that of an assertion dropped or discarded from an instance
+(P4283; see scan_contract_specifier_operand).
+*/
+{
+  a_token_set_array  stop_tokens;
+
+  clear_token_set_array(stop_tokens);
+  incr_token_set_array_element(stop_tokens, tok_rparen);
+  incr_token_set_array_element(stop_tokens, tok_semicolon);
+  cache_token_stream((a_token_cache *)NULL, stop_tokens);
+}  /* skip_contract_operand */
+
+
+void skip_rest_of_contract_specifier(void)
+/*
+Skip the rest of a function contract specifier dropped after an error in its
+requires-clause (P4283; see cache_contract_requires_clause): its attributes,
+capture list and operand, with the parentheses.
+*/
+{
+  skip_over_attributes();
+  if (curr_token == tok_lbracket) {
+    a_token_set_array  stop_tokens;
+    clear_token_set_array(stop_tokens);
+    incr_token_set_array_element(stop_tokens, tok_lparen);
+    incr_token_set_array_element(stop_tokens, tok_semicolon);
+    cache_token_stream((a_token_cache *)NULL, stop_tokens);
+  }  /* if */
+  if (required_token(tok_lparen, ec_exp_lparen)) {
+    skip_contract_operand();
+    (void)required_token(tok_rparen, ec_exp_rparen);
+  }  /* if */
+}  /* skip_rest_of_contract_specifier */
+
+
+a_boolean cache_contract_requires_clause(a_contract_specifier_ptr  csp,
+                                         a_boolean                 skip)
+/*
+The current token is the "requires" that begins the requires-clause of the
+contract assertion csp (P4283), after its label if it has one.  Cache its
+tokens, from "requires" to the end of the constraint (see
+contract_requires_clause_length), in csp->requires_token_cache, from which the
+clause is scanned with the operand (see scan_cached_contract_requires_clause),
+or if skip is TRUE, skip them.  Without P4283, and on an assertion that is not
+templated where it is written (not in a template-dependent context, nor in an
+instance, whose tokens are a template's), diagnose the clause, skip it, and
+return TRUE: the caller drops the assertion (as GCC does).  Otherwise return
+FALSE.  The tokens that follow the clause are scanned again.
+*/
+{
+  a_token_cache      *cache, *rest;
+  a_token_set_array  stop_tokens;
+  sizeof_t           length;
+  a_boolean          after_requires, rejected = FALSE;
+
+  if (!contracts_p4283_enabled) {
+    pos_error(ec_contract_requires_needs_option, &pos_curr_token);
+    rejected = TRUE;
+  } else if (!is_template_dependent_context() &&
+             depth_innermost_instantiation_scope == NO_SCOPE_DEPTH) {
+    pos_error(ec_contract_requires_not_templated, &pos_curr_token);
+    rejected = TRUE;
+  }  /* if */
+  /* The tokens that can end the assertion's specifier, or the declaration
+     or statement; those nested in brackets do not. */
+  clear_token_set_array(stop_tokens);
+  incr_token_set_array_element(stop_tokens, tok_semicolon);
+  incr_token_set_array_element(stop_tokens, tok_lbrace);
+  incr_token_set_array_element(stop_tokens, tok_rbrace);
+  incr_token_set_array_element(stop_tokens, tok_rparen);
+  incr_token_set_array_element(stop_tokens, tok_rbracket);
+  incr_token_set_array_element(stop_tokens, tok_colon);
+  incr_token_set_array_element(stop_tokens, tok_assign);
+  cache = new_fe<a_token_cache>(/*reusable=*/TRUE);
+  for (;;) {
+    cache_token_stream(cache, stop_tokens);
+    if (curr_token != tok_lbrace) break;
+    (void)contract_requires_clause_length(cache, &after_requires);
+    if (!after_requires) break;
+    /* The requirement-body of a requires-expression. */
+    if (cache_token_stream_until_matching_token(cache, CTS_NO_OPTIONS)) break;
+    cache_curr_token(cache);
+    (void)get_token();
+  }  /* for */
+  length = contract_requires_clause_length(cache, &after_requires);
+  rest = new_fe<a_token_cache>(/*reusable=*/FALSE);
+  rest->move_copy_tokens(cache->begin() + (int)length, cache->end());
+  cache->remove_token_range(cache->begin() + (int)length, cache->end());
+  rescan_cached_tokens(rest);
+  delete_fe(&rest);
+  if (skip || rejected) {
+    delete_fe(&cache);
+  } else {
+    terminate_token_cache(cache);
+    csp->requires_token_cache = cache;
+  }  /* if */
+  return rejected;
+}  /* cache_contract_requires_clause */
+
+
+a_boolean contract_requires_clause_satisfied(an_expr_node_ptr  constraint)
+/*
+Return TRUE if the instance being scanned satisfies constraint, that of the
+requires-clause of a contract assertion (P4283) as written in its template:
+substituted with the arguments of the active instantiations, as a
+requires-expression is (see scan_requires_expr), per [temp.constr] -- a
+substitution failure in an atomic constraint makes it not satisfied, and a
+conjunction or disjunction settled by its first operand does not substitute
+the second.  A constraint in error is satisfied.
+*/
+{
+  a_subst_pairs_array  subst_pairs = get_current_subst_pairs();
+  a_diag_list          diag_list;
+  a_boolean            result;
+
+  if (constraint == NULL || is_error_node(constraint)) return TRUE;
+  clear_diag_list(&diag_list);
+  result = constraint_satisfied_full(constraint, subst_pairs, &diag_list);
+  discard_more_info_list(&diag_list);
+  return result;
+}  /* contract_requires_clause_satisfied */
+
+
+a_boolean scan_cached_contract_requires_clause(
+                                           a_contract_specifier_ptr  csp)
+/*
+Scan the requires-clause of the contract assertion csp (P4283) from
+csp->requires_token_cache (see cache_contract_requires_clause), which is not
+consumed, in the scope of the operand, before the label.  In a
+template-dependent context, record its constraint in csp->requires_constraint
+and return TRUE.  Otherwise the assertion belongs to an instance: return TRUE
+if the instance satisfies the constraint as written in the template (recorded
+when the template's tokens were scanned; see
+scan_contract_requires_constraint), or FALSE if the assertion is to be
+discarded.
+*/
+{
+  an_expr_node_ptr  constraint;
+  a_boolean         dependent = is_template_dependent_context();
+
+  rescan_reusable_cache(a_reusable_token_cache(csp->requires_token_cache));
+  constraint = scan_contract_requires_constraint(dependent);
+  if (curr_token != tok_end_of_source) {
+    /* Tokens remain in the cache: Issue an error. */
+    pos_error(ec_exp_lparen, &pos_curr_token);
+    while (curr_token != tok_end_of_source) (void)get_token();
+  }  /* if */
+  /* Skip past the tok_end_of_source. */
+  (void)get_token();
+  if (dependent) {
+    csp->requires_constraint = constraint;
+    return TRUE;
+  }  /* if */
+  return contract_requires_clause_satisfied(constraint);
+}  /* scan_cached_contract_requires_clause */
+
+
+void remove_discarded_contract_specifiers(
+                                    a_contract_specifier_ptr  *p_specifiers)
+/*
+Remove from the list of function contract specifiers *p_specifiers those
+discarded because an instance does not satisfy their requires-clauses
+(P4283; see scan_cached_contract_requires_clause).
+*/
+{
+  while (*p_specifiers != NULL) {
+    if ((*p_specifiers)->discarded) {
+      *p_specifiers = (*p_specifiers)->next;
+    } else {
+      p_specifiers = &(*p_specifiers)->next;
+    }  /* if */
+  }  /* while */
+}  /* remove_discarded_contract_specifiers */
 
 
 typedef Ptr_map<a_token_sequence_number, an_auto_param_descr*> 
@@ -10435,6 +10752,8 @@ of the declaration reactivated.
   scan_cached_contract_specifiers(rp, dps->contract_specifiers,
                                   func_info->prototype_scope_symbols,
                                   /*keep_tokens=*/FALSE);
+  /* Those an instance discards (P4283). */
+  remove_discarded_contract_specifiers(&dps->contract_specifiers);
   pop_scope();
   pop_scope();
 }  /* scan_contract_operands_of_declaration */
@@ -10553,6 +10872,18 @@ first difference.
                                     curr->label, (a_variable_ptr)NULL))) {
       /* P3400: the same label as written, or none on both. */
       pos2_diagnostic(es_error, ec_contract_redecl_label_mismatch,
+                      &curr->position, &prev->position);
+      return;
+    }  /* if */
+    an_expr_node_ptr  prev_req = prev->requires_constraint;
+    an_expr_node_ptr  curr_req = curr->requires_constraint;
+    if ((prev_req == NULL) != (curr_req == NULL) ||
+        (prev_req != NULL && !expr_contains_error(prev_req) &&
+         !expr_contains_error(curr_req) &&
+         !compare_expressions(prev_req, curr_req,
+                              CC_EXACT_DECLTYPE_EXPR_MATCH_REQUIRED))) {
+      /* P4283: the same requires-clause as written, or none on both. */
+      pos2_diagnostic(es_error, ec_contract_redecl_requires_mismatch,
                       &curr->position, &prev->position);
       return;
     }  /* if */

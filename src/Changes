@@ -1,6 +1,30 @@
 Version 7.0, September 28, 2026
 
 10/4/26  []
+Contracts (P4283): requires-clauses on contract assertions
+
+The new --[no_]contracts_p4283 option (implied by --contracts_p3850, and
+enabling contracts unless --[no_]contracts is given) lets a precondition,
+postcondition or contract_assert of a templated function have a
+requires-clause, after its label, and predefines __cpp_contracts_requires as
+202609L:
+
+  template<class T> T f(T x) pre requires std::integral<T> (x > 0);
+
+An instance whose template arguments do not satisfy the constraints of the
+clause (a substitution failure makes an atomic constraint not satisfied, as
+in any requires-clause) does not have the assertion: neither its label,
+captures nor predicate are scanned, and a discarded contract_assert is an
+empty statement.  The clause may name the function's parameters.  On an
+assertion that is not templated the clause is an error, and the assertion is
+ignored (as GCC does).  The requires-clauses of a function's contract
+specifiers must be the same on all its declarations.  The C++-generating
+back end puts templates out as written, clauses included (and the clauses
+of a generic lambda's assertions where it puts one out from the IL), so
+that g++ discards the same assertions from its instances.
+
+
+10/4/26  []
 Contracts (P3400): groups
 
 The group names of an assertion-control specifier's label (its group_names

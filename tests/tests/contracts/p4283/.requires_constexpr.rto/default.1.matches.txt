@@ -1,0 +1,40 @@
+Matches for "line 25: error: contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  line 25: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+Matches for "line 31: error: contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  line 31: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+Matches for "line 43: error: contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  line 43: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+Matches for "line 51: error: contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  line 51: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+Matches for "line 62: error: contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  line 62: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+Matches for "line 64: error: contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  line 64: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+Matches for "line 66: error: contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  line 66: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+Matches for "line 78: error: contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  line 78: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+Matches for "line 83: error: contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  line 83: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+Matches for "line 92: error: contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  line 92: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
