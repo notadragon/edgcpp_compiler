@@ -4716,9 +4716,58 @@ the underlying implementation is).
 }  /* scan_va_list_operand */
 
 
+#if GCC_BUILTIN_VARARGS
+
+static a_boolean scan_c23_va_start_tail(a_variable_ptr last_param_var)
+/*
+Scan what follows the first operand of a GNU __builtin_c23_va_start call
+(the expansion of the C23 and C++26 va_start(ap, ...) macro), up to but not
+including the closing parenthesis.  That is either nothing, or a comma
+followed by the name of the last parameter, last_param_var (the form
+accepted before C23 and C++26), or a comma followed by tokens that are
+ignored with a warning, as GCC does.  Return TRUE if the name of the last
+parameter follows; in that case the current token is that name, which the
+caller scans as the second operand of a regular va_start.
+*/
+{
+  a_boolean  result = FALSE;
+
+  remove_stop_token(tok_comma);
+  if (curr_token != tok_rparen) {
+    (void)required_token(tok_comma, ec_exp_comma);
+    if (curr_token == tok_identifier &&
+        next_token() == tok_rparen &&
+        last_param_var != NULL &&
+        last_param_var->source_corresp.name != NULL &&
+        curr_token_is_identifier_string(
+                                     last_param_var->source_corresp.name)) {
+      result = TRUE;
+    } else {
+      /* Skip the remaining arguments, which need not be balanced except
+         for parentheses. */
+      int depth = 0;
+      pos_warning(ec_bad_va_start, &pos_curr_token);
+      while (curr_token != tok_end_of_source &&
+             (curr_token != tok_rparen || depth != 0)) {
+        if (curr_token == tok_lparen) {
+          depth++;
+        } else if (curr_token == tok_rparen) {
+          depth--;
+        }  /* if */
+        (void)get_token();
+      }  /* while */
+    }  /* if */
+  }  /* if */
+  return result;
+}  /* scan_c23_va_start_tail */
+
+#endif /* GCC_BUILTIN_VARARGS */
+
+
 static void scan_va_start_operator(an_operand *result,
                                    an_operand *builtin_func,
-                                   a_boolean  single_operand)
+                                   a_boolean  single_operand,
+                                   a_boolean  c23_form)
 /*
 Scan a reference to the <stdarg.h> or <varargs.h> va_start macro, when it is
 treated as a builtin.  The <stdarg.h> form is expected when single_operand is
@@ -4736,6 +4785,12 @@ If builtin_func is non-NULL, the construct is being handled as a pseudo-call
 to a builtin function and the function name and left parenthesis have already
 been scanned: builtin_func represents the reference to the builtin function
 (this is how GNU's __builtin_va_start is handled).
+
+c23_form is TRUE for GNU's __builtin_c23_va_start (single_operand is then
+FALSE), the C23 and C++26 form, whose second operand is optional and
+ignored, and which is allowed in a function with no parameter before the
+"...".  It produces the same IL as __builtin_va_start(va_list_var, 0) when
+the second operand is not the name of the last parameter.
 */
 {
   a_source_position start_position;
@@ -4792,7 +4847,8 @@ been scanned: builtin_func represents the reference to the builtin function
             last_param_var = innermost_function_scope->variant.routine
                                                           .this_param_variable;
           }  /* if */
-          if (last_param_var == NULL) bad_scope = TRUE;
+          /* The C23/C++26 form needs no parameter before the "...". */
+          if (last_param_var == NULL && !c23_form) bad_scope = TRUE;
         } else {
           while (last_param_var->next != NULL) {
             last_param_var = last_param_var->next;
@@ -4811,12 +4867,21 @@ been scanned: builtin_func represents the reference to the builtin function
   /* Scan the first expression. */
   node1 = scan_va_list_operand(/*value_used=*/FALSE,
                                ec_bad_va_start, &err);
+#if GCC_BUILTIN_VARARGS
+  if (c23_form && !scan_c23_va_start_tail(last_param_var)) {
+    /* No second operand, or one that is ignored: GCC then uses a zero
+       second operand, which it does not check. */
+    if (!err) node1->next = make_zero_expr(integer_type(ik_int));
+  } else
+#endif /* GCC_BUILTIN_VARARGS */
   if (!single_operand) {
-    /* Check for and pass over the comma. */
-    add_stop_token(tok_identifier);
-    (void)required_token(tok_comma, ec_exp_comma);
-    remove_stop_token(tok_identifier);
-    remove_stop_token(tok_comma);
+    if (!c23_form) {
+      /* Check for and pass over the comma. */
+      add_stop_token(tok_identifier);
+      (void)required_token(tok_comma, ec_exp_comma);
+      remove_stop_token(tok_identifier);
+      remove_stop_token(tok_comma);
+    }  /* if */
     /* Scan the second expression. */
     scan_expr(&operand, PREC_LOWEST, EOPT_DISALLOW_COMMA_OPERATOR);
     do_operand_transformations(&operand,
@@ -5662,10 +5727,16 @@ call, and rcblock->argument_list to the previously-scanned argument list.
 #if GCC_BUILTIN_VARARGS
     case bfk_stdarg_start:
     case bfk_va_start:
-      scan_va_start_operator(result_op, operand, /*single_operand=*/FALSE);
+      scan_va_start_operator(result_op, operand, /*single_operand=*/FALSE,
+                             /*c23_form=*/FALSE);
+      break;
+    case bufk_c23_va_start:
+      scan_va_start_operator(result_op, operand, /*single_operand=*/FALSE,
+                             /*c23_form=*/TRUE);
       break;
     case bfk_varargs_start:
-      scan_va_start_operator(result_op, operand, /*single_operand=*/TRUE);
+      scan_va_start_operator(result_op, operand, /*single_operand=*/TRUE,
+                             /*c23_form=*/FALSE);
       break;
     case bfk_va_arg:
       scan_va_arg_operator(result_op, operand);
@@ -45810,7 +45881,7 @@ handle_cli_typeid:
     case tok_va_start:
       /* <stdarg.h> va_start macro, when treated as a builtin. */
       scan_va_start_operator(&local_result, (an_operand*)NULL,
-                             /*single_operand=*/FALSE);
+                             /*single_operand=*/FALSE, /*c23_form=*/FALSE);
       break;
 
     case tok_va_arg:

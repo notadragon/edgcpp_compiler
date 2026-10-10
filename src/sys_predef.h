@@ -392,6 +392,7 @@ enum a_builtin_user_function_kind {
   bufk_u8strlen,                  /* __builtin_u8strlen */
   bufk_FUNCSIG,                   /* __builtin_FUNCSIG */
   bufk_FILE_NAME,                 /* __builtin_FILE_NAME */
+  bufk_c23_va_start,              /* __builtin_c23_va_start */
   bufk_last                       /* final entry */
 };
 
@@ -446,6 +447,13 @@ EXTERN a_builtin_user_descr builtin_user_table[]
 
   /* __builtin_stdarg_start is also not picked up for GCC. */
   { "__builtin_stdarg_start", "gx(40500-)", "void (...)", bfk_stdarg_start },
+
+  /* __builtin_c23_va_start is a keyword in GCC (used by the va_start macro
+     of <stdarg.h>), available beginning with GCC 15 in C23 mode and GCC 16
+     in C++26 mode.  The language version is checked when the builtin
+     symbols are preloaded. */
+  { "__builtin_c23_va_start", "gc(150000-)g+(160000-)", "void (...)",
+    bufk_c23_va_start },
 
   /* Manually add the size-specific versions of the __atomic builtins for
      clang.  These entries were copied from the corresponding automatically-
