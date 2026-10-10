@@ -12383,6 +12383,12 @@ enable_microsoft_mode:
                                semantic_string);
           }  /* if */
 #if BACK_END_IS_C_GEN_BE
+          if (contract_evaluation_semantic == ces_noexcept_observe ||
+              contract_evaluation_semantic == ces_noexcept_enforce) {
+            /* The noexcept semantics (P4298) let no exception escape a
+               check either: allowed (without --contracts_p4298 they become
+               observe and enforce, which are rejected then). */
+          } else
           if (contract_evaluation_semantic != ces_ignore &&
               contract_evaluation_semantic != ces_quick_enforce) {
             /* The C-generating back end implements exception handling
@@ -12541,6 +12547,12 @@ enable_microsoft_mode:
                                (a_const_char *)NULL);
       contract_evaluation_semantic = ces_enforce;
     }  /* if */
+#if BACK_END_IS_C_GEN_BE
+    /* See the --contract_evaluation_semantic option. */
+    str_command_line_error(ec_cl_contract_evaluation_semantic_needs_cp_gen_be,
+                           contract_evaluation_semantic == ces_observe
+                             ? "observe" : "enforce");
+#endif /* BACK_END_IS_C_GEN_BE */
   }  /* if */
   /* Check for consistent specification of dialects and language modes. */
   check_dialect_and_language_modes();

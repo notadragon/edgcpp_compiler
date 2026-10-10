@@ -5338,6 +5338,26 @@ EXTERN_THREAD a_symbol_ptr
                            template arguments to __builtin_common_type are
                            dependent). */
 
+EXTERN_THREAD a_routine_ptr
+                contract_noexcept_check_routine;
+                        /* The routine that the check of a contract assertion
+                           (P2900) with a noexcept semantic (P4298) calls on a
+                           violation, in a configuration where the front end
+                           generates checks: a noexcept function, defined in
+                           the translation unit, that calls libcontracts'
+                           __c_contract_check_noexcept; NULL if it has not
+                           been defined (see
+                           enter_contract_noexcept_check_routine). */
+
+EXTERN_THREAD a_routine_ptr
+                contract_noexcept_exception_routine;
+                        /* Likewise the routine that it calls when the
+                           evaluation of the predicate exits with an
+                           exception: a noexcept function that reports the
+                           violation with the "evaluation exception"
+                           detection mode through libcontracts'
+                           __dispatch_with_override_core. */
+
 EXTERN_THREAD a_symbol_ptr
                 symbol_for_builtin_common_type_alias;
                         /* Symbol for "__builtin_common_type_alias", which is
@@ -6085,6 +6105,8 @@ extern a_symbol_ptr find_corresponding_operator_delete_sym(
                                                   a_boolean    template_okay,
                                                   a_boolean    *ambiguous,
                                                   a_symbol_ptr *overload_sym);
+
+extern void enter_contract_noexcept_check_routine(void);
 
 extern a_symbol_ptr make_predeclared_function_symbol(
                                               a_symbol_locator  *locator,

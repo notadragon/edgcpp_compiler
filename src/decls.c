@@ -10846,6 +10846,9 @@ skip_overloading:;
   attach_contract_specifiers(routine_ptr, dps, redeclaration);
   if (is_handle_contract_violation(routine_ptr)) {
     check_handle_contract_violation(routine_ptr, &locator->source_position);
+    /* For the alias by which the contracts runtime calls it (P4298, the
+       first semantics that call the handler from C-generated code). */
+    routine_ptr->is_contract_violation_handler = TRUE;
   }  /* if */
 #if GNU_FUNCTION_MULTIVERSIONING
   if (repr_rout_ptr != NULL) {

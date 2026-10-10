@@ -1,0 +1,3 @@
+./a.out
+semantic 7
+terminate called after throwing an instance of 'int'

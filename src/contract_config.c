@@ -744,6 +744,10 @@ evaluation, on the callee side (no caller-side checks are generated).
     if (entry->has_semantic) {
       a_contract_evaluation_semantic  semantic =
                                         supported_semantic(entry->semantic);
+      if (semantic == ces_noexcept_observe ||
+          semantic == ces_noexcept_enforce) {
+        /* Allowed (P4298), as on the command line. */
+      } else
       if (semantic != ces_ignore && semantic != ces_quick_enforce) {
         /* See the --contract_evaluation_semantic option. */
       }  /* if */

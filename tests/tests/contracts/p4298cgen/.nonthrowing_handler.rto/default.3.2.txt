@@ -1,0 +1,2 @@
+./a.out
+semantic 7

@@ -3111,6 +3111,7 @@ to it.  The entry is allocated in the file scope memory region.
 #endif /* GENERATE_SOURCE_SEQUENCE_LISTS */
   rp->considered_decider_function_at_some_point = FALSE;
   rp->is_raw_literal_operator     = FALSE;
+  rp->is_contract_violation_handler = FALSE;
 #if USE_LAZY_INITIALIZATION_FOR_THREAD_LOCAL_VARIABLES
   rp->is_tls_init_alias           = FALSE;
 #endif /* USE_LAZY_INITIALIZATION_FOR_THREAD_LOCAL_VARIABLES */

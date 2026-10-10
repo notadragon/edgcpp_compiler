@@ -13256,6 +13256,13 @@ typedef struct a_routine {
 			/* TRUE if this routine is a raw literal operator,
 			   i.e., a literal operator with one parameter of
 			   type const char*, and FALSE otherwise. */
+  a_bit_field	is_contract_violation_handler:1;
+			/* TRUE if this routine is the replacement
+			   contract-violation handler, ::handle_contract_violation
+			   (P2900), which the contracts runtime calls by the
+			   C-linkage name __handle_contract_violation: a back
+			   end that generates C puts out that alias with its
+			   definition. */
 #if USE_LAZY_INITIALIZATION_FOR_THREAD_LOCAL_VARIABLES
   a_bit_field	is_tls_init_alias:1;
                         /* TRUE if this routine is an alias for the

@@ -4180,6 +4180,9 @@ Display the indicated routine.
   if (ptr->is_raw_literal_operator) {
     disp_boolean("is_raw_literal_operator", TRUE);
   }  /* if */
+  if (ptr->is_contract_violation_handler) {
+    disp_boolean("is_contract_violation_handler", TRUE);
+  }  /* if */
 #if USE_LAZY_INITIALIZATION_FOR_THREAD_LOCAL_VARIABLES
   if (ptr->is_tls_init_alias) {
     disp_boolean("is_tls_init_alias", TRUE);

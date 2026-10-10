@@ -5147,6 +5147,30 @@ Return TRUE if the indicated expression is a zero constant.
 #endif /* !C_GEN_BE_GENERATES_ANSI_C */
 
 
+static void dump_contract_violation_handler_alias(a_routine_ptr  rout)
+/*
+rout, the replacement contract-violation handler (::handle_contract_violation,
+P2900), has just been defined.  Put out the C-linkage alias
+__handle_contract_violation for it, the name by which the contracts runtime
+(libcontracts) calls it, as GCC does; the handler's one parameter, a
+reference, is passed as the runtime's pointer.  Only for a gcc or clang
+target, which has the assembler alias used for __tls_init.
+*/
+{
+  if (gcc_or_clang_is_generated_code_target) {
+    set_output_position(&rout->source_corresp.decl_position);
+    disable_line_wrapping();
+    write_str("__asm__(\".global __handle_contract_violation\");");
+    end_output_line();
+    write_str("__asm__(\"__handle_contract_violation = ");
+    dump_routine_name(rout);
+    write_str("\");");
+    end_output_line();
+    enable_line_wrapping();
+  }  /* if */
+}  /* dump_contract_violation_handler_alias */
+
+
 static void dump_routine_address(an_expr_node_ptr expr)
 /*
 Generate code for an enk_routine expression node, i.e., the name of a
@@ -11286,6 +11310,9 @@ declare_routine:
 #if ASM_FUNCTION_ALLOWED
       within_asm_function_definition = FALSE;
 #endif /* ASM_FUNCTION_ALLOWED */
+      if (rout->is_contract_violation_handler) {
+        dump_contract_violation_handler_alias(rout);
+      }  /* if */
     }  /* if */
     end_unreferenced_bracket(&rout->source_corresp);
   }  /* if */

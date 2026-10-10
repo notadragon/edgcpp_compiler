@@ -56089,6 +56089,11 @@ ignore and quick_enforce).
   if (!in_ce) {
     allowed &= (1u << 1) | (1u << 4);
   }  /* if */
+  if (!in_ce) {
+    /* And the noexcept semantics, which let no exception escape a check
+       either. */
+    allowed |= supported & ((1u << 6) | (1u << 7));
+  }  /* if */
 #endif /* BACK_END_IS_C_GEN_BE */
   v = noexcept_best_fit_label_semantic(contract_semantic_value(semantic),
                                        allowed);

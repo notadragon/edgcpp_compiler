@@ -1,5 +1,15 @@
 Version 7.0, September 28, 2026
 
+10/4/26  []
+eccp.sh: the contracts runtime
+
+When the objects to be linked call __c_contract_check_noexcept (the
+contract checks of the noexcept evaluation semantics, P4298), eccp.sh links
+the contracts runtime as g++ does: libstdc++exp (with its default violation
+handler and terminate-on-throw barrier forced in by -u) and libcontracts.
+EDG_CONTRACTS_LIBRARIES, if set, replaces those options.
+
+
 10/3/26  []
 edg_gxx.sh: contract configuration options
 

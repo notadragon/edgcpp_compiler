@@ -6625,6 +6625,98 @@ condition is not recognized till the label statement is reached.
 }  /* check_for_jump_over_initialization */
 
 
+static an_expr_node_ptr string_arg_for_contract_check(a_const_char  *str)
+/*
+Return an expression (of type const char *) for a string literal with the
+value str, for an argument of a call made on a contract violation.
+*/
+{
+  an_expr_node_ptr  node;
+
+  node = alloc_node_for_allocated_constant(shareable_fs_string_constant(
+                        copy_string_to_region(file_scope_region_number, str)));
+  node->is_lvalue = TRUE;
+  return conv_array_expr_to_pointer(node);
+}  /* string_arg_for_contract_check */
+
+
+static an_expr_node_ptr contract_noexcept_violation_call(
+                                  a_contract_specifier_ptr        csp,
+                                  a_contract_evaluation_semantic  semantic,
+                                  a_contract_violation_call_kind  call_kind)
+/*
+Return an expression (of type void) that handles a violation of the contract
+assertion csp, in the current function, under the noexcept semantic
+semantic (P4298):
+
+  __edg_contract_check_noexcept(comment, file, function, line, kind,
+                                semantic)
+
+(see enter_contract_noexcept_check_routine), with the ABI's values for the
+kind and the semantic, which libcontracts reports to the violation handler;
+for a violation by an exception (see a_contract_violation_call_kind),
+__edg_contract_check_noexcept_exception with the same arguments, the kind
+being post_capture for an exception from the initialization of captures.
+Return NULL (after an error) if that function is not available.
+*/
+{
+  a_routine_ptr     rp = call_kind == cvck_predicate_false ?
+                                         contract_noexcept_check_routine :
+                                         contract_noexcept_exception_routine;
+  a_const_char      *file_name, *full_name;
+  a_line_number     line_number;
+  a_boolean         at_end_of_source;
+  an_expr_node_ptr  args = NULL, *p_arg = &args, call;
+  unsigned int      kind;
+
+  if (rp == NULL) {
+    /* Not entered (see enter_contract_check_routines): after an error in
+       its definition. */
+    expect_error();
+    return NULL;
+  }  /* if */
+  (void)conv_seq_to_file_and_line(csp->position.seq, &file_name,
+                                  &full_name, &line_number,
+                                  &at_end_of_source);
+  switch (csp->kind) {
+    case ctk_pre:  kind = 1; break;  /* CXA_AK_PRE */
+    case ctk_post: kind = 2; break;  /* CXA_AK_POST */
+    default:       kind = 3; break;  /* CXA_AK_ASSERT */
+  }  /* switch */
+  if (call_kind == cvck_capture_exception) kind = 6;  /* CXA_AK_POST_CAPTURE */
+  *p_arg = string_arg_for_contract_check(csp->comment != NULL ?
+                                                     csp->comment : "");
+  p_arg = &(*p_arg)->next;
+  *p_arg = string_arg_for_contract_check(file_name != NULL ? file_name : "");
+  p_arg = &(*p_arg)->next;
+  *p_arg = string_arg_for_contract_check(
+                  get_string_for_function_name(tok_pretty_function_name,
+                                               /*include_quote=*/FALSE));
+  p_arg = &(*p_arg)->next;
+  *p_arg = node_for_integer_constant((long)line_number,
+                                     (an_integer_kind)ik_unsigned_int);
+  p_arg = &(*p_arg)->next;
+  *p_arg = node_for_integer_constant((long)kind,
+                                     (an_integer_kind)ik_unsigned_char);
+  p_arg = &(*p_arg)->next;
+  /* CXA_ES_NOEXCEPT_OBSERVE and CXA_ES_NOEXCEPT_ENFORCE. */
+  *p_arg = node_for_integer_constant(
+                         semantic == ces_noexcept_observe ? 6L : 7L,
+                         (an_integer_kind)ik_unsigned_char);
+  call = function_rvalue_expr(rp);
+  call->next = args;
+  call = make_operator_node((an_expr_operator_kind)eok_call, void_type(),
+                            call);
+  if (strict_cpp17_eval_order) {
+    /* As for an ordinary call (see make_function_call). */
+    call->variant.operation.eval_left_to_right = TRUE;
+  }  /* if */
+  rp->source_corresp.referenced = TRUE;
+  set_expr_result_not_used(call);
+  return call;
+}  /* contract_noexcept_violation_call */
+
+
 static void goto_statement(void)
 /*
 Scan a "goto" statement and add it to the current statement sequence.
@@ -7203,6 +7295,16 @@ quick_enforce handles a violation by an exception (P2900, P3098) alike.
   a_routine_ptr     rp;
   an_expr_node_ptr  call;
 
+  { a_contract_evaluation_semantic  semantic =
+                          contract_semantic_for(csp, current_routine_entry(),
+                                                /*in_constant_evaluation=*/
+                                                FALSE);
+    if (semantic == ces_noexcept_observe ||
+        semantic == ces_noexcept_enforce) {
+      /* A noexcept semantic (P4298) calls the violation handler. */
+      return contract_noexcept_violation_call(csp, semantic, call_kind);
+    }  /* if */
+  }
   check_assertion(contract_semantic_for(csp, current_routine_entry(),
                                         /*in_constant_evaluation=*/FALSE) ==
                                                          ces_quick_enforce);
