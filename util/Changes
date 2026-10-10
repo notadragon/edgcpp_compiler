@@ -1,5 +1,24 @@
 Version 7.0, September 28, 2026
 
+9/30/26  []
+edg_gxx.sh: pair the C++-generating front end with g++
+
+A new driver, util/edg_gxx.sh, compiles C++ by running the C++-generating
+front end (cpfe-cp) and handing the regenerated C++ to a GNU g++.  It takes
+g++'s options.  Because g++ compiles the result, exception handling, RTTI
+and the rest of the Itanium ABI are g++'s own: code compiled this way throws
+through, catches from and links against g++-compiled libraries (including
+libstdc++) exactly as g++-compiled code does.  eccp cannot do that, since
+the C-generating back end implements exception handling with setjmp and
+longjmp.  For example:
+
+  edg-gxx -std=c++26 -O2 main.cpp other.o -o main
+
+The g++ used is $EDG_GXX, else the one named in edg_gxx_config in EDG_BASE,
+else g++ from PATH; its version and include directories are read from it on
+each run.
+
+
 9/27/26  [EDGcpfe/29061]
 
 mk_errinfo could produce incorrect output (e.g., missing font changes)
