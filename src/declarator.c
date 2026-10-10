@@ -3078,6 +3078,24 @@ with a prototype.
 }  /* diag_unprototyped_func_declarator */
 
 
+static a_boolean is_ordinary_member_of_class_template(a_decl_parse_state  *dps)
+/*
+Return TRUE if dps describes the declaration of a member function (not a
+member template or a friend) of a class template or of one of its instances.
+The current scope must be the one containing the declaration.
+*/
+{
+  a_boolean                result = FALSE;
+  a_scope_stack_entry_ptr  ssep = &scope_stack_top();
+
+  if (!(dps->dso_flags & DSO_FRIEND) &&
+      scope_is(ssep, sck_class_struct_union)) {
+    result = is_unspecialized_template_class(ssep->assoc_type);
+  }  /* if */
+  return result;
+}  /* is_ordinary_member_of_class_template */
+
+
 void function_declarator(a_decl_parse_state  *state,
                          a_decl_flag_set     di_flags,
                          a_type_ptr          *new_type_ptr,
@@ -4539,9 +4557,12 @@ done:
   if (must_pop_function_prototype_scope) pop_scope();
   if (!is_top_level_declarator) {
     done_with_func_info(local_func_info_block); /*lint !e530*/
-  } else if (must_adjust_param_type_qualifiers) {
+  } else if (must_adjust_param_type_qualifiers ||
+             is_ordinary_member_of_class_template(state)) {
     /* We are rescanning a function template declaration for substitution
-       purposes and we encountered a parameter with a top-level qualifier.
+       purposes, or scanning the declaration of a member of a class template
+       or of one of its instances, and we encountered a parameter with a
+       top-level qualifier.
        Now consider:
          template<typename T> void f(T const);  // (1)
          template<typename T> void f(T) {}
@@ -4552,9 +4573,15 @@ done:
        explicit instantiation is
          template void f<int const>(int);
        a_param_id::eff_top_level_cv_quals will be TQ_NONE and the const will
-       be preserved.  This adjustment has to happen after trailing return
-       types and exception-specifications are scanned, because in those
-       contexts the cv-qualifiers do apply. */
+       be preserved.  Likewise for
+         template<typename T> struct C { void m(T const); };
+         template<typename T> void C<T>::m(T) {}
+       where the member of C (and of C<int>, declared by rescanning the
+       in-class declaration) is defined outside the class: the definition's
+       parameter variables get only the qualifiers the definition adds (see
+       decl_parameter).  This adjustment
+       has to happen after trailing return types and exception-specifications
+       are scanned, because in those contexts the cv-qualifiers do apply. */
     a_param_id_ptr    pip = func_info->param_id_list;
     a_param_type_ptr  ptp = extra_info->param_type_list;
     for (; ptp != NULL; ptp = ptp->next) {

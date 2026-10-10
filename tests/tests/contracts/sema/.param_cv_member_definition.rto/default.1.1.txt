@@ -1,0 +1,74 @@
+fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
+"Test_name.c", line 29: warning: parameter "x" was set but never used
+  template <> void A<long>::m5(long x) { x = 1; }  // OK
+                                    ^
+
+"Test_name.c", line 36: warning: parameter "x" was set but never used
+  void A<const int>::n(int x) { x = 1; }         // OK, not a template member
+                           ^
+
+"Test_name.c", line 61: warning: parameter "x" was set but never used
+  void S::n(int x) { x = 1; }                     // OK
+                ^
+
+"Test_name.c", line 23: warning: parameter "x" was set but never used
+  template <class T> void A<T>::m1(T x) { x = 1; }  // OK
+                                     ^
+          detected during instantiation of "void A<T>::m1(T) [with T=int]" at line 31
+
+"Test_name.c", line 25: error: expression must be a modifiable lvalue
+    x = 1;                                         // Error, in A<int>
+    ^
+          detected during instantiation of "void A<T>::m2(T) [with T=int]" at line 31
+
+"Test_name.c", line 19: error: expression must be a modifiable lvalue
+    void m3(const T x) { x = 1; }                 // Error, in A<int>
+                         ^
+          detected during instantiation of "void A<T>::m3(T) [with T=int]" at line 31
+
+"Test_name.c", line 30: warning: parameter "x" was set but never used
+  template <class T> void A<T>::m5(T x) { x = 1; }  // OK
+                                     ^
+          detected during instantiation of "void A<T>::m5(T) [with T=int]" at line 31
+
+"Test_name.c", line 28: warning: parameter "x" was set but never used
+  void A<T>::m4(T x, U) { x = 1; }                // OK
+                  ^
+          detected during instantiation of "void A<T>::m4(T, U) [with T=int, U=char]" at line 32
+
+"Test_name.c", line 43: error: expression must be a modifiable lvalue
+    x = 1;                                         // Error, in B<const int>
+    ^
+          detected during instantiation of "void B<T>::m1(T) [with T=const int]" at line 48
+
+"Test_name.c", line 46: error: expression must be a modifiable lvalue
+    x = 1;                                         // Error, in B<const int>
+    ^
+          detected during instantiation of "void B<T>::m2(T) [with T=const int]" at line 48
+
+"Test_name.c", line 56: warning: parameter "x" was set but never used
+  template <class U> void S::m(U x) { x = 1; }    // OK
+                                 ^
+          detected during instantiation of "void S::m(U) [with U=int]" at line 62
+
+"Test_name.c", line 58: error: expression must be a modifiable lvalue
+    x = 1;                                         // Error, in S::m2<int>
+    ^
+          detected during instantiation of "void S::m2(U) [with U=int]" at line 63
+
+"Test_name.c", line 60: warning: parameter "x" was set but never used
+  template <class U> void f(U x) { x = 1; }       // OK
+                              ^
+          detected during instantiation of "void f(U) [with U=int]" at line 64
+
+"Test_name.c", line 70: warning: parameter "x" was set but never used
+  void C<T>::m(U x) { x = 1; }                    // OK
+                 ^
+          detected during instantiation of "void C<T>::m(U) [with T=int, U=int]" at line 71
+
+"Test_name.c", line 79: error: value parameter "x" used in a postcondition must be declared const
+  template <class T> void D<T>::m(T x) {}         // Error, in D<int>
+                                    ^
+          detected during instantiation of "void D<T>::m(T) [with T=int]" at line 81
+
+6 errors detected in the compilation of "Test_name.c".

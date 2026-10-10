@@ -1,0 +1,24 @@
+Matches for "line 19: error: expression must be a modifiable lvalue":
+  <-----------------------------------------------------------------------------
+  line 19: error: expression must be a modifiable lvalue
+  ----------------------------------------------------------------------------->
+Matches for "line 25: error: expression must be a modifiable lvalue":
+  <-----------------------------------------------------------------------------
+  line 25: error: expression must be a modifiable lvalue
+  ----------------------------------------------------------------------------->
+Matches for "line 43: error: expression must be a modifiable lvalue":
+  <-----------------------------------------------------------------------------
+  line 43: error: expression must be a modifiable lvalue
+  ----------------------------------------------------------------------------->
+Matches for "line 46: error: expression must be a modifiable lvalue":
+  <-----------------------------------------------------------------------------
+  line 46: error: expression must be a modifiable lvalue
+  ----------------------------------------------------------------------------->
+Matches for "line 58: error: expression must be a modifiable lvalue":
+  <-----------------------------------------------------------------------------
+  line 58: error: expression must be a modifiable lvalue
+  ----------------------------------------------------------------------------->
+Matches for "line 79: error: value parameter "x" used in a postcondition must be declared const":
+  <-----------------------------------------------------------------------------
+  line 79: error: value parameter "x" used in a postcondition must be declared const
+  ----------------------------------------------------------------------------->
