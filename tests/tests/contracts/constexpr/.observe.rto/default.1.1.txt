@@ -1,0 +1,48 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contract_evaluation_semantic=observe Test_name.c
+"Test_name.c", line 13: warning: contract predicate is false in constant expression
+  constexpr int f(int x) pre(x > 0) { return x; }
+                         ^
+
+"Test_name.c", line 13: warning: contract predicate is false in constant expression
+  constexpr int f(int x) pre(x > 0) { return x; }
+                         ^
+
+"Test_name.c", line 19: warning: contract condition is not constant
+  constexpr int g(int x) pre(not_constexpr(x) > 0) { return x; }
+                         ^
+
+"Test_name.c", line 24: warning: contract predicate is false in constant expression
+    pre(x != 1) pre(x != 2) pre(x != 3) pre(x != 4) pre(x != 5)
+    ^
+
+"Test_name.c", line 24: warning: contract predicate is false in constant expression
+    pre(x != 1) pre(x != 2) pre(x != 3) pre(x != 4) pre(x != 5)
+                ^
+
+"Test_name.c", line 24: warning: contract predicate is false in constant expression
+    pre(x != 1) pre(x != 2) pre(x != 3) pre(x != 4) pre(x != 5)
+                            ^
+
+"Test_name.c", line 24: warning: contract predicate is false in constant expression
+    pre(x != 1) pre(x != 2) pre(x != 3) pre(x != 4) pre(x != 5)
+                                        ^
+
+"Test_name.c", line 24: warning: contract predicate is false in constant expression
+    pre(x != 1) pre(x != 2) pre(x != 3) pre(x != 4) pre(x != 5)
+                                                    ^
+
+"Test_name.c", line 25: warning: contract predicate is false in constant expression
+    pre(x != 6) pre(x != 7) pre(x != 8) pre(x != 9) pre(x != 10) { return x; }
+    ^
+
+"Test_name.c", line 25: warning: contract predicate is false in constant expression
+    pre(x != 6) pre(x != 7) pre(x != 8) pre(x != 9) pre(x != 10) { return x; }
+                ^
+
+"Test_name.c", line 25: warning: contract predicate is false in constant expression
+    pre(x != 6) pre(x != 7) pre(x != 8) pre(x != 9) pre(x != 10) { return x; }
+                            ^
+"Test_name.c", line 25: note: and 2 more contract violations not shown
+    pre(x != 6) pre(x != 7) pre(x != 8) pre(x != 9) pre(x != 10) { return x; }
+                            ^
+

@@ -1,0 +1,4 @@
+Matches for "line 30: error: contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  line 30: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->

@@ -57,6 +57,44 @@ type "const std::contracts::contract_violation &".
 
 
 10/1/26  []
+Contracts (P2900): constant evaluation of contract assertions
+
+Contract assertions are now evaluated during constant evaluation, for every
+back end: a function's preconditions when a call starts (for a constructor,
+before its mem-initializers), its postconditions when it returns (for a
+destructor, after its members and bases are destroyed), and a
+contract_assert where it is reached.  Under the ignore semantic nothing is
+evaluated.  Otherwise a predicate that is false, or is not a core constant
+expression, does not stop the evaluation; when the evaluation is complete:
+
+  - If it is not a constant expression on other grounds, nothing more is
+    said.
+  - If it is not manifestly constant-evaluated (std::is_constant_evaluated()
+    is false), it is not a constant expression, silently, and the
+    expression is evaluated at run time, where the assertions are checked.
+  - Otherwise each such assertion is diagnosed ("contract predicate is false
+    in constant expression", or "contract condition is not constant"): with
+    an error under enforce and quick_enforce, and with a warning under
+    observe, where the value stands.  At most eight are listed per
+    evaluation, and one already diagnosed for the same expression is not
+    diagnosed again.
+
+  constexpr int f(int x) pre(x > 0) { return x; }
+  static_assert(f(0) == 0);     // error: contract predicate is false in
+                                // constant expression (at the "pre")
+
+A predicate's side effects never persist in a constant evaluation: the
+objects it modifies are restored once its value is known, as if an
+equivalent evaluation without side effects had been performed (which P2900
+permits).  Deallocating, in a predicate, storage allocated before the
+predicate was evaluated cannot yet be undone, so such a predicate is treated
+as not constant.
+
+The checks the front end generates for the C-generating back end are not
+themselves evaluated during constant evaluation.
+
+
+10/1/26  []
 Contracts (P2900): contract assertions of templates
 
 The contract assertions of function templates, of members of class

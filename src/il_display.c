@@ -5600,6 +5600,9 @@ Display the indicated statement.
   if (ptr->is_unlikely) {
     disp_boolean("is_unlikely", TRUE);
   }  /* if */
+  if (ptr->is_contract_check) {
+    disp_boolean("is_contract_check", TRUE);
+  }  /* if */
 #if GENERATE_SOURCE_SEQUENCE_LISTS
   if (ptr->source_sequence_entry != NULL) {
     disp_ptr("source_sequence_entry", (char *)ptr->source_sequence_entry,

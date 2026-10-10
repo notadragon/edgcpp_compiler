@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contract_evaluation_semantic=quick_enforce Test_name.c
+"Test_name.c", line 14: error: contract predicate is false in constant expression
+  template<class... Ts> constexpr int f(Ts... a, int b) pre(b > 0) { return b; }
+                                                        ^
+
+"Test_name.c", line 17: error: contract predicate is false in constant expression
+    pre(((p < t) && ...)) { return 0; }
+    ^
+
+"Test_name.c", line 19: error: contract predicate is false in constant expression
+  template<class... P> constexpr int ix(P... p) pre(p...[1] > 0) { return 0; }
+                                                ^
+
+"Test_name.c", line 22: error: contract predicate is false in constant expression
+    pre(((p < n) && ...))
+    ^
+
+"Test_name.c", line 26: error: contract predicate is false in constant expression
+    post(r: r == n) { return (p + ...); }
+    ^
+
+5 errors detected in the compilation of "Test_name.c".

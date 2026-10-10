@@ -1796,6 +1796,80 @@ typedef struct a_var_postfix {
 
 
 /*
+A problem with a contract assertion (P2900) found during an interpretation:
+Its predicate was false, or was not a core constant expression.  Problems do
+not stop the interpretation; they are reported (or make it fail) when it is
+complete (see finish_contract_evaluation).
+*/
+typedef struct a_contract_problem *a_contract_problem_ptr;
+typedef struct a_contract_problem {
+  a_contract_problem_ptr
+		next;	/* The next problem, in the order found. */
+  a_contract_specifier_ptr
+		assertion;
+			/* The contract assertion. */
+  a_boolean	not_constant;
+			/* TRUE if the predicate was not a core constant
+			   expression; FALSE if it was false. */
+  a_contract_evaluation_semantic
+		semantic;
+			/* The assertion's evaluation semantic in constant
+			   evaluation (see contract_semantic_for). */
+} a_contract_problem;
+
+
+/*
+A copy of a complete object that existed before the evaluation of a contract
+predicate began, taken when the predicate first modifies the object.  The
+copy covers the object's bookkeeping prefix (its flags and initialization
+bitmap) as well as its value, and is put back when the predicate's value has
+been determined: A predicate's side effects never persist in a constant
+evaluation.
+*/
+typedef struct a_contract_snapshot *a_contract_snapshot_ptr;
+typedef struct a_contract_snapshot {
+  a_contract_snapshot_ptr
+		next;	/* The previously taken snapshot of the same
+			   predicate evaluation. */
+  a_byte	*complete_object;
+			/* The complete object. */
+  a_byte	*start;	/* The first byte copied (in the prefix). */
+  a_byte_count	n_bytes;
+			/* The number of bytes copied, which follow this
+			   structure. */
+} a_contract_snapshot;
+
+
+/*
+The state of the evaluation of one contract predicate.  These are on the host
+stack, and nest when a predicate calls a function whose contract assertions
+are evaluated in turn.
+*/
+typedef struct a_contract_predicate_state {
+  struct a_contract_predicate_state
+		*enclosing;
+			/* The state of the enclosing predicate evaluation,
+			   or NULL. */
+  an_alloc_seq_number
+		first_seq_number;
+			/* The first allocation sequence number of storage
+			   allocated by the predicate: Storage with a lower
+			   number existed before the predicate began. */
+  a_contract_snapshot_ptr
+		snapshots;
+			/* The snapshots taken, most recent first. */
+  a_constexpr_allocation_ptr
+		deallocations;
+			/* The allocations made before the predicate began
+			   that it deallocated, most recent first, linked
+			   through their "next" fields.  Their blocks are
+			   kept, but are off the list of live allocations and
+			   out of the live set, until the deallocations are
+			   undone (see restore_contract_deallocations). */
+} a_contract_predicate_state;
+
+
+/*
 Structure maintaining data about the IL interpreter across a complete
 interpretation of a constexpr function and its callees.
 */
@@ -1968,6 +2042,28 @@ typedef struct an_interpreter_state {
 		dyn_allocations;
 			/* Pointer to a doubly-linked list of allocations
 			   performed during the evaluation. */
+  a_contract_problem_ptr
+		contract_problems;
+			/* The problems found with contract assertions, in
+			   the order found. */
+  a_call_frame_ptr
+		contract_frame;
+			/* While the precondition or postcondition
+			   predicates of a call are evaluated, the frame of
+			   that call: A parameter reference (enk_param_ref)
+			   in a predicate evaluated in that frame designates
+			   the corresponding parameter of the callee.
+			   Otherwise, NULL. */
+  a_variable_ptr
+		contract_result_name;
+			/* While a postcondition with a result name is
+			   evaluated, its result-name variable, which
+			   designates the result of the call of
+			   contract_frame.  Otherwise, NULL. */
+  a_contract_predicate_state
+		*contract_predicate;
+			/* The state of the innermost contract predicate
+			   being evaluated, or NULL. */
 } an_interpreter_state;
 
 
@@ -1991,6 +2087,38 @@ STATIC_THREAD a_call_frame_ptr
 			/* Recycled call frames.  These are allocated in front
 			   end memory, so this list is dropped for each
 			   compilation like work_stack_pool above. */
+
+STATIC_THREAD a_contract_problem_ptr
+		free_contract_problems;
+			/* Recycled contract problem records, which are
+			   allocated in front end memory like call frames. */
+
+/*
+A contract assertion problem reported during constant evaluation, recorded so
+that it is not reported again when the same expression is evaluated again
+(e.g., an array bound, which is evaluated more than once).
+*/
+typedef struct a_reported_contract_problem
+                                     *a_reported_contract_problem_ptr;
+typedef struct a_reported_contract_problem {
+  a_reported_contract_problem_ptr
+		next;
+  a_contract_specifier_ptr
+		assertion;
+			/* The contract assertion. */
+  a_source_position
+		position;
+			/* The position of the expression whose evaluation
+			   found the problem. */
+  a_routine_ptr	routine;
+			/* The function whose definition contains that
+			   expression, or NULL. */
+} a_reported_contract_problem;
+
+STATIC_THREAD a_reported_contract_problem_ptr
+		reported_contract_problems;
+			/* The contract problems reported in this translation
+			   unit.  The entries are in front end memory. */
 
 
 static INLINE void work_item_result_cap(
@@ -2996,8 +3124,41 @@ result of calls to std::is_constant_evaluated().
   ips->failed = FALSE;
   ips->reattempt_state = {};
   ips->dyn_allocations = NULL;
+  ips->contract_problems = NULL;
+  ips->contract_frame = NULL;
+  ips->contract_result_name = NULL;
+  ips->contract_predicate = NULL;
   n_active_interpreter_states += 1;
 }  /* init_interpreter_state */
+
+
+static void release_contract_problems(an_interpreter_state  *ips)
+/*
+Return the contract problem records of the given interpreter state to the free
+list.
+*/
+{
+  a_contract_problem_ptr  cpp = ips->contract_problems, next_cpp;
+
+  for (; cpp != NULL; cpp = next_cpp) {
+    next_cpp = cpp->next;
+    cpp->next = free_contract_problems;
+    free_contract_problems = cpp;
+  }  /* for */
+  ips->contract_problems = NULL;
+}  /* release_contract_problems */
+
+
+/*
+Macros bracketing an evaluation whose result is discarded (the operand of an
+assumption, the argument of __builtin_constant_p): The contract problems found
+in it are dropped (see a_contract_problem), as the operand is not evaluated as
+far as the program is concerned.  saved is a local a_contract_problem_ptr.
+*/
+#define begin_discarded_evaluation(ips, saved)                               \
+  ((saved) = (ips)->contract_problems, (ips)->contract_problems = NULL)
+#define end_discarded_evaluation(ips, saved)                                 \
+  (release_contract_problems(ips), (ips)->contract_problems = (saved))
 
 
 static void release_interpreter_state(an_interpreter_state  *ips)
@@ -3045,6 +3206,7 @@ Release the storage allocated for the given interpreter state.
   if (ips->report_started) {
     fprintf(f_error, "\n%s\n", error_text(ec_constexpr_end_report));
   }  /* if */
+  release_contract_problems(ips);
 }  /* release_interpreter_state */
 
 
@@ -9160,7 +9322,10 @@ evaluates to false.
     a_boolean            saved_side_effects_disabled =
                                                    ips->side_effects_disabled;
     a_diagnostic_ptr     dp = ips->diag_list.tail;
+    a_contract_problem_ptr
+                         saved_contract_problems;
 
+    begin_discarded_evaluation(ips, saved_contract_problems);
     ips->side_effects_disabled = TRUE;
     check_assertion(ap->kind == ak_assume && aap->kind == aak_expression);
     expr = expr_node_from_attribute_arg(aap);
@@ -9182,9 +9347,665 @@ evaluates to false.
          constant evaluation to fail. */
     }  /* if */
     ips->side_effects_disabled = saved_side_effects_disabled;
+    end_discarded_evaluation(ips, saved_contract_problems);
   }  /* if */
   return result;
 }  /* do_assumption_check */
+
+
+/*
+Contract assertions (P2900) in constant evaluation.
+
+A contract assertion is evaluated where the interpretation reaches it: a
+function's preconditions when its call starts (for a constructor, before its
+mem-initializers), its postconditions when the call returns (for a destructor,
+after its subobjects are destroyed), and a contract_assert statement in place.
+Under the ignore semantic nothing is evaluated.  Otherwise a predicate that is
+false or is not a core constant expression is recorded as a problem, and the
+interpretation continues; the problems are dealt with when the interpretation
+is complete (see finish_contract_evaluation).  The predicate's value counts,
+but its side effects do not: Whatever it modifies is restored once its value
+is known, as if an equivalent evaluation without side effects had been
+performed instead (which P2900 permits).
+
+These are interpreted from the routines' contract specifiers and the
+stmk_contract_assert statements, for every back end.  The checks the front end
+generates for the C-generating back end (CONTRACT_CHECKS_IN_FRONT_END) are
+skipped (see a_statement::is_contract_check).
+*/
+
+static void free_allocation(an_interpreter_state    *ips,
+                            a_constexpr_allocation  *allocation);
+
+
+static void record_contract_problem(an_interpreter_state      *ips,
+                                    a_contract_specifier_ptr  csp,
+                                    a_boolean                 not_constant,
+                                    a_contract_evaluation_semantic
+                                                              semantic)
+/*
+Record a problem with the contract assertion csp, whose evaluation semantic
+is semantic (see a_contract_problem): Its predicate was not a core constant
+expression if not_constant is TRUE, and was false otherwise.  An assertion is
+recorded only once per interpretation (it may be reached many times, e.g., in
+a loop).
+*/
+{
+  a_contract_problem_ptr  cpp, *p_next = &ips->contract_problems;
+
+  for (cpp = *p_next; cpp != NULL; cpp = cpp->next) {
+    if (cpp->assertion == csp) return;
+    p_next = &cpp->next;
+  }  /* for */
+  if (free_contract_problems != NULL) {
+    cpp = free_contract_problems;
+    free_contract_problems = cpp->next;
+  } else {
+    cpp = alloc_fe_of_type(a_contract_problem);
+  }  /* if */
+  cpp->next = NULL;
+  cpp->assertion = csp;
+  cpp->not_constant = not_constant;
+  cpp->semantic = semantic;
+  *p_next = cpp;
+}  /* record_contract_problem */
+
+
+static void save_contract_snapshot(an_interpreter_state  *ips,
+                                   a_byte                *complete_object,
+                                   an_alloc_seq_number   alloc_seq_number)
+/*
+The complete object at complete_object, whose storage has the given
+allocation sequence number, is about to be modified, or have its lifetime
+changed, while a contract predicate is being evaluated.  If the object
+existed before the predicate began and has not been saved yet, save a copy of
+it (see a_contract_snapshot) for restore_contract_snapshots.  An object
+created by the predicate needs no copy: It does not outlive the predicate.
+*/
+{
+  a_contract_predicate_state  *pps = ips->contract_predicate;
+  a_contract_snapshot_ptr     sp;
+  a_type_ptr                  tp;
+  a_byte_count                data_bytes, prefix_bytes;
+  a_boolean                   has_bitmap, ok = TRUE;
+
+  if (pps == NULL || complete_object == NULL ||
+      alloc_seq_number >= pps->first_seq_number) {
+    return;
+  }  /* if */
+  for (sp = pps->snapshots; sp != NULL; sp = sp->next) {
+    if (sp->complete_object == complete_object) return;
+  }  /* for */
+  if (complete_obj_flag(complete_object, COMPLETE_OBJ_DYN_ALLOC)) {
+    /* A dynamically allocated object, whose prefix always has an
+       initialization bitmap (see do_constexpr_dynamic_alloc). */
+    a_constexpr_allocation_ptr  allocation;
+    for (allocation = ips->dyn_allocations; allocation != NULL;
+         allocation = allocation->next) {
+      if ((a_byte*)allocation+allocation->prefix_size == complete_object) {
+        break;
+      }  /* if */
+    }  /* for */
+    if (allocation == NULL) {
+      unexpected_condition();
+      return;
+    }  /* if */
+    data_bytes = allocation->total_size-allocation->prefix_size;
+    has_bitmap = TRUE;
+  } else {
+    tp = skip_typerefs(complete_object_type(complete_object));
+    data_bytes = value_bytes_for_type(ips, tp, &ok);
+    if (!ok) {
+      unexpected_condition();
+      return;
+    }  /* if */
+    has_bitmap = is_immediate_class_type(tp) || type_is(tp, tk_array);
+  }  /* if */
+  /* The prefix ends with the type pointer, preceded by the flags byte and,
+     going down from there, the initialization bitmap (see get_init_bit_pos
+     and set_complete_obj_flag). */
+  if (has_bitmap && data_bytes != 0) {
+    prefix_bytes = sizeof(a_type_ptr)+2+(data_bytes-1)/CHAR_BIT;
+  } else {
+    prefix_bytes = sizeof(a_type_ptr)+1;
+  }  /* if */
+  sp = (a_contract_snapshot_ptr)alloc_general(
+                        (sizeof_t)(sizeof(a_contract_snapshot)+prefix_bytes+
+                                   data_bytes));
+  sp->complete_object = complete_object;
+  sp->start = complete_object-prefix_bytes;
+  sp->n_bytes = prefix_bytes+data_bytes;
+  (void)memcpy((a_byte*)(sp+1), sp->start, size_t_arg(sp->n_bytes));
+  sp->next = pps->snapshots;
+  pps->snapshots = sp;
+}  /* save_contract_snapshot */
+
+
+static void restore_contract_snapshots(a_contract_predicate_state  *pps)
+/*
+The evaluation of a contract predicate with the state *pps is complete: Put
+back the objects it modified, most recently saved first, and free the
+copies.
+*/
+{
+  a_contract_snapshot_ptr  sp = pps->snapshots, next_sp;
+
+  for (; sp != NULL; sp = next_sp) {
+    next_sp = sp->next;
+    (void)memcpy(sp->start, (a_byte*)(sp+1), size_t_arg(sp->n_bytes));
+    free_general((char*)sp,
+                 (sizeof_t)(sizeof(a_contract_snapshot)+sp->n_bytes));
+  }  /* for */
+  pps->snapshots = NULL;
+}  /* restore_contract_snapshots */
+
+
+static void restore_contract_deallocations(an_interpreter_state        *ips,
+                                           a_contract_predicate_state  *pps)
+/*
+The evaluation of a contract predicate with the state *pps is complete: Undo
+its deallocations of storage allocated before it began (see
+defer_contract_deallocation), putting each allocation back in the live set
+and on the list of live allocations, at the place its sequence number gives
+it (the list is ordered from the most recent allocation).  The objects in
+that storage were saved before they were destroyed, and are restored by
+restore_contract_snapshots.
+*/
+{
+  a_constexpr_allocation_ptr  allocation = pps->deallocations, next;
+  a_constexpr_allocation_ptr  prev, curr;
+
+  for (; allocation != NULL; allocation = next) {
+    next = allocation->next;
+    add_to_live_set(&ips->live_set, allocation->alloc_seq_number);
+    prev = NULL;
+    for (curr = ips->dyn_allocations;
+         curr != NULL &&
+         curr->alloc_seq_number > allocation->alloc_seq_number;
+         curr = curr->next) {
+      prev = curr;
+    }  /* for */
+    allocation->prev = prev;
+    allocation->next = curr;
+    if (prev == NULL) {
+      ips->dyn_allocations = allocation;
+    } else {
+      prev->next = allocation;
+    }  /* if */
+    if (curr != NULL) curr->prev = allocation;
+  }  /* for */
+  pps->deallocations = NULL;
+}  /* restore_contract_deallocations */
+
+
+static void release_contract_predicate_allocations(
+                                       an_interpreter_state        *ips,
+                                       a_contract_predicate_state  *pps)
+/*
+The evaluation of a contract predicate with the state *pps is complete: Free
+the storage it allocated dynamically and did not free.  Nothing refers to it
+any more once the objects that existed before the predicate are restored.
+*/
+{
+  a_constexpr_allocation_ptr  allocation = ips->dyn_allocations, next;
+
+  for (; allocation != NULL; allocation = next) {
+    next = allocation->next;
+    if (allocation->alloc_seq_number >= pps->first_seq_number) {
+      free_allocation(ips, allocation);
+    }  /* if */
+  }  /* for */
+}  /* release_contract_predicate_allocations */
+
+
+static a_boolean side_effect_allowed(an_interpreter_state  *ips,
+                                     void                  *target)
+/*
+An assignment, increment, or decrement is about to modify the object
+designated by the interpreter address *target (an a_constexpr_address).
+Return FALSE if side effects are disabled (see
+an_interpreter_state::side_effects_disabled).  Otherwise return TRUE, after
+saving the object if a contract predicate is being evaluated (see
+save_contract_snapshot).
+*/
+{
+  a_constexpr_address  *cap = (a_constexpr_address*)target;
+
+  if (ips->side_effects_disabled) return FALSE;
+  if (ips->contract_predicate != NULL && !is_runtime_data_address(cap) &&
+      !is_function_address(cap) && cap->address != NULL) {
+    save_contract_snapshot(ips, cap->complete_object, cap->alloc_seq_number);
+  }  /* if */
+  return TRUE;
+}  /* side_effect_allowed */
+
+
+static void evaluate_contract_assertion(an_interpreter_state      *ips,
+                                        a_contract_specifier_ptr  csp,
+                                        an_expr_node_ptr          predicate,
+                                        a_boolean                 negated,
+                                        a_routine_ptr             routine)
+/*
+Evaluate the contract assertion csp, of routine (NULL if unknown), whose
+predicate is "predicate", or if negated is TRUE, the negation of "predicate"
+(the condition of a check generated for the C-generating back end, into which
+the predicate of a contract_assert has moved).  Unless the evaluation
+semantic (see contract_semantic_for) is ignore, record
+a problem if the predicate is false or is not a core constant expression (see
+record_contract_problem); in neither case does the interpretation fail.  The
+objects the predicate modifies are restored afterwards, its deallocations of
+storage allocated before it began are undone, and the storage it allocated is
+freed.
+*/
+{
+  a_boolean                   passed = FALSE, evaluated, stack_ok = TRUE;
+  a_boolean                   saved_suspend_diag_list;
+  a_contract_predicate_state  pps;
+  a_storage_stack_state       saved_stack;
+  a_contract_evaluation_semantic
+                              semantic;
+
+  if (predicate == NULL || is_error_node(predicate)) return;
+  semantic = contract_semantic_for(csp, routine,
+                                   /*in_constant_evaluation=*/TRUE);
+  if (semantic == ces_ignore) return;
+  save_storage_stack(ips, saved_stack);
+  pps.enclosing = ips->contract_predicate;
+  pps.first_seq_number = ips->curr_alloc_seq_number;
+  pps.snapshots = NULL;
+  pps.deallocations = NULL;
+  ips->contract_predicate = &pps;
+  /* The reasons a predicate is not constant are not reported. */
+  saved_suspend_diag_list = ips->suspend_diag_list;
+  ips->suspend_diag_list = TRUE;
+  evaluated = eval_bool_assertion(ips, predicate, &passed);
+  /* Pop the predicate's storage (and destroy any temporaries left) while
+     its modifications are still tracked. */
+  restore_storage_stack(ips, saved_stack, stack_ok);
+  ips->suspend_diag_list = saved_suspend_diag_list;
+  ips->contract_predicate = pps.enclosing;
+  restore_contract_snapshots(&pps);
+  restore_contract_deallocations(ips, &pps);
+  release_contract_predicate_allocations(ips, &pps);
+  if (ips->input_error) {
+    /* The IL has an error: That is diagnosed already. */
+  } else if (!evaluated || !stack_ok) {
+    record_contract_problem(ips, csp, /*not_constant=*/TRUE, semantic);
+  } else if (passed == negated) {
+    record_contract_problem(ips, csp, /*not_constant=*/FALSE, semantic);
+  }  /* if */
+}  /* evaluate_contract_assertion */
+
+
+static a_boolean in_contract_frame(an_interpreter_state  *ips)
+/*
+Return TRUE if the precondition or postcondition predicates of a call are
+being evaluated (see contract_frame in an_interpreter_state), and the current
+frame is that of the call or that of a GNU statement expression in one of
+them (see push_stmt_expr), at any depth.
+*/
+{
+  a_call_frame_ptr  frame = ips->curr_call_frame;
+
+  if (ips->contract_frame == NULL) return FALSE;
+  while (frame != NULL && frame != ips->contract_frame &&
+         frame->routine == NULL) {
+    frame = frame->parent;
+  }  /* while */
+  return frame == ips->contract_frame;
+}  /* in_contract_frame */
+
+
+static a_boolean release_postcondition_captures(
+                                         an_interpreter_state      *ips,
+                                         a_contract_specifier_ptr  csp,
+                                         a_variable_ptr            end);
+static a_boolean init_postcondition_captures(an_interpreter_state      *ips,
+                                             a_contract_specifier_ptr  csp,
+                                             a_routine_ptr             routine);
+static a_boolean postcondition_captures_initialized(
+                                         an_interpreter_state      *ips,
+                                         a_contract_specifier_ptr  csp);
+
+
+static an_alloc_seq_number params_alloc_seq_number(
+                                             an_interpreter_state  *ips,
+                                             a_variable_ptr        params)
+/*
+params is the list of the parameter variables of the routine of the current
+call.  Return the allocation sequence number recorded for their storage (see
+map_param_to_arg), or zero if none of them is mapped.
+*/
+{
+  a_variable_ptr  vp;
+
+  for (vp = params; vp != NULL; vp = vp->next) {
+    a_byte  *bytes;
+    get_stack_bytes(ips, vp, bytes);
+    if (bytes != NULL) {
+      a_boolean     ok = TRUE;
+      a_byte_count  n_bytes = value_bytes_for_type(ips,
+                                                   skip_typerefs(vp->type),
+                                                   &ok);
+      if (!ok) break;
+      do_host_alignment(&n_bytes);
+      return ((a_var_postfix*)(bytes+n_bytes))->alloc_seq_number;
+    }  /* if */
+  }  /* for */
+  return 0;
+}  /* params_alloc_seq_number */
+
+
+static void with_param_proxies_mapped(an_interpreter_state      *ips,
+                                      a_contract_specifier_ptr  csp,
+                                      a_routine_ptr             callee,
+                                      a_variable_ptr            proxy,
+                                      a_variable_ptr            params,
+                                      a_boolean                 init_captures)
+/*
+The preconditions or postconditions of a call of callee are being evaluated
+(see evaluate_function_contracts), and csp is one of them.  Map each of its
+parameter proxies (see a_contract_specifier::param_proxies), from proxy on,
+to the storage of the parameter variable of the call that it stands for
+(params is the list of the call's parameter variables), so that a lambda in
+the predicate captures the parameter; then initialize csp's captures (P3098)
+if init_captures is TRUE, or evaluate it otherwise; then restore the previous
+mappings (the evaluation may be nested in another of the same specifier,
+through a recursive call).
+*/
+{
+  a_byte          *param_bytes = NULL, *prev_bytes = NULL;
+  a_variable_ptr  param;
+
+  if (proxy == NULL) {
+    if (init_captures) {
+      (void)init_postcondition_captures(ips, csp, callee);
+    } else {
+      evaluate_contract_assertion(ips, csp, contract_specifier_predicate(csp),
+                                  /*negated=*/FALSE, callee);
+    }  /* if */
+    return;
+  }  /* if */
+  param = param_variable_for_param_ref(
+                       params, proxy->initializer.dynamic->variant.expression);
+  if (param != NULL) get_stack_bytes(ips, param, param_bytes);
+  if (param_bytes != NULL) {
+    map_or_replace_ptr(&ips->map, proxy, param_bytes, prev_bytes);
+  }  /* if */
+  with_param_proxies_mapped(ips, csp, callee, proxy->next, params,
+                            init_captures);
+  if (param_bytes != NULL) {
+    if (prev_bytes == NULL) {
+      unmap_ptr(&ips->map, proxy);
+    } else {
+      replace_mapped_ptr(&ips->map, proxy, prev_bytes);
+    }  /* if */
+  }  /* if */
+}  /* with_param_proxies_mapped */
+
+
+static void evaluate_function_contracts(an_interpreter_state  *ips,
+                                        a_routine_ptr         callee,
+                                        a_contract_kind       kind,
+                                        a_constexpr_address   *this_address)
+/*
+The current call frame is that of a call of callee, which is starting (kind
+is ctk_pre) or has completed successfully (ctk_post).  Evaluate its
+preconditions or postconditions, in declaration order (see
+evaluate_contract_assertion).  In their predicates, a parameter reference
+designates the corresponding parameter of the routine called, "this" the
+callee's "this" parameter, and the result name of a postcondition the result
+of the call (see contract_frame and contract_result_name in
+an_interpreter_state).  If this_address is non-NULL, callee is the statically
+chosen function of a virtual call (P3097), whose contract assertions are
+checked around those of the final overrider, the routine called: "this" is
+then *this_address, the object expression's address before the dispatch.
+*/
+{
+  a_contract_specifier_ptr  csp = callee->contract_specifiers;
+  a_call_frame_ptr          saved_frame;
+  a_variable_ptr            saved_result_name, this_var, params;
+  a_byte                    *this_bytes = NULL, *prev_this_bytes = NULL;
+  an_alloc_seq_number       params_seq = 0, revived_seq = 0;
+  an_alloc_seq_number       saved_curr_seq = 0;
+
+  for (; csp != NULL; csp = csp->next) {
+    /* The captures of a postcondition (P3098) are initialized with the
+       preconditions. */
+    if (csp->kind == kind ||
+        (kind == ctk_pre && csp->captures != NULL)) {
+      break;
+    }  /* if */
+  }  /* for */
+  if (csp == NULL) return;
+  if (kind == ctk_pre) {
+    /* The parameters are associated with the allocation sequence number
+       that the function's top-level block is about to get (see
+       process_call_work).  Keep it live, and out of the predicates' reach,
+       while they are evaluated, and leave it for the block afterwards: The
+       predicates' storage is gone by then, so their numbers are free. */
+    params_seq = ++ips->curr_alloc_seq_number;
+    add_to_live_set(&ips->live_set, params_seq);
+  } else {
+    /* The parameters outlive the function's top-level block, whose
+       allocation sequence number they carry (see process_call_work), until
+       the call completes: Make it live again while the postconditions are
+       evaluated (e.g., one binding a reference to a parameter), and keep
+       their storage, if any, above it. */
+    revived_seq = params_alloc_seq_number(
+                     ips, scope_for_routine(ips->curr_call_frame->routine)
+                                                ->variant.routine.parameters);
+    if (revived_seq != 0 && !in_live_set(&ips->live_set, revived_seq)) {
+      saved_curr_seq = ips->curr_alloc_seq_number;
+      if (ips->curr_alloc_seq_number < revived_seq) {
+        ips->curr_alloc_seq_number = revived_seq;
+      }  /* if */
+      add_to_live_set(&ips->live_set, revived_seq);
+    } else {
+      revived_seq = 0;
+    }  /* if */
+  }  /* if */
+  saved_frame = ips->contract_frame;
+  saved_result_name = ips->contract_result_name;
+  ips->contract_frame = ips->curr_call_frame;
+  /* Outside the function body, "this" is a parameter reference too, which
+     finds the "this" pointer through &ips->curr_call_frame (as in a field
+     initializer). */
+  if (this_address != NULL) {
+    this_bytes = (a_byte*)this_address;
+  } else {
+    this_var =
+             scope_for_routine(callee)->variant.routine.this_param_variable;
+    if (this_var != NULL) get_stack_bytes(ips, this_var, this_bytes);
+  }  /* if */
+  if (this_bytes != NULL) {
+    map_or_replace_ptr(&ips->map, &ips->curr_call_frame, this_bytes,
+                       prev_this_bytes);
+  }  /* if */
+  params = scope_for_routine(ips->curr_call_frame->routine)
+                                                 ->variant.routine.parameters;
+  for (; csp != NULL; csp = csp->next) {
+    if (kind == ctk_pre && csp->kind == ctk_post && csp->captures != NULL) {
+      /* In lexical order with the preconditions, as GCC does. */
+      with_param_proxies_mapped(ips, csp, callee, csp->param_proxies, params,
+                                /*init_captures=*/TRUE);
+      continue;
+    }  /* if */
+    if (csp->kind != kind) continue;
+    if (csp->awaits_return_type_deduction) {
+      /* Not scanned yet: the call is in the body of a function whose
+         return type is not yet deduced (EDG-9). */
+      continue;
+    }  /* if */
+    if (csp->captures != NULL &&
+        !postcondition_captures_initialized(ips, csp)) {
+      /* Ignored, or a capture's initializer was not constant (recorded as a
+         problem already). */
+      continue;
+    }  /* if */
+    ips->contract_result_name = csp->result_name;
+    with_param_proxies_mapped(ips, csp, callee, csp->param_proxies, params,
+                              /*init_captures=*/FALSE);
+    if (csp->captures != NULL &&
+        !release_postcondition_captures(ips, csp, NULL)) {
+      /* A capture's destructor is not a constant expression. */
+      record_contract_problem(ips, csp, /*not_constant=*/TRUE,
+                              contract_semantic_for(
+                                       csp, callee,
+                                       /*in_constant_evaluation=*/TRUE));
+    }  /* if */
+  }  /* for */
+  if (this_bytes != NULL) {
+    if (prev_this_bytes == NULL) {
+      unmap_ptr(&ips->map, &ips->curr_call_frame);
+    } else {
+      replace_mapped_ptr(&ips->map, &ips->curr_call_frame, prev_this_bytes);
+    }  /* if */
+  }  /* if */
+  ips->contract_frame = saved_frame;
+  ips->contract_result_name = saved_result_name;
+  if (params_seq != 0) {
+    remove_from_live_set(&ips->live_set, params_seq);
+    ips->curr_alloc_seq_number = params_seq - 1;
+  }  /* if */
+  if (revived_seq != 0) {
+    remove_from_live_set(&ips->live_set, revived_seq);
+    ips->curr_alloc_seq_number = saved_curr_seq;
+  }  /* if */
+}  /* evaluate_function_contracts */
+
+
+static a_boolean contract_problem_reported_before(
+                                         a_contract_specifier_ptr  csp,
+                                         a_source_position         *pos,
+                                         a_routine_ptr             routine)
+/*
+Return TRUE if a problem with the contract assertion csp was already reported
+for the evaluation of the expression at pos in routine (NULL outside any
+function).  Otherwise record that it is reported now and return FALSE.  An
+expression can be evaluated more than once (an array bound, for example), and
+its problems are reported only once, as GCC does.
+*/
+{
+  a_reported_contract_problem_ptr  rcp;
+
+  for (rcp = reported_contract_problems; rcp != NULL; rcp = rcp->next) {
+    if (rcp->assertion == csp && rcp->routine == routine &&
+        rcp->position.seq == pos->seq &&
+        rcp->position.column == pos->column) {
+      return TRUE;
+    }  /* if */
+  }  /* for */
+  rcp = alloc_fe_of_type(a_reported_contract_problem);
+  rcp->assertion = csp;
+  rcp->position = *pos;
+  rcp->routine = routine;
+  rcp->next = reported_contract_problems;
+  reported_contract_problems = rcp;
+  return FALSE;
+}  /* contract_problem_reported_before */
+
+
+/*
+The maximum number of contract problems reported for one interpretation (as
+in GCC); the number of the others is given in a note.
+*/
+#define MAX_CONTRACT_PROBLEMS_REPORTED 8
+
+
+static void finish_contract_evaluation(an_interpreter_state  *ips,
+                                       a_boolean             *p_result,
+                                       a_constant_ptr        result_con)
+/*
+The interpretation described by *ips is complete, with the result *p_result
+(and, if result_con is non-NULL, the value in *result_con).  Deal with the
+problems found with contract assertions, if any (see a_contract_problem), as
+our GCC does:
+- If the interpretation failed, or met an error in the IL, they are dropped:
+  The evaluation is not a constant expression on other grounds.
+- If the evaluation is not manifestly constant-evaluated
+  (std::is_constant_evaluated() is false), it fails, without a diagnostic:
+  The expression is then evaluated at run time, where the contract assertions
+  are checked.
+- Otherwise each problem is reported at its contract assertion (unless the
+  same evaluation reported it before): as a warning under the observe
+  semantic, and as an error under a terminating semantic (enforce,
+  quick_enforce).  The value stands if every problem is under observe;
+  otherwise it becomes an error constant (or the interpretation fails, if
+  there is no result constant).
+*/
+{
+  a_contract_problem_ptr  cpp, last_reported = NULL;
+  a_routine_ptr           routine = NULL;
+  a_boolean               terminating = FALSE;
+  int32_t                 n_reported = 0, n_not_shown = 0;
+
+  if (ips->contract_problems == NULL) return;
+  if (!*p_result || ips->input_error) {
+    /* Not a constant expression anyway. */
+  } else if (!ips->is_constant_evaluated) {
+    *p_result = FALSE;
+  } else {
+    if (innermost_function_scope != NULL) routine = current_routine_entry();
+    /* Determine which problems to report and the last one shown, which
+       gets the note about the rest. */
+    for (cpp = ips->contract_problems; cpp != NULL; cpp = cpp->next) {
+      if (cpp->semantic != ces_observe) terminating = TRUE;
+      if (contract_problem_reported_before(cpp->assertion, &ips->position,
+                                           routine)) {
+        /* Reported before: Do not report it again. */
+        cpp->assertion = NULL;
+      } else if (n_reported == MAX_CONTRACT_PROBLEMS_REPORTED) {
+        n_not_shown += 1;
+        cpp->assertion = NULL;
+      } else {
+        n_reported += 1;
+        last_reported = cpp;
+      }  /* if */
+    }  /* for */
+    for (cpp = ips->contract_problems; cpp != NULL; cpp = cpp->next) {
+      a_diagnostic_ptr  dp;
+      if (cpp->assertion == NULL) continue;
+      if (!cpp->not_constant && message != NULL) {
+        /* P3099: with the diagnostic message, as GCC does. */
+        dp = pos_st_start_diagnostic(
+                         cpp->semantic != ces_observe ? es_error : es_warning,
+                         ec_contract_predicate_false_in_constexpr_message,
+                         &cpp->assertion->position, message);
+      } else {
+        dp = pos_start_diagnostic(cpp->semantic != ces_observe ? es_error
+                                                               : es_warning,
+                                  cpp->not_constant
+                                    ? ec_contract_predicate_not_constant
+                                    : ec_contract_predicate_false_in_constexpr,
+                                  &cpp->assertion->position);
+      }  /* if */
+      if (cpp == last_reported && n_not_shown != 0) {
+        a_diag_list  note;
+        clear_diag_list(&note);
+        if (n_not_shown == 1) {
+          more_info_diagnostic(ec_contract_one_more_problem_not_shown,
+                               &cpp->assertion->position, &note);
+        } else {
+          more_info_num_diagnostic(ec_contract_more_problems_not_shown,
+                                   &cpp->assertion->position, n_not_shown,
+                                   &note);
+        }  /* if */
+        add_more_info_list(dp, &note);
+      }  /* if */
+      end_diagnostic(dp);
+    }  /* for */
+    if (terminating) {
+      /* The program is ill-formed (and diagnosed, now or before). */
+      if (result_con != NULL) {
+        set_error_constant(result_con);
+      } else {
+        *p_result = FALSE;
+      }  /* if */
+    }  /* if */
+  }  /* if */
+  release_contract_problems(ips);
+}  /* finish_contract_evaluation */
 
 
 static a_boolean decl_stmt_only_has_known_constant_variables(
@@ -9269,6 +10090,12 @@ loop body push a work item for it and continue in a later phase.
         a_statement_ptr       then_statement, else_statement;
         a_statement_ptr       chosen;
         sw->restore_consteval = FALSE;
+        if (stmt->is_contract_check) {
+          /* A check generated for the C-generating back end: The contract
+             assertion it checks is evaluated as such (see
+             evaluate_contract_assertion). */
+          break;
+        }  /* if */
         if (stmt->kind == (a_statement_kind)stmk_constexpr_if) {
           then_statement = stmt->variant.constexpr_if->then_statement;
           else_statement = stmt->variant.constexpr_if->else_statement;
@@ -9559,6 +10386,27 @@ loop body push a work item for it and continue in a later phase.
           }  /* if */
         } while (result && ap != NULL);
       }  /* if */
+      break;
+    case stmk_contract_assert:
+      { a_contract_specifier_ptr  csp = stmt->variant.contract_assert;
+        a_statement_ptr           check = stmt->next;
+        a_call_frame_ptr          frame = ips->curr_call_frame;
+        /* The routine whose body this is (past statement expressions). */
+        while (frame != NULL && frame->routine == NULL) {
+          frame = frame->parent;
+        }  /* while */
+        if (csp->predicate != NULL) {
+          evaluate_contract_assertion(ips, csp, csp->predicate,
+                                      /*negated=*/FALSE,
+                                      frame != NULL ? frame->routine : NULL);
+        } else if (check != NULL && check->is_contract_check) {
+          /* The predicate moved into the check that follows, whose
+             condition is its negation. */
+          evaluate_contract_assertion(ips, csp, check->expr,
+                                      /*negated=*/TRUE,
+                                      frame != NULL ? frame->routine : NULL);
+        }  /* if */
+      }
       break;
     case stmk_set_vla_size:
     case stmk_vla_decl:
@@ -10531,6 +11379,10 @@ address).
     do_constexpr_fail(result);
     info_with_pos(ec_constexpr_access_to_expired_storage, &call_node->position,
                   ips);
+    goto done;
+  }  /* if */
+  if (!side_effect_allowed(ips, dst_cap)) {
+    do_constexpr_fail(result);
     goto done;
   }  /* if */
   src_tp = obj_type_at_address(ips, src_cap);
@@ -12195,6 +13047,8 @@ to FALSE and the reason for the failure is recorded in *ips.
              unsuccessful, we can still continue interpretation because no
              side-effects took place. */
           a_boolean     saved_side_effects_disabled, saved_suspend_diag_list;
+          a_contract_problem_ptr
+                        saved_contract_problems;
           a_type_ptr    arg_type = skip_typerefs(args->type);
           a_byte_count  n_bytes = expr_result_size(ips, args, arg_type,
                                                    p_result);
@@ -12203,12 +13057,14 @@ to FALSE and the reason for the failure is recorded in *ips.
           ips->side_effects_disabled = TRUE;
           saved_suspend_diag_list = ips->suspend_diag_list;
           ips->suspend_diag_list = TRUE;
+          begin_discarded_evaluation(ips, saved_contract_problems);
           if (alloc_complete_object(ips, n_bytes, arg_type, arg1_bytes) &&
               do_constexpr_expression(ips, args, arg1_bytes, arg1_bytes)) {
             *(an_integer_value*)result_storage = one_int;
           } else {
             *(an_integer_value*)result_storage = zero_int;
           }  /* if */
+          end_discarded_evaluation(ips, saved_contract_problems);
           ips->side_effects_disabled = saved_side_effects_disabled;
           ips->suspend_diag_list = saved_suspend_diag_list;
         }  /* if */
@@ -22020,8 +22876,8 @@ static a_constexpr_allocation_ptr find_constexpr_allocation(
 /*
 obj_bytes is presumed to be a pointer to the top-level object allocated with
 do_constexpr_dynamic_alloc.  Find the associated allocation and return it.  If
-there is none, record the given diagnostic in ips for the given position (with
-no other fill-ins) and return NULL.
+there is none, record a diagnostic in ips for the given position and return
+NULL.
 */
 {
   a_constexpr_allocation  *allocation;
@@ -22059,6 +22915,42 @@ Release the given allocation.
   }  /* if */
   free_for_interpreter((a_byte*)allocation, (sizeof_t)allocation->total_size);
 }  /* free_allocation */
+
+
+static void defer_contract_deallocation(an_interpreter_state    *ips,
+                                        a_constexpr_allocation  *allocation)
+/*
+Deallocate the given allocation, whose objects have been destroyed (if they
+are to be).  While a contract predicate is being evaluated, the deallocation
+of storage allocated before the predicate began must be undone with the
+predicate's other side effects: Save the object (if that has not been done
+before it was destroyed; see save_contract_snapshot), take the allocation
+off the list of live allocations and out of the live set (so the storage
+counts as deallocated), and keep its block for
+restore_contract_deallocations.  Otherwise, release the allocation.
+*/
+{
+  a_contract_predicate_state  *pps = ips->contract_predicate;
+
+  if (pps == NULL || allocation->alloc_seq_number >= pps->first_seq_number) {
+    free_allocation(ips, allocation);
+  } else {
+    save_contract_snapshot(ips, (a_byte*)allocation+allocation->prefix_size,
+                           allocation->alloc_seq_number);
+    remove_from_live_set(&ips->live_set, allocation->alloc_seq_number);
+    if (allocation->prev == NULL) {
+      ips->dyn_allocations = allocation->next;
+    } else {
+      allocation->prev->next = allocation->next;
+    }  /* if */
+    if (allocation->next != NULL) {
+      allocation->next->prev = allocation->prev;
+    }  /* if */
+    allocation->prev = NULL;
+    allocation->next = pps->deallocations;
+    pps->deallocations = allocation;
+  }  /* if */
+}  /* defer_contract_deallocation */
 
 
 static a_boolean do_constexpr_std_allocator_deallocate(
@@ -22176,7 +23068,7 @@ already-evaluated arguments of the call.
     do_constexpr_fail(result);
     goto done;
   }  /* if */
-  free_allocation(ips, allocation);
+  defer_contract_deallocation(ips, allocation);
 done:
   return result;
 }  /* do_constexpr_std_allocator_deallocate */
@@ -22817,6 +23709,12 @@ was charged up front to the actual cost of the call.
   a_byte_count      *arg_size = (a_byte_count*)cw->arg_sizes;
 
   if (result) {
+    if (!cw->callee->is_constexpr_intrinsic) {
+      /* The callee's postconditions see its own result, before any
+         covariant adjustment. */
+      evaluate_function_contracts(ips, cw->callee, ctk_post,
+                                  (a_constexpr_address*)NULL);
+    }  /* if */
     if (cw->retval_offset != 0) {
       /* A virtual call dispatching to an overriding function with a covariant
          return type.  The return value is an address that must be updated to
@@ -22933,6 +23831,11 @@ callee; the iwp_1st_resume visit completes the call in the latter case.
     } else {
       a_boolean  nonvirtual = !call_node->variant.operation.is_virtual_call ||
                               is_array_element(cap);
+      /* Ending the lifetime of an object that existed before a contract
+         predicate being evaluated must be undone with the predicate's other
+         side effects. */
+      save_contract_snapshot(ips, cap->complete_object,
+                             cap->alloc_seq_number);
       result = do_constexpr_dtor(ips, callee, &call_node->position,
                                  cap->address, cap->complete_object,
                                  nonvirtual);
@@ -23309,6 +24212,8 @@ callee; the iwp_1st_resume visit completes the call in the latter case.
                                    result_storage, complete_object);
       finish_call_work(ips, item, result);
     } else {
+      evaluate_function_contracts(ips, callee, ctk_pre,
+                                  (a_constexpr_address*)NULL);
       item->needs_cleanup = TRUE;
       item->phase = iwp_1st_resume;
       push_block_work(ips, function_body_block(callee_scope), callee_scope);
@@ -23783,6 +24688,9 @@ after the constructor body has been interpreted.
                              complete_object);
       record_subobject_derivation(result_storage+offset, bcp);
     }  /* if */
+    /* The preconditions are evaluated before the mem-initializers. */
+    evaluate_function_contracts(ips, callee, ctk_pre,
+                                (a_constexpr_address*)NULL);
     /* Run the constructor initializers, then the constructor body. */
     iw->arg_ptrs = arg_ptrs;
     iw->this_bytes = this_bytes;
@@ -24047,7 +24955,11 @@ apply_cleanup:
        so both have to be consulted here. */
     if (ips->failed) result = FALSE;
     this_var = callee_scope->variant.routine.this_param_variable;
-    if (result) note_routine_interpreted(callee);
+    if (result) {
+      note_routine_interpreted(callee);
+      evaluate_function_contracts(ips, callee, ctk_post,
+                                  (a_constexpr_address*)NULL);
+    }  /* if */
     release_address_structures_for_args(args, p_arg_ptr);
     pop_call_frame(ips);
     unmap_param_list(ips, callee_scope->variant.routine.parameters, p_arg_ptr,
@@ -24218,6 +25130,8 @@ the iwp_1st_resume visit destroys the subobjects and undoes that mapping.
     dw->this_var = this_var;
     dw->up_front_cost = up_front_cost;
     dw->alloc_seq_number = alloc_seq_number;
+    evaluate_function_contracts(ips, callee, ctk_pre,
+                                (a_constexpr_address*)NULL);
     item->needs_cleanup = TRUE;
     item->phase = iwp_1st_resume;
     push_block_work(ips, function_body_block(callee_scope), callee_scope);
@@ -24281,7 +25195,13 @@ apply_cleanup:
       result = FALSE;
       goto done;
     }  /* if */
-    if (result) note_routine_interpreted(callee);
+    if (result) {
+      note_routine_interpreted(callee);
+      /* The postconditions are evaluated after the subobjects are
+         destroyed. */
+      evaluate_function_contracts(ips, callee, ctk_post,
+                                  (a_constexpr_address*)NULL);
+    }  /* if */
     pop_call_frame(ips);
     if (result &&
         is_whole_complete_object(result_storage, class_type, complete_object)) {
@@ -25482,6 +26402,34 @@ given complete object).  Otherwise, return FALSE and update *ips accordingly.
 }  /* do_constexpr_bound_expr */
 
 
+static a_constexpr_address contract_result_location(
+                                                 an_interpreter_state  *ips)
+/*
+Return the location of the result of the call of ips->contract_frame, whose
+postcondition with a result name (ips->contract_result_name) is being
+evaluated.  It plays the part of the result-name variable's storage (see
+do_constexpr_contract_result).
+*/
+{
+  a_constexpr_address  result_addr = ips->contract_frame->result_loc;
+  a_type_ptr           result_tp =
+                         skip_typerefs(ips->contract_result_name->type);
+
+  if (!is_immediate_class_type(result_tp) && !type_is(result_tp, tk_array)) {
+    /* A returned scalar value (or address) is stored without being marked
+       initialized; the caller marks it once the call is complete, which it
+       is, but for its postconditions. */
+    if (result_addr.address == result_addr.complete_object) {
+      mark_complete_object_initialized(result_addr.complete_object);
+    } else {
+      mark_subobject_initialized(result_addr.address,
+                                 result_addr.complete_object);
+    }  /* if */
+  }  /* if */
+  return result_addr;
+}  /* contract_result_location */
+
+
 static a_boolean do_constexpr_lambda(an_interpreter_state       *ips,
                                      a_dynamic_init_ptr         dip,
                                      a_source_position          *pos,
@@ -25609,7 +26557,13 @@ closure object is placed at the location indicated by dst_addr.
         a_boolean           ref_case = FALSE;
         check_assertion(constant_is(field_con, ck_dynamic_init));
         sub_dip = field_con->variant.dynamic_init.ptr;
-        get_stack_bytes(ips, vp, var_storage);
+        if (vp == ips->contract_result_name) {
+          /* The result name of the postcondition being evaluated, captured
+             by a lambda in its predicate. */
+          var_storage = contract_result_location(ips).address;
+        } else {
+          get_stack_bytes(ips, vp, var_storage);
+        }  /* if */
         if (type_is(uvtp, tk_pointer)) {
           if (uvtp->variant.pointer.is_reference ||
               (vp->is_this_parameter && !cap->capture_by_reference)) {
@@ -26544,6 +27498,10 @@ Evaluate the given new-expression.
       info_with_pos(ec_constexpr_placement_new, &expr->position, ips);
       goto done;
     }  /* if */
+    /* Constructing an object in storage that existed before a contract
+       predicate being evaluated must be undone with the predicate's other
+       side effects. */
+    save_contract_snapshot(ips, cap->complete_object, cap->alloc_seq_number);
     if (type_is(elem_type, tk_array)) {
       do {
         alloc_length = (a_byte_count)
@@ -26804,6 +27762,10 @@ Evaluate the given delete-expression.
     }  /* if */
     elem_size = value_bytes_for_type(ips, elem_type, &result);
     if (!result) goto done;
+    /* Destroying objects that existed before a contract predicate being
+       evaluated must be undone with the predicate's other side effects
+       (see defer_contract_deallocation). */
+    save_contract_snapshot(ips, arr, allocation->alloc_seq_number);
     unmark_complete_object_initialized(arr);
     for (; k<length; ++k, elem += elem_size) {
       if (dip != NULL) {
@@ -26831,7 +27793,7 @@ Evaluate the given delete-expression.
       goto done;
     }  /* if */
   }  /* if */
-  free_allocation(ips, allocation);
+  defer_contract_deallocation(ips, allocation);
 done:
   return result;
 }  /* do_constexpr_delete */
@@ -27214,6 +28176,51 @@ marked as needing cleanup.
   item->phase = iwp_2nd_resume;
   push_expr_work(ips, opnd, result_cap);
 }  /* push_result_operand */
+
+
+static a_boolean do_constexpr_contract_result(an_interpreter_state  *ips,
+                                              an_expr_node_ptr      expr,
+                                              a_byte                *result_storage,
+                                              a_byte                *complete_object)
+/*
+expr is a use of the result name of the postcondition being evaluated (see
+an_interpreter_state::contract_result_name).  It designates the result of the
+call of ips->contract_frame, at the frame's result location, which plays the
+part of the variable's storage: For a function returning a reference, the
+result is the address returned, and a use of the result name is a use of a
+reference variable, which the IL dereferences.  Interpret expr as a glvalue
+or, if it is a prvalue, load the value into result_storage (within
+complete_object).  Return TRUE if successful.
+*/
+{
+  a_boolean            result = TRUE;
+  a_constexpr_address  result_addr = contract_result_location(ips);
+  a_type_ptr           tp = skip_typerefs(expr->type);
+
+  if (expr->is_lvalue || expr->is_xvalue) {
+    *(a_constexpr_address*)result_storage = result_addr;
+    copy_address_structures(result_storage);
+    if (result_storage == complete_object) {
+      mark_complete_object_initialized(complete_object);
+    }  /* if */
+  } else {
+    a_byte_count  n_bytes = value_bytes_for_type(ips, tp, &result);
+    if (!result) {
+      /* Nothing more to do. */
+    } else if (is_any_reference_type(tp)) {
+      /* The value of the reference: the address returned. */
+      (void)memcpy(result_storage, result_addr.address, size_t_arg(n_bytes));
+      copy_address_structures(result_storage);
+      if (result_storage == complete_object) {
+        mark_complete_object_initialized(complete_object);
+      }  /* if */
+    } else {
+      result = do_glvalue_to_prvalue(ips, expr, tp, &result_addr, n_bytes,
+                                     result_storage, complete_object);
+    }  /* if */
+  }  /* if */
+  return result;
+}  /* do_constexpr_contract_result */
 
 
 /*lint -efunc(2704,*process_expr_work)*/
@@ -28549,7 +29556,7 @@ the value representation of the integer value.
                 do_constexpr_fail(result);
                 info_with_pos(ec_constexpr_null_dereference, &expr->position,
                               ips);
-              } else if (ips->side_effects_disabled) {
+              } else if (!side_effect_allowed(ips, opnd1_value)) {
                 /* Side-effects (like assignments) are disabled. */
                 do_constexpr_fail(result);
               } else if (is_const_storage(cap)) {
@@ -28668,7 +29675,7 @@ the value representation of the integer value.
                 do_constexpr_fail(result);
                 info_with_pos(ec_constexpr_null_dereference, &expr->position,
                               ips);
-              } else if (ips->side_effects_disabled) {
+              } else if (!side_effect_allowed(ips, opnd1_value)) {
                 /* Side-effects (like assignments) are disabled. */
                 do_constexpr_fail(result);
               } else if (is_const_storage(cap)) {
@@ -28781,7 +29788,7 @@ the value representation of the integer value.
                 do_constexpr_fail(result);
                 info_with_pos(ec_constexpr_null_dereference, &expr->position,
                               ips);
-              } else if (ips->side_effects_disabled) {
+              } else if (!side_effect_allowed(ips, opnd1_value)) {
                 /* Side-effects (like assignments) are disabled. */
                 do_constexpr_fail(result);
               } else if (!is_initialized(cap)) {
@@ -28904,7 +29911,7 @@ the value representation of the integer value.
                 do_constexpr_fail(result);
                 info_with_pos(ec_constexpr_null_dereference, &expr->position,
                               ips);
-              } else if (ips->side_effects_disabled) {
+              } else if (!side_effect_allowed(ips, opnd1_value)) {
                 /* Side-effects (like assignments) are disabled. */
                 do_constexpr_fail(result);
               } else if (!is_initialized(cap)) {
@@ -30418,7 +31425,7 @@ the value representation of the integer value.
                 do_constexpr_fail(result);
                 info_with_pos(ec_object_not_initialized, &opnd1->position,
                               ips);
-              } else if (ips->side_effects_disabled) {
+              } else if (!side_effect_allowed(ips, opnd1_value)) {
                 /* Side-effects (like assignments) are disabled. */
                 do_constexpr_fail(result);
               } else {
@@ -30520,7 +31527,7 @@ the value representation of the integer value.
                           !check_variant_path(ips, dst, &expr->position))) {
                 /* Attempting to store into a non-active variant field. */
                 do_constexpr_fail(result);
-              } else if (ips->side_effects_disabled) {
+              } else if (!side_effect_allowed(ips, opnd1_value)) {
                 /* Side-effects (like assignments) are disabled. */
                 do_constexpr_fail(result);
               } else {
@@ -30695,7 +31702,7 @@ the value representation of the integer value.
                           !check_variant_path(ips, dst, &expr->position))) {
                 /* Attempting to store into a non-active variant field. */
                 do_constexpr_fail(result);
-              } else if (ips->side_effects_disabled) {
+              } else if (!side_effect_allowed(ips, opnd1_value)) {
                 /* Side-effects (like assignments) are disabled. */
                 do_constexpr_fail(result);
               } else {
@@ -30870,7 +31877,7 @@ the value representation of the integer value.
                           !check_variant_path(ips, dst, &expr->position))) {
                 /* Attempting to store into a non-active variant field. */
                 do_constexpr_fail(result);
-              } else if (ips->side_effects_disabled) {
+              } else if (!side_effect_allowed(ips, opnd1_value)) {
                 /* Side-effects (like assignments) are disabled. */
                 do_constexpr_fail(result);
               } else {
@@ -31045,7 +32052,7 @@ the value representation of the integer value.
                 info_with_pos(ec_constexpr_modifying_const_storage,
                               &expr->position, ips);
                 do_constexpr_fail(result);
-              } else if (ips->side_effects_disabled) {
+              } else if (!side_effect_allowed(ips, opnd1_value)) {
                 /* Side-effects (like assignments) are disabled. */
                 do_constexpr_fail(result);
               } else {
@@ -31219,7 +32226,7 @@ the value representation of the integer value.
                           !check_variant_path(ips, dst, &expr->position))) {
                 /* Attempting to store into a non-active variant field. */
                 do_constexpr_fail(result);
-              } else if (ips->side_effects_disabled) {
+              } else if (!side_effect_allowed(ips, opnd1_value)) {
                 /* Side-effects (like assignments) are disabled. */
                 do_constexpr_fail(result);
               } else if (expr->variant.operation.type_kind ==
@@ -31294,7 +32301,7 @@ the value representation of the integer value.
                 info_with_pos(ec_constexpr_modifying_const_storage,
                               &expr->position, ips);
                 do_constexpr_fail(result);
-              } else if (ips->side_effects_disabled) {
+              } else if (!side_effect_allowed(ips, opnd1_value)) {
                 /* Side-effects (like assignments) are disabled. */
                 do_constexpr_fail(result);
               } else if (expr->variant.operation.type_kind ==
@@ -31387,7 +32394,7 @@ the value representation of the integer value.
                           !check_variant_path(ips, dst, &expr->position))) {
                 /* Attempting to store into a non-active variant field. */
                 do_constexpr_fail(result);
-              } else if (ips->side_effects_disabled) {
+              } else if (!side_effect_allowed(ips, opnd1_value)) {
                 /* Side-effects (like assignments) are disabled. */
                 do_constexpr_fail(result);
               } else if (expr->variant.operation.type_kind ==
@@ -31482,7 +32489,7 @@ the value representation of the integer value.
                           !check_variant_path(ips, dst, &expr->position))) {
                 /* Attempting to store into a non-active variant field. */
                 do_constexpr_fail(result);
-              } else if (ips->side_effects_disabled) {
+              } else if (!side_effect_allowed(ips, opnd1_value)) {
                 /* Side-effects (like assignments) are disabled. */
                 do_constexpr_fail(result);
 #if GNU_VECTOR_TYPES_ALLOWED
@@ -31547,7 +32554,7 @@ the value representation of the integer value.
                           !check_variant_path(ips, dst, &expr->position))) {
                 /* Attempting to store into a non-active variant field. */
                 do_constexpr_fail(result);
-              } else if (ips->side_effects_disabled) {
+              } else if (!side_effect_allowed(ips, opnd1_value)) {
                 /* Side-effects (like assignments) are disabled. */
                 do_constexpr_fail(result);
 #if GNU_VECTOR_TYPES_ALLOWED
@@ -31612,7 +32619,7 @@ the value representation of the integer value.
                           !check_variant_path(ips, dst, &expr->position))) {
                 /* Attempting to store into a non-active variant field. */
                 do_constexpr_fail(result);
-              } else if (ips->side_effects_disabled) {
+              } else if (!side_effect_allowed(ips, opnd1_value)) {
                 /* Side-effects (like assignments) are disabled. */
                 do_constexpr_fail(result);
 #if GNU_VECTOR_TYPES_ALLOWED
@@ -31648,7 +32655,7 @@ the value representation of the integer value.
             break;
           case eok_padd_assign:
             {
-              if (ips->side_effects_disabled) {
+              if (!side_effect_allowed(ips, opnd1_value)) {
                 /* Side-effects (like assignments) are disabled. */
                 do_constexpr_fail(result);
                 break;
@@ -31749,7 +32756,7 @@ the value representation of the integer value.
             break;
           case eok_psubtract_assign:
             /* ptr_lvalue -= integer_rvalue. */
-            if (ips->side_effects_disabled) {
+            if (!side_effect_allowed(ips, opnd1_value)) {
               /* Side-effects (like assignments) are disabled. */
               do_constexpr_fail(result);
               break;
@@ -32357,6 +33364,16 @@ the value representation of the integer value.
         a_variable_ptr  var = node_variable(expr);
         a_byte          *var_bytes;
 
+        if (var == ips->contract_result_name && var != NULL) {
+          /* The result name of the postcondition being evaluated, also when
+             named in the body of a lambda called by its predicate (the
+             variable belongs to that postcondition alone, and a nested
+             evaluation of it saves and restores contract_result_name). */
+          result = do_constexpr_contract_result(ips, expr, result_storage,
+                                                complete_object);
+          break;
+        }  /* if */
+
         /* If this variable does not have an initializer, check to see if one
            is available from an imported module. */
         if (var->init_kind == initk_none &&
@@ -32735,6 +33752,30 @@ finish_temp_init:
       result = do_constexpr_typeid(ips, expr, result_storage, complete_object);
       break;
     case enk_param_ref:
+      if (in_contract_frame(ips) &&
+          expr->variant.param_ref.levels_up == 0 &&
+          expr->variant.param_ref.param_num != 0) {
+        /* A parameter of the function whose precondition or postcondition
+           is being evaluated: Interpret the use as one of the parameter
+           variable of the callee (which is mapped to the argument). */
+        a_scope_ptr     callee_scope =
+                              scope_for_routine(ips->contract_frame->routine);
+        a_variable_ptr  vp = param_variable_for_param_ref(
+                                   callee_scope->variant.routine.parameters,
+                                   expr);
+        if (vp == NULL) {
+          do_constexpr_fail(result);
+          info_with_pos(ec_constexpr_expression_cannot_be_interpreted,
+                        &expr->position, ips);
+        } else {
+          an_expr_node  var_node = *expr;
+          var_node.kind = (an_expr_node_kind)enk_variable;
+          node_variable(&var_node) = vp;
+          var_node.variant.variable.name_reference = NULL;
+          result = do_constexpr_expr(ips, &var_node, result_cap);
+        }  /* if */
+        break;
+      }  /* if */
       /* A reference to a parameter or "this" outside a function body. */
       { a_byte     *param_table_bytes = NULL;
         a_boolean  produce_unknown = FALSE;
@@ -33925,6 +34966,7 @@ FALSE if the evaluation produces a "false" value.
     *p_value = FALSE;
   }  /* if */
 done:
+  finish_contract_evaluation(&ips, &result, (a_constant_ptr)NULL);
   discard_more_info_list(&ips.diag_list);
   release_interpreter_state(&ips);
   return result;
@@ -33985,6 +35027,7 @@ expressions").
       }  /* if */
     }  /* if */
   }  /* if */
+  finish_contract_evaluation(&ips, &result, (a_constant_ptr)NULL);
   *diag_list = ips.diag_list;
   release_interpreter_state(&ips);
 done:
@@ -34198,6 +35241,7 @@ interpreter.
   } else {
     result = FALSE;
   }  /* if */
+  finish_contract_evaluation(&ips, &result, result_con);
   if (diag_list != NULL) *diag_list = ips.diag_list;
   release_interpreter_state(&ips);
 done:
@@ -34262,6 +35306,7 @@ indicates the value produced by std::is_constant_evaluated().
   }  /* if */
   ips.position = expr->position;
   result = evaluate_expr(&ips, expr, force_prvalue, result_con);
+  finish_contract_evaluation(&ips, &result, result_con);
   *diag_list = ips.diag_list;
   release_interpreter_state(&ips);
 done:
@@ -34293,6 +35338,10 @@ function (i.e., std::is_constant_evaluated() produces TRUE).
   ips.position = call_expr->position;
   callee = eval_constexpr_callee(&ips, call_expr, &pm_target,
                                  &pre_evaluated_this_bytes);
+  { a_boolean  result = callee != NULL;
+    finish_contract_evaluation(&ips, &result, (a_constant_ptr)NULL);
+    if (!result) callee = NULL;
+  }
   *diag_list = ips.diag_list;
   release_interpreter_state(&ips);
   return callee;
@@ -34412,6 +35461,7 @@ can only be TRUE if the called function is "consteval").
       } while (dlist != NULL);
     }  /* if */
   }  /* if */
+  finish_contract_evaluation(&ips, &result, result_con);
   *diag_list = ips.diag_list;
   release_interpreter_state(&ips);
 done:
@@ -34707,6 +35757,7 @@ if the caller has determined that reinterpret_cast expressions can be folded
       }  /* if */
     }  /* if */
   }  /* if */
+  finish_contract_evaluation(&ips, &result, result_con);
   *diag_list = ips.diag_list;
   if (saved_storage) {
     release_constexpr_stack(&saved_stack_for_full_expr);
@@ -34848,6 +35899,7 @@ position associated with the call.
       do_constexpr_fail(result);
     }  /* if */
   }  /* if */
+  finish_contract_evaluation(&ips, &result, result_con);
   *diag_list = ips.diag_list;
   release_interpreter_state(&ips);
 done:
@@ -34949,6 +36001,7 @@ that need initialization for every (primary and secondary) translation unit.
 */
 {
   trans_unit_initialization_needed = TRUE;
+  reported_contract_problems = NULL;
 }  /* interpret_trans_unit_init */
 
 
@@ -34961,6 +36014,8 @@ Initialize static variables that need to be reset for every compilation.
   memzero((char*)free_live_set_tables, sizeof(free_live_set_tables));
   work_stack_pool = NULL;
   free_call_frames = NULL;
+  free_contract_problems = NULL;
+  reported_contract_problems = NULL;
   useful_constants_initialized = FALSE;
 }  /* interpret_init */
 
@@ -34990,6 +36045,7 @@ One-time initialization for interpret.c static variables.
   register_trans_unit_variable(valid_placement_new_type);
   register_trans_unit_variable(n_object_reflection_variables);
   register_trans_unit_variable(n_info_array_variables);
+  register_trans_unit_variable(reported_contract_problems);
   useful_constants_initialized = FALSE;
   free_stack_blocks = NULL;
   free_variant_path_entries = NULL;

@@ -4283,6 +4283,7 @@ flag.
   sp->is_fallthrough_statement= FALSE;
   sp->is_likely               = FALSE;
   sp->is_unlikely             = FALSE;
+  sp->is_contract_check       = FALSE;
 #if GENERATE_SOURCE_SEQUENCE_LISTS
   sp->source_sequence_entry = NULL;
 #endif /* GENERATE_SOURCE_SEQUENCE_LISTS */

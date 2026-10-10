@@ -1,3 +1,8 @@
+constexpr/not_manifest.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: an evaluation that is not manifestly constant-evaluated and meets a violation is not constant
+constexpr/observe.sft.cpp:fp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: a violation in constant evaluation is a warning under observe, and the value stands
+constexpr/observe_gxx.sft.cpp:cp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: through edg-gxx an observed violation in constant evaluation is warned about by the front end and again by g++
+constexpr/result_name.sft.cpp:fn:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: a postcondition's result name in constant evaluation
+constexpr/statement_expression_lambda.sft.cpp:fn:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: a statement expression in a lambda's precondition or postcondition in constant evaluation
 harness/gxx_exceptions.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:gxx configuration: catch an exception thrown by libstdc++
 parse/attributes.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: attributes on contract assertions and result names
 parse/param_operands.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: a precondition's parameters in nested operands (new[] bound, dependent typeid)

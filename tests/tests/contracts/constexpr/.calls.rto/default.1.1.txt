@@ -1,0 +1,34 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contract_evaluation_semantic=quick_enforce Test_name.c
+"Test_name.c", line 17: error: contract predicate is false in constant expression
+  constexpr auto lam = [](int x) pre(x > 0) { return x; };
+                                 ^
+
+"Test_name.c", line 20: error: contract predicate is false in constant expression
+  template <class T> constexpr T tmpl(T x) pre(x > 0) { return x; }
+                                           ^
+
+"Test_name.c", line 25: error: contract predicate is false in constant expression
+    constexpr T get() const pre(v > 0) { return v; }
+                            ^
+
+"Test_name.c", line 29: error: contract predicate is false in constant expression
+  constexpr int inner(int x) pre(x != 3) { return x; }
+                             ^
+
+"Test_name.c", line 39: error: contract predicate is false in constant expression
+      pre(a > 0)
+      ^
+
+"Test_name.c", line 40: error: contract predicate is false in constant expression
+      post(v == a + 1)
+      ^
+
+"Test_name.c", line 43: error: contract predicate is false in constant expression
+      pre(v > 0)
+      ^
+
+"Test_name.c", line 44: error: contract predicate is false in constant expression
+      post(never) {}
+      ^
+
+8 errors detected in the compilation of "Test_name.c".
