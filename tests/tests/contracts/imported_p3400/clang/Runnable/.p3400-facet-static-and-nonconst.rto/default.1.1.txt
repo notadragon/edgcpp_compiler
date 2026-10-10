@@ -1,0 +1,13 @@
+eccp -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contract_evaluation_semantic=observe Test_name.c
+Test_name.c:120:27: warning: 'mut_handler_t' does not provide the 'handle_contract_violation' facet because that member is not 'const'; a facet member must be 'const' or 'static' [-Wcontract-invalid-label-facet]
+  120 | void f_mut_handler(int x) pre<mut_handler>(x > 0) {}
+      |                           ^~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:104:6: note: declared here
+  104 |   void handle_contract_violation(const contract_violation &) {
+      |      ^~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:121:25: warning: 'mut_query_t' does not provide the 'query' facet because that member is not 'const'; a facet member must be 'const' or 'static' [-Wcontract-invalid-label-facet]
+  121 | void f_mut_query(int x) pre<mut_query>(x > 0) {}
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:111:7: note: declared here
+  111 |   void *query(const void *k, std::size_t) { return (void *)k; }
+      |       ^~~~~

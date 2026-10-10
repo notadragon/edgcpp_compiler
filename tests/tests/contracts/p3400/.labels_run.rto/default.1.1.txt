@@ -1,0 +1,5 @@
+eccp -DTEST_NUMBER=1 --c++26 --contracts_p3400 --contract_evaluation_semantic=enforce Test_name.c
+"Test_name.c", line 38: warning: variable "my_label" was declared but never referenced
+  constexpr auto my_label = contract_control(always_observe | review);
+                 ^
+

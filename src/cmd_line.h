@@ -396,6 +396,7 @@ enum an_option_kind {
   optk_contracts_p3099,
   optk_contracts_p3098,
   optk_contracts_p3290,
+  optk_contracts_p3400,
   optk_last		/* Must be last. */
 };
 
@@ -3013,6 +3014,13 @@ EXTERN_THREAD a_boolean
 			/* TRUE if P3098 (postcondition captures) is enabled:
 			   a postcondition can have a capture list before its
 			   operand. */
+
+EXTERN_THREAD a_boolean
+		contracts_p3400_enabled;
+			/* TRUE if P3400 (assertion-control objects, or
+			   labels) is enabled: a contract assertion can have
+			   an assertion-control specifier ("<label>"), and
+			   "contract_control" is a keyword. */
 
 EXTERN_THREAD a_boolean
 		contracts_p3290_enabled;

@@ -1,0 +1,5 @@
+eccp -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contract_evaluation_semantic=ignore Test_name.c
+"Test_name.c", line 26: warning: variable "always_enforce" was declared but never referenced
+  constexpr fixed_semantic_t<evaluation_semantic::enforce> always_enforce{};
+                                                           ^
+

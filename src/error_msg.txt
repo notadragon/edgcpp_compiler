@@ -3738,6 +3738,11 @@ ec_post_capture_duplicate;;"%sq is captured more than once in the postcondition"
 REMOVED;ec_post_capture_unsupported_here;;"postcondition captures are not yet supported in this configuration"
 ec_contract_redecl_captures_mismatch;;"mismatched postcondition captures in declaration (previous contract specifier declared %p)"
 ec_post_capture_implicit_this_in_ctor;;"in a postcondition capture of a constructor, a member must be accessed through an explicit \"this\""
+ec_contract_label_needs_option;;"assertion-control specifiers require --contracts_p3400"
+ec_contract_label_not_class;;"an assertion-control expression must be of a class type with a nested type assertion_control_object"
+ec_contract_label_not_control_object;;"type %t does not satisfy assertion_control_object (missing or inaccessible nested type assertion_control_object)"
+ec_contract_label_not_constant;;"an assertion-control expression must be a constant expression"
+ec_contract_redecl_label_mismatch;;"mismatched assertion-control label in declaration (previous contract specifier declared %p)"
 ec_contract_result_name_shadows_init_capture;;"the result name of a postcondition cannot have the same name as an init-capture of the lambda"
  ###############################################################################
 

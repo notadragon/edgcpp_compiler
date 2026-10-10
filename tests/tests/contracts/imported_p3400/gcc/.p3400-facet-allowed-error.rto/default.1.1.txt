@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts_p3400 --contract_evaluation_semantic=enforce Test_name.c
+"Test_name.c", line 29: error: assertion-control label allows no evaluation semantics
+    pre<nothing>(x > 0)  // { dg-error "allows no evaluation semantics" }
+    ^
+
+"Test_name.c", line 46: error: compute_semantic result is not in the allowed evaluation semantics
+    pre<bad_compute>(x > 0)  // { dg-error "compute_semantic. result is not in the allowed" }
+    ^
+
+"Test_name.c", line 70: error: assertion-control label allows no evaluation semantics
+    pre<(terminating | observe_or_ignore)>(x > 0)  // { dg-error "allows no evaluation semantics" }
+    ^
+
+3 errors detected in the compilation of "Test_name.c".

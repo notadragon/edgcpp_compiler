@@ -3408,6 +3408,12 @@ typedef struct an_active_using_directive {
 			   visible as a result of the transitivity of
 			   using-directives, this will be the declaration
 			   sequence number of the outermost using-directive. */
+  a_boolean	contract_control_only;
+			/* TRUE if the namespace is visible only to the
+			   lookups within assertion-control specifiers and
+			   contract_control expressions (P3400): it was
+			   nominated only by "using contract_control
+			   namespace" directives, directly or transitively. */
 } an_active_using_directive;
 
 

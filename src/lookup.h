@@ -221,7 +221,18 @@ reused later.
                 IDL_TENTATIVE_TYPE_LOOKUP |				\
 		IDL_IS_EXPR_CONTEXT |					\
 		IDL_SKIP_CLASS_SCOPES |					\
-                IDL_DO_NOT_ADD_TO_NONREAL_CLASS)) == 0)
+                IDL_DO_NOT_ADD_TO_NONREAL_CLASS)) == 0 &&		\
+   !in_assertion_control_expression)
+
+/*
+TRUE while the expression of an assertion-control specifier, or the operand
+of a contract_control expression, is scanned (P3400): a using-directive of
+the form "using contract_control namespace N;" applies only to the lookups
+made there.  (Their results are not reused elsewhere, see
+is_reusable_using_directive_lookup.)
+*/
+EXTERN_THREAD a_boolean
+		in_assertion_control_expression;
 
 
 #if MICROSOFT_EXTENSIONS_ALLOWED

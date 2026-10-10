@@ -4752,6 +4752,7 @@ a_token_kind for more information about IFC token serialization.
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
     case tok_bit_precise_int:
     case tok_contract_assert:
+    case tok_contract_control:
       result = ifc_ebts_complex;
       break;
     case tok_gen_constant:

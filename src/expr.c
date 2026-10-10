@@ -35028,6 +35028,7 @@ of:
     case tok_native_nullptr:
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
     case tok_this:
+    case tok_contract_control:
     case tok_lparen:
     case tok_colon_colon:
     case tok_operator:               /* Start of "operator+" and the like. */
@@ -38343,6 +38344,7 @@ Return TRUE if the indicated token is one that could start an expression.
     case tok_decltype:
     case tok_operator:
     case tok_this:
+    case tok_contract_control:
     case tok_float_constant:
     case tok_fixed_point_constant:
     case tok_string_literal:
@@ -42243,6 +42245,182 @@ after_advance_past_id:
 }  /* scan_identifier */
 
 
+static void scan_contract_control_expression(an_operand  *result)
+/*
+The current token is "contract_control" (P3400).  Scan an expression of the
+form
+	contract_control ( constant-expression )
+whose operand is scanned with the name lookup of an assertion-control
+specifier (see in_assertion_control_expression).  The result (stored in
+*result) is a const lvalue for a constexpr object initialized by the
+operand's value, one for each type and value (the template parameter object
+for it, see make_contract_control_object_operand).  It is represented as
+	(value, object)
+a comma operation whose first operand is the value as a constant, backed by
+the operand's expression, and which is marked is_contract_control_operand so
+that the C++-generating back end puts it out as written.  In a
+template-dependent context the operand itself is the result, marked.
+*/
+{
+  a_source_position  start_position = pos_curr_token, end_position;
+  a_boolean          saved_in_assertion_control_expression =
+                                             in_assertion_control_expression;
+
+  (void)get_token();
+  /* The lookups of the operand's first token (a user-defined literal's
+     operator, say) are among the operand's. */
+  in_assertion_control_expression = TRUE;
+  if (!required_token(tok_lparen, ec_exp_lparen)) {
+    in_assertion_control_expression = saved_in_assertion_control_expression;
+    make_error_operand(result);
+    return;
+  }  /* if */
+  scan_expr(result, PREC_QUEST_MARK, EOPT_DISALLOW_COMMA_OPERATOR);
+  in_assertion_control_expression = saved_in_assertion_control_expression;
+  eliminate_unusual_operand_kinds(result);
+  end_position = pos_curr_token;
+  if (!required_token_no_advance(tok_rparen, ec_exp_rparen)) {
+    make_error_operand(result);
+    return;
+  }  /* if */
+  if (is_error_operand(result)) {
+    /* Nothing more to do. */
+  } else if (is_template_dependent_context() ||
+             is_template_param_type(skip_typerefs(result->type))) {
+    /* Made into its object in the instances. */
+    an_operand        orig_operand = *result;
+    an_expr_node_ptr  node = make_node_from_operand(result);
+    node->is_contract_control_operand = TRUE;
+    make_lvalue_or_rvalue_expression_operand(node, result);
+    restore_operand_details_incl_ref(result, &orig_operand);
+  } else {
+    an_expr_node_ptr  node = make_node_from_operand(result);
+    a_constant_ptr    cp = local_constant();
+    a_diag_list       diag_list = { NULL, NULL };
+    if (is_constant_node(node)) {
+      copy_constant(node_constant(node), cp);
+    } else if (!interpret_expr(node, /*is_constant_evaluated=*/TRUE,
+                               /*force_prvalue=*/TRUE, cp, &diag_list)) {
+      pos_error(ec_contract_label_not_constant, &start_position);
+      make_error_operand(result);
+    }  /* if */
+    discard_more_info_list(&diag_list);
+    if (!is_error_operand(result)) {
+      an_operand              object;
+      a_constant_ptr          obj_cp;
+      an_expr_node_ptr        value_node, comma_node;
+      a_memory_region_number  region_to_switch_back_to;
+      /* The object has the operand's type, as deduced for auto. */
+      cp->type = make_unqualified_type(cp->type);
+      cp->expr = NULL;
+      switch_to_file_scope_region(&region_to_switch_back_to);
+      obj_cp = local_constant();
+      copy_constant(cp, obj_cp);
+      obj_cp = move_local_constant_to_il(&obj_cp);
+      switch_back_to_original_region(region_to_switch_back_to);
+      make_contract_control_object_operand(obj_cp, &object);
+      cp->expr = node;
+      value_node = alloc_node_for_constant(cp);
+      value_node->next = make_node_from_operand(&object);
+      comma_node = make_lvalue_operator_node((an_expr_operator_kind)eok_comma,
+                                             value_node->next->type,
+                                             value_node);
+      comma_node->is_contract_control_operand = TRUE;
+      make_lvalue_or_rvalue_expression_operand(comma_node, result);
+    }  /* if */
+    release_local_constant(&cp);
+  }  /* if */
+  set_operand_position(result, &start_position, &end_position,
+                       (a_source_position *)NULL);
+  /* Advance past the ")". */
+  (void)get_token();
+}  /* scan_contract_control_expression */
+
+
+an_expr_node_ptr scan_contract_label(void)
+/*
+Scan the expression of an assertion-control specifier (P3400), a
+constant-expression, from the current token, in the scope of its contract
+assertion (as the predicate is, see scan_contract_predicate), with the name
+lookup of an assertion-control specifier (see
+in_assertion_control_expression).  Check that it is a constant expression of
+a class type with a nested, accessible type named assertion_control_object
+(the assertion_control_object concept), except when it is
+template-dependent, where that waits for the instances.  Return it as a full
+expression, or NULL after an error.
+*/
+{
+  an_expr_node_ptr        result = NULL;
+  an_operand              operand;
+  an_expr_stack_entry     *saved_expr_stack;
+  an_expr_stack_entry     expr_stack_entry;
+  an_object_lifetime_ptr  saved_object_lifetime;
+  a_memory_region_number  region_to_switch_back_to;
+  a_source_position       pos = pos_curr_token;
+  a_boolean               saved_in_assertion_control_expression =
+                                             in_assertion_control_expression;
+
+  save_expr_stack(&saved_expr_stack);
+  switch_to_scope_region_and_lifetime(
+                                scope_depth_to_allocate_unevaluated_operand(),
+                                &region_to_switch_back_to,
+                                &saved_object_lifetime);
+  if (curr_object_lifetime != NULL &&
+      curr_object_lifetime->kind == olk_expr_temporary) {
+    curr_object_lifetime = curr_object_lifetime->parent_lifetime;
+  }  /* if */
+  push_expr_stack(ek_normal, &expr_stack_entry,
+                  /*force_object_lifetime=*/FALSE,
+                  /*suppress_object_lifetime=*/FALSE);
+  in_assertion_control_expression = TRUE;
+  scan_expr(&operand, PREC_QUEST_MARK, EOPT_DISALLOW_COMMA_OPERATOR);
+  in_assertion_control_expression = saved_in_assertion_control_expression;
+  eliminate_unusual_operand_kinds(&operand);
+  if (!is_error_operand(&operand)) {
+    a_type_ptr  type = skip_typerefs(operand.type);
+    if (is_template_dependent_type(type) ||
+        (is_template_dependent_context() &&
+         operand_is_instantiation_dependent(&operand))) {
+      /* Checked in the instances. */
+      result = make_node_from_operand(&operand);
+    } else if (!is_immediate_class_type(type)) {
+      pos_error(ec_contract_label_not_class, &pos);
+    } else {
+      a_symbol_locator  loc;
+      a_symbol_ptr      aco_sym;
+      clear_locator(&loc, &pos);
+      (void)find_symbol("assertion_control_object",
+                        sizeof("assertion_control_object")-1, &loc);
+      aco_sym = class_qualified_id_lookup(&loc, type, IDL_NO_OPTIONS);
+      if (aco_sym == NULL || !is_type_symbol(aco_sym) ||
+          !have_access_to_symbol(aco_sym)) {
+        pos_ty_error(ec_contract_label_not_control_object, &pos, type);
+      } else {
+        a_constant_ptr  cp = local_constant();
+        a_diag_list     diag_list = { NULL, NULL };
+        result = make_node_from_operand(&operand);
+        /* The label initializes a constexpr object (its value, not an
+           object it names, must be constant). */
+        if (!is_constant_node(result) &&
+            !interpret_expr(result, /*is_constant_evaluated=*/TRUE,
+                            /*force_prvalue=*/TRUE, cp, &diag_list)) {
+          pos_error(ec_contract_label_not_constant, &pos);
+          result = NULL;
+        }  /* if */
+        discard_more_info_list(&diag_list);
+        release_local_constant(&cp);
+      }  /* if */
+    }  /* if */
+  }  /* if */
+  if (result != NULL) result = wrap_up_full_expression(result);
+  pop_expr_stack();
+  switch_back_region_and_lifetime(region_to_switch_back_to,
+                                  saved_object_lifetime);
+  restore_expr_stack(saved_expr_stack);
+  return result;
+}  /* scan_contract_label */
+
+
 static void scan_this(an_operand *result)
 /*
 Scan an occurrence of "this" in an expression.  Return an operand for
@@ -45914,6 +46092,10 @@ handle_identifier:
     case tok_this:
       /* Scan "this" in a member function. */
       scan_this(&local_result);
+      break;
+    case tok_contract_control:
+      /* A contract_control expression (P3400). */
+      scan_contract_control_expression(&local_result);
       break;
     case tok_func_name:
     case tok_function_name:

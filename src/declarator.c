@@ -5690,6 +5690,87 @@ __w64 annotation, and __based variable specifiers).  The given type must be a
 
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
 
+a_boolean curr_token_starts_labeled_contract_specifier(void)
+/*
+Return TRUE if the current token begins a function contract specifier with
+an assertion-control specifier (P3400): "pre" or "post" followed by "<".
+Such a specifier ends a trailing return type, where "pre<" would otherwise
+be taken for the start of a template-id.
+*/
+{
+  return contracts_enabled && contracts_p3400_enabled &&
+         (curr_token_is_identifier_string("pre") ||
+          curr_token_is_identifier_string("post")) &&
+         next_token() == tok_lt;
+}  /* curr_token_starts_labeled_contract_specifier */
+
+
+void cache_contract_label(a_contract_specifier_ptr  csp,
+                          a_boolean                 skip)
+/*
+The current token is the "<" that begins the assertion-control specifier of
+the contract assertion csp (P3400).  Cache the tokens of its expression
+(between the angle brackets) in csp->label_token_cache, from which the label
+is scanned with the operand (see scan_cached_contract_label), or if skip is
+TRUE, skip them.  Without P3400, diagnose the specifier and skip it.  As in
+a template argument list, a ">" not nested in parentheses ends the
+specifier; a template-id's angle brackets are recognized as such by the
+coalescing of identifiers, with the name lookup of an assertion-control
+specifier (see in_assertion_control_expression).
+*/
+{
+  a_token_set_array  stop_tokens;
+  a_boolean          saved_in_assertion_control_expression =
+                                             in_assertion_control_expression;
+
+  if (!contracts_p3400_enabled) {
+    pos_error(ec_contract_label_needs_option, &pos_curr_token);
+    skip = TRUE;
+  }  /* if */
+  /* The first token's lookup (a user-defined literal's operator, say) is
+     one of the specifier's too. */
+  in_assertion_control_expression = TRUE;
+  (void)get_token();
+  clear_token_set_array(stop_tokens);
+  incr_token_set_array_element(stop_tokens, tok_gt);
+  incr_token_set_array_element(stop_tokens, tok_semicolon);
+  if (skip) {
+    cache_token_stream_coalesce_identifiers((a_token_cache *)NULL,
+                                            stop_tokens);
+  } else {
+    csp->label_token_cache = new_fe<a_token_cache>(/*reusable=*/TRUE);
+    cache_token_stream_coalesce_identifiers(csp->label_token_cache,
+                                            stop_tokens);
+    terminate_token_cache(csp->label_token_cache);
+  }  /* if */
+  in_assertion_control_expression = saved_in_assertion_control_expression;
+  (void)required_token(tok_gt, ec_exp_gt);
+}  /* cache_contract_label */
+
+
+void scan_cached_contract_label(a_contract_specifier_ptr  csp)
+/*
+Scan the label of the contract assertion csp (P3400) from
+csp->label_token_cache (see cache_contract_label), which is not consumed,
+into csp->label (see scan_contract_label in expr.c), and record its facets
+(see resolve_contract_label_facets).
+*/
+{
+  a_boolean  saved_in_assertion_control_expression =
+                                             in_assertion_control_expression;
+
+  /* The rescan fetches the first token, whose lookups are the label's. */
+  in_assertion_control_expression = TRUE;
+  rescan_reusable_cache(a_reusable_token_cache(csp->label_token_cache));
+  csp->label = scan_contract_label();
+  in_assertion_control_expression = saved_in_assertion_control_expression;
+  if (curr_token != tok_end_of_source) {
+    /* Tokens remain in the cache: Issue an error. */
+    pos_error(ec_exp_gt, &pos_curr_token);
+    while (curr_token != tok_end_of_source) (void)get_token();
+  }  /* if */
+  /* Skip past the tok_end_of_source. */
+  (void)get_token();
 a_type_ptr pointer_declarator(
                    a_type_ptr                       specifiers_type,
                    a_decl_parse_state               *state,
@@ -5826,6 +5907,9 @@ Microsoft extended decl modifiers are also scanned, but they are ignored
         report_gnu_cpp11_extension_if_needed(
                               &pos_curr_token, ec_rvalue_references_is_cpp11);
       }  /* if */
+    } else if (state->is_trailing_return_type &&
+               curr_token_starts_labeled_contract_specifier()) {
+      /* P3400: "pre<label>" ends the trailing return type. */
     } else if (!C_mode() && is_ptr_to_member_declarator_start()) {
       /* A pointer-to-member "Name::*". */
       another_pointer_declarator = TRUE;
@@ -7845,8 +7929,10 @@ etc.).
     }  /* if */
     /* An identifier is expected next, but is omitted in the 
        abstract declarator. */
-    is_name_start = (is_decl_qualified_name_start() ||
-                     curr_token == tok_operator || curr_token == tok_compl
+    is_name_start = (!(state->is_trailing_return_type &&
+                       curr_token_starts_labeled_contract_specifier()) &&
+                     is_decl_qualified_name_start()) ||
+                    (curr_token == tok_operator || curr_token == tok_compl
 #if MICROSOFT_EXTENSIONS_ALLOWED
                      || (cli_or_cx_enabled && curr_token == tok_not)
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
@@ -9201,6 +9287,12 @@ contract_specifier_predicate).
   an_expr_node_ptr        pred = csp->predicate;
   a_memory_region_number  region_to_switch_back_to;
 
+  if (csp->label != NULL && in_file_scope(csp) && !in_file_scope(csp->label)) {
+    /* The label (P3400), a constant expression, likewise. */
+    switch_to_file_scope_region(&region_to_switch_back_to);
+    csp->label = copy_expr_tree(csp->label, CE_ALWAYS_COPY_BACKING_EXPRESSIONS);
+    switch_back_to_original_region(region_to_switch_back_to);
+  }  /* if */
   if (pred == NULL || !in_file_scope(csp) || in_file_scope(pred)) return;
   switch_to_file_scope_region(&region_to_switch_back_to);
   if (csp->comment != NULL && !in_file_scope(csp->comment)) {
@@ -9250,6 +9342,10 @@ name), or NULL if there is none (see remove_contract_operand_symbols).
   /* A lambda in a capture's initializer or in the predicate may name the
      parameters (see contract_param_proxy). */
   saved_proxy_owner = set_contract_param_proxy_owner(csp);
+  if (csp->label_token_cache != NULL) {
+    /* The label (P3400), in the scope of the operand. */
+    scan_cached_contract_label(csp);
+  }  /* if */
   if (capture_cache != NULL) {
     first_sym = scan_postcondition_captures(csp, capture_cache);
   }  /* if */
@@ -9462,6 +9558,10 @@ a template-dependent context, and scanned in the body of its call operator
     switch_back_to_original_region(region_to_switch_back_to);
     csp->position = pos_curr_token;
     (void)get_token();
+    if (curr_token == tok_lt) {
+      /* An assertion-control specifier (P3400). */
+      cache_contract_label(csp, skip);
+    }  /* if */
     scan_contract_assertion_attributes();
     if (curr_token == tok_lbracket) {
       /* A capture list (P3098). */
@@ -9809,6 +9909,9 @@ the symbols prototype_scope_symbols, is the top scope.
     }  /* if */
     csp = alloc_contract_specifier(templ_csp->kind);
     csp->position = templ_csp->position;
+    /* The label (P3400) is scanned with the operand, from the template's
+       tokens. */
+    csp->label_token_cache = templ_csp->label_token_cache;
     if (templ_csp->result_name != NULL && dps.has_deducible_return_type) {
       /* The return type of the instance is not yet deduced, so neither is
          the type of the result name: the operand waits, in the template's
@@ -10427,6 +10530,15 @@ first difference.
     if (!equiv_postcondition_captures(prev->captures, curr->captures)) {
       /* P3098: the same captures as written, or none on both. */
       pos2_diagnostic(es_error, ec_contract_redecl_captures_mismatch,
+                      &curr->position, &prev->position);
+      return;
+    }  /* if */
+    if ((prev->label == NULL) != (curr->label == NULL) ||
+        (prev->label != NULL &&
+         !equiv_contract_predicates(prev->label, (a_variable_ptr)NULL,
+                                    curr->label, (a_variable_ptr)NULL))) {
+      /* P3400: the same label as written, or none on both. */
+      pos2_diagnostic(es_error, ec_contract_redecl_label_mismatch,
                       &curr->position, &prev->position);
       return;
     }  /* if */

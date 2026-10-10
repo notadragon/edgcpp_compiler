@@ -1,0 +1,34 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 Test_name.c
+"Test_name.c", line 24: error: type "not_a_label" does not satisfy assertion_control_object (missing or inaccessible nested type assertion_control_object)
+  void freefn(int x) pre<bad_lbl>(x > 0) { } // expected-error {{value of type 'const not_a_label' is not a valid assertion-control label; its type must be a class type with an 'assertion_control_object' member type}}
+                         ^
+
+"Test_name.c", line 27: error: type "not_a_label" does not satisfy assertion_control_object (missing or inaccessible nested type assertion_control_object)
+    void memfn(int x) pre<bad_lbl>(x > 0) { } // expected-error {{value of type 'const not_a_label' is not a valid assertion-control label; its type must be a class type with an 'assertion_control_object' member type}}
+                          ^
+
+"Test_name.c", line 28: error: type "not_a_label" does not satisfy assertion_control_object (missing or inaccessible nested type assertion_control_object)
+    int post_fn(int x) post<bad_lbl>(r: r > 0) { return x; } // expected-error {{value of type 'const not_a_label' is not a valid assertion-control label; its type must be a class type with an 'assertion_control_object' member type}}
+                            ^
+
+"Test_name.c", line 32: error: type "not_a_label" does not satisfy assertion_control_object (missing or inaccessible nested type assertion_control_object)
+    void memdecl(int x) pre<bad_lbl>(x > 0); // expected-error {{value of type 'const not_a_label' is not a valid assertion-control label; its type must be a class type with an 'assertion_control_object' member type}}
+                            ^
+
+"Test_name.c", line 33: error: type "not_a_label" does not satisfy assertion_control_object (missing or inaccessible nested type assertion_control_object)
+    int post_decl(int x) post<bad_lbl>(r: r > 0); // expected-error {{value of type 'const not_a_label' is not a valid assertion-control label; its type must be a class type with an 'assertion_control_object' member type}}
+                              ^
+
+"Test_name.c", line 36: error: type "not_a_label" does not satisfy assertion_control_object (missing or inaccessible nested type assertion_control_object)
+  void T::memdecl(int x) pre<bad_lbl>(x > 0) { } // expected-error {{value of type 'const not_a_label' is not a valid assertion-control label; its type must be a class type with an 'assertion_control_object' member type}}
+                             ^
+
+"Test_name.c", line 37: error: type "not_a_label" does not satisfy assertion_control_object (missing or inaccessible nested type assertion_control_object)
+  int T::post_decl(int x) post<bad_lbl>(r: r > 0) { return x; } // expected-error {{value of type 'const not_a_label' is not a valid assertion-control label; its type must be a class type with an 'assertion_control_object' member type}}
+                               ^
+
+"Test_name.c", line 44: error: type "not_a_label" does not satisfy assertion_control_object (missing or inaccessible nested type assertion_control_object)
+    void m(U x) pre<bad_lbl>(x > 0); // expected-error {{value of type 'const not_a_label' is not a valid assertion-control label; its type must be a class type with an 'assertion_control_object' member type}}
+                    ^
+
+8 errors detected in the compilation of "Test_name.c".

@@ -12104,6 +12104,12 @@ command line -D options.
                                  /*cannot_be_redefined=*/TRUE,
                                  /*ref_suppresses_pch_file=*/FALSE);
       }  /* if */
+      if (contracts_enabled && contracts_p3400_enabled) {
+        /* P3400 (assertion-control objects), as GCC. */
+        (void)enter_predef_macro("202609L", "__cpp_contracts_labels",
+                                 /*cannot_be_redefined=*/TRUE,
+                                 /*ref_suppresses_pch_file=*/FALSE);
+      }  /* if */
       /* __cpp_constexpr must be handled specially, as it will have different
          values depending on whether C++11, C++14, C++17, C++20, or C++23
          constexpr features are supported. */
