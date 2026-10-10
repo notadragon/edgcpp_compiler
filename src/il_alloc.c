@@ -3130,6 +3130,7 @@ to it.  The entry is allocated in the file scope memory region.
   rp->decl_modifiers              = DM_NONE;
 #endif /* DECL_MODIFIERS_IN_USE */
   rp->trailing_requires_clause    = NULL;
+  rp->contract_specifiers         = NULL;
   rp->number.virtual_function     = VIRTUAL_FUNCTION_NUMBER_NONE;
 #if MICROSOFT_EXTENSIONS_ALLOWED
   rp->overridden_functions        = NULL;
@@ -4240,6 +4241,9 @@ fields to default values.
     case stmk_stmt_expr_result:
       sp->variant.stmt_expr_result.dynamic_init = NULL;
       break;
+    case stmk_contract_assert:
+      sp->variant.contract_assert = NULL;
+      break;
     default:
       unexpected_condition_str("set_statement_kind: bad kind");
   }  /* switch */
@@ -5036,6 +5040,34 @@ initialize its fields, and return a pointer to it.
   rcp->requires_pos = null_source_position;
   return rcp; 
 }  /* alloc_requires_clause */
+
+
+a_contract_specifier_ptr alloc_contract_specifier(a_contract_kind  kind)
+/*
+Allocate a contract specifier entry of the given kind in the current memory
+region, initialize its fields, and return a pointer to it.
+*/
+{
+  a_contract_specifier_ptr  csp;
+
+  csp = alloc_cil_of_type(a_contract_specifier);
+  csp->next = NULL;
+  csp->kind = kind;
+  csp->predicate = NULL;
+  csp->result_name = NULL;
+  csp->param_proxies = NULL;
+  csp->position = null_source_position;
+  csp->comment = NULL;
+  csp->local_predicate = FALSE;
+  csp->predicate_sexpr = NULL;
+  csp->operand_cached = FALSE;
+  csp->awaits_return_type_deduction = FALSE;
+  csp->token_cache = NULL;
+#if BACK_END_IS_CP_GEN_BE
+  csp->put_out = FALSE;
+#endif /* BACK_END_IS_CP_GEN_BE */
+  return csp;
+}  /* alloc_contract_specifier */
 
 
 a_template_decl_ptr alloc_template_decl(void)

@@ -4598,6 +4598,7 @@ Do C99 lowering on the indicated statement.
 #endif /* ASM_FUNCTION_ALLOWED */
       case stmk_decl:
       case stmk_empty:
+      case stmk_contract_assert:
 #if UPC_EXTENSIONS_ALLOWED
       case stmk_upc_notify:
       case stmk_upc_wait:

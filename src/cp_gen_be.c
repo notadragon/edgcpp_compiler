@@ -10376,7 +10376,8 @@ will be put out when they are encountered when generating the parameter types.
 {
   a_type_ptr                   type = NULL;
   a_src_seq_secondary_decl_ptr sec_decl;
-  a_boolean                    is_definition, found_decl, is_type;
+  a_boolean                    is_definition, found_decl, is_type,
+                               is_stmt_expr;
 
   while (curr_source_sequence_entry != NULL) {
     a_source_sequence_scan_state saved_state;
@@ -10384,10 +10385,18 @@ will be put out when they are encountered when generating the parameter types.
     /* Skip past macros, etc.  We come back and process these entries if
        there's actually a declaration following them. */
     advance_past_preprocessing_directives();
-    found_decl = is_type = FALSE;
+    found_decl = is_type = is_stmt_expr = FALSE;
     if (ss_entry_kind(curr_source_sequence_entry) == iek_variable) {
       /* A parameter declaration. */
       found_decl = TRUE;
+    } else if (curr_src_seq_entry_is_for_statement_expression()) {
+      /* A GNU statement expression in the predicate of a precondition or
+         postcondition (P2900) of a lambda, which is scanned once the body of
+         the call operator is entered, before its parameters are declared
+         there (see scan_lambda_contract_operands).  Its entries are picked
+         up again when the predicate is rendered (see
+         gen_statement_expression). */
+      found_decl = is_stmt_expr = TRUE;
     } else if (ss_entry_kind(curr_source_sequence_entry) == iek_statement) {
       /* Stop on the opening brace of the function. */
       /* found_decl = FALSE; */
@@ -10410,7 +10419,9 @@ will be put out when they are encountered when generating the parameter types.
     /* Stop looping if an embedded declaration was not found. */
     if (!found_decl) break;
     (void)process_preprocessing_directives();
-    if (!is_type) {
+    if (is_stmt_expr) {
+      skip_block_statement();
+    } else if (!is_type) {
       /* Bypass a parameter declaration. */
       adv_curr_source_sequence_entry();
     } else {
@@ -18096,6 +18107,127 @@ Render the list of lambda captures, including the delimiting brackets.
 }  /* gen_lambda_captures */
 
 
+static void gen_contract_predicate(an_expr_node_ptr pred)
+/*
+Generate the predicate of a contract assertion (P2900), which the grammar
+makes a conditional-expression: a top-level assignment or comma, written in
+the source within parentheses, needs them again.
+*/
+{
+  an_expr_node_ptr  op = skip_implicit_steps(pred);
+  a_boolean         parens = is_operation_node(op) &&
+                             generated_precedence[op->variant.operation.kind]
+                                                         <= PREC_ASSIGNMENT;
+
+  if (parens) write_tok_ch('(');
+  gen_expression(pred);
+  if (parens) write_tok_ch(')');
+}  /* gen_contract_predicate */
+
+
+/* The buffer in which gen_contract_message forms a string literal. */
+STATIC_THREAD a_text_buffer_ptr
+		contract_message_buffer;
+
+
+static void gen_contract_message(a_contract_specifier_ptr  csp)
+/*
+Generate the diagnostic message of the contract assertion csp (P3099), if it
+has one, after its predicate: a comma and a string literal with its text
+(written as one token, so that it is not wrapped).
+*/
+{
+  a_text_buffer_ptr  literal;
+  a_const_char       *p;
+  char               buf[8];
+
+  if (csp->message == NULL) return;
+  if (contract_message_buffer == NULL) {
+    contract_message_buffer = alloc_text_buffer(64);
+  }  /* if */
+  literal = contract_message_buffer;
+  reset_text_buffer(literal);
+  add_string_to_text_buffer(literal, "\"");
+  for (p = csp->message; *p != '\0'; p++) {
+    unsigned char  c = (unsigned char)*p;
+    if (c == '"' || c == '\\') {
+      buf[0] = '\\';
+      buf[1] = (char)c;
+      buf[2] = '\0';
+    } else if (c < 0x20 || c == 0x7F) {
+      /* Three octal digits, so that a following digit is not taken into
+         the escape. */
+      (void)sprintf(buf, "\\%03o", (unsigned)c);
+    } else {
+      buf[0] = (char)c;
+      buf[1] = '\0';
+    }  /* if */
+    add_string_to_text_buffer(literal, buf);
+  }  /* for */
+  add_to_text_buffer(literal, "\"", (sizeof_t)2);
+  write_tok_str(", ");
+  write_tok_str(literal->buffer);
+}  /* gen_contract_message */
+
+
+static void gen_contract_specifiers(a_routine_ptr  rout,
+                                    a_type_ptr     rout_type)
+/*
+Generate the precondition and postcondition specifiers (P2900) of rout, if
+it has any, after the declarator of a declaration of rout whose type is
+rout_type: as written, for the compiler of the output to check (see
+CONTRACT_CHECKS_IN_FRONT_END).  They are generated only on the first
+declaration put out, which is where a valid program has them; a
+redeclaration may omit them.  The parameters they name are those of
+rout_type.
+*/
+{
+  a_contract_specifier_ptr      csp = rout->contract_specifiers;
+  a_func_prototype_stack_entry  fpse;
+
+  if (csp == NULL || csp->put_out) return;
+  csp->put_out = TRUE;
+  fpse.params = function_type_params(skip_typerefs(rout_type));
+  fpse.outside_parameter_list = TRUE;
+  push_function_prototype(&fpse, &octl);
+  for (; csp != NULL; csp = csp->next) {
+    an_expr_node_ptr  pred = contract_specifier_predicate(csp);
+    if (pred == NULL || is_error_node(pred)) continue;
+    /* Put each specifier at its own position, which the compiler of the
+       output reports as the location of a violation. */
+    set_output_position(&csp->position);
+    write_tok_str(csp->kind == ctk_pre ? " pre" : " post");
+    gen_contract_label(csp);
+    if (csp->captures == NULL) {
+      write_tok_ch('(');
+    } else {
+      /* The capture list (P3098). */
+      a_variable_ptr  cap;
+      write_tok_str(" [");
+      for (cap = csp->captures; cap != NULL; cap = cap->next) {
+        /* A pack, in a template, as an init-capture pack. */
+        if (cap->is_pack) write_tok_str("...");
+        gen_variable_name(cap);
+        /* Parenthesized: the initializer may be a comma expression. */
+        write_tok_str(" = (");
+        gen_expression(cap->initializer.dynamic->variant.expression);
+        write_tok_str(")");
+        if (cap->next != NULL) write_tok_str(", ");
+      }  /* for */
+      write_tok_str("] (");
+    }  /* if */
+    if (csp->result_name != NULL) {
+      gen_variable_name(csp->result_name);
+      write_tok_str(": ");
+    }  /* if */
+    gen_contract_predicate(pred);
+    gen_contract_message(csp);
+    write_tok_ch(')');
+  }  /* for */
+  pop_function_prototype(&octl);
+}  /* gen_contract_specifiers */
+
+
 static void gen_lambda(a_lambda_ptr lambda)
 /*
 Generate code for the given lambda.
@@ -18198,7 +18330,9 @@ Generate code for the given lambda.
     }  /* if */
     gen_attributes(rp->source_corresp.attributes, al_lambda_expression,
                    /*primary_only=*/FALSE);
-    if (lambda->has_parameter_decl) {
+    if (lambda->has_parameter_decl || rp->contract_specifiers != NULL) {
+      /* (A lambda with contract specifiers gets a parameter list even if it
+         had none: they follow the lambda-declarator.) */
       gen_function_declarator_with_scope(rp->type, scope,
                                          /*top_level_decl=*/TRUE,
                                          /*suppress_def_args=*/FALSE);
@@ -18219,6 +18353,7 @@ Generate code for the given lambda.
       write_tok_ch(')');
       pop_function_prototype(&octl);
     }  /* if */
+    gen_contract_specifiers(rp, rp->type);
     save_function_state(&state);
     innermost_function_scope = scope;
     push_name_context(scope);
@@ -22416,6 +22551,24 @@ one that yields the value) of a statement expression.
     case stmk_empty:
       write_tok_ch(';');
       break;
+    case stmk_contract_assert:
+      /* contract_assert statement (P2900): generate it as written, for the
+         compiler of the output to check (see CONTRACT_CHECKS_IN_FRONT_END).
+         A predicate that could not be scanned leaves an empty statement. */
+      { a_contract_specifier_ptr  csp = statement->variant.contract_assert;
+        if (csp->predicate != NULL && !is_error_node(csp->predicate)) {
+          write_tok_str("contract_assert");
+          gen_contract_label(csp);
+          write_tok_ch('(');
+          /* Process any tags declared within the expression. */
+          skip_embedded_declarations();
+          gen_contract_predicate(csp->predicate);
+          gen_contract_message(csp);
+          write_tok_ch(')');
+        }  /* if */
+        write_tok_ch(';');
+      }
+      break;
     case stmk_expr:
       /* Expression statement: generate "expr;". */
 #if CHECKING
@@ -25070,6 +25223,11 @@ declarator (or NULL if it wasn't recorded).
       pop_function_prototype(&octl);
     }  /* if */
   }
+  if (!instantiation_directive && !decl_within_class) {
+    /* (Within a class they follow the virt-specifiers, which the caller
+       puts out next.) */
+    gen_contract_specifiers(rout, rout_type);
+  }  /* if */
   if (name_context_to_restore != NULL) {
     /* Restore lexical context lookup. */
     name_context_to_restore->ignore_lexical_context_for_friend_decl = FALSE;
@@ -26138,6 +26296,9 @@ handle_as_definition:
   }  /* if */
   if (decl_within_class) {
     gen_member_function_modifiers(rout, &abstract_generated);
+    /* A function contract specifier follows the virt-specifiers
+       ([dcl.decl.general]). */
+    gen_contract_specifiers(rout, rout_type);
   }  /* if */
   if (rout->is_deleted && !rout->is_defaulted &&
       (!friend_decl || rout->defined_in_friend_decl)) {
