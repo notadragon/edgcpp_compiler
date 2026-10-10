@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=3 --c++26 Test_name.c
+"Test_name.c", line 17: error: identifier "r" is undefined
+    int h(int x) post(r: r > 0) post(r: r < 10) post(x > r);  // Error, third r
+                                                         ^
+
+1 error detected in the compilation of "Test_name.c".

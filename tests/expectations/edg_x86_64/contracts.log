@@ -1,6 +1,14 @@
 harness/gxx_exceptions.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:gxx configuration: catch an exception thrown by libstdc++
+parse/attributes.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: attributes on contract assertions and result names
+parse/param_operands.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: a precondition's parameters in nested operands (new[] bound, dependent typeid)
+parse/semantic_option_cp_gen_be.sft.cpp:fp:-DTEST_NUMBER=1 --contract_evaluation_semantic=ignore:REQUIREMENTS NOT MET:contracts: every evaluation semantic with the C++-generating back end
+parse/semantic_option_cp_gen_be.sft.cpp:fp:-DTEST_NUMBER=2 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:contracts: every evaluation semantic with the C++-generating back end
+parse/semantic_option_cp_gen_be.sft.cpp:fp:-DTEST_NUMBER=3 --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:contracts: every evaluation semantic with the C++-generating back end
+parse/semantic_option_cp_gen_be.sft.cpp:fp:-DTEST_NUMBER=4 --contract_evaluation_semantic=quick_enforce:REQUIREMENTS NOT MET:contracts: every evaluation semantic with the C++-generating back end
 sema/c23_va_start.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: the C++26 va_start of GCC 16+ <cstdarg> (EDG-67)
 sema/constexpr_member_before_construction.sft.cpp:fn:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:constant evaluation rejects referring to a member of a member whose constructor has not begun
 sema/constexpr_object_lifetime.sft.cpp:fn:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:constant evaluation rejects destroying an object twice and writing to an object after its destruction
 sema/param_cv_member_definition.sft.cpp:fn:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:a parameter variable takes its top-level cv-qualifiers from the definition, also for a member of a class template defined outside the class
+sema/result_name_deduced.sft.cpp:fn:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: a result name of a function with a deduced return type, on its definition: its type is the deduced one (EDG-9)
+sema/result_name_deduced_run.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: through edg-gxx, postconditions naming the result of functions and lambdas with deduced return types are checked against the deduced result (EDG-9)
 sema/source_location_unselected_operand.sft.cpp:fp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: an immediate invocation in the unselected operand of a constant conditional expands its source location default arguments

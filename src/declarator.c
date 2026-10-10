@@ -8785,6 +8785,746 @@ class is partially instantiated.
 }  /* scan_trailing_requires_clause */
 
 
+static a_boolean curr_token_starts_function_contract_specifier(void)
+/*
+Return TRUE if the current token is an identifier spelled "pre" or "post"
+(context-sensitive keywords that introduce a function contract specifier)
+and contracts are enabled.
+*/
+{
+  return contracts_enabled &&
+         (curr_token_is_identifier_string("pre") ||
+          curr_token_is_identifier_string("post"));
+}  /* curr_token_starts_function_contract_specifier */
+
+
+static a_boolean curr_token_starts_result_name_introducer(void)
+/*
+Return TRUE if the current token, at the start of the operand of a
+postcondition, begins a result-name-introducer: an attributed-identifier
+followed by ":".  Two left brackets after the identifier can only begin an
+attribute-specifier-seq.
+*/
+{
+  a_token_kind  token_2;
+
+  return curr_token == tok_identifier &&
+         (next_token() == tok_colon ||
+          (next_two_tokens(tok_lbracket, &token_2) == tok_lbracket &&
+           token_2 == tok_lbracket));
+}  /* curr_token_starts_result_name_introducer */
+
+
+void scan_contract_assertion_attributes(void)
+/*
+Scan the attribute-specifier-seq, if any, that follows "pre", "post" or
+"contract_assert" (P2900).  It appertains to the contract assertion, to
+which no attribute applies: each recognized attribute is diagnosed (an
+unrecognized one already was) and all are discarded.
+*/
+{
+  an_attribute_ptr  ap;
+
+  for (ap = scan_attributes(al_prefix); ap != NULL; ap = ap->next) {
+    if (ap->kind != ak_unrecognized) {
+      report_bad_attribute_target(es_warning, ap);
+    }  /* if */
+  }  /* for */
+}  /* scan_contract_assertion_attributes */
+
+
+static a_symbol_ptr declare_contract_result_name(a_decl_parse_state  *dps,
+                                                 a_variable_ptr      *p_var)
+/*
+The current token is the identifier of a result-name-introducer in a
+postcondition of the function described by dps.  Declare it in the current
+scope (the reactivated function parameter scope) as a variable naming the
+result of the function, return in *p_var the variable, and return the
+symbol.  A result name of a function with a deduced return type is diagnosed
+by scan_function_contract_specifiers, or, for an instance of a templated
+function, by instantiate_contract_specifiers; in a template, it has the
+placeholder type.
+*/
+{
+  a_symbol_locator  loc = locator_for_curr_id;
+  a_type_ptr        return_type = error_type();
+  a_symbol_ptr      sym;
+  a_variable_ptr    vp;
+
+  if (!is_error_type(dps->type)) {
+    return_type = skip_typerefs(dps->type)->variant.routine.return_type;
+    if (is_void_type(return_type)) {
+      pos_error(contract_result_name_void_error(dps), &pos_curr_token);
+      return_type = error_type();
+    } else if (dps->has_deducible_return_type &&
+               !is_template_dependent_context()) {
+      /* In a template, the result name has the (dependent) placeholder
+         type until the return type is deduced for an instance. */
+      return_type = error_type();
+    }  /* if */
+  }  /* if */
+  { a_memory_region_number  region_to_switch_back_to;
+    /* The variable belongs to the specifier, which is in file-scope memory
+       even where the predicate is scanned in a function's (see
+       place_contract_predicate). */
+    switch_to_file_scope_region(&region_to_switch_back_to);
+    vp = make_variable(return_type, (a_storage_class)sc_auto, NO_SCOPE_DEPTH);
+    vp->is_contract_specifier_var = TRUE;
+    switch_back_to_original_region(region_to_switch_back_to);
+  }
+  sym = make_symbol((a_symbol_kind)sk_variable, &loc);
+  sym->variant.variable.ptr = vp;
+  set_source_corresp(&vp->source_corresp, sym);
+  *p_var = vp;
+  /* A result name with the name of a parameter is diagnosed here, and "_"
+     is a name-independent declaration (P2169), which may share its name with
+     a parameter. */
+  add_symbol_to_symbol_table(sym, depth_scope_stack,
+                             /*suppress_error=*/
+                             contract_result_name_hides_parameter(&loc) ||
+                             strcmp(loc.symbol_header->identifier, "_") == 0);
+  return sym;
+}  /* declare_contract_result_name */
+
+
+
+static void place_contract_predicate(a_contract_specifier_ptr  csp)
+/*
+The predicate of the function contract specifier csp, which is in file-scope
+memory, has just been scanned.  If that happened in a function's memory region
+(the predicate is scanned where its declaration is: in a lambda's body, in a
+local class, an instantiation where it is used), make it reachable from the
+specifier: copy it, and its texts, to file-scope memory, unless it names an
+entity local to that function (a lambda's predicate naming its captures does,
+through the call operator's "this"), in which case the specifier refers to it
+through a local expression node reference (see
+contract_specifier_predicate).
+*/
+{
+  an_expr_node_ptr        pred = csp->predicate;
+  a_memory_region_number  region_to_switch_back_to;
+
+  if (pred == NULL || !in_file_scope(csp) || in_file_scope(pred)) return;
+  switch_to_file_scope_region(&region_to_switch_back_to);
+  if (csp->comment != NULL && !in_file_scope(csp->comment)) {
+    csp->comment = copy_string_to_region(file_scope_region_number,
+                                         csp->comment);
+  }  /* if */
+  if (!expr_has_reference_to_local_entity(pred) &&
+      !expr_has_local_capturing_lambda(pred)) {
+    csp->predicate = copy_expr_tree(pred, CE_ALWAYS_COPY_BACKING_EXPRESSIONS);
+  } else {
+    a_scope_ptr              function_scope = get_innermost_function_scope();
+    a_scoped_expression_ptr  sexpr;
+    check_assertion(function_scope != NULL);
+    sexpr = alloc_scoped_expression();
+    make_local_expr_node_ref(pred, lerk_scoped_expr, (char*)sexpr,
+                             function_scope);
+    csp->predicate = NULL;
+    csp->local_predicate = TRUE;
+    csp->predicate_sexpr = sexpr;
+  }  /* if */
+  switch_back_to_original_region(region_to_switch_back_to);
+}  /* place_contract_predicate */
+
+
+static a_symbol_ptr scan_contract_specifier_operand(
+                                     a_contract_specifier_ptr  csp,
+                                     a_decl_parse_state        *dps,
+                                     a_token_cache             *capture_cache)
+/*
+The current token begins the operand of the function contract specifier csp
+(the tokens between its parentheses) on the function declaration described
+by dps.  The function parameter scope is active.  Scan the captures of a
+postcondition from capture_cache, if it is non-NULL (P3098; see
+scan_postcondition_captures), then the result-name-introducer, if any, and
+the predicate.  Return the first symbol declared (a capture or the result
+name), or NULL if there is none (see remove_contract_operand_symbols).
+*/
+{
+  a_symbol_ptr              result_sym = NULL, first_sym = NULL;
+  a_variable_ptr            saved_captures;
+  a_contract_specifier_ptr  saved_proxy_owner;
+
+  /* A lambda in a capture's initializer or in the predicate may name the
+     parameters (see contract_param_proxy). */
+  saved_proxy_owner = set_contract_param_proxy_owner(csp);
+  if (capture_cache != NULL) {
+    first_sym = scan_postcondition_captures(csp, capture_cache);
+  }  /* if */
+  if (csp->kind == ctk_post && curr_token_starts_result_name_introducer()) {
+    an_attribute_ptr  attributes;
+    result_sym = declare_contract_result_name(dps, &csp->result_name);
+    (void)get_token();
+    /* The attributes of an attributed-identifier appertain to the result
+       binding. */
+    attributes = scan_attributes(al_postfix);
+    if (attributes != NULL) {
+      attach_attributes(attributes, (char *)csp->result_name, iek_variable);
+    }  /* if */
+    (void)required_token(tok_colon, ec_exp_colon);
+  }  /* if */
+  saved_captures = set_postcondition_captures_in_scope(csp->captures);
+  csp->predicate = scan_contract_predicate(&csp->comment, &csp->message);
+  (void)set_postcondition_captures_in_scope(saved_captures);
+  (void)set_contract_param_proxy_owner(saved_proxy_owner);
+  check_function_contract_predicate(csp);
+  place_contract_predicate(csp);
+  return first_sym != NULL ? first_sym : result_sym;
+}  /* scan_contract_specifier_operand */
+
+
+static a_symbol_ptr rescan_contract_specifier_operand(
+                                     a_contract_specifier_ptr  csp,
+                                     a_decl_parse_state        *dps,
+                                     a_token_cache             *cache,
+                                     a_token_cache             *capture_cache)
+/*
+Scan the operand of the function contract specifier csp on the function
+declaration described by dps (see scan_contract_specifier_operand) from cache,
+which holds its tokens, after its captures from capture_cache, if it is
+non-NULL.  The caches are not consumed.  Return the first symbol declared, or
+NULL if there is none.
+*/
+{
+  a_symbol_ptr  result_sym;
+
+  rescan_reusable_cache(a_reusable_token_cache(cache));
+  result_sym = scan_contract_specifier_operand(csp, dps, capture_cache);
+  if (curr_token != tok_end_of_source) {
+    /* Tokens remain in the cache: Issue an error. */
+    pos_error(ec_exp_rparen, &pos_curr_token);
+    /* Flush to the end of the cache. */
+    while (curr_token != tok_end_of_source) (void)get_token();
+  }  /* if */
+  /* Skip past the tok_end_of_source. */
+  (void)get_token();
+  return result_sym;
+}  /* rescan_contract_specifier_operand */
+
+
+static void init_decl_parse_state_for_contract_rescan(
+                                                a_decl_parse_state  *dps,
+                                                a_routine_ptr       rp)
+/*
+Initialize *dps as a declaration parse state for the declaration of rp, for
+scanning the operands of its function contract specifiers from cached tokens
+(as for an exception specification; see delayed_scan_of_exception_spec).
+*/
+{
+  init_decl_parse_state(dps);
+  dps->sym = symbol_for(rp);
+  dps->type = rp->type;
+  dps->is_inclass_member_function_decl = rp->source_corresp.is_class_member;
+  if (!is_error_type(rp->type)) {
+    a_type_ptr  return_type =
+                       skip_typerefs(rp->type)->variant.routine.return_type;
+    dps->has_deducible_return_type = is_auto_type(return_type);
+  }  /* if */
+}  /* init_decl_parse_state_for_contract_rescan */
+
+
+static void unlink_contract_result_name(
+                                     a_symbol_ptr  result_sym,
+                                     a_symbol_ptr  prototype_scope_symbols)
+/*
+The function parameter scope in which the result name result_sym of a
+postcondition was declared (see scan_contract_specifier_operand) has been
+popped.  The result name was appended to the scope's symbol list after the
+reactivated prototype-scope symbols prototype_scope_symbols, which links it
+from the last of them; unlink it so that a later reactivation (e.g., for the
+function body) does not bring it back.
+*/
+{
+  a_symbol_ptr  sym = prototype_scope_symbols;
+
+  for (; sym != NULL; sym = sym->next_in_scope) {
+    if (sym->next_in_scope == result_sym) {
+      sym->next_in_scope = NULL;
+      break;
+    }  /* if */
+  }  /* for */
+}  /* unlink_contract_result_name */
+
+
+static a_boolean contract_specifiers_are_skipped(a_decl_parse_state  *dps)
+/*
+Return TRUE if the function contract specifiers on the declaration described
+by dps are to be skipped: on the rescan of a template declaration (e.g., to
+form the type of an instance), and on a member function, not itself a
+template, of an instantiation of a class template.  In both cases the
+specifiers of an instance are instantiated from those of the template when
+its definition is (see instantiate_template_function_full), as a trailing
+requires-clause is substituted (see scan_trailing_requires_clause).  An
+explicit specialization declared in the class has its own specifiers, which
+are not skipped.
+*/
+{
+  a_boolean                skip = dps->is_template_rescan;
+  a_scope_stack_entry_ptr  ssep = &scope_stack_top();
+
+  if (!skip && !dps->is_explicit_specialization &&
+      !scope_is(ssep, sck_template_declaration) &&
+      scope_is(ssep, sck_class_struct_union)) {
+    a_type_ptr  class_type = ssep->assoc_type;
+    if (is_unspecialized_template_class(class_type) &&
+        !class_type->variant.class_struct_union.is_prototype_instantiation) {
+      skip = TRUE;
+    }  /* if */
+  }  /* if */
+  return skip;
+}  /* contract_specifiers_are_skipped */
+
+
+static void scan_function_contract_specifiers(a_decl_parse_state  *dps,
+                                              a_func_info_block   *func_info,
+                                              a_symbol_locator    *loc)
+/*
+The current token begins a function contract specifier (see
+curr_token_starts_function_contract_specifier) following an otherwise-complete
+function declarator described by dps, func_info, and loc (and any trailing
+requires-clause).  Scan the function-contract-specifier-seq (P2900):
+
+  precondition-specifier:
+    pre ( conditional-expression )
+  postcondition-specifier:
+    post ( result-name-introducer[opt] conditional-expression )
+  result-name-introducer:
+    identifier :
+
+and append the specifiers to dps->contract_specifiers.  Each predicate is
+scanned with the function parameter scope reactivated, as for a trailing
+requires-clause (see scan_trailing_requires_clause), and separately for each
+specifier, so that a result name is visible only in its own predicate.
+
+The contract assertions of a member function are a complete-class context,
+as are those of a friend declaration: On a member function declared in a
+class definition (an explicit specialization declared there included; see
+add_routine_fixup_for_specialization), or a friend declared in the
+definition of a class that is not templated, the operand of each specifier
+is cached instead, and scanned when the class is complete (see
+scan_cached_contract_specifiers).  In a template-dependent context, the
+operand is scanned, and its tokens are also kept, to be scanned again for
+each instantiation (see instantiate_contract_specifiers).  Where the
+specifiers are instantiated instead (see contract_specifiers_are_skipped),
+they are skipped.  The operands of a lambda's specifiers are cached, also in
+a template-dependent context, and scanned in the body of its call operator
+(see scan_lambda_contract_operands).
+*/
+{
+  a_contract_specifier_ptr  *p_next = &dps->contract_specifiers;
+  a_boolean                 cache_operands, keep_tokens, skip;
+  a_boolean                 awaits_deduction;
+  a_source_position         deduced_result_name_pos = null_source_position;
+
+  cache_operands = func_info != NULL &&
+                   contract_specifiers_can_be_deferred() &&
+                   (dps->is_inclass_member_function_decl ||
+                    ((dps->dso_flags & DSO_FRIEND) != 0 &&
+                     scope_is(&scope_stack_top(), sck_class_struct_union) &&
+                     !is_template_dependent_context()));
+  if (func_info != NULL && dps->is_explicit_specialization &&
+      dps->in_class_scope) {
+    /* An explicit specialization declared in a class, which has no routine
+       fixup entry yet: full_specialization makes one for it. */
+    cache_operands = TRUE;
+  }  /* if */
+  if (dps->is_lambda) {
+    /* A lambda's predicates name its captures: Scanned once the body of its
+       call operator is entered (see scan_lambda_contract_operands), also in
+       a template-dependent context, where the tokens are kept too: those of
+       a generic lambda are scanned again in the body of each instance (see
+       instantiate_lambda_contract_specifiers). */
+    cache_operands = TRUE;
+  }  /* if */
+  if (!cache_operands &&
+      contract_operands_wait_for_declaration(dps, func_info, loc)) {
+    /* Scanned once the function is declared, so that its name is in scope
+       (see scan_contract_operands_of_declaration). */
+    cache_operands = TRUE;
+  }  /* if */
+  keep_tokens = is_template_dependent_context();
+  skip = contract_specifiers_are_skipped(dps);
+  while (*p_next != NULL) p_next = &(*p_next)->next;
+  while (curr_token_starts_function_contract_specifier()) {
+    a_contract_specifier_ptr  csp;
+    a_symbol_ptr              result_sym = NULL;
+    a_boolean                 pop_func_prototype_scope = FALSE;
+    a_memory_region_number    region_to_switch_back_to;
+
+    /* The specifiers belong to the routine, which is in file-scope memory,
+       also when it is declared in a block scope (see
+       place_contract_predicate). */
+    switch_to_file_scope_region(&region_to_switch_back_to);
+    csp = alloc_contract_specifier(curr_token_is_identifier_string("pre") ?
+                                   ctk_pre : ctk_post);
+    switch_back_to_original_region(region_to_switch_back_to);
+    csp->position = pos_curr_token;
+    (void)get_token();
+    scan_contract_assertion_attributes();
+    if (!required_token(tok_lparen, ec_exp_lparen)) break;
+    awaits_deduction = FALSE;
+    if (!skip && csp->kind == ctk_post && dps->has_deducible_return_type &&
+        !is_template_dependent_context() &&
+        curr_token_starts_result_name_introducer()) {
+      /* A result name with a deduced return type: P2900 [dcl.contract.res]
+         allows it, for a function that is not templated, only on a
+         definition, which is known below.  Its type is known once the
+         return type is deduced: the operand waits for the end of the
+         body (see scan_postconditions_awaiting_deduction). */
+      if (deduced_result_name_pos.seq == 0) {
+        deduced_result_name_pos = pos_curr_token;
+      }  /* if */
+      awaits_deduction = TRUE;
+    }  /* if */
+    if (skip) {
+      a_token_set_array  stop_tokens;
+      clear_token_set_array(stop_tokens);
+      incr_token_set_array_element(stop_tokens, tok_rparen);
+      incr_token_set_array_element(stop_tokens, tok_semicolon);
+      cache_token_stream((a_token_cache *)NULL, stop_tokens);
+      (void)required_token(tok_rparen, ec_exp_rparen);
+      continue;
+    }  /* if */
+    if (cache_operands || keep_tokens || awaits_deduction) {
+      a_token_set_array  stop_tokens;
+      clear_token_set_array(stop_tokens);
+      incr_token_set_array_element(stop_tokens, tok_rparen);
+      incr_token_set_array_element(stop_tokens, tok_semicolon);
+      csp->token_cache = new_fe<a_token_cache>(/*reusable=*/TRUE);
+      cache_token_stream(csp->token_cache, stop_tokens);
+      terminate_token_cache(csp->token_cache);
+      if (awaits_deduction) {
+        csp->awaits_return_type_deduction = TRUE;
+        goto next_specifier;
+      }  /* if */
+      if (cache_operands) {
+        csp->operand_cached = TRUE;
+        goto next_specifier;
+      }  /* if */
+    }  /* if */
+    /* Reactivate any parent scope and the function parameter scope. */
+    if (loc->is_class_member) {
+      if (is_immediate_class_type(loc->parent.class_type)) {
+        push_class_reactivation_scope(loc->parent.class_type,
+                                      /*extend_namespace=*/FALSE);
+      }  /* if */
+    } else if (loc->parent.namespace_ptr != NULL) {
+      push_namespace_reactivation_scope(loc->parent.namespace_ptr);
+    }  /* if */
+    if (func_info != NULL) {
+      (void)push_scope((a_scope_kind)sck_func_prototype,
+                       func_info->scope_number, dps->type,
+                       (a_routine_ptr)NULL);
+      scope_stack_top().decl_parse_state = dps;
+      scope_stack_top().outside_parameter_list = TRUE;
+      reactivate_prototype_scope_symbols(func_info->prototype_scope_symbols);
+      pop_func_prototype_scope = TRUE;
+    }  /* if */
+    if (csp->token_cache != NULL) {
+      result_sym = rescan_contract_specifier_operand(
+                                                csp, dps, csp->token_cache,
+                                                csp->capture_token_cache);
+    } else {
+      result_sym = scan_contract_specifier_operand(csp, dps,
+                                                   csp->capture_token_cache);
+    }  /* if */
+    if (pop_func_prototype_scope) {
+      pop_scope();
+      if (result_sym != NULL) {
+        unlink_contract_result_name(result_sym,
+                                    func_info->prototype_scope_symbols);
+      }  /* if */
+    }  /* if */
+    if (loc->is_class_member) {
+      if (is_immediate_class_type(loc->parent.class_type)) {
+        pop_class_reactivation_scope();
+      }  /* if */
+    } else if (loc->parent.namespace_ptr != NULL) {
+      pop_namespace_reactivation_scope();
+    }  /* if */
+next_specifier:
+    (void)required_token(tok_rparen, ec_exp_rparen);
+    *p_next = csp;
+    p_next = &csp->next;
+  }  /* while */
+  if (deduced_result_name_pos.seq != 0) {
+    diagnose_deduced_contract_result_name(&deduced_result_name_pos,
+                                          /*is_definition=*/
+                                          curr_token == tok_lbrace ||
+                                          curr_token == tok_try);
+  }  /* if */
+}  /* scan_function_contract_specifiers */
+
+
+void scan_cached_contract_specifiers(
+                             a_routine_ptr             rp,
+                             a_contract_specifier_ptr  csps,
+                             a_symbol_ptr              prototype_scope_symbols,
+                             a_boolean                 keep_tokens)
+/*
+Scan the cached operands of the function contract specifiers csps (those of
+rp, or of a friend redeclaration of rp), on a declaration of rp, a member
+function or friend whose class is now complete (see
+scan_function_contract_specifiers).  The class is reactivated, and the
+function parameter scope of the declaration, with the symbols
+prototype_scope_symbols, is the top scope.  If keep_tokens is TRUE (rp is a
+member of a class template), the token caches are kept, for instantiation
+(see instantiate_contract_specifiers); otherwise they are deleted.
+*/
+{
+  a_scope_stack_entry_ptr   ssep = &scope_stack_top();
+  a_contract_specifier_ptr  csp;
+  a_decl_parse_state        dps;
+#if EXTRA_SOURCE_POSITIONS_IN_IL
+  a_source_position         saved_curr_construct_end_position =
+                                                  curr_construct_end_position;
+#endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
+
+  check_assertion(scope_is(ssep, sck_func_prototype));
+  init_decl_parse_state_for_contract_rescan(&dps, rp);
+  ssep->decl_parse_state = &dps;
+  ssep->outside_parameter_list = TRUE;
+  for (csp = csps; csp != NULL; csp = csp->next) {
+    a_token_cache  *cache = csp->token_cache;
+    a_symbol_ptr   result_sym;
+    if (!csp->operand_cached) continue;
+    csp->operand_cached = FALSE;
+    if (cache == NULL) {
+      expect_error();
+      continue;
+    }  /* if */
+    result_sym = rescan_contract_specifier_operand(csp, &dps, cache,
+                                                   csp->capture_token_cache);
+    if (!keep_tokens) {
+      csp->token_cache = NULL;
+      delete_fe(&cache);
+    }  /* if */
+    if (result_sym != NULL) {
+      /* The captures and the result name leave the scope with the
+         predicate. */
+      remove_contract_operand_symbols(result_sym, prototype_scope_symbols);
+    }  /* if */
+  }  /* for */
+  ssep->decl_parse_state = NULL;
+#if EXTRA_SOURCE_POSITIONS_IN_IL
+  curr_construct_end_position = saved_curr_construct_end_position;
+#endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
+}  /* scan_cached_contract_specifiers */
+
+
+void scan_lambda_contract_operands(a_routine_ptr      rp,
+                                   a_func_info_block  *func_info)
+/*
+rp is the call operator of a lambda, whose body is being entered: its
+function scope and "this" exist, its parameters are not yet declared in it.
+Scan the cached operands of its function contract specifiers (see
+scan_function_contract_specifiers) in its function parameter scope, pushed
+on top, so that they name its parameters as on any declaration and its
+captures as its body does (P2900 [expr.prim.lambda.capture]).  In a
+template-dependent context (the prototype instantiation of a generic lambda,
+or a lambda in a template), the tokens are kept: a generic lambda's are
+scanned again for each instance (see instantiate_lambda_contract_specifiers).
+*/
+{
+  (void)push_scope((a_scope_kind)sck_func_prototype, func_info->scope_number,
+                   rp->type, (a_routine_ptr)NULL);
+  reactivate_prototype_scope_symbols(func_info->prototype_scope_symbols);
+  scan_cached_contract_specifiers(rp, rp->contract_specifiers,
+                                  func_info->prototype_scope_symbols,
+                                  /*keep_tokens=*/
+                                  is_template_dependent_context());
+  pop_scope();
+}  /* scan_lambda_contract_operands */
+
+
+a_boolean contract_specifiers_await_deduction(a_routine_ptr  rp)
+/*
+Return TRUE if the operand of any of rp's function contract specifiers waits
+for its return type to be deduced (see scan_postconditions_awaiting_deduction).
+*/
+{
+  a_contract_specifier_ptr  csp;
+
+  for (csp = rp->contract_specifiers; csp != NULL; csp = csp->next) {
+    if (csp->awaits_return_type_deduction) return TRUE;
+  }  /* for */
+  return FALSE;
+}  /* contract_specifiers_await_deduction */
+
+
+void scan_postconditions_awaiting_deduction(a_routine_ptr   rp,
+                                            a_param_id_ptr  param_id_list)
+/*
+The body of rp, a function with a deduced return type, has just been scanned,
+so its return type is deduced (EDG-9).  Scan the operands of its
+postconditions that have a result name, which waited for it in their token
+caches (see scan_function_contract_specifiers and
+instantiate_contract_specifiers), in a function parameter scope pushed by
+the caller as the top scope, as on its declaration; the caller also hides
+the declarations of the body.  param_id_list is the list of rp's parameters:
+the parameter symbols of the declaration became the body's parameter
+variables, so each named parameter is entered afresh as a parameter of the
+scope (as enter_contract_param_names does for an explicit specialization of
+a member template), and leaves it with the scope; the parameters that a
+postcondition uses are checked against them (see
+check_function_contract_predicate), which are the definition's.  The token
+caches of an instance belong to its template's specifiers and are kept.
+*/
+{
+  a_scope_stack_entry_ptr   ssep = &scope_stack_top();
+  a_contract_specifier_ptr  csp;
+  a_decl_parse_state        dps;
+  a_param_id_ptr            pip, prev_pip = NULL;
+  a_symbol_ptr              first_param_sym = NULL;
+  a_symbol_ptr              *saved_syms;
+  sizeof_t                  n_params = 0, i;
+  a_boolean                 keep_tokens =
+                   symbol_for(rp)->variant.routine.instance_ptr != NULL ||
+                   is_template_dependent_context();
+  a_memory_region_number    region_to_switch_back_to;
+#if EXTRA_SOURCE_POSITIONS_IN_IL
+  a_source_position         saved_curr_construct_end_position =
+                                                  curr_construct_end_position;
+#endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
+
+  check_assertion(scope_is(ssep, sck_func_prototype));
+  if (symbol_for(rp)->variant.routine.instance_ptr != NULL &&
+      symbol_for(rp)->variant.routine.instance_ptr->param_id_list != NULL) {
+    /* An instance: the parameters with their types in it (as for
+       instantiate_contract_specifiers_full in templates.c). */
+    param_id_list = symbol_for(rp)->variant.routine.instance_ptr->
+                                                              param_id_list;
+  }  /* if */
+  for (pip = param_id_list; pip != NULL; pip = pip->next) ++n_params;
+  saved_syms = (a_symbol_ptr *)alloc_fe((n_params + 1) *
+                                        sizeof(a_symbol_ptr));
+  for (i = 0, pip = param_id_list; pip != NULL;
+       ++i, prev_pip = pip, pip = pip->next) {
+    a_symbol_ptr  sym;
+    saved_syms[i] = pip->symbol;
+    if (pip->symbol == NULL ||
+        (pip->is_pack_element && prev_pip != NULL &&
+         prev_pip->is_pack_element)) {
+      /* Unnamed, or a non-initial element of a function parameter pack. */
+      continue;
+    }  /* if */
+    sym = alloc_symbol((a_symbol_kind)sk_parameter, pip->symbol->header,
+                       &pip->symbol->decl_position);
+    sym->variant.param_id = pip;
+    sym->is_pack_element = pip->is_pack_element;
+    set_decl_sequence_number(sym);
+    add_symbol_to_symbol_table(sym, depth_scope_stack,
+                               /*suppress_error=*/TRUE);
+    pip->symbol = sym;
+    if (first_param_sym == NULL) first_param_sym = sym;
+  }  /* for */
+  ssep = &scope_stack_top();
+  ssep->param_id_list = param_id_list;
+  init_decl_parse_state_for_contract_rescan(&dps, rp);
+  ssep->decl_parse_state = &dps;
+  ssep->outside_parameter_list = TRUE;
+  switch_to_file_scope_region(&region_to_switch_back_to);
+  for (csp = rp->contract_specifiers; csp != NULL; csp = csp->next) {
+    a_token_cache  *cache = csp->token_cache;
+    a_symbol_ptr   first_sym;
+    if (!csp->awaits_return_type_deduction) continue;
+    csp->awaits_return_type_deduction = FALSE;
+    if (cache == NULL) {
+      expect_error();
+      continue;
+    }  /* if */
+    first_sym = rescan_contract_specifier_operand(csp, &dps, cache,
+                                                  csp->capture_token_cache);
+    if (!keep_tokens) {
+      csp->token_cache = NULL;
+      delete_fe(&cache);
+    }  /* if */
+    if (first_sym != NULL) {
+      remove_contract_operand_symbols(first_sym, first_param_sym);
+    }  /* if */
+  }  /* for */
+  switch_back_to_original_region(region_to_switch_back_to);
+  ssep = &scope_stack_top();
+  ssep->decl_parse_state = NULL;
+  for (i = 0, pip = param_id_list; pip != NULL; ++i, pip = pip->next) {
+    pip->symbol = saved_syms[i];
+  }  /* for */
+  free_fe(saved_syms, (n_params + 1) * sizeof(a_symbol_ptr));
+#if EXTRA_SOURCE_POSITIONS_IN_IL
+  curr_construct_end_position = saved_curr_construct_end_position;
+#endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
+}  /* scan_postconditions_awaiting_deduction */
+
+
+void instantiate_contract_specifiers(
+                           a_routine_ptr             rp,
+                           a_contract_specifier_ptr  templ_specifiers,
+                           a_symbol_ptr              prototype_scope_symbols)
+/*
+rp is an instance of a function template, or of a member function of a class
+template, whose template has the function contract specifiers
+templ_specifiers.  Give rp its own function contract specifiers, scanned from
+the tokens of the template's (see scan_function_contract_specifiers).  The
+template instantiation scope is active, and the function parameter scope, with
+the symbols prototype_scope_symbols, is the top scope.
+*/
+{
+  a_scope_stack_entry_ptr   ssep = &scope_stack_top();
+  a_contract_specifier_ptr  templ_csp, *p_next = &rp->contract_specifiers;
+  a_decl_parse_state        dps;
+  a_memory_region_number    region_to_switch_back_to;
+#if EXTRA_SOURCE_POSITIONS_IN_IL
+  a_source_position         saved_curr_construct_end_position =
+                                                  curr_construct_end_position;
+#endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
+
+  check_assertion(scope_is(ssep, sck_func_prototype) &&
+                  rp->contract_specifiers == NULL);
+  init_decl_parse_state_for_contract_rescan(&dps, rp);
+  ssep->decl_parse_state = &dps;
+  ssep->outside_parameter_list = TRUE;
+  switch_to_file_scope_region(&region_to_switch_back_to);
+  for (templ_csp = templ_specifiers; templ_csp != NULL;
+       templ_csp = templ_csp->next) {
+    a_contract_specifier_ptr  csp;
+    a_symbol_ptr              result_sym;
+    if (templ_csp->token_cache == NULL) {
+      /* The template's specifier was not scanned (after an error). */
+      expect_error();
+      continue;
+    }  /* if */
+    csp = alloc_contract_specifier(templ_csp->kind);
+    csp->position = templ_csp->position;
+    if (templ_csp->result_name != NULL && dps.has_deducible_return_type) {
+      /* The return type of the instance is not yet deduced, so neither is
+         the type of the result name: the operand waits, in the template's
+         token caches, for the end of the instance's body (see
+         scan_postconditions_awaiting_deduction). */
+      csp->awaits_return_type_deduction = TRUE;
+      csp->token_cache = templ_csp->token_cache;
+      csp->capture_token_cache = templ_csp->capture_token_cache;
+      *p_next = csp;
+      p_next = &csp->next;
+      continue;
+    }  /* if */
+    result_sym = rescan_contract_specifier_operand(
+                                        csp, &dps, templ_csp->token_cache,
+                                        templ_csp->capture_token_cache);
+    if (result_sym != NULL) {
+      remove_contract_operand_symbols(result_sym, prototype_scope_symbols);
+    }  /* if */
+    *p_next = csp;
+    p_next = &csp->next;
+  }  /* for */
+  switch_back_to_original_region(region_to_switch_back_to);
+  ssep->decl_parse_state = NULL;
+#if EXTRA_SOURCE_POSITIONS_IN_IL
+  curr_construct_end_position = saved_curr_construct_end_position;
+#endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
+}  /* instantiate_contract_specifiers */
+
+
 static void use_nonreal_type_for_nested_prototype_type(
 						a_decl_parse_state	*state)
 /*
@@ -9028,6 +9768,10 @@ next_capture:;
     }  /* if */
     scan_trailing_requires_clause(dps, func_info, &loc);
   }  /* if */
+  if (curr_token_starts_function_contract_specifier() &&
+      !dps->is_trailing_return_type) {
+    scan_function_contract_specifiers(dps, func_info, &loc);
+  }  /* if */
 }  /* scan_lambda_declarator */
 
 
@@ -9181,6 +9925,26 @@ the parameters.
          component before reparsing, and thus we can simply not consume it. */
     } else {
       scan_trailing_requires_clause(state, func_info, locator);
+    }  /* if */
+  }  /* if */
+  if (curr_token_starts_function_contract_specifier() &&
+      !state->is_trailing_return_type) {
+    if (type_is(state->type, tk_routine) &&
+        state->variant.auto_params != NULL &&
+        !state->is_abbr_func_template) {
+      /* Presumably this is the first pass scanning an abbreviated template:
+         Ignore the function contract specifiers, as the requires-clause
+         above.  They are scanned when the declarator is reparsed in a
+         template context. */
+    } else if (locator != NULL && type_is(state->type, tk_routine) &&
+               state->declared_storage_class != (a_storage_class)sc_typedef &&
+               (input_flags & DI_IS_PARAMETER_DECL) == 0) {
+      scan_function_contract_specifiers(state, func_info, locator);
+    } else if (next_token() == tok_lparen) {
+      /* P2900 [dcl.contract.func]: Function contract specifiers appear only
+         on the declarator of a function declaration: not on a typedef, a
+         type-id, a parameter, or a declaration of non-function type. */
+      skip_function_contract_specifiers();
     }  /* if */
   }  /* if */
 }  /* declarator */

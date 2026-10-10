@@ -1,5 +1,47 @@
 Version 7.0, September 28, 2026
 
+10/1/26  []
+Contracts (P2900): contract assertions of member functions
+
+Contract assertions on member functions, including static members,
+constructors and destructors, and on friends declared in a class, are now
+parsed.  They are a complete-class context: the predicates of a member
+function or friend declared in a class definition are scanned when the class
+is complete, so they can name members declared after them:
+
+  struct S {
+    int f(int x) pre(x < limit) { return x; }
+    static constexpr int limit = 10;
+  };
+
+
+9/30/26  []
+Contracts (P2900): options, contract_assert, pre and post
+
+The front end now parses contract assertions as specified by C++26 (WG21
+P2900): the contract_assert statement and the pre and post function contract
+specifiers of functions and lambdas, including a postcondition's
+result name.  They are recorded in the IL (an iek_contract_specifier entry
+kind, a contract_specifiers list on a_routine, and an stmk_contract_assert
+statement kind).  The C++-generating back end puts them out as written, for
+the compiler of its output to check; the front end does not check them.  For
+example:
+
+  int f(int x) pre(x > 0) post(r: r > x) { return x + 1; }
+  void g(int y) { contract_assert(y != 0); }
+
+Contracts are enabled by default in C++26 mode and can be enabled in other
+C++ modes with --contracts (or disabled with --no_contracts); __cpp_contracts
+is defined when they are.  "pre" and "post" are context-sensitive keywords;
+contract_assert is a keyword only when contracts are enabled.
+
+The new --contract_evaluation_semantic=X option selects the evaluation
+semantic of every contract assertion: ignore, observe, enforce (the default)
+or quick_enforce.  The C-generating back end supports only ignore and
+quick_enforce (the latter is its default), since its exception handling
+cannot propagate an exception out of a violation handler.
+
+
 9/15/26  [EDGcpfe/28958]
 Virtual and consteval specifiers on the "==" implied by a defaulted "<=>"
 

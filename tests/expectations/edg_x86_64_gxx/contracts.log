@@ -1,2 +1,5 @@
+parse/il_display.sft.cpp:fp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: contract specifiers and contract_assert in the IL
+parse/semantic_option_c_gen_be.sft.cpp:fc:-DTEST_NUMBER=1 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:contracts: the C-generating back end supports only ignore and quick_enforce
+parse/semantic_option_c_gen_be.sft.cpp:fc:-DTEST_NUMBER=2 --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:contracts: the C-generating back end supports only ignore and quick_enforce
 sema/float_literal_exponent_range.sft.cpp:fn:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:a floating literal whose exponent is beyond every format's range is out of range like 1.0e400, and a raw literal operator receives it
 sema/typeid_evaluated_operand_run.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:typeid of a glvalue of polymorphic class type evaluates its operand, even where its dynamic type is known

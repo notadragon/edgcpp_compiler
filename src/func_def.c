@@ -1566,6 +1566,18 @@ of lambda expressions.
     scope_ptr->variant.routine.this_param_variable =
                                  make_implicit_this_param_variable(rout_type);
   }  /* if */
+  if (rout_ptr->is_lambda_body && contracts_enabled) {
+    /* The predicates of the lambda's contract assertions name its
+       captures. */
+    if (rout_ptr->contract_specifiers != NULL &&
+        rout_ptr->contract_specifiers->operand_cached) {
+      /* A lambda, or the prototype instantiation of a generic lambda. */
+      scan_lambda_contract_operands(rout_ptr, func_info);
+    } else if (is_instantiation && !rout_ptr->is_prototype_instantiation) {
+      /* An instance of a generic lambda. */
+      instantiate_lambda_contract_specifiers(rout_ptr);
+    }  /* if */
+  }  /* if */
   if (microsoft_bugs && microsoft_version == 1200 &&
       rout_ptr->defined && rout_ptr->is_specialized) {
     /* This is a duplicate definition of a template specialization.
@@ -1925,6 +1937,55 @@ of lambda expressions.
        Ensure that a type is established at this point. */
     check_deduced_return_type(rout_ptr, &body_pos);
   }  /* if */
+  if ((func_info->lambda != NULL || CONTRACT_CHECKS_IN_FRONT_END) &&
+      contracts_enabled && contract_specifiers_await_deduction(rout_ptr)) {
+    /* The postconditions of a lambda that name its result, whose type is
+       now deduced (EDG-9), name its captures like its other contract
+       assertions (see scan_lambda_contract_operands): scanned in its
+       function parameter scope pushed on its function scope, whose
+       declarations are hidden meanwhile.  So are any function's where the
+       front end generates the checks of contract assertions, which it then
+       makes before the function is lowered (see
+       add_deferred_postcondition_checks). */
+    a_symbol_ptr  sym, *hidden;
+    sizeof_t      n_syms = 0, i = 0;
+    a_scope_depth saved_depth = depth_innermost_function_scope;
+    a_scope_ptr   saved_scope = innermost_function_scope;
+    for (sym = assoc_pointers_block_of(&scope_stack_top())->symbols;
+         sym != NULL; sym = sym->next_in_scope) {
+      ++n_syms;
+    }  /* for */
+    hidden = (a_symbol_ptr *)alloc_fe((n_syms + 1) * sizeof(a_symbol_ptr));
+    for (sym = assoc_pointers_block_of(&scope_stack_top())->symbols;
+         sym != NULL; sym = sym->next_in_scope) {
+      if (!sym->is_invisible) {
+        sym->is_invisible = TRUE;
+        hidden[i++] = sym;
+      }  /* if */
+    }  /* for */
+    if (func_info->lambda == NULL) {
+      /* Scanned as after the function scope is popped (below): out of the
+         function's memory region and object lifetimes, "this" being the
+         declaration's. */
+      depth_innermost_function_scope = NO_SCOPE_DEPTH;
+      innermost_function_scope = NULL;
+    }  /* if */
+    (void)push_scope((a_scope_kind)sck_func_prototype, NO_SCOPE_NUMBER,
+                     rout_ptr->type, (a_routine_ptr)NULL);
+    scan_postconditions_awaiting_deduction(rout_ptr,
+                                           func_info->param_id_list);
+    pop_scope();
+    depth_innermost_function_scope = saved_depth;
+    innermost_function_scope = saved_scope;
+    while (i > 0) hidden[--i]->is_invisible = FALSE;
+    free_fe(hidden, (n_syms + 1) * sizeof(a_symbol_ptr));
+    add_deferred_postcondition_checks();
+  }  /* if */
+  if (CONTRACT_CHECKS_IN_FRONT_END && contracts_enabled) {
+    /* Postcondition captures are destroyed when an exception leaves the
+       body too (EDG-86). */
+    protect_contract_captures();
+  }  /* if */
   if (func_info->lambda != NULL) {
     /* Remove unneeded captures. */
     a_lambda_capture_ptr  *p_lcp = &func_info->lambda->capture_list;
@@ -1946,6 +2007,20 @@ of lambda expressions.
   }  /* if */
   /* Pop the function scope. */
   pop_scope();
+  if (func_info->lambda == NULL && contracts_enabled &&
+      contract_specifiers_await_deduction(rout_ptr)) {
+    /* The postconditions that name the result, whose type is now deduced
+       (EDG-9), are scanned as on the declaration (see
+       scan_contract_operands_of_declaration). */
+    (void)push_scope((a_scope_kind)sck_function_access, NO_SCOPE_NUMBER,
+                     (a_type_ptr)NULL, rout_ptr);
+    (void)push_scope((a_scope_kind)sck_func_prototype, NO_SCOPE_NUMBER,
+                     rout_ptr->type, (a_routine_ptr)NULL);
+    scan_postconditions_awaiting_deduction(rout_ptr,
+                                           func_info->param_id_list);
+    pop_scope();
+    pop_scope();
+  }  /* if */
   if (flags & SFB_NEW_STRUCT_STMT_STACK_REQUIRED) {
     /* Restore the original structured statement stack.  This is done
        after popping the function scope because pop_scope calls

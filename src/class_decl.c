@@ -112,6 +112,10 @@ typedef struct a_routine_fixup {
   a_bit_field	process_exception_spec:1;
 			/* When TRUE, the operand of an noexcept specifier
 			   must be scanned. */
+  a_bit_field	process_contracts:1;
+			/* When TRUE, the cached operands of the function
+			   contract specifiers (P2900) must be scanned (see
+			   scan_cached_contract_specifiers). */
   a_bit_field	inheriting_ctor:1;
 			/* When TRUE, this is the fixup for an inheriting
 			   constructor. */
@@ -265,6 +269,7 @@ initialize it.
   rfp->is_template = FALSE;
   rfp->is_definition = FALSE;
   rfp->process_exception_spec = FALSE;
+  rfp->process_contracts = FALSE;
   rfp->inheriting_ctor = FALSE;
   rfp->inh_copy_move_ctor = FALSE;
   rfp->deferred = FALSE;
@@ -301,6 +306,83 @@ pointed to by the rfp->func_info if needed.
   rfp->next = avail_routine_fixup;
   avail_routine_fixup = rfp;
 }  /* free_routine_fixup */
+
+
+a_boolean contract_specifiers_can_be_deferred(void)
+/*
+Return TRUE if the operands of the function contract specifiers (P2900) of
+the member function declaration being scanned can be cached, to be scanned
+when the class is complete: there is a routine fixup entry for the
+declaration (see attach_member_contract_specifiers).
+*/
+{
+  return curr_routine_fixup != NULL;
+}  /* contract_specifiers_can_be_deferred */
+
+
+static void note_cached_contract_specifiers(a_routine_ptr  rp)
+/*
+If the operands of the function contract specifiers (P2900) of rp, declared
+in a class definition, are cached (see scan_function_contract_specifiers),
+record in the current routine fixup entry that they are to be scanned when
+the class is complete.
+*/
+{
+  a_contract_specifier_ptr  csp;
+
+  /* A lambda's are scanned when its body is entered (see
+     scan_lambda_contract_operands). */
+  if (rp->is_lambda_body) return;
+  for (csp = rp->contract_specifiers; csp != NULL; csp = csp->next) {
+    if (csp->operand_cached) {
+      check_assertion(curr_routine_fixup != NULL);
+      curr_routine_fixup->process_contracts = TRUE;
+      break;
+    }  /* if */
+  }  /* for */
+}  /* note_cached_contract_specifiers */
+
+
+static void attach_member_contract_specifiers(a_routine_ptr       rp,
+                                              a_decl_parse_state  *dps)
+/*
+Attach the function contract specifiers (P2900) of the in-class declaration
+of member function rp, described by dps, to rp (see
+note_cached_contract_specifiers).
+*/
+{
+  /* A member function cannot be redeclared in its class. */
+  attach_contract_specifiers(rp, dps, /*is_redeclaration=*/FALSE);
+  note_cached_contract_specifiers(rp);
+}  /* attach_member_contract_specifiers */
+
+
+static void scan_contracts_for_routine_fixup(a_routine_fixup_ptr  rfp,
+                                             a_boolean            keep_tokens)
+/*
+Scan the cached operands of the function contract specifiers of the member
+function of routine fixup entry rfp, whose class is complete and reactivated,
+with its function prototype scope reactivated (see
+scan_cached_contract_specifiers).  If keep_tokens is TRUE (the class is a
+class template), keep the tokens for the instantiations.
+*/
+{
+  rfp->process_contracts = FALSE;
+  (void)push_scope((a_scope_kind)sck_func_prototype,
+                   rfp->func_info.scope_number,
+                   underlying_function_type(rfp->symbol),
+                   (a_routine_ptr)NULL);
+  if (rfp->func_info.prototype_scope_symbols != NULL) {
+    reactivate_prototype_scope_symbols(rfp->func_info.prototype_scope_symbols);
+  }  /* if */
+  scan_cached_contract_specifiers(rfp->symbol->variant.routine.ptr,
+                                  rfp->symbol->variant.routine.ptr
+                                                       ->contract_specifiers,
+                                  rfp->func_info.prototype_scope_symbols,
+                                  keep_tokens);
+  match_redeclared_contract_specifiers(rfp);
+  pop_scope();
+}  /* scan_contracts_for_routine_fixup */
 
 
 static a_scope_stack_entry_ptr scope_stack_entry_for_routine_fixup_list(void)
@@ -634,7 +716,8 @@ the current class.  Otherwise free it for later use.
     if ((curr_routine_fixup->function_body_token_cache.ptr() != NULL &&
          !curr_routine_fixup->function_body_token_cache->is_empty()) ||
         curr_routine_fixup->def_arg_expr_fixup_list != NULL ||
-        curr_routine_fixup->process_exception_spec) {
+        curr_routine_fixup->process_exception_spec ||
+        curr_routine_fixup->process_contracts) {
       needed = TRUE;
     }  /* if */
 #if GENERATE_SOURCE_SEQUENCE_LISTS
@@ -3289,6 +3372,20 @@ and for member functions of template classes.
                                      sym, daefp, rfp->prototype_scope_symbols,
                                      /*update_declared_type=*/TRUE);
           }  /* if */
+          if (is_member_function_template && !is_friend &&
+              !is_real_template_instantiation) {
+            /* Scan the cached operands of the function contract specifiers
+               of a member template in the template (see
+               scan_member_template_contract_specifiers).  Not in an
+               instantiation of a class template: there, as a noexcept
+               operand is, they are instantiated only when needed, from the
+               tokens, for each instance of the member template (P2900
+               [temp.inst]; see instantiate_contract_specifiers_if_needed).
+               Scanning them here would substitute only the arguments of the
+               class, and a function parameter pack expanding a pack of the
+               class would then no longer be a pack (EDG-53). */
+            scan_member_template_contract_specifiers(sym);
+          }  /* if */
           if (rfp->process_exception_spec && !is_friend &&
               (is_real_template_instantiation || do_proto_inst_for_sym)) {
             /* When exceptions are disabled and exception specifications are
@@ -3307,7 +3404,8 @@ and for member functions of template classes.
             }  /* if */
           }  /* if */
         }  /* if */
-      } else if (daefp != NULL || rfp->process_exception_spec) {
+      } else if (daefp != NULL || rfp->process_exception_spec ||
+                 rfp->process_contracts) {
 #if GENERATE_SOURCE_SEQUENCE_LISTS
         a_boolean  do_declared_type_fixup = is_function_symbol(rfp->symbol);
 #endif /* GENERATE_SOURCE_SEQUENCE_LISTS */
@@ -3395,6 +3493,24 @@ and for member functions of template classes.
             for (; daefp != NULL; daefp = daefp->next) {
               clear_template_cache(&daefp->cache);
             }  /* for */
+          }  /* if */
+          if (rfp->process_contracts && !template_second_pass &&
+              sym->kind == (a_symbol_kind)sk_member_function && !is_friend) {
+            /* Scan the function contract specifiers of a member function of
+               a class template in the template, keeping their tokens: the
+               specifiers of the instances are scanned from them, in a
+               template instantiation context where what was parsed in the
+               template (e.g., a requires-expression) is substituted (see
+               instantiate_template_function_full). */
+            if (!same_entities(curr_scope_class_type, rfp->class_type)) {
+              if (curr_scope_class_type != NULL) {
+                pop_class_reactivation_scope();
+              }  /* if  */
+              push_class_and_template_reactivation_scope(
+                rfp->class_type, is_template_based, /*extend_namespace=*/TRUE);
+              curr_scope_class_type = rfp->class_type;
+            }  /* if */
+            scan_contracts_for_routine_fixup(rfp, /*keep_tokens=*/TRUE);
           }  /* if */
           goto fixup_declared_type;
         }  /* if */
@@ -3499,6 +3615,9 @@ and for member functions of template classes.
           }  /* if */
           /* Pop the reactivated function prototype scope off the stack. */
           pop_scope();
+        }  /* if */
+        if (rfp->process_contracts) {
+          scan_contracts_for_routine_fixup(rfp, /*keep_tokens=*/FALSE);
         }  /* if */
 fixup_declared_type: ;
 #if GENERATE_SOURCE_SEQUENCE_LISTS
@@ -12506,6 +12625,10 @@ possibility.
       decl_routine(locator, state, func_info, srk_flags, &linkage,
                    &old_type, &ext_sym, &decl_info->decl_pos_block);
       sym = state->sym;
+      if (sym != NULL && is_simple_function_symbol(sym)) {
+        /* decl_routine attached the function contract specifiers. */
+        note_cached_contract_specifiers(sym->variant.routine.ptr);
+      }  /* if */
       /* N4861 [class.friend]/6 prohibits defining a nonmember function in a
          local class friend declaration. */
       if (func_info->is_definition && !locator->is_error &&
@@ -16557,6 +16680,7 @@ implicitly declared member functions.
     rtn->trailing_requires_clause = decl_state->trailing_requires_clause;
     decl_state->trailing_requires_clause = NULL;
   }  /* if */
+  attach_member_contract_specifiers(rtn, decl_state);
   check_defaulted_or_deleted_function(decl_state, func_info,
                                       &locator->source_position);
   if (rtn->is_defaulted) {
@@ -17874,6 +17998,9 @@ decl_member_function, which handles in-class member function declarations.)
     rtn->trailing_requires_clause = dps->trailing_requires_clause;
     dps->trailing_requires_clause = NULL;
   }  /* if */
+  /* The function contract specifiers (P2900) of a member template are
+     scanned for each instantiation (see instantiate_contract_specifiers). */
+  attach_contract_specifiers(rtn, dps, /*is_redeclaration=*/FALSE);
   if (!is_error_locator(*locator)) {
 #if EXTRA_SOURCE_POSITIONS_IN_IL
     update_decl_pos_info(&rtn->source_corresp, &decl_info->decl_pos_block);
@@ -30405,11 +30532,13 @@ flag if error recovery should be performed as if the specifier didn't occur.
         check_assertion(curr_routine_fixup->function_body_token_cache.ptr() ==
                         NULL);
         if (curr_routine_fixup->def_arg_expr_fixup_list != NULL ||
-            curr_routine_fixup->process_exception_spec) {
+            curr_routine_fixup->process_exception_spec ||
+            curr_routine_fixup->process_contracts) {
            /* The previous one must have been a routine declaration with
-              default arguments or an exception specification whose operand
-              still needs processing, so we have to save the routine fixup
-              entry onto the fixup list. */
+              default arguments, an exception specification whose operand
+              still needs processing, or contract specifiers whose operands
+              do, so we have to save the routine fixup entry onto the fixup
+              list. */
           add_to_routine_fixup_list(curr_routine_fixup);
           /* Make a new fixup entry for the current declarator. */
           curr_routine_fixup = alloc_routine_fixup(class_type);

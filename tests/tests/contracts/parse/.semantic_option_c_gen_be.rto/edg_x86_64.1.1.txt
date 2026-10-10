@@ -1,0 +1,5 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contract_evaluation_semantic=observe Test_name.c
+Command-line error: this configuration supports only the ignore, quick_enforce, noexcept_enforce, noexcept_observe and assume contract evaluation semantics: observe
+
+1 catastrophic error detected in this compilation.
+Compilation terminated.

@@ -1,0 +1,11 @@
+Matches for "line 11: warning: attribute namespace "foo" is unrecognized":
+  <-----------------------------------------------------------------------------
+  line 11: warning: attribute namespace "foo" is unrecognized
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  line 11: warning: attribute namespace "foo" is unrecognized
+  ----------------------------------------------------------------------------->
+Matches for "line 12: warning: attribute "maybe_unused" does not apply here":
+  <-----------------------------------------------------------------------------
+  line 12: warning: attribute "maybe_unused" does not apply here
+  ----------------------------------------------------------------------------->

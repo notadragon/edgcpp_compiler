@@ -341,6 +341,7 @@ be restored).
   dps->alignment = 0;
   dps->strongest_alignment = NULL;
   dps->trailing_requires_clause = NULL;
+  dps->contract_specifiers = NULL;
   dps->routine_fixup = NULL;
 }  /* clear_decl_parse_state_fields */
 
@@ -10829,6 +10830,23 @@ skip_overloading:;
   }  /* if */
   routine_ptr->suppress_inline_body =
                                     routine_ptr->definition_for_inlining_only;
+  /* Attach the function contract specifiers (P2900). */
+  scan_contract_operands_of_declaration(routine_ptr, dps, func_info);
+  if (redeclaration && dps->contract_specifiers == NULL &&
+      !is_function_def && routine_ptr->template_arg_list == NULL) {
+    /* A redeclaration without the specifiers: The parameters that the
+       postconditions odr-use must be const here too (a definition is
+       checked with its body; see check_postcondition_params_of_definition).
+       An instance or explicit specialization of a function template has its
+       own declarations. */
+    check_postcondition_params_of_redeclaration(
+                                     routine_ptr, func_info->param_id_list,
+                                     (a_contract_redecl_param_ptr *)NULL);
+  }  /* if */
+  attach_contract_specifiers(routine_ptr, dps, redeclaration);
+  if (is_handle_contract_violation(routine_ptr)) {
+    check_handle_contract_violation(routine_ptr, &locator->source_position);
+  }  /* if */
 #if GNU_FUNCTION_MULTIVERSIONING
   if (repr_rout_ptr != NULL) {
     an_attribute_ptr *next_ap = &repr_rout_ptr->source_corresp.attributes;
@@ -11463,6 +11481,9 @@ definition of a member function of a class template.
       rout_ptr->trailing_requires_clause = dps->trailing_requires_clause;
       dps->trailing_requires_clause = NULL;
     }  /* if */
+    /* The function contract specifiers (P2900), whose tokens are kept for
+       instantiation (see instantiate_contract_specifiers). */
+    attach_contract_specifiers(rout_ptr, dps, /*is_redeclaration=*/FALSE);
     /* Call a routine that manages the correspondence of entities between
        translation units to notify it of the new instance. */
     record_instantiation(prototype_sym, tssp);
@@ -11523,6 +11544,32 @@ definition of a member function of a class template.
          declaration. */
       rout_ptr->trailing_requires_clause = dps->trailing_requires_clause;
       dps->trailing_requires_clause = NULL;
+    }  /* if */
+    if (is_specialization && !tssp->is_specific_definition) {
+      /* The first declaration of an explicit specialization of a member
+         template (see record_specialization). */
+      attach_member_template_specialization_contracts(tssp, dps, func_info,
+                                                      templ_decl_info);
+    } else {
+      if (!is_specialization && dps->contract_specifiers == NULL &&
+          !func_info->is_definition) {
+        /* A redeclaration without the function contract specifiers (see
+           decl_routine). */
+        a_contract_redecl_param_ptr  *p_dependent_params = NULL;
+        if (rout_ptr->contract_specifiers != NULL &&
+            symbol_is(sym, sk_function_template)) {
+          /* The parameters whose types are dependent are checked in each
+             instance (see check_postcondition_params_of_redeclaration). */
+          p_dependent_params = &template_supplement_for_symbol(
+                                  prototype_template_of(sym))->
+                                    variant.function.contract_redecl_params;
+        }  /* if */
+        check_postcondition_params_of_redeclaration(
+                                      rout_ptr, func_info->param_id_list,
+                                      p_dependent_params);
+      }  /* if */
+      /* The function contract specifiers (P2900). */
+      attach_contract_specifiers(rout_ptr, dps, /*is_redeclaration=*/TRUE);
     }  /* if */
 #if GNU_EXTENSIONS_ALLOWED
     if (!sym->is_class_member) {

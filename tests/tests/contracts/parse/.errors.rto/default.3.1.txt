@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=3 --c++26 Test_name.c
+"Test_name.c", line 9: error: expected a "("
+  void h(int x) pre x > 0;        // Error, parenthesis required
+                    ^
+
+1 error detected in the compilation of "Test_name.c".

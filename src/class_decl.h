@@ -48,6 +48,8 @@ extern void record_class_member_symbol_declaration(a_symbol_ptr       sym,
 
 extern a_type_ptr class_from_routine_fixup(struct a_routine_fixup  *fixup);
 
+extern a_boolean contract_specifiers_can_be_deferred(void);
+
 extern a_symbol_ptr find_corresp_prototype_tag_sym(a_symbol_ptr  curr_sym);
 
 extern a_boolean conflicts_with_previous_function_decl(

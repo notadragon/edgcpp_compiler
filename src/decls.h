@@ -1431,6 +1431,10 @@ typedef struct a_decl_parse_state {
   a_requires_clause_ptr
 		trailing_requires_clause;
 			/* The trailing requires-clause, if any. */
+  a_contract_specifier_ptr
+		contract_specifiers;
+			/* The function contract specifiers (P2900), if
+			   any, in declaration order. */
   an_expr_node_ptr
 		type_constraint;
 			/* The type-constraint in something like
