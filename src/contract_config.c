@@ -1373,6 +1373,22 @@ if in_ce is TRUE.
       entry->constexpr_eval != (in_ce ? 1 : 0)) {
     return FALSE;
   }  /* if */
+  if (entry->group != NULL) {
+    /* P3400: a group of the contract assertion's label (see
+       a_contract_specifier::label_groups) that is the entry's, or of which
+       it is a prefix ending before a ".", as in GCC. */
+    a_const_char  *name = csp->label_groups;
+    size_t        len = strlen(entry->group);
+    a_boolean     found = FALSE;
+    while (!found && name != NULL && *name != '\0') {
+      a_const_char  *end = strchr(name, '\n');
+      found = (size_t)(end - name) >= len &&
+              strncmp(name, entry->group, len) == 0 &&
+              (name + len == end || name[len] == '.');
+      name = end + 1;
+    }  /* while */
+    if (!found) return FALSE;
+  }  /* if */
   if (entry->ns != NULL &&
       !namespace_matches(entry->ns, routine != NULL
                                       ? routine_namespace(routine) : "")) {

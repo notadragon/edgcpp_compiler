@@ -42744,6 +42744,8 @@ diagnosed when that semantic is chosen, as GCC does).
         csp->label_computed_semantics[v] = 0xFE;
       }  /* if */
     }  /* for */
+    /* The group names (P3400). */
+    resolve_contract_label_groups(csp, label_con);
   }  /* if */
   release_local_constant(&value);
   release_local_constant(&label_con);
@@ -43114,6 +43116,88 @@ routine_case:
     (void)required_token(tok_rsplice, ec_exp_rbracket);
   }  /* if */
 }  /* scan_expr_splicer */
+
+
+/*
+The state with which the group names of P3400 labels are read (see
+resolve_contract_label_groups).
+*/
+STATIC_THREAD a_text_buffer_ptr
+		contract_label_group_buffer;
+			/* The group names of a label, as they are read. */
+STATIC_THREAD a_token_cache_ptr
+		contract_label_group_count_cache;
+			/* The number of the label's group names. */
+STATIC_THREAD a_token_cache_ptr
+		contract_label_group_char_cache;
+			/* Character __edg_opnd__(2) of the label's group name
+			   __edg_opnd__(1). */
+
+
+void resolve_contract_label_groups(a_contract_specifier_ptr  csp,
+                                   a_constant_ptr            label_con)
+/*
+Record, as csp->label_groups, the group names of the label of the contract
+assertion csp (P3400), whose value is *label_con: its group_names member,
+found as the library's identification_label concept finds it (through the
+combined label, see probe_contract_label_facet), each element read as a
+string character by character (whether an array of characters or a pointer
+to them); empty names are skipped, as GCC does.
+*/
+{
+  a_constant_ptr  value = local_constant();
+  an_operand      label_opnd, index_opnd, char_opnd;
+  a_boolean       not_constant;
+  unsigned long   count, i, j;
+  a_text_buffer   *buffer = contract_label_group_buffer;
+
+  if (buffer == NULL) {
+    buffer = contract_label_group_buffer = alloc_text_buffer((sizeof_t)64);
+  }  /* if */
+  reset_text_buffer(buffer);
+  csp->label_groups = NULL;
+  make_constant_operand(label_con, &label_opnd);
+  make_error_operand(&index_opnd);
+  if (probe_contract_label_facet(
+          &contract_label_group_count_cache,
+          "sizeof(" CONTRACT_LABEL_COMBINED ".group_names) / sizeof("
+          CONTRACT_LABEL_COMBINED ".group_names[0]);",
+          &label_opnd, &index_opnd, (an_operand *)NULL, &csp->position,
+          value, &not_constant) &&
+      !not_constant &&
+      (count = contract_label_facet_value(value)) != 0xFE) {
+    for (i = 0; i < count; i++) {
+      for (j = 0; j < 256; j++) {
+        unsigned long  c;
+        make_constant_operand(label_con, &label_opnd);
+        make_integer_constant_operand(&index_opnd, (a_host_large_integer)i);
+        make_integer_constant_operand(&char_opnd, (a_host_large_integer)j);
+        if (!probe_contract_label_facet(
+                 &contract_label_group_char_cache,
+                 CONTRACT_LABEL_COMBINED ".group_names[__edg_opnd__(1)]"
+                 "[__edg_opnd__(2)];",
+                 &label_opnd, &index_opnd, &char_opnd, &csp->position,
+                 value, &not_constant) ||
+            not_constant ||
+            (c = contract_label_facet_value(value)) == 0 || c == 0xFE) {
+          break;
+        }  /* if */
+        add_char_to_text_buffer(buffer, (char)c);
+      }  /* for */
+      if (buffer->size != 0 && buffer->buffer[buffer->size - 1] != '\n') {
+        /* A name, not an empty one. */
+        add_char_to_text_buffer(buffer, '\n');
+      }  /* if */
+    }  /* for */
+  }  /* if */
+  if (buffer->size != 0) {
+    char  *text = (char*)alloc_il((sizeof_t)(buffer->size + 1));
+    (void)memcpy(text, buffer->buffer, (size_t)buffer->size);
+    text[buffer->size] = '\0';
+    csp->label_groups = text;
+  }  /* if */
+  release_local_constant(&value);
+}  /* resolve_contract_label_groups */
 
 
 static void check_for_pcc_compound_assignment_operators(void)
@@ -61099,6 +61183,9 @@ Do one-time initialization of variables related to expression processing.
   contract_label_message_cache = NULL;
   contract_label_null_message_cache = NULL;
   contract_label_comment_cache = NULL;
+  contract_label_group_count_cache = NULL;
+  contract_label_group_char_cache = NULL;
+  contract_label_group_buffer = NULL;
 }  /* expr_one_time_init */
 
 

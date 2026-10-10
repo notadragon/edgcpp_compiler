@@ -9312,6 +9312,10 @@ contract_specifier_predicate).
     csp->label_message = copy_string_to_region(file_scope_region_number,
                                                csp->label_message);
   }  /* if */
+  if (csp->label_groups != NULL && !in_file_scope(csp->label_groups)) {
+    csp->label_groups = copy_string_to_region(file_scope_region_number,
+                                              csp->label_groups);
+  }  /* if */
   if (!expr_has_reference_to_local_entity(pred) &&
       !expr_has_local_capturing_lambda(pred)) {
     csp->predicate = copy_expr_tree(pred, CE_ALWAYS_COPY_BACKING_EXPRESSIONS);
