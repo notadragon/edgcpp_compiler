@@ -1,5 +1,17 @@
 Version 7.0, September 28, 2026
 
+10/5/26  []
+Contracts (P4299): the C spellings of contract assertions in C++
+
+The new --[no_]contracts_p4299 option makes _Pre, _Post and _ContractAssert,
+P4299's spellings of contract assertions for C, alternative spellings of
+pre, post and contract_assert in C++ when contracts are enabled; _Pre and
+_Post are keywords, as in Clang, so they cannot be used as identifiers.
+Without the option they are ordinary identifiers.  The option does not
+enable contracts, is not implied by --contracts_p3850, and predefines no
+macro; contracts in C are not supported, so it is an error in C.
+
+
 10/4/26  []
 Contracts (P4298): the noexcept semantics with the C-generating back end
 

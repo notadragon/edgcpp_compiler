@@ -4753,6 +4753,8 @@ a_token_kind for more information about IFC token serialization.
     case tok_bit_precise_int:
     case tok_contract_assert:
     case tok_contract_control:
+    case tok_p4299_pre:
+    case tok_p4299_post:
       result = ifc_ebts_complex;
       break;
     case tok_gen_constant:

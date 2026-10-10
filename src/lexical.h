@@ -1876,6 +1876,8 @@ EXTERN_CONSTINIT_ARRAY(an_opname_kind, opname_kind_for_token, tok_last + 1)
    onk_none,           /* tok_builtin_is_structural */
    onk_none,           /* tok_contract_assert */
    onk_none,           /* tok_contract_control */
+   onk_none,           /* tok_p4299_pre */
+   onk_none,           /* tok_p4299_post */
    onk_last            /* tok_last */
 }
 #endif /* VAR_INITIALIZERS */
@@ -4586,6 +4588,8 @@ string.
    strcmp((sym_hdr)->identifier, (tok_str)) == 0)
 
 extern a_boolean curr_token_is_identifier_string(a_const_char *tok_str);
+
+extern void demote_p4299_contract_keyword(void);
 
 extern a_boolean check_context_sensitive_keyword(a_token_kind  tok_kind,
                                                  a_const_char  *tok_str);

@@ -5698,6 +5698,7 @@ Such a specifier ends a trailing return type, where "pre<" would otherwise
 be taken for the start of a template-id.
 */
 {
+  demote_p4299_contract_keyword();
   return contracts_enabled && contracts_p3400_enabled &&
          (curr_token_is_identifier_string("pre") ||
           curr_token_is_identifier_string("post")) &&
@@ -9180,6 +9181,7 @@ Return TRUE if the current token is an identifier spelled "pre" or "post"
 and contracts are enabled.
 */
 {
+  demote_p4299_contract_keyword();
   return contracts_enabled &&
          (curr_token_is_identifier_string("pre") ||
           curr_token_is_identifier_string("post"));
@@ -10042,6 +10044,7 @@ which begins the next function contract specifier.
 {
   a_const_char  *id;
 
+  if (tok->is(tok_p4299_pre) || tok->is(tok_p4299_post)) return TRUE;
   if (!tok->is(tok_identifier) || !tok->is_identifier()) return FALSE;
   id = tok->get_locator().symbol_header->identifier;
   return strcmp(id, "pre") == 0 || strcmp(id, "post") == 0;

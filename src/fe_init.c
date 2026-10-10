@@ -1612,6 +1612,13 @@ Install the keywords in the symbol table.
     if (contracts_enabled && contracts_p3400_enabled) {
       enter_keyword((a_token_kind)tok_contract_control, "contract_control");
     }  /* if */
+    if (contracts_enabled && contracts_p4299_enabled) {
+      /* P4299's C spellings: _ContractAssert is contract_assert; _Pre and
+         _Post are keywords that introduce a precondition and a
+         postcondition (see demote_p4299_contract_keyword). */
+      enter_keyword((a_token_kind)tok_contract_assert, "_ContractAssert");
+      enter_keyword((a_token_kind)tok_p4299_pre, "_Pre");
+      enter_keyword((a_token_kind)tok_p4299_post, "_Post");
     }  /* if */
   }  /* if */
   if (ms_extensions && microsoft_version >= 1300) {
