@@ -365,6 +365,13 @@ The complete object flag values.
 #define COMPLETE_OBJ_ARRAY_DYN_ALLOC   ((a_byte)0x04)
 			/* Indicates that the object is dynamically allocated
 			   using array new syntax. */
+#define COMPLETE_OBJ_DESTROYED   ((a_byte)0x08)
+			/* Indicates that the lifetime of the object was ended
+			   by its destruction, and that it has not been
+			   constructed again.  (Its storage is uninitialized
+			   either way, but storage that was never initialized
+			   may be written to or constructed in; a destroyed
+			   object may not be destroyed again or written to.) */
 
 #define set_complete_obj_flag(obj, flag)                                     \
   (*((a_byte*)obj-sizeof(a_type_ptr)-1) |= flag)
@@ -5631,6 +5638,23 @@ Mark the complete object at the given address as not fully initialized.
 */
 #define unmark_complete_object_initialized(obj)                              \
   clear_complete_obj_flag(obj, COMPLETE_OBJ_INITIALIZED)
+
+
+static a_boolean is_whole_complete_object(a_byte      *obj,
+                                          a_type_ptr  tp,
+                                          a_byte      *complete_object)
+/*
+Return TRUE if the object of type tp at obj is the complete object at
+complete_object itself, not one of its subobjects or an element of a
+dynamically allocated array.  Only such an object is marked
+COMPLETE_OBJ_DESTROYED.
+*/
+{
+  return obj != NULL && obj == complete_object &&
+         !complete_obj_flag(complete_object, COMPLETE_OBJ_ARRAY_DYN_ALLOC) &&
+         skip_typerefs(complete_object_type(complete_object)) ==
+                                                         skip_typerefs(tp);
+}  /* is_whole_complete_object */
 
 
 static a_boolean add_to_variant_path(
@@ -23111,6 +23135,15 @@ callee; the iwp_1st_resume visit completes the call in the latter case.
       /* An assignment operator may change the active field in a union. */
       a_byte               *arg_bytes = *(a_byte**)arg_ptrs;
       a_constexpr_address  *this_cap = (a_constexpr_address*)arg_bytes;
+      if (!is_runtime_data_address(this_cap) &&
+          !is_function_address(this_cap) && this_cap->address != NULL &&
+          complete_obj_flag(this_cap->complete_object,
+                            COMPLETE_OBJ_DESTROYED)) {
+        info_with_pos(ec_constexpr_modifying_outside_lifetime,
+                      &call_node->position, ips);
+        do_constexpr_fail(result);
+        goto done;
+      }  /* if */
       if (is_variant_path(this_cap)) {
         /* Assignment may require setting a new active field. */
         if (!check_variant_assign(ips, this_cap, &call_node->position)) {
@@ -23472,6 +23505,12 @@ after the constructor body has been interpreted.
     a_byte               *result_storage = cap.address;
     a_byte               *complete_object = cap.complete_object;
     a_scope_ptr          callee_scope = scope_for_routine(callee);
+    if (is_whole_complete_object(result_storage, parent_class_of(callee),
+                                 complete_object)) {
+      /* A destroyed object can be constructed again (e.g., with
+         std::construct_at). */
+      clear_complete_obj_flag(complete_object, COMPLETE_OBJ_DESTROYED);
+    }  /* if */
     an_expr_node_ptr     args = dip->variant.constructor.args, arg;
     a_variable_ptr       params = callee_scope->variant.routine.parameters,
                          param, this_var;
@@ -24057,6 +24096,15 @@ the iwp_1st_resume visit destroys the subobjects and undoes that mapping.
         item->result_storage = result_storage;
       }  /* if */
     }  /* if */
+    if (is_whole_complete_object(result_storage, parent_class_of(callee),
+                                 complete_object) &&
+        complete_obj_flag(complete_object, COMPLETE_OBJ_DESTROYED)) {
+      /* E.g., "s.~S();" followed by the destruction of s at the end of its
+         scope. */
+      info_with_pos(ec_constexpr_destroying_outside_lifetime, pos, ips);
+      do_constexpr_fail(result);
+      goto done;
+    }  /* if */
     callee_scope = scope_for_routine(callee);
     /* Don't attempt to interpret a non-constexpr function.  The flag
        scope->is_constexpr_routine is set at the end of a constexpr function
@@ -24161,6 +24209,10 @@ apply_cleanup:
     }  /* if */
     if (result) note_routine_interpreted(callee);
     pop_call_frame(ips);
+    if (result &&
+        is_whole_complete_object(result_storage, class_type, complete_object)) {
+      set_complete_obj_flag(complete_object, COMPLETE_OBJ_DESTROYED);
+    }  /* if */
     unmap_or_restore_param(ips, dw->this_var, dw->this_bytes,
                            sizeof(a_constexpr_address));
     remove_from_live_set(&ips->live_set, dw->alloc_seq_number);
@@ -26411,6 +26463,9 @@ Evaluate the given new-expression.
         elem_type = skip_typerefs(elem_type->variant.array.element_type);
       } while (type_is(elem_type, tk_array));
     }  /* if */
+    if (is_whole_complete_object(cap->address, type, cap->complete_object)) {
+      clear_complete_obj_flag(cap->complete_object, COMPLETE_OBJ_DESTROYED);
+    }  /* if */
     elem_size = value_bytes_for_type(ips, elem_type, &result); 
   } else {
     allocation = do_constexpr_dynamic_alloc(ips, elem_type, alloc_length,
@@ -26652,6 +26707,13 @@ Evaluate the given delete-expression.
     a_byte              *arr = (a_byte*)allocation+allocation->prefix_size,
                         *elem = arr;
     a_type_ptr          elem_type = skip_typerefs(allocation->elem_type);
+    if (complete_obj_flag(arr, COMPLETE_OBJ_DESTROYED)) {
+      /* E.g., "p->~S(); delete p;". */
+      info_with_pos(ec_constexpr_destroying_outside_lifetime, &expr->position,
+                    ips);
+      do_constexpr_fail(result);
+      goto done;
+    }  /* if */
     elem_size = value_bytes_for_type(ips, elem_type, &result);
     if (!result) goto done;
     unmark_complete_object_initialized(arr);
@@ -28016,6 +28078,15 @@ the value representation of the integer value.
                   complete_obj = opnd1_value;
                 }  /* if */
                 if (obj != NULL) {
+                  a_boolean  whole = is_whole_complete_object(obj, obj_type,
+                                                              complete_obj);
+                  if (whole &&
+                      complete_obj_flag(complete_obj, COMPLETE_OBJ_DESTROYED)) {
+                    info_with_pos(ec_constexpr_destroying_outside_lifetime,
+                                  &expr->position, ips);
+                    do_constexpr_fail(result);
+                    break;
+                  }  /* if */
                   /* Mark the substructure as uninitialized. */
                   if (!mark_whole_subobject_uninitialized(ips, obj, obj_type,
                                                           complete_obj)) {
@@ -28023,6 +28094,10 @@ the value representation of the integer value.
                     break;
                   }  /* if */
                   unmark_complete_object_initialized(complete_obj);
+                  if (whole) {
+                    set_complete_obj_flag(complete_obj,
+                                          COMPLETE_OBJ_DESTROYED);
+                  }  /* if */
                 }  /* if */
               }  /* if */
             } else {
@@ -30241,6 +30316,11 @@ the value representation of the integer value.
                 do_constexpr_fail(result);
               } else if (is_const_storage(dst)) {
                 info_with_pos(ec_constexpr_modifying_const_storage,
+                              &expr->position, ips);
+                do_constexpr_fail(result);
+              } else if (complete_obj_flag(dst->complete_object,
+                                           COMPLETE_OBJ_DESTROYED)) {
+                info_with_pos(ec_constexpr_modifying_outside_lifetime,
                               &expr->position, ips);
                 do_constexpr_fail(result);
               } else if (!(lhs_initialized = is_initialized(dst)) &&
