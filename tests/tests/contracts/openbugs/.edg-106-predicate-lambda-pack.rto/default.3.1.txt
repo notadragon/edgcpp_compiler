@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=3 --c++26 Test_name.c
+"Test_name.c", line 20: error: identifier "p" is undefined
+  int main() { return TEST_NUMBER == 2 ? p(1, 2) : g(1, 2); }
+                                         ^
+
+"Test_name.c", line 18: error: "xs" has already been declared in the current scope
+  int g(T... xs) pre([xs...] { return ((xs > 0) && ...); }()) { return 0; }
+                      ^
+          detected during instantiation of "int g(T...) [with T=<int, int>]" at line 20
+
+"Test_name.c", line 18: internal error: assertion failed at: "scope_stk.c", line <suppressed> in find_parameter_for_pack
+
+  int g(T... xs) pre([xs...] { return ((xs > 0) && ...); }()) { return 0; }
+                                       ^
+
+2 errors and 1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation aborted.
+edg-gxx: cpfe-cp terminated by signal 6

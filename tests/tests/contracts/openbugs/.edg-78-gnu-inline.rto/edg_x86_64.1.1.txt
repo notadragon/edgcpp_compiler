@@ -1,0 +1,9 @@
+eccp -DTEST_NUMBER=1 --c++26 --gnu_version=170000 Test_name.c
+eccp: diagnostics generated from compilation of Test_name.int.c:
+Test_name.c: In function '_Z1fiz':
+Test_name.c:10:51: error: invalid use of '__builtin_va_arg_pack ()'
+In function '_Z1fiz',
+    inlined from 'main' at Test_name.c:13:25:
+Test_name.c:10:51: error: invalid use of '__builtin_va_arg_pack ()'
+eccp: end of diagnostics from compilation of Test_name.int.c
+eccp: gcc compilation of Test_name.int.c returned an exit status of 1

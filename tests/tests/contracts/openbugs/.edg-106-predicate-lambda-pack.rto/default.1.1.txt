@@ -1,0 +1,13 @@
+fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
+"Test_name.c", line 20: error: identifier "p" is undefined
+  int main() { return TEST_NUMBER == 2 ? p(1, 2) : g(1, 2); }
+                                         ^
+
+"Test_name.c", line 12: internal error: assertion failed at: "scope_stk.c", line <suppressed> in find_parameter_for_pack
+
+  int g(T... xs) pre([=] { return ((xs > 0) && ...); }()) { return 0; }
+                                   ^
+
+1 error and 1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation aborted.
+edg-gxx: cpfe-cp terminated by signal 6

@@ -1,0 +1,3 @@
+[
+  {"match": {"location": "Test_name.c:15:21"}, "output": {"semantic": "ignore"}}
+]

@@ -1,0 +1,42 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contracts_p3098 Test_name.c
+"Test_name.c", line 15: error: only a function parameter can be captured without an initializer in a postcondition
+  int bad3(T... xs) post [y... = xs] (((y > 0) && ...)) { return 0; }
+                          ^
+
+"Test_name.c", line 15: error: identifier "y" is undefined
+  int bad3(T... xs) post [y... = xs] (((y > 0) && ...)) { return 0; }
+                                        ^
+
+"Test_name.c", line 15: error: fold expression does not refer to a parameter pack
+  int bad3(T... xs) post [y... = xs] (((y > 0) && ...)) { return 0; }
+                                                  ^
+
+"Test_name.c", line 17: error: expected an identifier in a postcondition capture
+  int bad4(T... xs) post [...y... = xs] (((y > 0) && ...)) { return 0; }
+                             ^
+
+"Test_name.c", line 17: error: pack expansion does not make use of any argument packs
+  int bad4(T... xs) post [...y... = xs] (((y > 0) && ...)) { return 0; }
+                          ^
+
+"Test_name.c", line 17: error: identifier "y" is undefined
+  int bad4(T... xs) post [...y... = xs] (((y > 0) && ...)) { return 0; }
+                                           ^
+
+"Test_name.c", line 17: error: fold expression does not refer to a parameter pack
+  int bad4(T... xs) post [...y... = xs] (((y > 0) && ...)) { return 0; }
+                                                     ^
+
+"Test_name.c", line 19: error: only a function parameter can be captured without an initializer in a postcondition
+  int d7(T... xs) post [y... = xs, z = 0] (((y > z) && ...));
+                        ^
+
+"Test_name.c", line 19: error: identifier "y" is undefined
+  int d7(T... xs) post [y... = xs, z = 0] (((y > z) && ...));
+                                             ^
+
+"Test_name.c", line 19: error: fold expression does not refer to a parameter pack
+  int d7(T... xs) post [y... = xs, z = 0] (((y > z) && ...));
+                                                       ^
+
+10 errors detected in the compilation of "Test_name.c".

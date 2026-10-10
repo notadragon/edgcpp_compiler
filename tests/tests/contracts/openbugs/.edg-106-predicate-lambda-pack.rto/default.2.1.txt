@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=2 --c++26 Test_name.c
+"Test_name.c", line 15: internal error: assertion failed at: "scope_stk.c", line <suppressed> in find_parameter_for_pack
+
+  int p(const T... xs) post([&] { return ((xs > 0) && ...); }()) { return 0; }
+                                          ^
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation aborted.
+edg-gxx: cpfe-cp terminated by signal 6

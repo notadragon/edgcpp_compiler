@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contracts_p4299 Test_name.c
+"Test_name.c", line 9: error: identifier "__gcc_contracts_p4299" is undefined
+  static_assert(__gcc_contracts_p4299 > 0);   // Error, not defined
+                ^
+
+1 error detected in the compilation of "Test_name.c".

@@ -1,0 +1,1 @@
+fe_only -DTEST_NUMBER=3 --c++26 --contract_configuration=[{"output":{"semantic":"enforce","dynamic":{"linkage":"C++","name":"sel(int)"}}}] Test_name.c
