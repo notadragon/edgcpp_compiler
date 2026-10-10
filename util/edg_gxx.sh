@@ -23,6 +23,13 @@
 # -w goes to both.  -E and -fsyntax-only stop after cpfe-cp.  Raw front end
 # options are passed with -Xedg <option> or --edg=<option>.
 #
+# Contracts.  The contract options -f[no-]contracts and
+# -fcontract-evaluation-semantic= go to both.  cpfe-cp checks the contract
+# assertions as the front end does and puts them out as written, and g++
+# implements them: it generates the checks with the given semantic, links the
+# contracts runtime, and makes a user-defined handle_contract_violation the
+# violation handler.  The comment of a violation is g++'s printing of the
+# predicate (-fcontract-comment-from-expression, when g++ has it).
 #
 # Environment:
 #   EDG_GXX           the g++ to pair with
@@ -128,6 +135,13 @@ while [ $# -gt 0 ] ; do
       edg_args+=("--no_rtti"); gxx_args+=("$arg") ;;
     -w)
       edg_args+=("--no_warnings"); gxx_args+=("$arg") ;;
+    -fcontracts)
+      edg_args+=("--contracts"); gxx_args+=("$arg") ;;
+    -fno-contracts)
+      edg_args+=("--no_contracts"); gxx_args+=("$arg") ;;
+    -fcontract-evaluation-semantic=*)
+      edg_args+=("--contract_evaluation_semantic=${arg#*=}")
+      gxx_args+=("$arg") ;;
     -E)
       edg_only_mode=preprocess; stop_after_edg=1 ;;
     -fsyntax-only)
@@ -216,6 +230,13 @@ if [ $stop_after_edg = 1 ] ; then
   done
   exit $status
 fi
+
+# The generated C++ names the original sources in its #line directives, but
+# its columns are not theirs, so g++ must not read a contract violation's
+# comment back from those files.  -fcontract-comment-from-expression (our
+# GCC's) makes it print the predicate instead; pass it when g++ takes it.
+"$GXX" -fcontract-comment-from-expression -x c++ -E /dev/null \
+    > /dev/null 2>&1 && gxx_args+=(-fcontract-comment-from-expression)
 
 tmp_dir=$(mktemp -d "${TMPDIR:-/tmp}/edg-gxx.XXXXXXXX") \
   || die "cannot create a temporary directory"

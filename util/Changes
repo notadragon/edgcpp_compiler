@@ -1,6 +1,24 @@
 Version 7.0, September 28, 2026
 
 9/30/26  []
+edg_gxx.sh: contract options
+
+edg_gxx.sh now accepts g++'s contract options, -f[no-]contracts and
+-fcontract-evaluation-semantic=X, and passes them to both the front end (as
+--[no_]contracts and --contract_evaluation_semantic=X) and g++.  The front
+end puts contract assertions out as written, and g++ checks them with the
+given semantic, links the contracts runtime and makes a user-defined
+::handle_contract_violation the violation handler.  When g++ accepts
+-fcontract-comment-from-expression (as the GCC contracts implementation
+does), edg_gxx.sh passes it, so that the comment of a violation is g++'s
+printing of the predicate: the generated code's columns are not those of the
+source files its #line directives name, from which g++ would otherwise read
+it.  For example:
+
+  edg-gxx -std=c++26 -fcontract-evaluation-semantic=observe main.cpp
+
+
+9/30/26  []
 edg_gxx.sh: pair the C++-generating front end with g++
 
 A new driver, util/edg_gxx.sh, compiles C++ by running the C++-generating

@@ -23,6 +23,8 @@
 #   --c++NN                      -> -std=c++NN (front end and g++)
 #   --[no_]exceptions, --[no_]rtti, --no_warnings
 #                                -> the g++ spellings (front end and g++)
+#   --[no_]contracts, --contract_evaluation_semantic=X
+#                                -> the g++ spellings (front end and g++)
 #   -D, -U, -I, -l, -L, -Wl,...  -> unchanged (edg_gxx.sh routes them)
 #   --verbose_driver_debug       -> dropped
 #   --pch_test_mode              -> compile twice, as eccp does: the first
@@ -80,6 +82,12 @@ while [ $# -gt 0 ] ; do
       ;;
     --pch_test_mode)
       pch_test_mode=1 ;;
+    --contracts)
+      args+=(-fcontracts) ;;
+    --no_contracts)
+      args+=(-fno-contracts) ;;
+    --contract_evaluation_semantic=*)
+      args+=("-fcontract-evaluation-semantic=${arg#*=}") ;;
     -D*|-U*|-I*|-l*|-L*|-Wl,*)
       args+=("$arg") ;;
     -*)
