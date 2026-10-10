@@ -271,6 +271,15 @@ Split an input string [str, end) into parts.
   }  /* if */
   if (dec->type != fpt_number) {
     /* Nothing to do. */
+  } else if (BIGINT_MAX_EXP <= dec->exponent) {
+    /* The value is at least 10**(BIGINT_MAX_EXP-1), beyond the range of
+       every floating-point format (and the clamping of the precision below
+       would make it negative). */
+    dec->type = fpt_overflow;
+  } else if (BIGINT_MAX_EXP <= -dec->exponent) {
+    /* The value is below 10**-BIGINT_MAX_EXP, smaller than the smallest
+       denormal of every floating-point format. */
+    dec->type = fpt_underflow;
   } else if (BIGINT_MAX_EXP < dec->precision + dec->exponent) {
     dec->precision = BIGINT_MAX_EXP - dec->exponent;
   } else if (BIGINT_MAX_EXP < dec->precision - dec->exponent) {
