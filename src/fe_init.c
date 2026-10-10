@@ -1602,6 +1602,10 @@ Install the keywords in the symbol table.
       enter_keyword((a_token_kind)tok_requires, "requires");
       enter_keyword((a_token_kind)tok_concept, "concept");
     }  /* if */
+    if (contracts_enabled) {
+      enter_keyword((a_token_kind)tok_contract_assert, "contract_assert");
+    }  /* if */
+    }  /* if */
   }  /* if */
   if (ms_extensions && microsoft_version >= 1300) {
     /* The __wchar_t keyword is entered even when wchar_t_is_keyword is FALSE.

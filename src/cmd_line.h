@@ -386,6 +386,8 @@ enum an_option_kind {
   optk_dump_command_options,
   optk_output_mode,
   optk_incognito,
+  optk_contracts,
+  optk_contract_evaluation_semantic,
   optk_last		/* Must be last. */
 };
 
@@ -2956,6 +2958,28 @@ enum an_output_mode {
 EXTERN_THREAD an_output_mode
 		output_mode;
 			/* The output mode. */
+
+EXTERN_THREAD a_boolean
+		contracts_enabled;
+			/* TRUE if contract assertions (P2900: the
+			   contract_assert statement and the pre and post
+			   function contract specifiers) are accepted. */
+
+enum a_contract_evaluation_semantic {
+  /* The evaluation semantics of a contract assertion (P2900). */
+  ces_ignore,		/* The predicate is not evaluated. */
+  ces_observe,		/* A violation calls the violation handler, and
+			   evaluation continues after it returns. */
+  ces_enforce,		/* A violation calls the violation handler, and
+			   the program is terminated if it returns. */
+  ces_quick_enforce,	/* A violation terminates the program without
+			   calling the violation handler. */
+};
+
+EXTERN_THREAD a_contract_evaluation_semantic
+		contract_evaluation_semantic;
+			/* The evaluation semantic of every contract
+			   assertion in the translation unit. */
 
 EXTERN_THREAD a_boolean
 		incognito;
