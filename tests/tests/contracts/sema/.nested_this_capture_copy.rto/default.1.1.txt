@@ -1,0 +1,16 @@
+eccp -DTEST_NUMBER=1 --c++26 --contract_evaluation_semantic=quick_enforce Test_name.c
+Test_name.c: In lambda function:
+Test_name.c:11:22: warning: implicit capture of 'this' via '[=]' is deprecated in C++20 [-Wdeprecated]
+   11 |   N *p = [&] { return [=] { return this; }(); }();
+      |                      ^
+Test_name.c:11:22: note: add explicit 'this' or '*this' capture
+Test_name.c: In lambda function:
+Test_name.c:12:10: warning: implicit capture of 'this' via '[=]' is deprecated in C++20 [-Wdeprecated]
+   12 |   int q = [=] { return [*this] { return m + 1; }(); }();
+      |          ^
+Test_name.c:12:10: note: add explicit 'this' or '*this' capture
+Test_name.c: In lambda function:
+Test_name.c:16:30: warning: implicit capture of 'this' via '[=]' is deprecated in C++20 [-Wdeprecated]
+   16 |   constexpr int f() const pre([=] { return [*this] { return m == 1; }(); }()) {
+      |                              ^
+Test_name.c:16:30: note: add explicit 'this' or '*this' capture

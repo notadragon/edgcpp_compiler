@@ -2006,11 +2006,13 @@ for an array initialization in GNU C++ mode).
       source_ipm.curr_field = src_field;
       source_ipm.type = src_field->type;
       if (is_reference_type(source_ipm.type) ||
-          (var != NULL && var->is_this_parameter &&
+          (((var != NULL && var->is_this_parameter) ||
+            (var == NULL && src_field->is_captured_this)) &&
            !source_desc->capture->capture_by_reference &&
            is_pointer_type(src_field->type))) {
         /* In the reference case, or for a capture of "*this" when the
-           enclosing lambda captured only "this", we need to add an
+           enclosing lambda captured only "this" (also where "this" has no
+           variable, as in a default member initializer), we need to add an
            additional indirection on top of the source description, but we
            don't have an appropriate modifier, so set a flag and add the
            indirection after converting to an expression. */

@@ -13453,7 +13453,11 @@ The selection is an lvalue selection if is_lvalue is TRUE.
       !lambda_capture->is_indirect_init_capture &&
       ((lambda_capture->captured.variable != NULL &&
         lambda_capture->captured.variable->is_this_parameter) ||
-       lambda_capture->is_param_ref_capture) &&
+       lambda_capture->is_param_ref_capture ||
+       (lambda_capture->captured.variable == NULL &&
+        lambda_capture->capture_info.source_closure_field != NULL &&
+        lambda_capture->capture_info.source_closure_field
+                                                    ->is_captured_this)) &&
       !lambda_capture->capture_by_reference) {
     /* This is a capture of "*this", so the entire object and not just
        the "this" pointer was captured.  Add an eok_address_of node on top

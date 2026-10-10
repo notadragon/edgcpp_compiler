@@ -43136,12 +43136,15 @@ fields of the closure object.  Return a pointer to the dynamic init entry.
         /* Other cases, including when dest_type is a reference (which happens
            when the capture is by reference). */
         check_assertion(!array_case);
-        if (var != NULL && var->is_this_parameter &&
+        if (((var != NULL && var->is_this_parameter) ||
+             (var == NULL && source_field != NULL &&
+              source_field->is_captured_this)) &&
             lcp->capture_by_reference && is_an_lvalue(&operand) &&
             !is_pointer_or_handle_type(operand.type)) {
           /* Capturing "this", but operand really represents "*this" (possible
-             if an enclosing lambda captured "*this").  Capture the address of
-             *this. */
+             if an enclosing lambda captured "*this", also where "this" has no
+             variable, as in a default member initializer).  Capture the
+             address of *this. */
           take_address_of_lvalue(&operand, &lcp->position);
         }  /* if */
         prep_initializer_operand(&operand,
