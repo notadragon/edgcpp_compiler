@@ -576,6 +576,10 @@ enter_system_specific_predeclared_symbols; see sys_predef.c.)
   }  /* if */
   /* Enter other predeclared symbols, as required by the implementation. */
   enter_system_specific_predeclared_symbols();
+  if (contracts_enabled) {
+    /* The runtime functions called by contract checks. */
+    enter_contract_check_routines();
+  }  /* if */
 #if MICROSOFT_EXTENSIONS_ALLOWED
   if (ms_extensions) {
     if (C_mode()) {

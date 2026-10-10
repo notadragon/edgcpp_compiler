@@ -1,3 +1,16 @@
+codegen/enforce.sft.cpp:rn:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: a violation under enforce terminates the program
+codegen/enforce.sft.cpp:rn:-DTEST_NUMBER=2:REQUIREMENTS NOT MET:contracts: a violation under enforce terminates the program
+codegen/enforce.sft.cpp:rn:-DTEST_NUMBER=3:REQUIREMENTS NOT MET:contracts: a violation under enforce terminates the program
+codegen/explicit_specialization_member.sft.cpp:rn:-DTEST_NUMBER=2 -DVIOLATE=1:REQUIREMENTS NOT MET:contracts: checks of the contract assertions of explicit specializations of member templates under quick_enforce
+codegen/explicit_specialization_member.sft.cpp:rn:-DTEST_NUMBER=3 -DVIOLATE=2:REQUIREMENTS NOT MET:contracts: checks of the contract assertions of explicit specializations of member templates under quick_enforce
+codegen/explicit_specialization_member.sft.cpp:rp:-DTEST_NUMBER=1 -DVIOLATE=0:REQUIREMENTS NOT MET:contracts: checks of the contract assertions of explicit specializations of member templates under quick_enforce
+codegen/handler.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: a user-defined violation handler sees the violation's properties
+codegen/members.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: checks of the contract assertions of member functions under observe
+codegen/observe.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: checks of preconditions, postconditions and contract_assert under observe
+codegen/pass_through.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: the C++-generating back end puts contract assertions out as written
+codegen/predicate_parentheses.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: cpfe-cp parenthesizes a comma or assignment predicate
+codegen/statement_expression_lambda.sft.cpp:rn:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: a statement expression in a lambda's precondition or postcondition is checked
+codegen/statement_expression_lambda.sft.cpp:rn:-DTEST_NUMBER=2:REQUIREMENTS NOT MET:contracts: a statement expression in a lambda's precondition or postcondition is checked
 constexpr/not_manifest.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: an evaluation that is not manifestly constant-evaluated and meets a violation is not constant
 constexpr/observe.sft.cpp:fp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: a violation in constant evaluation is a warning under observe, and the value stands
 constexpr/observe_gxx.sft.cpp:cp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: through edg-gxx an observed violation in constant evaluation is warned about by the front end and again by g++

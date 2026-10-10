@@ -10311,6 +10311,11 @@ loop body push a work item for it and continue in a later phase.
         goto done;
       }
     case stmk_try_block:
+      if (stmt->is_contract_check) {
+        /* The try block of a check generated for the C-generating back end
+           (see the stmk_if case). */
+        break;
+      }  /* if */
       { a_block_ptr  block;
         a_statement_ptr  try_stmt = stmt->variant.try_block->statement;
         block = try_stmt->variant.block.extra_info;
@@ -10402,6 +10407,12 @@ loop body push a work item for it and continue in a later phase.
         } else if (check != NULL && check->is_contract_check) {
           /* The predicate moved into the check that follows, whose
              condition is its negation. */
+          if (check->kind == (a_statement_kind)stmk_try_block) {
+            /* The check is in a try block, the predicate might throw (see
+               make_contract_try_block). */
+            check = check->variant.try_block->statement->
+                                                    variant.block.statements;
+          }  /* if */
           evaluate_contract_assertion(ips, csp, check->expr,
                                       /*negated=*/TRUE,
                                       frame != NULL ? frame->routine : NULL);

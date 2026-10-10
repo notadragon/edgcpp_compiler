@@ -5345,6 +5345,16 @@ EXTERN_THREAD a_symbol_ptr
                            builtin class template, used to deduplicate a
                            template type argument list. */
 
+EXTERN_THREAD a_routine_ptr
+                contract_trap_routine;
+                        /* The routine for the extern "C" function
+                           __builtin_trap, which the check of a contract
+                           assertion (P2900) with the quick_enforce semantic
+                           calls on a violation, in a mode where it is not a
+                           builtin function (when it is, the builtin is
+                           called instead); NULL if it has not been entered
+                           (see enter_contract_check_routines). */
+
 extern void reenter_block_scope_symbol(a_symbol_ptr  sym);
 
 extern a_base_class_ptr find_base_with_type(a_type_ptr        base_type,
@@ -6073,6 +6083,8 @@ extern a_symbol_ptr find_corresponding_operator_delete_sym(
 extern a_symbol_ptr make_predeclared_function_symbol(
                                               a_symbol_locator  *locator,
                                               a_type_ptr        rout_type);
+
+extern void enter_contract_check_routines(void);
 
 extern void make_global_operator_new_or_delete_symbol(
                                               an_opname_kind  opname,

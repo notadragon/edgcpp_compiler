@@ -1,0 +1,1 @@
+eccp -DTEST_NUMBER=1 --c++26 --contract_evaluation_semantic=quick_enforce -DARG=0 Test_name.c

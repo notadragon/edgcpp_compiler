@@ -1,0 +1,4 @@
+Matches for "", line 10: error: a statement expression in a precondition or postcondition is not yet supported":
+  <-----------------------------------------------------------------------------
+  ", line 10: error: a statement expression in a precondition or postcondition is not yet supported
+  ----------------------------------------------------------------------------->

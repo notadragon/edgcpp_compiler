@@ -23261,6 +23261,8 @@ matches is_lvalue.
 }  /* make_dummy_expr */
 
 
+static void substitute_contract_capture(a_lambda_capture_ptr  capture);
+
 static a_lambda_capture_ptr copy_lambda_capture(
                                              a_lambda_capture_ptr      capture,
                                              an_expr_copy_options_set  options,
@@ -23283,6 +23285,9 @@ Allocate a copy of a lambda capture and return a pointer to it.
     check_assertion(capture->is_init_capture);
     capture_copy->captured.initializer =
            i_copy_dynamic_init(capture->captured.initializer, options, cblock);
+  }  /* if */
+  if (options & CE_SUBSTITUTE_CONTRACT_NAMES) {
+    substitute_contract_capture(capture_copy);
   }  /* if */
   return capture_copy;
 }  /* copy_lambda_capture */
@@ -23460,6 +23465,288 @@ otherwise.  An init capture is not considered to be capturing something.
   }  /* for */
   return result;
 }  /* lambda_expr_captures_something */
+
+
+/*
+The substitutions made while copying the predicate of a function contract
+assertion (see copy_contract_predicate).
+*/
+STATIC_THREAD a_variable_ptr
+		contract_copy_params;
+			/* The parameter variables of the function
+			   definition. */
+STATIC_THREAD a_variable_ptr
+		contract_copy_result_name;
+			/* The result-name variable of the postcondition
+			   being copied, or NULL. */
+STATIC_THREAD a_variable_ptr
+		contract_copy_result_var;
+			/* The variable that replaces it. */
+STATIC_THREAD a_variable_ptr
+		contract_copy_param_proxies;
+			/* The parameter proxies of the specifier whose
+			   predicate is being copied (see
+			   a_contract_specifier::param_proxies). */
+
+
+static void forget_unqualified_member_name_reference(
+                                          a_name_reference_ptr     *p_nrp,
+                                          a_source_correspondence  *scp)
+/*
+*p_nrp is the name reference of a node just copied from the predicate of a
+function contract assertion, which refers to the entity with source
+correspondence scp.  If it records an unqualified reference to a class member
+(as written in the class, e.g., in the declaration of a friend), clear it, so
+that the C++-generating back end chooses the form of the name for the context
+of the check (e.g., the body of a friend defined outside the class, where the
+name must be qualified).
+*/
+{
+  a_name_reference_ptr  nrp = *p_nrp;
+
+  if (nrp != NULL && scp->is_class_member && nrp->qualifier == NULL &&
+      !nrp->is_global_qualified_name && !nrp->is_template_id &&
+      !nrp->is_super_qualified && !nrp->is_decltype_qualified &&
+      nrp->special_kind == (a_special_function_kind)sfk_none &&
+      nrp->variant.destructor_type == NULL) {
+    *p_nrp = NULL;
+  }  /* if */
+}  /* forget_unqualified_member_name_reference */
+
+
+a_variable_ptr param_variable_for_param_ref(a_variable_ptr    params,
+                                            an_expr_node_ptr  param_ref)
+/*
+params is the list of parameter variables of a function definition, and
+param_ref an enk_param_ref (levels_up zero, param_num nonzero) in the
+predicate of one of the function's contract assertions.  Return the
+variable it refers to, or NULL if there is none.  A variable is matched by
+the parameter number of its param-type entry (by its position if it has
+none): in an instance of a variadic template that number is the position of
+the parameter in the template, so the elements of an expanded function
+parameter pack share it, and a reference to an element selects it by its
+pack_element_num.
+*/
+{
+  a_variable_ptr  vp;
+  unsigned int    n, param_num = param_ref->variant.param_ref.param_num;
+  unsigned int    element_num = param_ref->variant.param_ref.pack_element_num;
+
+  for (n = 1, vp = params; vp != NULL; ++n, vp = vp->next) {
+    a_param_type_ptr  ptp = vp->variant.assoc_param_type;
+    if ((ptp != NULL ? ptp->param_num : n) == param_num) {
+      if (element_num <= 1) break;
+      --element_num;
+    }  /* if */
+  }  /* for */
+  return vp;
+}  /* param_variable_for_param_ref */
+
+
+static a_variable_ptr contract_copy_param_for_proxy(a_variable_ptr  vp)
+/*
+vp is a variable of the precondition or postcondition whose predicate is
+being copied (see copy_contract_predicate).  If it is one of its parameter
+proxies (see a_contract_specifier::param_proxies), return the parameter
+variable of the function definition that it stands for, marked referenced;
+if it is one of its captures (see set_contract_copy_captures), the variable
+that replaces it; otherwise return NULL.
+*/
+{
+  a_variable_ptr  proxy, param = NULL;
+  sizeof_t        n;
+
+  for (proxy = contract_copy_captures, n = 0; proxy != NULL;
+       proxy = proxy->next, n++) {
+    if (proxy == vp) return contract_copy_capture_vars[n];
+  }  /* for */
+  for (proxy = contract_copy_param_proxies; proxy != NULL;
+       proxy = proxy->next) {
+    if (proxy == vp) {
+      param = param_variable_for_param_ref(
+                          contract_copy_params,
+                          proxy->initializer.dynamic->variant.expression);
+      if (param != NULL) {
+        param->source_corresp.referenced = TRUE;
+      } else {
+        expect_error();
+      }  /* if */
+      break;
+    }  /* if */
+  }  /* for */
+  return param;
+}  /* contract_copy_param_for_proxy */
+
+
+static an_expr_node_ptr substitute_contract_names(an_expr_node_ptr  expr)
+/*
+expr is a node just copied from the predicate of a function contract
+assertion.  If it refers to a parameter of the function (an enk_param_ref
+outside any nested parameter list, including "this") or to the result name
+of the postcondition, make it refer instead to the corresponding variable in
+the function definition: the parameter variable, or the variable holding the
+returned value.  The type and value category of the node are unchanged.
+An unqualified reference to a class member loses its recorded form (see
+forget_unqualified_member_name_reference).  Return the node to use in place
+of expr: expr itself, or for a "this" whose type in the predicate (a pointer
+to const, see contract_predicate_this_type) is not that of the definition's
+"this" parameter, a cast of that parameter to it.
+*/
+{
+  if (expr->kind == (an_expr_node_kind)enk_variable) {
+    forget_unqualified_member_name_reference(
+                                       &expr->variant.variable.name_reference,
+                                       &node_variable(expr)->source_corresp);
+  } else if (expr->kind == (an_expr_node_kind)enk_routine &&
+             node_routine(expr) != NULL) {
+    forget_unqualified_member_name_reference(
+                                        &expr->variant.routine.name_reference,
+                                        &node_routine(expr)->source_corresp);
+  } else if (expr->kind == (an_expr_node_kind)enk_constant) {
+    /* A constant whose backing expression names a class member (e.g., a
+       static const data member) is printed from that expression: use a copy
+       without it, which is printed as its value. */
+    a_constant_ptr    con = node_constant(expr);
+    an_expr_node_ptr  backing_expr = con->expr;
+    if (backing_expr != NULL &&
+        backing_expr->kind == (an_expr_node_kind)enk_variable &&
+        node_variable(backing_expr)->source_corresp.is_class_member) {
+      a_constant_ptr  copy = alloc_constant(con->kind);
+      copy_constant(con, copy);
+      copy->expr = NULL;
+      node_constant(expr) = copy;
+    }  /* if */
+  }  /* if */
+  if (expr->kind == (an_expr_node_kind)enk_param_ref) {
+    unsigned int  param_num = expr->variant.param_ref.param_num;
+    if (expr->variant.param_ref.levels_up == 0 && param_num != 0) {
+      a_variable_ptr  vp = param_variable_for_param_ref(contract_copy_params,
+                                                        expr);
+      if (vp != NULL) {
+        expr->kind = (an_expr_node_kind)enk_variable;
+        node_variable(expr) = vp;
+        expr->variant.variable.name_reference = NULL;
+        /* The parameter may be referenced only here (e.g., in an instance
+           of a template, whose predicate names its parameters with
+           enk_param_ref nodes); the inliner remaps only parameters marked
+           referenced. */
+        vp->source_corresp.referenced = TRUE;
+      } else {
+        expect_error();
+      }  /* if */
+    } else if (expr->variant.param_ref.levels_up == 0 &&
+               innermost_function_scope != NULL &&
+               innermost_function_scope->variant.routine.this_param_variable
+                                                                    != NULL) {
+      /* "this" (a prvalue): the "this" parameter of the definition. */
+      a_variable_ptr    this_var =
+               innermost_function_scope->variant.routine.this_param_variable;
+      an_expr_node_ptr  var_node = var_rvalue_expr(this_var);
+      this_var->source_corresp.referenced = TRUE;
+      if (!il_identical_types(var_node->type, expr->type)) {
+        /* A predicate scanned where there was no "this" variable (that of
+           a declaration other than the definition) has the "this" type of
+           the predicate in its enk_param_ref node. */
+        return add_cast(var_node, expr->type);
+      }  /* if */
+      expr->kind = (an_expr_node_kind)enk_variable;
+      node_variable(expr) = this_var;
+      expr->variant.variable.name_reference = NULL;
+    }  /* if */
+  } else if (expr->kind == (an_expr_node_kind)enk_variable &&
+             contract_copy_result_name != NULL &&
+             node_variable(expr) == contract_copy_result_name) {
+    node_variable(expr) = contract_copy_result_var;
+  } else if (expr->kind == (an_expr_node_kind)enk_variable &&
+             node_variable(expr)->is_contract_specifier_var) {
+    /* A parameter proxy (e.g., in the initialization of the closure object
+       of a lambda that captures it): The parameter variable. */
+    a_variable_ptr  param = contract_copy_param_for_proxy(node_variable(expr));
+    if (param != NULL) {
+      node_variable(expr) = param;
+      expr->variant.variable.name_reference = NULL;
+    }  /* if */
+  }  /* if */
+  return expr;
+}  /* substitute_contract_names */
+
+
+static void substitute_contract_capture(a_lambda_capture_ptr  capture)
+/*
+capture is a capture just copied from a lambda in the predicate of a
+function contract assertion (see copy_contract_predicate), by a lambda
+directly in the predicate (not in the body of another lambda).  If it
+captures a parameter proxy (see a_contract_specifier::param_proxies), the
+result name of the postcondition, or "this" (a capture with no variable, see
+a_lambda_capture::is_param_ref_capture), make it capture instead the
+corresponding variable of the function definition, as substitute_contract_names
+does for the predicate's own references.
+*/
+{
+  a_variable_ptr  vp;
+
+  if (capture->is_init_capture || capture->is_indirect_init_capture ||
+      capture->capture_info.source_closure_field != NULL) {
+    return;
+  }  /* if */
+  vp = capture->captured.variable;
+  if (capture->is_param_ref_capture) {
+    if (innermost_function_scope != NULL &&
+        innermost_function_scope->variant.routine.this_param_variable
+                                                                   != NULL) {
+      vp = innermost_function_scope->variant.routine.this_param_variable;
+      vp->source_corresp.referenced = TRUE;
+      capture->captured.variable = vp;
+      capture->is_param_ref_capture = FALSE;
+    } else {
+      expect_error();
+    }  /* if */
+  } else if (vp != NULL && vp->is_contract_specifier_var) {
+    if (contract_copy_result_name != NULL &&
+        vp == contract_copy_result_name) {
+      capture->captured.variable = contract_copy_result_var;
+    } else {
+      a_variable_ptr  param = contract_copy_param_for_proxy(vp);
+      if (param != NULL) capture->captured.variable = param;
+    }  /* if */
+  }  /* if */
+}  /* substitute_contract_capture */
+
+
+an_expr_node_ptr copy_contract_predicate(an_expr_node_ptr  predicate,
+                                         a_variable_ptr    params,
+                                         a_variable_ptr    param_proxies,
+                                         a_variable_ptr    result_name,
+                                         a_variable_ptr    result_var)
+/*
+Copy the predicate of a contract assertion into the body of a function, for a
+check of the assertion there.  params is the list of parameter variables of
+the function definition, which replace the parameter references of a
+precondition or postcondition, and its parameter proxies param_proxies (see
+a_contract_specifier::param_proxies), which lambdas in it capture; if
+result_name is non-NULL, it is the result-name variable of a postcondition,
+and is replaced by result_var.  As
+for a default argument (see copy_default_arg_expr), the top-level object
+lifetime of the predicate is not copied: The copies of its temporaries are
+bound into the current object lifetime.
+*/
+{
+  an_expr_node_ptr  copy;
+
+  if (predicate->kind == (an_expr_node_kind)enk_object_lifetime) {
+    predicate = predicate->variant.object_lifetime.expr;
+  }  /* if */
+  contract_copy_params = params;
+  contract_copy_param_proxies = param_proxies;
+  contract_copy_result_name = result_name;
+  contract_copy_result_var = result_var;
+  copy = copy_expr_tree(predicate, CE_SUBSTITUTE_CONTRACT_NAMES);
+  contract_copy_params = NULL;
+  contract_copy_param_proxies = NULL;
+  contract_copy_result_name = NULL;
+  contract_copy_result_var = NULL;
+  return copy;
+}  /* copy_contract_predicate */
 
 
 static an_expr_node_ptr i_copy_expr_tree(an_expr_node_ptr          expr,
@@ -23963,6 +24250,9 @@ copied again.
     adjust_copied_expression_for_inlining(expr_copy, &cblock->inlining_failed);
   }  /* if */
 #endif /* MINIMAL_INLINING */
+  if (options & CE_SUBSTITUTE_CONTRACT_NAMES) {
+    expr_copy = substitute_contract_names(expr_copy);
+  }  /* if */
   if (options & CE_COPYING_EVALUATED_DEFAULT_ARG_EXPR) {
     do_instantiations_for_copied_default_arg_expr(expr_copy);
   }  /* if */

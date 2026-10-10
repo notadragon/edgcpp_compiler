@@ -2307,6 +2307,10 @@ typedef int an_expr_copy_options_set;
 #define CE_CONST_EVAL_SUB_EXPRESSION 0x40000
 			/* TRUE if this copy operation is copying an operand of
 			   an expression in an immediate evaluation context. */
+#define CE_SUBSTITUTE_CONTRACT_NAMES 0x80000
+			/* TRUE if this copy operation is copying the
+			   predicate of a function contract assertion into the
+			   function body (see copy_contract_predicate). */
 
 a_constant_ptr copy_constant_full(a_constant_ptr           old_constant,
                                   a_constant_ptr           new_constant,
@@ -3188,6 +3192,17 @@ extern an_expr_node_ptr copy_node(an_expr_node_ptr expr);
 extern an_expr_node_ptr copy_list_of_expr_trees(
                                             an_expr_node_ptr         expr_list,
                                             an_expr_copy_options_set options);
+
+extern a_variable_ptr param_variable_for_param_ref(
+                                         a_variable_ptr    params,
+                                         an_expr_node_ptr  param_ref);
+
+extern an_expr_node_ptr copy_contract_predicate(
+                                         an_expr_node_ptr  predicate,
+                                         a_variable_ptr    params,
+                                         a_variable_ptr    param_proxies,
+                                         a_variable_ptr    result_name,
+                                         a_variable_ptr    result_var);
 
 extern an_expr_node_ptr copy_expr_tree(an_expr_node_ptr         expr,
                                        an_expr_copy_options_set options);

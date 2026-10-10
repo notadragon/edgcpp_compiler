@@ -3241,6 +3241,9 @@ Display the indicated variable.
   if (ptr->is_in_class_specialization) {
     disp_boolean("is_in_class_specialization", TRUE);
   }  /* if */
+  if (ptr->is_contract_result) {
+    disp_boolean("is_contract_result", TRUE);
+  }  /* if */
   if (ptr->is_contract_specifier_var) {
     disp_boolean("is_contract_specifier_var", TRUE);
   }  /* if */
@@ -7123,6 +7126,21 @@ do_assoc_type:
       if (ptr->variant.routine.return_value_variable != NULL) {
         disp_ptr("return_value_variable",
                  (char *)ptr->variant.routine.return_value_variable,
+                 iek_variable);
+      }  /* if */
+      if (ptr->variant.routine.contract_prologue != NULL) {
+        disp_ptr("contract_prologue",
+                 (char *)ptr->variant.routine.contract_prologue,
+                 iek_statement);
+      }  /* if */
+      if (ptr->variant.routine.contract_epilogue != NULL) {
+        disp_ptr("contract_epilogue",
+                 (char *)ptr->variant.routine.contract_epilogue,
+                 iek_statement);
+      }  /* if */
+      if (ptr->variant.routine.contract_result_variable != NULL) {
+        disp_ptr("contract_result_variable",
+                 (char *)ptr->variant.routine.contract_result_variable,
                  iek_variable);
       }  /* if */
       break;

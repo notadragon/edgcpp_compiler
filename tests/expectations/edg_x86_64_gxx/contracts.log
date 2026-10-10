@@ -1,3 +1,25 @@
+codegen/ctor_dtor_order.sft.cpp:rn:-DTEST_NUMBER=1 -DVIOLATE=1:REQUIREMENTS NOT MET:contracts: a constructor's preconditions precede its mem-initializers, a destructor's postconditions follow its member destructions
+codegen/ctor_dtor_order.sft.cpp:rn:-DTEST_NUMBER=2 -DVIOLATE=2:REQUIREMENTS NOT MET:contracts: a constructor's preconditions precede its mem-initializers, a destructor's postconditions follow its member destructions
+codegen/explicit_specialization_in_class.sft.cpp:rn:-DTEST_NUMBER=2 -DVIOLATE=1:REQUIREMENTS NOT MET:contracts: checks of the contract assertions of explicit specializations declared in a class under quick_enforce
+codegen/explicit_specialization_in_class.sft.cpp:rn:-DTEST_NUMBER=3 -DVIOLATE=2:REQUIREMENTS NOT MET:contracts: checks of the contract assertions of explicit specializations declared in a class under quick_enforce
+codegen/explicit_specialization_in_class.sft.cpp:rp:-DTEST_NUMBER=1 -DVIOLATE=0:REQUIREMENTS NOT MET:contracts: checks of the contract assertions of explicit specializations declared in a class under quick_enforce
+codegen/generic_lambda_own_contracts.sft.cpp:rn:-DTEST_NUMBER=2 -DVIOLATE=1:REQUIREMENTS NOT MET:contracts: a generic lambda's own preconditions and postconditions name its captures
+codegen/generic_lambda_own_contracts.sft.cpp:rn:-DTEST_NUMBER=3 -DVIOLATE=2:REQUIREMENTS NOT MET:contracts: a generic lambda's own preconditions and postconditions name its captures
+codegen/generic_lambda_own_contracts.sft.cpp:rn:-DTEST_NUMBER=4 -DVIOLATE=3:REQUIREMENTS NOT MET:contracts: a generic lambda's own preconditions and postconditions name its captures
+codegen/generic_lambda_own_contracts.sft.cpp:rn:-DTEST_NUMBER=5 -DVIOLATE=4:REQUIREMENTS NOT MET:contracts: a generic lambda's own preconditions and postconditions name its captures
+codegen/generic_lambda_own_contracts.sft.cpp:rp:-DTEST_NUMBER=1 -DVIOLATE=0:REQUIREMENTS NOT MET:contracts: a generic lambda's own preconditions and postconditions name its captures
+codegen/il_display.sft.cpp:fp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: the checks of contract assertions in the IL
+codegen/postcondition_returns.sft.cpp:rn:-DTEST_NUMBER=2 -DARG=1:REQUIREMENTS NOT MET:contracts: a postcondition violated at one of several returns
+codegen/postcondition_returns.sft.cpp:rn:-DTEST_NUMBER=3 -DARG=2:REQUIREMENTS NOT MET:contracts: a postcondition violated at one of several returns
+codegen/postcondition_returns.sft.cpp:rp:-DTEST_NUMBER=1 -DARG=0:REQUIREMENTS NOT MET:contracts: a postcondition violated at one of several returns
+codegen/result_object.sft.cpp:rn:-DTEST_NUMBER=2 -DBAD=1:REQUIREMENTS NOT MET:contracts: postconditions see the result object itself, after the locals are destroyed
+codegen/result_object.sft.cpp:rn:-DTEST_NUMBER=3 -DBAD=2:REQUIREMENTS NOT MET:contracts: postconditions see the result object itself, after the locals are destroyed
+codegen/result_object.sft.cpp:rn:-DTEST_NUMBER=4 -DBAD=3:REQUIREMENTS NOT MET:contracts: postconditions see the result object itself, after the locals are destroyed
+codegen/result_object.sft.cpp:rn:-DTEST_NUMBER=5 -DBAD=4:REQUIREMENTS NOT MET:contracts: postconditions see the result object itself, after the locals are destroyed
+codegen/result_object.sft.cpp:rp:-DTEST_NUMBER=1 -DBAD=0:REQUIREMENTS NOT MET:contracts: postconditions see the result object itself, after the locals are destroyed
+codegen/statement_expression_ignored.sft.cpp:fp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: a contract_assert whose predicate is a statement expression, under ignore, keeps its predicate in the lowered IL (EDG-85)
+codegen/statement_expression_unsupported.sft.cpp:fn:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: a statement expression in a lambda's precondition is not yet supported by the C-generating back end
+constexpr/explicit_specialization_in_class.sft.cpp:fn:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: an explicit specialization declared in a class evaluates its own contract assertions, naming later members, in constant evaluation
 parse/il_display.sft.cpp:fp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: contract specifiers and contract_assert in the IL
 parse/semantic_option_c_gen_be.sft.cpp:fc:-DTEST_NUMBER=1 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:contracts: the C-generating back end supports only ignore and quick_enforce
 parse/semantic_option_c_gen_be.sft.cpp:fc:-DTEST_NUMBER=2 --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:contracts: the C-generating back end supports only ignore and quick_enforce

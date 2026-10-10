@@ -11745,6 +11745,15 @@ typedef struct a_variable {
 			   and the specialization was declared within the
 			   enclosing class. */
   a_bit_field
+		is_contract_result:1;
+			/* TRUE if this is the compiler-generated variable
+			   that holds the value returned by a function, or
+			   refers to the object returned, while its
+			   postconditions (P2900) are checked.  It has no
+			   declaration in the source; its stmk_init statement
+			   stands for one, or, for a scope's
+			   contract_result_variable, IL lowering sets it. */
+  a_bit_field
 		is_contract_specifier_var:1;
 			/* TRUE if this variable belongs to a precondition or
 			   postcondition specifier (P2900) and is on no
@@ -18593,6 +18602,30 @@ typedef struct a_scope {
 			   local variable, namely the variable pointed to by
 			   this field.  Note that the variable is also on the
 			   local variables list of this scope. */
+      a_statement_ptr
+		contract_prologue;
+			/* In a configuration where the front end generates
+			   the checks of contract assertions, the checks of
+			   the routine's preconditions (P2900), a list of
+			   statements not yet in the body, which IL lowering
+			   puts at the start of the lowered routine (before a
+			   constructor's mem-initializers); NULL if there are
+			   none. */
+      a_statement_ptr
+		contract_epilogue;
+			/* Likewise the checks of its postconditions, which IL
+			   lowering puts in an epilogue that every return of
+			   the lowered routine branches to (after a
+			   destructor's member and base destructions); NULL if
+			   there are none. */
+      a_variable_ptr
+		contract_result_variable;
+			/* The variable that the checks in contract_epilogue
+			   name as the result of the routine, which lowering
+			   sets at each return: of the return type, or for a
+			   reference or class type, a reference to the result
+			   object; NULL if there is none.  It is on the local
+			   variables list of this scope. */
     } routine;
   } variant;
   a_statement_ptr

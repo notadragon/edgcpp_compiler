@@ -1311,6 +1311,23 @@ in the correct place.
      represents the actual function body. */
   check_assertion(stmt != NULL && stmt->next != NULL &&
                   stmt->kind == (a_statement_kind)stmk_coroutine);
+  if (sp->variant.routine.contract_prologue != NULL) {
+    /* The checks of the preconditions, which the front end made for IL
+       lowering before the function was known to be a coroutine (see
+       prepare_contract_checks_for_lowering), begin the body instead. */
+    a_statement_ptr  check, *p_next = NULL;
+    for (check = sp->variant.routine.contract_prologue;
+         check != NULL;
+         check = check->next) {
+      check->parent = stmt->parent;
+      p_next = &check->next;
+    }  /* for */
+    *p_next = stmt->next;
+    stmt->next = sp->variant.routine.contract_prologue;
+    sp->variant.routine.contract_prologue = NULL;
+  }  /* if */
+  /* The postconditions of a coroutine are not checked yet (EDG-84): IL
+     lowering leaves their checks unused (see lower_scope). */
   func_body = stmt->next;
   stmt->next = NULL;
   cr_desc = stmt->variant.coroutine.descr;

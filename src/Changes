@@ -130,6 +130,48 @@ is complete, so they can name members declared after them:
 
 
 9/30/26  []
+Contracts (P2900): checks of contract assertions
+
+Contract assertions on functions and lambdas, and contract_assert
+statements, are now checked.  For the C-generating back end the front end
+generates the checks as ordinary code (an "if" testing the predicate) in the
+function definition -- preconditions as the function is entered,
+postconditions as it returns (including falling off the end), and a
+contract_assert where it appears -- which that back end emits as it would any
+other statement.  It supports two evaluation semantics (see
+--contract_evaluation_semantic): ignore, for which no check is generated and
+the predicate is not evaluated, and quick_enforce, for which a violation
+calls __builtin_trap.  For example, with quick_enforce
+
+  int f(const int x) pre(x > 0) post(r: r > x) { return x + 1; }
+
+is generated as
+
+  int f(const int x) {
+    int __T1;
+    if (!(x > 0)) __builtin_trap();
+    { __T1 = x + 1; goto L; }
+  L:
+    if (!(__T1 > x)) __builtin_trap();
+    return __T1;
+  }
+
+Each return branches to the postconditions' checks, which follow the
+destruction of the function's local variables and name the object returned
+(through a pointer to it, for a reference or class return type).  A
+constructor's preconditions are checked before its bases and members are
+initialized, and a destructor's postconditions after they are destroyed.  A
+statement expression in a precondition or postcondition is not yet supported
+(an error is issued).
+
+The C++-generating back end instead puts contract assertions out as written
+-- the pre and post specifiers on the first declaration of a function or
+lambda, and contract_assert statements where they appear -- and leaves their
+checks to the compiler of its output, as it does templates and coroutines.
+Any other back end receives them in the IL.  (CONTRACT_CHECKS_IN_FRONT_END
+in host_envir.h selects whether the front end generates checks.)
+
+9/30/26  []
 Contracts (P2900): options, contract_assert, pre and post
 
 The front end now parses contract assertions as specified by C++26 (WG21
