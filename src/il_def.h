@@ -12301,6 +12301,10 @@ typedef struct a_contract_specifier {
 			   its tokens, on one line), passed to the violation
 			   handler as the comment of a violation.  NULL if
 			   the predicate was not scanned. */
+  a_const_char	*message;
+			/* The text of the diagnostic message following the
+			   predicate (P3099), passed to the violation handler
+			   as its message; NULL if there is none. */
   a_bit_field	local_predicate:1;
 			/* TRUE if the specifier is in file-scope memory but
 			   its predicate is in a function's memory region, as

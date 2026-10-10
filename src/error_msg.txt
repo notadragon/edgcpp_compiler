@@ -3723,6 +3723,10 @@ ec_cl_contract_configuration_error;;"invalid contract configuration (%s): %s2"
 ec_cl_contract_configuration_warning;contract_configuration;"contract configuration (%s): %s2"
 ec_cl_contract_configuration_unreadable;;"cannot read contract configuration file: %s"
 ec_cl_contract_configuration_without_contracts;;"contract configuration options have no effect when contracts are not enabled"
+ec_contract_message_not_string_literal;;"a diagnostic message that is not a string literal is not yet supported"
+ec_contract_message_encoding_prefix;;"a diagnostic message cannot have an encoding prefix"
+ec_contract_redecl_message_mismatch;;"mismatched contract diagnostic message in declaration (previous contract specifier declared %p)"
+ec_contract_predicate_false_in_constexpr_message;;"contract predicate is false in constant expression (%s)"
 ec_contract_result_name_shadows_init_capture;;"the result name of a postcondition cannot have the same name as an init-capture of the lambda"
  ###############################################################################
 

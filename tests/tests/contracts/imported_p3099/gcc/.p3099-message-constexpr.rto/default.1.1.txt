@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts_p3099 Test_name.c
+"Test_name.c", line 10: error: contract predicate is false in constant expression (must be positive)
+  constexpr int f(int x) pre(x > 0, "must be positive") {  // { dg-error "contract predicate is false in constant expression \\(must be positive\\)" }
+                         ^
+
+"Test_name.c", line 14: warning: variable "y" was declared but never referenced
+  constexpr int y = f(-1);
+                ^
+
+1 error detected in the compilation of "Test_name.c".

@@ -536,6 +536,31 @@ imported_p3097/gcc/pr124486-accepted.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contra
 imported_p3097/gcc/pure-virtual-dependent-predicate-codegen.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3097:REQUIREMENTS NOT MET:imported from gcc:pure-virtual-dependent-predicate-codegen.C
 imported_p3097/gcc/pure-virtual-interface-contract-run.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3097 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:pure-virtual-interface-contract-run.C
 imported_p3097/gcc/virtual-wrapper-nodiscard.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3097:REQUIREMENTS NOT MET:imported from gcc:virtual-wrapper-nodiscard.C
+imported_p3099/clang/Runnable/p3099-message-class.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3099 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:Runnable/p3099-message-class.cpp
+imported_p3099/clang/Runnable/p3099-message-contract-assert.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3099 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:Runnable/p3099-message-contract-assert.cpp
+imported_p3099/clang/Runnable/p3099-message-empty.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3099 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:Runnable/p3099-message-empty.cpp
+imported_p3099/clang/Runnable/p3099-message-escapes.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3099 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:Runnable/p3099-message-escapes.cpp
+imported_p3099/clang/Runnable/p3099-message-nullptr.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3099 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:Runnable/p3099-message-nullptr.cpp
+imported_p3099/clang/Runnable/p3099-message-p3290-null.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3099 --contracts_p3290:REQUIREMENTS NOT MET:imported from clang:Runnable/p3099-message-p3290-null.cpp
+imported_p3099/clang/Runnable/p3099-message-template.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3099 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:Runnable/p3099-message-template.cpp
+imported_p3099/clang/p3099-message-basic.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3099:REQUIREMENTS NOT MET:imported from clang:p3099-message-basic.cpp
+imported_p3099/clang/p3099-message-ftm.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3099:REQUIREMENTS NOT MET:imported from clang:p3099-message-ftm.cpp
+imported_p3099/clang/p3099-message-redecl.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3099:REQUIREMENTS NOT MET:imported from clang:p3099-message-redecl.cpp
+imported_p3099/clang/p3099-static-assert-message.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3099:REQUIREMENTS NOT MET:imported from clang:p3099-static-assert-message.cpp
+imported_p3099/gcc/p3099-message-basic.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts_p3099 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:p3099-message-basic.C
+imported_p3099/gcc/p3099-message-class.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts_p3099 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:p3099-message-class.C
+imported_p3099/gcc/p3099-message-constexpr.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts_p3099:REQUIREMENTS NOT MET:imported from gcc:p3099-message-constexpr.C
+imported_p3099/gcc/p3099-message-contract-assert.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts_p3099 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:p3099-message-contract-assert.C
+imported_p3099/gcc/p3099-message-empty.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts_p3099 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:p3099-message-empty.C
+imported_p3099/gcc/p3099-message-escapes.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts_p3099 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:p3099-message-escapes.C
+imported_p3099/gcc/p3099-message-ftm.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts_p3099:REQUIREMENTS NOT MET:imported from gcc:p3099-message-ftm.C
+imported_p3099/gcc/p3099-message-nullptr.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts_p3099 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:p3099-message-nullptr.C
+imported_p3099/gcc/p3099-message-observe-constexpr.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3099 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:p3099-message-observe-constexpr.C
+imported_p3099/gcc/p3099-message-p3290-null.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts_p3099 --contracts_p3290 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:p3099-message-p3290-null.C
+imported_p3099/gcc/p3099-message-redecl-empty.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3099:REQUIREMENTS NOT MET:imported from gcc:p3099-message-redecl-empty.C
+imported_p3099/gcc/p3099-message-redecl.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts_p3099:REQUIREMENTS NOT MET:imported from gcc:p3099-message-redecl.C
+imported_p3099/gcc/p3099-message-template.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts_p3099 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:p3099-message-template.C
+imported_p3099/gcc/p3099-static-assert-message.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts_p3099:REQUIREMENTS NOT MET:imported from gcc:p3099-static-assert-message.C
 imported_p3290/clang/Runnable/p3290-api-location.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3290:REQUIREMENTS NOT MET:imported from clang:Runnable/p3290-api-location.cpp
 imported_p3290/clang/Runnable/p3290-api-nothrow.sft.cpp:ra:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3290:REQUIREMENTS NOT MET:imported from clang:Runnable/p3290-api-nothrow.cpp
 imported_p3290/clang/Runnable/p3290-api-nullptr.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3290:REQUIREMENTS NOT MET:imported from clang:Runnable/p3290-api-nullptr.cpp
@@ -638,6 +663,7 @@ imported_p3850/gcc/contract-friend-deferred-mismatch.sft.cpp:fn:-DTEST_NUMBER=1 
 imported_p3850/gcc/contract-reentrancy-p3850.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts_p3850:REQUIREMENTS NOT MET:imported from gcc:contract-reentrancy-p3850.C
 imported_p3850/gcc/postcondition-throw-escapes-try.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts_p3850 --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:postcondition-throw-escapes-try.C
 imported_p3850/gcc/postcondition-throw-noexcept-terminate.sft.cpp:ra:-DTEST_NUMBER=1 --c++26 --contracts_p3850 --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:postcondition-throw-noexcept-terminate.C
+p3099/handler_message.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: P3099 through edg-gxx: the violation handler gets the message (nullptr without one), re-escaped faithfully
 p3290/assert.sft.cpp:rn:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: with P3290, assert from <cassert> reports a violation to the contract violation handler, then aborts
 p3290/macro.sft.cpp:fp:-DTEST_NUMBER=1 --c++23 --contracts_p3850:REQUIREMENTS NOT MET:contracts: with contracts, --contracts_p3290 (or --contracts_p3850, unless --[no_]contracts_p3290 is given) predefines our GCC's P3290 macro, and enables contracts
 p3290/macro.sft.cpp:fp:-DTEST_NUMBER=2 --contracts_p3850 --no_contracts_p3290:REQUIREMENTS NOT MET:contracts: with contracts, --contracts_p3290 (or --contracts_p3850, unless --[no_]contracts_p3290 is given) predefines our GCC's P3290 macro, and enables contracts

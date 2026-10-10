@@ -1,0 +1,16 @@
+Matches for "line 9: error: contract predicate is false in constant expression \(x must be positive\)":
+  <-----------------------------------------------------------------------------
+  line 9: error: contract predicate is false in constant expression (x must be positive)
+  ----------------------------------------------------------------------------->
+Matches for "line 11: error: contract predicate is false in constant expression \(r: "quoted" \\back\)":
+  <-----------------------------------------------------------------------------
+  line 11: error: contract predicate is false in constant expression (r: "quoted" \back)
+  ----------------------------------------------------------------------------->
+Matches for "line 13: error: contract predicate is false in constant expression \(\)":
+  <-----------------------------------------------------------------------------
+  line 13: error: contract predicate is false in constant expression ()
+  ----------------------------------------------------------------------------->
+Matches for "line 14: error: contract predicate is false in constant expression$":
+  <-----------------------------------------------------------------------------
+  line 14: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
