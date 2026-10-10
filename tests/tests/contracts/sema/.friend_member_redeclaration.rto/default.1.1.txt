@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
+"Test_name.c", line 24: error: declaration adds contracts to "void Inner::fn5(int)"
+    friend void Inner::fn5(int n) pre(n > 0);   // Error, adds contracts
+                                  ^
+
+"Test_name.c", line 22: error: mismatched contract condition in declaration (previous contract specifier declared at line 13)
+    friend void Inner::fn(int n) pre(n < 0);    // Error, condition
+                                 ^
+
+"Test_name.c", line 23: error: identifier "nope" is undefined
+    friend void Inner::fn2(int n) pre(n > 0 && nope > 1);   // Error
+                                               ^
+
+"Test_name.c", line 34: error: mismatched contract condition in declaration (previous contract specifier declared at line 31)
+    friend void In::fn2(int n) pre(n > 1);            // Error, condition
+                               ^
+
+4 errors detected in the compilation of "Test_name.c".

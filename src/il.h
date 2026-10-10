@@ -2353,6 +2353,14 @@ typedef int a_compare_constants_options_set;
 			/* TRUE if the expressions were built up in a
 			   template-dependent context, which makes some
 			   attributes (like value category) unreliable. */
+#define CC_AS_WRITTEN 0x100
+			/* TRUE if the expressions must be the same as written
+			   (e.g., the predicates of the function contract
+			   specifiers of two declarations of a function, P2900
+			   [dcl.contract.func]): a constant with a backing
+			   expression (e.g., "1 - 1", or a named constant)
+			   matches only a constant with an equivalent backing
+			   expression, not one with the same value. */
 
 extern a_boolean compare_constants(a_constant_ptr                   cp1,
                                    a_constant_ptr                   cp2,
@@ -4304,6 +4312,19 @@ Return the trailing requires-clause associated with rp, if any.
 
 extern a_boolean equiv_requires_clauses(a_requires_clause_ptr  rcp1,
                                         a_requires_clause_ptr  rcp2);
+extern a_boolean equiv_contract_predicates(an_expr_node_ptr  pred1,
+                                           a_variable_ptr    result_name1,
+                                           an_expr_node_ptr  pred2,
+                                           a_variable_ptr    result_name2);
+extern a_boolean equiv_postcondition_captures(a_variable_ptr  captures1,
+                                              a_variable_ptr  captures2);
+extern a_boolean equiv_postcondition_predicates(
+                                         an_expr_node_ptr  pred1,
+                                         a_variable_ptr    result_name1,
+                                         a_variable_ptr    captures1,
+                                         an_expr_node_ptr  pred2,
+                                         a_variable_ptr    result_name2,
+                                         a_variable_ptr    captures2);
 
 extern void rebuild_structures_on_il_read(void);
 

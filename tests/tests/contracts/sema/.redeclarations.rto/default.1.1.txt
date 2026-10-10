@@ -1,0 +1,54 @@
+fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
+"Test_name.c", line 9: error: declaration adds contracts to "int f2(int)"
+  int f2(int x) pre(x > 0);                     // Error, adds contracts
+                ^
+
+"Test_name.c", line 11: error: declaration has a different number of contracts than the previous declaration of "int f3(int)"
+  int f3(int x) pre(x > 0) pre(x < 9);          // Error, number
+                ^
+
+"Test_name.c", line 13: error: mismatched contract specifier in declaration (previous contract specifier declared at line 12)
+  int f4(const int x) post(x > 0);              // Error, kind
+                      ^
+
+"Test_name.c", line 15: error: mismatched contract condition in declaration (previous contract specifier declared at line 14)
+  int f5(int x) pre(x >= 1);                    // Error, condition
+                ^
+
+"Test_name.c", line 19: error: identifier "r" is undefined
+  int f7(int x) post(r > 0);                    // Errors, result name
+                     ^
+
+"Test_name.c", line 19: error: mismatched postcondition result name in declaration (previous postcondition declared at line 18)
+  int f7(int x) post(r > 0);                    // Errors, result name
+                ^
+
+"Test_name.c", line 25: error: identifier "undeclared" is undefined
+  void f10() pre(undeclared) { }                // Error, only the predicate
+                 ^
+
+"Test_name.c", line 36: error: mismatched contract condition in declaration (previous contract specifier declared at line 32)
+  int S::g(int x) pre(m > 0) { return x; }      // Error, condition
+                  ^
+
+"Test_name.c", line 37: error: declaration adds contracts to "int S::h(int)"
+  int S::h(int x) pre(x > 0) { return x; }      // Error, adds contracts
+                  ^
+
+"Test_name.c", line 42: error: mismatched contract condition in declaration (previous contract specifier declared at line 41)
+  int ff(int x) pre(x > 1);                     // Error, condition
+                ^
+
+"Test_name.c", line 46: error: mismatched contract condition in declaration (previous contract specifier declared at line 45)
+  struct H { friend int hh(int x) pre(x > 2); };    // Error, condition
+                                  ^
+
+"Test_name.c", line 52: error: mismatched contract condition in declaration (previous contract specifier declared at line 51)
+  template <class T> T t2(T x) pre(x > 1) { return x; }          // Error
+                               ^
+
+"Test_name.c", line 58: error: mismatched contract condition in declaration (previous contract specifier declared at line 57)
+  template <class T> int CT2<T>::f(int x) pre(x > 1) { return x; } // Error
+                                          ^
+
+13 errors detected in the compilation of "Test_name.c".

@@ -9976,6 +9976,323 @@ initialization for each compilation.
   construct(noexcept_args, /*mask_width=*/10u);
 }  /* declarator_init */
 
+
+/*
+Function contract specifiers (P2900): attaching them to a function, matching
+them on redeclarations, where they and result names are not allowed, and the
+rules for ::handle_contract_violation.
+*/
+
+a_boolean contract_specifiers_are_cached(a_contract_specifier_ptr  csp)
+/*
+Return TRUE if the operand of any of the function contract specifiers csp
+(a list) is still cached, to be scanned when its class is complete (see
+scan_function_contract_specifiers).
+*/
+{
+  for (; csp != NULL; csp = csp->next) {
+    if (csp->operand_cached) return TRUE;
+  }  /* for */
+  return FALSE;
+}  /* contract_specifiers_are_cached */
+
+
+static a_boolean contract_specifiers_have_error(
+                                         a_contract_specifier_ptr  csp)
+/*
+Return TRUE if the predicate of any of the function contract specifiers csp
+(a list) is in error.
+*/
+{
+  for (; csp != NULL; csp = csp->next) {
+    an_expr_node_ptr  pred = contract_specifier_predicate(csp);
+    if (pred != NULL && expr_contains_error(pred)) {
+      return TRUE;
+    }  /* if */
+  }  /* for */
+  return FALSE;
+}  /* contract_specifiers_have_error */
+
+
+void match_contract_specifiers(a_routine_ptr             rp,
+                               a_contract_specifier_ptr  csps)
+/*
+csps are the function contract specifiers, all scanned, of a redeclaration of
+rp, whose earlier declaration has the specifiers rp->contract_specifiers.
+Check that they are the same (P2900 [dcl.contract.func]): the same number, in
+the same order, each of the same kind, with a result name on both or
+neither, and with the same predicate as written.  Issue an error on the
+first difference.
+*/
+{
+  a_contract_specifier_ptr  prev, curr;
+  a_symbol_ptr              sym = symbol_for(rp);
+  size_t                    n_prev = 0, n_curr = 0;
+
+  for (prev = rp->contract_specifiers; prev != NULL; prev = prev->next) {
+    n_prev++;
+  }  /* for */
+  for (curr = csps; curr != NULL; curr = curr->next) n_curr++;
+  if (n_prev != n_curr) {
+    pos_sy_error(ec_contract_redecl_count_mismatch, &csps->position, sym);
+    return;
+  }  /* if */
+  for (prev = rp->contract_specifiers, curr = csps;
+       prev != NULL && curr != NULL;
+       prev = prev->next, curr = curr->next) {
+    if (prev->kind != curr->kind) {
+      pos2_diagnostic(es_error, ec_contract_redecl_kind_mismatch,
+                      &curr->position, &prev->position);
+      return;
+    }  /* if */
+    if ((prev->result_name == NULL) != (curr->result_name == NULL)) {
+      pos2_diagnostic(es_error, ec_contract_redecl_result_name_mismatch,
+                      &curr->position, &prev->position);
+      return;
+    }  /* if */
+    an_expr_node_ptr  prev_pred = contract_specifier_predicate(prev);
+    an_expr_node_ptr  curr_pred = contract_specifier_predicate(curr);
+    if (prev_pred == NULL || curr_pred == NULL ||
+        expr_contains_error(prev_pred) || expr_contains_error(curr_pred)) {
+      /* A predicate that was not scanned, after an error. */
+      expect_error();
+    } else if (!equiv_postcondition_predicates(prev_pred, prev->result_name,
+                                               prev->captures, curr_pred,
+                                               curr->result_name,
+                                               curr->captures)) {
+      pos2_diagnostic(es_error, ec_contract_redecl_condition_mismatch,
+                      &curr->position, &prev->position);
+      return;
+    }  /* if */
+  }  /* for */
+}  /* match_contract_specifiers */
+
+
+void attach_contract_specifiers(a_routine_ptr       rp,
+                                a_decl_parse_state  *dps,
+                                a_boolean           is_redeclaration)
+/*
+Attach the function contract specifiers of the declaration of rp described by
+dps (dps->contract_specifiers, which becomes NULL) to rp.  The first
+declaration (or an explicit specialization) provides them.  A redeclaration
+(is_redeclaration) may omit them or repeat them exactly (see
+match_contract_specifiers), but cannot add them (P2900
+[dcl.contract.func]).  The cached specifiers of a friend redeclared in
+a class definition are matched when the class is complete (see
+defer_contract_redeclaration_match).
+*/
+{
+  a_contract_specifier_ptr  csps = dps->contract_specifiers;
+
+  dps->contract_specifiers = NULL;
+  if (csps == NULL) {
+    /* None on this declaration. */
+  } else if (!is_redeclaration) {
+    rp->contract_specifiers = csps;
+  } else if (rp->contract_specifiers == NULL) {
+    if (contract_specifiers_have_error(csps)) {
+      /* Do not add to the error in a predicate. */
+      expect_error();
+    } else {
+      pos_sy_error(ec_contract_redecl_adds_contracts, &csps->position,
+                   symbol_for(rp));
+    }  /* if */
+  } else if (contract_specifiers_are_cached(csps)) {
+    defer_contract_redeclaration_match(csps);
+  } else if (contract_specifiers_are_cached(rp->contract_specifiers)) {
+    /* The earlier declaration is a friend declaration in a class definition
+       that is not yet complete, and this one is not: Its specifiers are not
+       matched. */
+  } else {
+    match_contract_specifiers(rp, csps);
+  }  /* if */
+}  /* attach_contract_specifiers */
+
+
+a_boolean is_handle_contract_violation(a_routine_ptr  rp)
+/*
+Return TRUE if contracts are enabled and rp is a declaration of
+::handle_contract_violation, the replaceable contract-violation handler
+(P2900 [basic.contract.handler]).
+*/
+{
+  a_symbol_ptr  sym = symbol_for(rp);
+
+  return contracts_enabled && sym != NULL && !sym->is_class_member &&
+         sym->parent.namespace_ptr == NULL &&
+         strcmp(sym->header->identifier, "handle_contract_violation") == 0;
+}  /* is_handle_contract_violation */
+
+
+static a_boolean is_const_contract_violation_ref(a_type_ptr  tp)
+/*
+Return TRUE if tp is "const std::contracts::contract_violation &".
+*/
+{
+  a_type_ptr    referenced;
+  a_symbol_ptr  sym, ns_sym;
+
+  if (!is_lvalue_reference_type(tp)) return FALSE;
+  referenced = type_pointed_to(skip_typerefs(tp));
+  if ((get_type_qualifiers(referenced) & (TQ_CONST | TQ_VOLATILE)) !=
+                                                                 TQ_CONST) {
+    return FALSE;
+  }  /* if */
+  referenced = skip_typerefs(referenced);
+  if (!is_immediate_class_type(referenced)) return FALSE;
+  sym = symbol_for(referenced);
+  if (sym->is_class_member || sym->parent.namespace_ptr == NULL ||
+      strcmp(sym->header->identifier, "contract_violation") != 0) {
+    return FALSE;
+  }  /* if */
+  ns_sym = symbol_for(sym->parent.namespace_ptr);
+  return strcmp(ns_sym->header->identifier, "contracts") == 0 &&
+         symbol_for_namespace_std != NULL &&
+         ns_sym->parent.namespace_ptr ==
+                    symbol_for_namespace_std->variant.namespace_info.ptr;
+}  /* is_const_contract_violation_ref */
+
+
+void check_handle_contract_violation(a_routine_ptr      rp,
+                                     a_source_position  *pos)
+/*
+rp, declared at pos, is ::handle_contract_violation (see
+is_handle_contract_violation).  Check the rules for a replacement of the
+contract-violation handler (P2900 [basic.contract.handler]): not inline,
+C++ language linkage, returning void, with a single parameter of type
+"const std::contracts::contract_violation &".  (That it is not deleted is
+checked by check_defaulted_or_deleted_function.)
+*/
+{
+  a_type_ptr        type = skip_typerefs(rp->type);
+  a_param_type_ptr  ptp;
+
+  if (is_error_type(type)) return;
+  if (rp->is_inline) {
+    pos_error(ec_hcv_inline, pos);
+  }  /* if */
+  if (rp->source_corresp.name_linkage == (a_name_linkage_kind)nlk_external) {
+    pos_error(ec_hcv_linkage, pos);
+  }  /* if */
+  if (!is_void_type(type->variant.routine.return_type)) {
+    pos_error(ec_hcv_return_type, pos);
+  }  /* if */
+  ptp = type->variant.routine.extra_info->param_type_list;
+  if (ptp == NULL || ptp->next != NULL ||
+      type->variant.routine.extra_info->has_ellipsis ||
+      !is_const_contract_violation_ref(ptp->type)) {
+    pos_error(ec_hcv_param, pos);
+  }  /* if */
+}  /* check_handle_contract_violation */
+
+
+a_boolean contract_result_name_hides_parameter(a_symbol_locator  *loc)
+/*
+The identifier described by loc is the result name of a postcondition, about
+to be declared in the current scope (the reactivated function parameter
+scope).  If it is the name of a parameter, issue an error and return TRUE:
+P2900 [basic.scope.contract], the result name cannot hide a parameter (it
+would be a redeclaration in the parameter scope).  "_" is exempt (see
+declare_contract_result_name).
+*/
+{
+  a_symbol_ptr  sym;
+
+  if (strcmp(loc->symbol_header->identifier, "_") == 0) return FALSE;
+  for (sym = assoc_pointers_block_of(&scope_stack_top())->symbols;
+       sym != NULL; sym = sym->next_in_scope) {
+    if (sym->header == loc->symbol_header &&
+        sym->kind == (a_symbol_kind)sk_parameter) {
+      pos_error(ec_contract_result_name_shadows_param, &pos_curr_token);
+      return TRUE;
+    }  /* if */
+  }  /* for */
+  /* On a lambda, nor the name of one of its init-captures, which inhabit the
+     lambda scope (a simple capture declares nothing).  A lambda's operands
+     are scanned in the body of its call operator, with the parameter scope
+     pushed on the function scope (see scan_lambda_contract_operands and
+     instantiate_lambda_contract_specifiers); a function declared in that
+     body has a type of its own. */
+  if (depth_scope_stack > 0) {
+    a_scope_stack_entry_ptr  ssep = &scope_stack[depth_scope_stack - 1];
+    if (is_lambda_body_scope(ssep) &&
+        ssep->assoc_routine->type == scope_stack_top().assoc_type) {
+      a_type_ptr   closure = parent_class_or_null(ssep->assoc_routine);
+      a_field_ptr  fp = NULL;
+      if (closure != NULL) {
+        fp = skip_typerefs(closure)->variant.class_struct_union.field_list;
+      }  /* if */
+      for (; fp != NULL; fp = fp->next) {
+        if (fp->is_init_capture && symbol_for(fp) != NULL &&
+            symbol_for(fp)->header == loc->symbol_header) {
+          pos_error(ec_contract_result_name_shadows_init_capture,
+                    &pos_curr_token);
+          return TRUE;
+        }  /* if */
+      }  /* for */
+    }  /* if */
+  }  /* if */
+  return FALSE;
+}  /* contract_result_name_hides_parameter */
+
+
+an_error_code contract_result_name_void_error(a_decl_parse_state  *dps)
+/*
+Return the error code for a result name in a postcondition of the function
+described by dps, which returns void: a constructor or destructor, if dps
+says so, has its own.
+*/
+{
+  an_error_code  ec = ec_contract_result_name_void_return;
+
+  if (dps->sym != NULL && is_simple_function_symbol(dps->sym)) {
+    a_routine_ptr  rp = dps->sym->variant.routine.ptr;
+    if (special_kind_is(rp, sfk_constructor)) {
+      ec = ec_contract_result_name_ctor;
+    } else if (special_kind_is(rp, sfk_destructor)) {
+      ec = ec_contract_result_name_dtor;
+    }  /* if */
+  }  /* if */
+  return ec;
+}  /* contract_result_name_void_error */
+
+
+void diagnose_deduced_contract_result_name(a_source_position  *pos,
+                                           a_boolean          is_definition)
+/*
+A postcondition at pos of a function, not templated, with a deduced return
+type introduces a result name.  P2900 [dcl.contract.res]: only a definition
+can do that.  On a definition, the predicate is scanned once the return
+type is deduced (see scan_postconditions_awaiting_deduction).
+*/
+{
+  if (!is_definition) {
+    pos_error(ec_contract_result_name_deduced_nondef, pos);
+  }  /* if */
+}  /* diagnose_deduced_contract_result_name */
+
+
+void skip_function_contract_specifiers(void)
+/*
+The current token begins a function contract specifier (see
+curr_token_starts_function_contract_specifier) where none is allowed.
+Diagnose it, and skip the function-contract-specifier-seq.
+*/
+{
+  pos_error(ec_contract_on_non_function, &pos_curr_token);
+  while (curr_token_starts_function_contract_specifier()) {
+    a_token_set_array  stop_tokens;
+    (void)get_token();
+    skip_over_attributes();
+    if (!required_token(tok_lparen, ec_exp_lparen)) break;
+    clear_token_set_array(stop_tokens);
+    incr_token_set_array_element(stop_tokens, tok_rparen);
+    incr_token_set_array_element(stop_tokens, tok_semicolon);
+    cache_token_stream((a_token_cache *)NULL, stop_tokens);
+    (void)required_token(tok_rparen, ec_exp_rparen);
+  }  /* while */
+}  /* skip_function_contract_specifiers */
+
 /* Conditionally close the "edg" namespace. */
 END_EDG_NAMESPACE
 

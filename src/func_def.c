@@ -2555,6 +2555,11 @@ member declaration (allowed in some Microsoft modes only).
       sym->variant.routine.ptr->specialized_with_old_syntax = TRUE;
       sym->variant.routine.instance_ptr->instantiation_required = FALSE;
     }  /* if */
+    /* Attach the function contract specifiers (P2900); a member of an
+       instantiation of a class template specialized here has its own. */
+    attach_contract_specifiers(rp, dps,
+                               /*is_redeclaration=*/
+                               sym->variant.routine.instance_ptr == NULL);
     /* Mark the routine to indicate that, though really belonging to the
        scope of its parent class, it is defined elsewhere. */
     if (!microsoft_out_of_class_redecl) rp->defined_outside_of_parent = TRUE;

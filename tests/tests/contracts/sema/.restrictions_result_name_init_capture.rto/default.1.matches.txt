@@ -1,0 +1,20 @@
+Matches for "line 12: error: the result name of a postcondition cannot have the same name as an init-capture of the lambda":
+  <-----------------------------------------------------------------------------
+  line 12: error: the result name of a postcondition cannot have the same name as an init-capture of the lambda
+  ----------------------------------------------------------------------------->
+Matches for "line 13: error: the result name of a postcondition cannot have the same name as an init-capture of the lambda":
+  <-----------------------------------------------------------------------------
+  line 13: error: the result name of a postcondition cannot have the same name as an init-capture of the lambda
+  ----------------------------------------------------------------------------->
+Matches for "line 14: error: the result name of a postcondition cannot have the same name as an init-capture of the lambda":
+  <-----------------------------------------------------------------------------
+  line 14: error: the result name of a postcondition cannot have the same name as an init-capture of the lambda
+  ----------------------------------------------------------------------------->
+Matches for "line 17: error: the result name of a postcondition cannot have the same name as an init-capture of the lambda":
+  <-----------------------------------------------------------------------------
+  line 17: error: the result name of a postcondition cannot have the same name as an init-capture of the lambda
+  ----------------------------------------------------------------------------->
+Matches for "line 21: error: the result name of a postcondition cannot have the same name as an init-capture of the lambda":
+  <-----------------------------------------------------------------------------
+  line 21: error: the result name of a postcondition cannot have the same name as an init-capture of the lambda
+  ----------------------------------------------------------------------------->

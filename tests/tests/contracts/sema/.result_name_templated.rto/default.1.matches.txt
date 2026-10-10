@@ -1,0 +1,4 @@
+Matches for "line 16: error: a result name in a postcondition of a function with a deduced return type can appear only on a function definition":
+  <-----------------------------------------------------------------------------
+  line 16: error: a result name in a postcondition of a function with a deduced return type can appear only on a function definition
+  ----------------------------------------------------------------------------->
