@@ -47,6 +47,9 @@
 # -f[no-]contracts-p4298 goes to both.
 # -f[no-]contracts-p4299 goes to both.
 # -f[no-]contracts-p4301 goes to both.
+# -f[no-]contracts-p3100 and -f[no-]contracts-allow-assume go to both; the
+# implicit contract assertions are g++'s, as are -fsanitize-semantic= and
+# -fsanitize-noncontract-callbacks (g++ only).
 #
 # Environment:
 #   EDG_GXX           the g++ to pair with
@@ -211,6 +214,14 @@ while [ $# -gt 0 ] ; do
       edg_args+=("--contracts_p4301"); gxx_args+=("$arg") ;;
     -fno-contracts-p4301)
       edg_args+=("--no_contracts_p4301"); gxx_args+=("$arg") ;;
+    -fcontracts-p3100)
+      edg_args+=("--contracts_p3100"); gxx_args+=("$arg") ;;
+    -fno-contracts-p3100)
+      edg_args+=("--no_contracts_p3100"); gxx_args+=("$arg") ;;
+    -fcontracts-allow-assume)
+      edg_args+=("--contracts_allow_assume"); gxx_args+=("$arg") ;;
+    -fno-contracts-allow-assume)
+      edg_args+=("--no_contracts_allow_assume"); gxx_args+=("$arg") ;;
     -E)
       edg_only_mode=preprocess; stop_after_edg=1 ;;
     -fsyntax-only)

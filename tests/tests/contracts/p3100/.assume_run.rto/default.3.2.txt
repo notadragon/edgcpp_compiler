@@ -1,0 +1,4 @@
+./a.out
+f 0
+evaluated 0
+end

@@ -676,6 +676,11 @@ not enabled (contract_semantic_best_fit): ignore for assume (without
     if (semantic == cs_noexcept_observe) return ces_noexcept_observe;
     if (semantic == cs_noexcept_enforce) return ces_noexcept_enforce;
   }  /* if */
+  if (contracts_allow_assume_enabled && semantic == cs_assume) {
+    /* With --contracts_allow_assume, assume (P3100); contract_semantic_for
+       gives ignore for it once a label has had its say. */
+    return ces_assume;
+  }  /* if */
   switch (semantic) {
     case cs_ignore:
     case cs_assume:
@@ -744,6 +749,9 @@ evaluation, on the callee side (no caller-side checks are generated).
     if (entry->has_semantic) {
       a_contract_evaluation_semantic  semantic =
                                         supported_semantic(entry->semantic);
+      if (semantic == ces_assume) {
+        /* Allowed (P3100), as on the command line. */
+      } else
       if (semantic == ces_noexcept_observe ||
           semantic == ces_noexcept_enforce) {
         /* Allowed (P4298), as on the command line. */
@@ -1276,6 +1284,10 @@ processed.
   } else if (contract_evaluation_semantic == ces_noexcept_enforce) {
     entry->semantic = cs_noexcept_enforce;
   }  /* if */
+  if (contract_evaluation_semantic == ces_assume) {
+    /* Nor is assume (P3100). */
+    entry->semantic = cs_assume;
+  }  /* if */
   append_config_entry(entry);
 }  /* init_contract_config */
 
@@ -1493,6 +1505,12 @@ of a label (P3400) adjust it (see apply_contract_label_facets).
     } else if (semantic == ces_noexcept_observe) {
       semantic = ces_observe;
     }  /* if */
+  }  /* if */
+  if (semantic == ces_assume) {
+    /* assume (P3100) is ignore for a contract assertion of the program, at
+       run time and in constant evaluation, as in GCC: the predicate is not
+       evaluated.  (Only a label's facets see it.) */
+    semantic = ces_ignore;
   }  /* if */
   return semantic;
 }  /* contract_semantic_for */

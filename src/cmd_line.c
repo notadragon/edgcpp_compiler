@@ -1888,6 +1888,19 @@ Initialize the option information table.
   add_option_description(optk_contracts_p4301, "no_contracts_p4301", '\0',
                          /*value=*/FALSE, /*arg_required=*/FALSE,
                          pchek_command_line);
+  add_option_description(optk_contracts_p3100, "contracts_p3100", '\0',
+                         /*value=*/TRUE, /*arg_required=*/FALSE,
+                         pchek_command_line);
+  add_option_description(optk_contracts_p3100, "no_contracts_p3100", '\0',
+                         /*value=*/FALSE, /*arg_required=*/FALSE,
+                         pchek_command_line);
+  add_option_description(optk_contracts_allow_assume, "contracts_allow_assume",
+                         '\0', /*value=*/TRUE, /*arg_required=*/FALSE,
+                         pchek_command_line);
+  add_option_description(optk_contracts_allow_assume,
+                         "no_contracts_allow_assume", '\0',
+                         /*value=*/FALSE, /*arg_required=*/FALSE,
+                         pchek_command_line);
 }  /* initialize_option_descriptions */
 
 
@@ -4085,6 +4098,13 @@ setting is used, and to set various unmentioned settings as needed.
     command_line_error(ec_cl_contracts_option_only_in_cplusplus);
   }  /* if */
   if (option_kind_used[(int)optk_contracts_p4301] && contracts_p4301_enabled) {
+    command_line_error(ec_cl_contracts_option_only_in_cplusplus);
+  }  /* if */
+  if (option_kind_used[(int)optk_contracts_p3100] && contracts_p3100_enabled) {
+    command_line_error(ec_cl_contracts_option_only_in_cplusplus);
+  }  /* if */
+  if (option_kind_used[(int)optk_contracts_allow_assume] &&
+      contracts_allow_assume_enabled) {
     command_line_error(ec_cl_contracts_option_only_in_cplusplus);
   }  /* if */
   if (option_kind_used[(int)optk_array_new_and_delete]) {
@@ -12396,12 +12416,19 @@ enable_microsoft_mode:
             contract_evaluation_semantic = ces_noexcept_observe;
           } else if (strcmp(semantic_string, "noexcept_enforce") == 0) {
             contract_evaluation_semantic = ces_noexcept_enforce;
+          } else if (strcmp(semantic_string, "assume") == 0) {
+            /* P3100; without --contracts_allow_assume, ignore (see
+               proc_command_line's wrap-up). */
+            contract_evaluation_semantic = ces_assume;
           } else {
             str_command_line_error(
                                ec_cl_invalid_contract_evaluation_semantic,
                                semantic_string);
           }  /* if */
 #if BACK_END_IS_C_GEN_BE
+          if (contract_evaluation_semantic == ces_assume) {
+            /* assume (P3100) does not evaluate the predicate either. */
+          } else
           if (contract_evaluation_semantic == ces_noexcept_observe ||
               contract_evaluation_semantic == ces_noexcept_enforce) {
             /* The noexcept semantics (P4298) let no exception escape a
@@ -12461,6 +12488,12 @@ enable_microsoft_mode:
         break;
       case optk_contracts_p4301:
         contracts_p4301_enabled = opt_value;
+        break;
+      case optk_contracts_p3100:
+        contracts_p3100_enabled = opt_value;
+        break;
+      case optk_contracts_allow_assume:
+        contracts_allow_assume_enabled = opt_value;
         break;
      default:
         /* It should not be possible to get here. */
@@ -12588,6 +12621,22 @@ enable_microsoft_mode:
   if (contracts_p4301_enabled && !option_kind_used[(int)optk_contracts]) {
     /* So does --contracts_p4301 contracts. */
     contracts_enabled = TRUE;
+  }  /* if */
+  if (contracts_p3850_enabled &&
+      !option_kind_used[(int)optk_contracts_p3100]) {
+    /* --contracts_p3850 enables P3100, unless --[no_]contracts_p3100 is
+       given (not --contracts_allow_assume). */
+    contracts_p3100_enabled = TRUE;
+  }  /* if */
+  if (contracts_p3100_enabled && !option_kind_used[(int)optk_contracts]) {
+    /* So does --contracts_p3100 contracts. */
+    contracts_enabled = TRUE;
+  }  /* if */
+  if (!contracts_allow_assume_enabled &&
+      contract_evaluation_semantic == ces_assume) {
+    /* assume (P3100) without --contracts_allow_assume: its best fit,
+       ignore, silently, as GCC does. */
+    contract_evaluation_semantic = ces_ignore;
   }  /* if */
   /* Check for consistent specification of dialects and language modes. */
   check_dialect_and_language_modes();
@@ -14185,6 +14234,8 @@ variables declared in cmd_line.h.
   contracts_p4298_enabled = FALSE;
   contracts_p4299_enabled = FALSE;
   contracts_p4301_enabled = FALSE;
+  contracts_p3100_enabled = FALSE;
+  contracts_allow_assume_enabled = FALSE;
   incognito = DEFAULT_INCOGNITO;
   keep_restrict_in_signatures = FALSE;
   attributes_on_using_declarations = FALSE;

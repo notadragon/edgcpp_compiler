@@ -42694,6 +42694,7 @@ diagnosed when that semantic is chosen, as GCC does).
                sizeof(csp->label_computed_semantics));
   (void)memset(csp->label_computed_noexcept_semantics, 0,
                sizeof(csp->label_computed_noexcept_semantics));
+  csp->label_computed_assume_semantic = 0;
   if (contract_label_constant(csp, label_con)) {
     an_operand  label_opnd, sem_opnd;
     a_boolean   not_constant;
@@ -42764,6 +42765,10 @@ diagnosed when that semantic is chosen, as GCC does).
                                  ? 0xFF : contract_label_facet_value(value));
         if (*p_computed == 0) *p_computed = 0xFE;
       }  /* for */
+    }  /* if */
+    if (contracts_allow_assume_enabled) {
+      /* compute_semantic for assume too (P3100). */
+      resolve_contract_label_assume_facet(csp, label_con);
     }  /* if */
     /* The group names (P3400). */
     resolve_contract_label_groups(csp, label_con);
@@ -42923,6 +42928,10 @@ issued once for each assertion.
   unsigned  allowed;
   int       v, computed;
 
+  if (contracts_allow_assume_enabled) {
+    /* With the assume semantic (P3100). */
+    return apply_contract_label_facets_p3100(csp, semantic, in_ce);
+  }  /* if */
   if (contracts_p4298_enabled) {
     /* With the noexcept semantics (P4298). */
     return apply_contract_label_facets_p4298(csp, semantic, in_ce);
@@ -56173,6 +56182,141 @@ error is detected during the processing.
 #endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
   make_braced_init_list_operand(alep, result);
 }  /* rescan_braced_init_list */
+
+
+void resolve_contract_label_assume_facet(a_contract_specifier_ptr  csp,
+                                         a_constant_ptr            label_con)
+/*
+The facets of the label (P3400) of the contract assertion csp, whose value is
+label_con, are being resolved (see resolve_contract_label_facets), with
+--contracts_allow_assume: if it has a compute_semantic facet, record what it
+gives for assume (P3100) as csp->label_computed_assume_semantic.
+*/
+{
+  a_constant_ptr  value;
+  an_operand      label_opnd, sem_opnd;
+  a_boolean       not_constant;
+
+  if (csp->label_computed_semantics[1] == 0) return;
+  value = local_constant();
+  make_constant_operand(label_con, &label_opnd);
+  make_integer_constant_operand(&sem_opnd, (a_host_large_integer)5);
+  if (probe_contract_label_facet(
+           &contract_label_compute_cache,
+           CONTRACT_LABEL_COMBINED ".compute_semantic("
+           "::std::contracts::evaluation_semantic(__edg_opnd__(1)));",
+           &label_opnd, &sem_opnd, (an_operand *)NULL, &csp->position,
+           value, &not_constant)) {
+    csp->label_computed_assume_semantic =
+                (a_byte)(not_constant ? 0xFF
+                                      : contract_label_facet_value(value));
+    if (csp->label_computed_assume_semantic == 0) {
+      csp->label_computed_assume_semantic = 0xFE;
+    }  /* if */
+  }  /* if */
+  release_local_constant(&value);
+}  /* resolve_contract_label_assume_facet */
+
+
+static int assume_semantic_level(int  v)
+/*
+Return the level of the semantic of std::contracts::evaluation_semantic
+value v as contract_semantic_level does, with assume (5, P3100) at level 0,
+below ignore, as our GCC orders them.
+*/
+{
+  return v == 5 ? 0 : contract_semantic_level(v);
+}  /* assume_semantic_level */
+
+
+a_contract_evaluation_semantic apply_contract_label_facets_p3100(
+                              a_contract_specifier_ptr        csp,
+                              a_contract_evaluation_semantic  semantic,
+                              a_boolean                       in_ce)
+/*
+Return the evaluation semantic of the contract assertion csp given the one
+the configuration gives it, as apply_contract_label_facets does, with
+--contracts_allow_assume: assume (P3100) is among the semantics a label may
+allow and compute, at the level below ignore (and the noexcept semantics
+with P4298).  The result may be ces_assume, which contract_semantic_for
+turns into ces_ignore.
+*/
+{
+  unsigned   supported = (1u << 1) | (1u << 2) | (1u << 3) | (1u << 4) |
+                         (1u << 5);
+  unsigned   allowed;
+  int        v, level, l, computed;
+  a_boolean  prefer_throwing;
+
+  if (contracts_p4298_enabled) {
+    supported |= (1u << 6) | (1u << 7);
+  }  /* if */
+  if (csp->label_allowed_semantics != 0) {
+    supported &= csp->label_allowed_semantics;
+  }  /* if */
+  allowed = supported;
+#if BACK_END_IS_C_GEN_BE
+  if (!in_ce) {
+    /* For a check the front end generates, only the semantics that let no
+       exception escape it (see the --contract_evaluation_semantic
+       option). */
+    allowed &= (1u << 1) | (1u << 4) | (1u << 5) | (1u << 6) | (1u << 7);
+  }  /* if */
+#endif /* BACK_END_IS_C_GEN_BE */
+  /* The best fit, as noexcept_best_fit_label_semantic chooses it, with
+     assume at level 0. */
+  v = semantic == ces_assume ? 5 : contract_semantic_value(semantic);
+  level = assume_semantic_level(v);
+  prefer_throwing = v == 2 || v == 3;
+  computed = 0;
+  for (l = level; l <= 4 && computed == 0; l++) {
+    computed = l == 0 ? ((allowed & (1u << 5)) != 0 ? 5 : 0)
+                      : label_semantic_at_level(l, allowed, prefer_throwing);
+  }  /* for */
+  for (l = level - 1; l >= 0 && computed == 0; l--) {
+    computed = l == 0 ? ((allowed & (1u << 5)) != 0 ? 5 : 0)
+                      : label_semantic_at_level(l, allowed, prefer_throwing);
+  }  /* for */
+  v = computed;
+  if (v == 0) {
+    if (!csp->label_facet_diagnosed) {
+      csp->label_facet_diagnosed = TRUE;
+      pos_error(ec_contract_no_valid_semantic, &csp->position);
+    }  /* if */
+    /* GCC's fallback. */
+#if BACK_END_IS_C_GEN_BE
+    if (!in_ce) return ces_quick_enforce;
+#endif /* BACK_END_IS_C_GEN_BE */
+    return in_ce ? ces_observe : ces_enforce;
+  }  /* if */
+  computed = v <= 4 ? csp->label_computed_semantics[v]
+             : v == 5 ? csp->label_computed_assume_semantic
+                      : csp->label_computed_noexcept_semantics[v - 6];
+  if (computed == 0) {
+    /* No compute_semantic facet. */
+  } else if (computed == 0xFF) {
+    if (!csp->label_facet_diagnosed) {
+      csp->label_facet_diagnosed = TRUE;
+      pos_ty_error(ec_contract_label_compute_not_constant, &csp->position,
+                   make_unqualified_type(skip_typerefs(csp->label->type)));
+    }  /* if */
+  } else if (assume_semantic_level(computed) < 0 ||
+             (allowed & (1u << computed)) == 0) {
+    if (!csp->label_facet_diagnosed) {
+      csp->label_facet_diagnosed = TRUE;
+      pos_error(assume_semantic_level(computed) >= 0 &&
+                (supported & (1u << computed)) != 0
+                  /* Allowed, but not by this configuration (see the
+                     --contract_evaluation_semantic option). */
+                  ? ec_contract_computed_semantic_unsupported
+                  : ec_contract_computed_semantic_not_allowed,
+                &csp->position);
+    }  /* if */
+  } else {
+    v = computed;
+  }  /* if */
+  return v == 5 ? ces_assume : contract_semantic_of_value(v);
+}  /* apply_contract_label_facets_p3100 */
 
 
 static void make_operand_for_rescanned_identifier(

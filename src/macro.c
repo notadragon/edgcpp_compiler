@@ -12568,6 +12568,26 @@ command line -D options.
     init_runtime_macros();
   }  /* if */
 
+  if (contracts_enabled && (gnu_mode || clang_mode)) {
+    /* P3100 (implicit contract assertions) and its assume semantic: the
+       vendor macros of the compiler emulated, which its standard library
+       tests (__cpp_lib_contracts_implicit). */
+    if (contracts_p3100_enabled) {
+      (void)enter_predef_macro("202609L",
+                               clang_mode ? "__clang_contracts_p3100"
+                                          : "__gcc_contracts_p3100",
+                               /*cannot_be_redefined=*/TRUE,
+                               /*ref_suppresses_pch_file=*/FALSE);
+    }  /* if */
+    if (contracts_allow_assume_enabled) {
+      (void)enter_predef_macro("",
+                               clang_mode ? "__clang_contracts_allow_assume"
+                                          : "__gcc_contracts_allow_assume",
+                               /*cannot_be_redefined=*/TRUE,
+                               /*ref_suppresses_pch_file=*/FALSE);
+    }  /* if */
+  }  /* if */
+
   /* __LINE__, __FILE__, defined, etc., are special (they cannot be defined
      in terms of a simple replacement string).  Therefore, they are entered
      with a NULL replacement text, and code on the expansion end handles

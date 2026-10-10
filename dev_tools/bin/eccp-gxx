@@ -38,6 +38,8 @@
 #   --[no_]contracts_p4298       -> the g++ spelling (front end and g++)
 #   --[no_]contracts_p4299       -> the g++ spelling (front end and g++)
 #   --[no_]contracts_p4301       -> the g++ spelling (front end and g++)
+#   --[no_]contracts_p3100       -> the g++ spelling (front end and g++)
+#   --[no_]contracts_allow_assume -> the g++ spelling (front end and g++)
 #   -D, -U, -I, -l, -L, -Wl,...  -> unchanged (edg_gxx.sh routes them)
 #   --verbose_driver_debug       -> dropped
 #   --pch_test_mode              -> compile twice, as eccp does: the first
@@ -147,6 +149,14 @@ while [ $# -gt 0 ] ; do
       args+=(-fcontracts-p4301) ;;
     --no_contracts_p4301)
       args+=(-fno-contracts-p4301) ;;
+    --contracts_p3100)
+      args+=(-fcontracts-p3100) ;;
+    --no_contracts_p3100)
+      args+=(-fno-contracts-p3100) ;;
+    --contracts_allow_assume)
+      args+=(-fcontracts-allow-assume) ;;
+    --no_contracts_allow_assume)
+      args+=(-fno-contracts-allow-assume) ;;
     -D*|-U*|-I*|-l*|-L*|-Wl,*)
       args+=("$arg") ;;
     -*)
