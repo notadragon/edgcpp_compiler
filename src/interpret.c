@@ -43,6 +43,7 @@ interpret.c -- IL interpreter for constexpr functions
 #include "symbol_ref.h"
 
 #include "templates.h"
+#include "contract_config.h"
 
 /* Conditionally open the "edg" namespace. */
 BEGIN_EDG_NAMESPACE

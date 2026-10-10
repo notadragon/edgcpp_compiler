@@ -1,5 +1,18 @@
 Version 7.0, September 28, 2026
 
+10/3/26  []
+edg_gxx.sh: contract configuration options
+
+edg_gxx.sh passes g++'s contract configuration options (P3595),
+-fcontract-configuration=JSON, -fcontract-configuration-file=PATH and
+-fcontract-group-evaluation-semantic=GROUP:SEMANTIC, to both the front end
+(as --contract_configuration, --contract_configuration_file and
+--contract_group_evaluation_semantic) and g++: g++ chooses the semantics of
+the checks it generates, the front end those of constant evaluation.
+-Wno-contract-configuration also suppresses the front end's warnings about
+the configuration.
+
+
 9/30/26  []
 edg_gxx.sh: contract options
 

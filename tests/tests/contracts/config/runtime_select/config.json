@@ -1,0 +1,4 @@
+[
+  {"match": {"kind": "post"}, "output": {"semantic": "ignore"}},
+  {"match": {"namespace": "lib"}, "output": {"semantic": "ignore"}}
+]

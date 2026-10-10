@@ -1,0 +1,5 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contract_configuration=[{"output":{"semantic":"enforce"}}] Test_name.c
+Command-line error: invalid contract configuration (<command-line>:1:2): this configuration supports only the ignore, quick_enforce, noexcept_enforce, noexcept_observe and assume contract evaluation semantics
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation terminated.

@@ -3719,6 +3719,10 @@ ec_contract_predicate_await;;"%sq cannot appear in a contract predicate other th
 ec_constexpr_destroying_outside_lifetime;;"attempt to destroy an object outside its lifetime"
 ec_constexpr_modifying_outside_lifetime;;"attempt to modify an object outside its lifetime"
 ec_constexpr_member_before_construction;;"attempt to refer to a member of an object whose construction has not begun"
+ec_cl_contract_configuration_error;;"invalid contract configuration (%s): %s2"
+ec_cl_contract_configuration_warning;contract_configuration;"contract configuration (%s): %s2"
+ec_cl_contract_configuration_unreadable;;"cannot read contract configuration file: %s"
+ec_cl_contract_configuration_without_contracts;;"contract configuration options have no effect when contracts are not enabled"
 ec_contract_result_name_shadows_init_capture;;"the result name of a postcondition cannot have the same name as an init-capture of the lambda"
  ###############################################################################
 

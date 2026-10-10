@@ -33,6 +33,7 @@ statements.c -- Scanning of statements.
 #include "pch.h"
 #include "pragma.h"
 #include "statements.h"
+#include "contract_config.h"
 #include "macro.h"
 #include "func_def.h"
 #include "sys_predef.h"
@@ -6699,6 +6700,20 @@ give the starting and ending positions of the break statement.
     sssep->break_statements = cfdp;
   }  /* if */
 }  /* add_goto_for_break */
+
+
+static a_boolean contract_check_wanted(a_contract_specifier_ptr  csp)
+/*
+Return TRUE if a check of the contract assertion csp, in the current
+function, is to be generated (see contract_checks_wanted): its evaluation
+semantic at run time (see contract_semantic_for) is not ignore, which does
+not evaluate the predicate.
+*/
+{
+  return contract_semantic_for(csp, current_routine_entry(),
+                               /*in_constant_evaluation=*/FALSE) !=
+                                                                ces_ignore;
+}  /* contract_check_wanted */
 
 #if UPC_EXTENSIONS_ALLOWED
 

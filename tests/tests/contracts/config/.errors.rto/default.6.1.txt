@@ -1,0 +1,5 @@
+fe_only -DTEST_NUMBER=6 --c++26 --contract_group_evaluation_semantic=.a:ignore Test_name.c
+Command-line error: invalid contract configuration (--contract_group_evaluation_semantic=.a:ignore): invalid group name
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation terminated.

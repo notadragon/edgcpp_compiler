@@ -39,6 +39,7 @@ cmd_line.c -- Command-line parsing.
 #endif /* !C_GEN_BE_GENERATES_ANSI_C */
 #endif /* BACK_END_IS_C_GEN_BE */
 #include "layout.h"
+#include "contract_config.h"
 
 #ifdef HOSTID
 extern long gethostid(void);
@@ -1813,6 +1814,18 @@ Initialize the option information table.
                          pchek_command_line);
   add_option_description(optk_contract_evaluation_semantic,
                          "contract_evaluation_semantic", '\0',
+                         /*value=*/TRUE, /*arg_required=*/TRUE,
+                         pchek_command_line);
+  add_option_description(optk_contract_configuration,
+                         "contract_configuration", '\0',
+                         /*value=*/TRUE, /*arg_required=*/TRUE,
+                         pchek_command_line);
+  add_option_description(optk_contract_configuration_file,
+                         "contract_configuration_file", '\0',
+                         /*value=*/TRUE, /*arg_required=*/TRUE,
+                         pchek_command_line);
+  add_option_description(optk_contract_group_evaluation_semantic,
+                         "contract_group_evaluation_semantic", '\0',
                          /*value=*/TRUE, /*arg_required=*/TRUE,
                          pchek_command_line);
 }  /* initialize_option_descriptions */
@@ -12307,6 +12320,15 @@ enable_microsoft_mode:
 #endif /* BACK_END_IS_C_GEN_BE */
         }
         break;
+      case optk_contract_configuration:
+        add_contract_config_source(ccsk_json_inline, opt_arg);
+        break;
+      case optk_contract_configuration_file:
+        add_contract_config_source(ccsk_json_file, opt_arg);
+        break;
+      case optk_contract_group_evaluation_semantic:
+        add_contract_config_source(ccsk_group_semantic, opt_arg);
+        break;
      default:
         /* It should not be possible to get here. */
         unexpected_condition();
@@ -13135,6 +13157,10 @@ enable_microsoft_mode:
     /* Must be initialized only after f_error is properly set. */
     init_colorization();
   }  /* if */
+  /* Build the configuration of contract evaluation semantics (P3595), now
+     that whether contracts are enabled is known (and the diagnostic
+     options are in effect). */
+  init_contract_config();
   /* Set the predefined macro mode values based on the command-line options
      used. */
   set_predef_macro_mode(pmm_gnu, gnu_mode && !clang_mode);

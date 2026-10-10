@@ -388,6 +388,9 @@ enum an_option_kind {
   optk_incognito,
   optk_contracts,
   optk_contract_evaluation_semantic,
+  optk_contract_configuration,
+  optk_contract_configuration_file,
+  optk_contract_group_evaluation_semantic,
   optk_last		/* Must be last. */
 };
 
