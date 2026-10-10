@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
+"Test_name.c", line 13: error: an enclosing-function local variable cannot be referenced in a lambda body unless it is in the capture list
+    auto l1 = [] { return &typeid(x); };      // Error, x not captured
+                                  ^
+
+"Test_name.c", line 14: error: an enclosing-function local variable cannot be referenced in a lambda body unless it is in the capture list
+    auto l2 = [] { return &typeid(r); };      // Error, r not captured
+                                  ^
+
+"Test_name.c", line 13: warning: variable "l1" was set but never used
+    auto l1 = [] { return &typeid(x); };      // Error, x not captured
+         ^
+
+"Test_name.c", line 14: warning: variable "l2" was set but never used
+    auto l2 = [] { return &typeid(r); };      // Error, r not captured
+         ^
+
+"Test_name.c", line 17: warning: variable "l5" was set but never used
+    auto l5 = [] { return &typeid(n); };      // OK, unevaluated operand
+         ^
+
+2 errors detected in the compilation of "Test_name.c".
