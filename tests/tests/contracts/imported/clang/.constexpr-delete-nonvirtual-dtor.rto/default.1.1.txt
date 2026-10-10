@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 Test_name.c
+"Test_name.c", line 24: error: expression must have a constant value
+  static_assert(f()); // expected-error {{not an integral constant expression}} \
+                ^
+"Test_name.c", line 20: note: deleting through a subobject pointer requires a virtual destructor
+    delete b; // expected-note {{delete of object with dynamic type 'D' through pointer to base class type 'B' with non-virtual destructor}}
+    ^
+
+1 error detected in the compilation of "Test_name.c".

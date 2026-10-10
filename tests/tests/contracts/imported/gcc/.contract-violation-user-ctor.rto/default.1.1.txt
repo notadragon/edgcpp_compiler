@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 18: error: "std::contracts::contract_violation::contract_violation(const __cxxabiv1::__cxa_contract_data_block *) noexcept" (declared at line 146 of "/root/repos/gnu_gcc-install/bin/../lib/gcc/x86_64-pc-linux-gnu/17.0.0/../../../../include/c++/17.0.0/contracts") is inaccessible
+    std::contracts::contract_violation v (nullptr);  // { dg-error "private" }
+                                          ^
+
+1 error detected in the compilation of "Test_name.c".

@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --no_contracts --c++26 Test_name.c
+"Test_name.c", line 11: error: identifier "contract_assert" is undefined
+      contract_assert(false); // { dg-error "'contract_assert' is only available with '-fcontracts'" }
+      ^
+
+"Test_name.c", line 12: error: identifier "__contract_assert" is undefined
+      __contract_assert(false); // { dg-error "'__contract_assert' is only available with '-fcontracts'" }
+      ^
+
+2 errors detected in the compilation of "Test_name.c".

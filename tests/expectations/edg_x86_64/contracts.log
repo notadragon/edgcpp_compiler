@@ -17,6 +17,447 @@ constexpr/observe_gxx.sft.cpp:cp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts:
 constexpr/result_name.sft.cpp:fn:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: a postcondition's result name in constant evaluation
 constexpr/statement_expression_lambda.sft.cpp:fn:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: a statement expression in a lambda's precondition or postcondition in constant evaluation
 harness/gxx_exceptions.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:gxx configuration: catch an exception thrown by libstdc++
+imported/clang/Runnable/allowed-mask-quick-enforce.sft.cpp:ra:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=quick_enforce:REQUIREMENTS NOT MET:imported from clang:Runnable/allowed-mask-quick-enforce.cpp
+imported/clang/Runnable/constify-requires-expr.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:Runnable/constify-requires-expr.cpp
+imported/clang/Runnable/contract-assert-handler-throw-catchable.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:Runnable/contract-assert-handler-throw-catchable.cpp
+imported/clang/Runnable/contract-declarator-positions.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:Runnable/contract-declarator-positions.cpp
+imported/clang/Runnable/contract-dependent-predicate-temporary.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:Runnable/contract-dependent-predicate-temporary.cpp
+imported/clang/Runnable/contract-result-binding-identity.sft.cpp:fp:-DTEST_NUMBER=1 --contract_evaluation_semantic=enforce --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:Runnable/contract-result-binding-identity.cpp
+imported/clang/Runnable/contract-result-binding-mutation-class.sft.cpp:fp:-DTEST_NUMBER=1 --contract_evaluation_semantic=enforce --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:Runnable/contract-result-binding-mutation-class.cpp
+imported/clang/Runnable/contract-result-binding-mutation.sft.cpp:fp:-DTEST_NUMBER=1 --contract_evaluation_semantic=enforce --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:Runnable/contract-result-binding-mutation.cpp
+imported/clang/Runnable/contract-retval-destroyed-on-unwind.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:Runnable/contract-retval-destroyed-on-unwind.cpp
+imported/clang/Runnable/coroutine-contract-parameters.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:Runnable/coroutine-contract-parameters.cpp
+imported/clang/Runnable/decl_contracts_res.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:Runnable/decl.contracts.res.cpp
+imported/clang/Runnable/evaluation-order/test.mft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from clang:Runnable/evaluation-order.cpp
+imported/clang/Runnable/explicit-spec-decl-renamed-params.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:Runnable/explicit-spec-decl-renamed-params.cpp
+imported/clang/Runnable/function-try-block-no-catch.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:Runnable/function-try-block-no-catch.cpp
+imported/clang/Runnable/handler-in-linkage-spec.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:Runnable/handler-in-linkage-spec.cpp
+imported/clang/Runnable/lambda-capture-contract-in-template.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:Runnable/lambda-capture-contract-in-template.cpp
+imported/clang/Runnable/lambda-capture-in-contract.sft.cpp:fp:-DTEST_NUMBER=1 --contract_evaluation_semantic=enforce --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:Runnable/lambda-capture-in-contract.cpp
+imported/clang/Runnable/lambda-contract-in-template.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:Runnable/lambda-contract-in-template.cpp
+imported/clang/Runnable/lambda-in-postcondition-result-name.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:Runnable/lambda-in-postcondition-result-name.cpp
+imported/clang/Runnable/lambda-test/test.mft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:Runnable/lambda-test.cpp
+imported/clang/Runnable/p3595-enforce-kind.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --no_exceptions --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from clang:Runnable/p3595-enforce-kind.cpp
+imported/clang/Runnable/p4298-noexcept-fn-inline.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from clang:Runnable/p4298-noexcept-fn-inline.cpp
+imported/clang/Runnable/postcondition-result-name-mangling.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:Runnable/postcondition-result-name-mangling.cpp
+imported/clang/Runnable/result-name-reference-return.sft.cpp:fp:-DTEST_NUMBER=1 --contract_evaluation_semantic=enforce --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:Runnable/result-name-reference-return.cpp
+imported/clang/Runnable/smf-handler-throws-terminate.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:Runnable/smf-handler-throws-terminate.cpp
+imported/clang/Runnable/violation-handler-throws-noexcept.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:Runnable/violation-handler-throws-noexcept.cpp
+imported/clang/Runnable/violation-handler-throws-observe.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:Runnable/violation-handler-throws-observe.cpp
+imported/clang/Runnable/violation-template-function-name/test.mft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:Runnable/violation-template-function-name.cpp
+imported/clang/Runnable/void-postcondition-explicit-return-test/test.mft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from clang:Runnable/void-postcondition-explicit-return-test.cpp
+imported/clang/Runnable/void-postcondition-test/test.mft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from clang:Runnable/void-postcondition-test.cpp
+imported/clang/Sema/contract-predicate-constify-in-lambda.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:Sema/contract-predicate-constify-in-lambda.cpp
+imported/clang/Sema/contract-predicate-constify-storage.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:Sema/contract-predicate-constify-storage.cpp
+imported/clang/Sema/contract-unexpanded-pack.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:Sema/contract-unexpanded-pack.cpp
+imported/clang/Sema/decl_contract_res.sft.cpp:fn:-DTEST_NUMBER=1 --contracts --c++26:REQUIREMENTS NOT MET:imported from clang:Sema/decl.contract.res.cpp
+imported/clang/Sema/deducing-this-no-this-in-predicate.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:Sema/deducing-this-no-this-in-predicate.cpp
+imported/clang/Sema/deducing-this-postcondition-param-dependent.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:Sema/deducing-this-postcondition-param-dependent.cpp
+imported/clang/Sema/deducing-this-postcondition-param.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:Sema/deducing-this-postcondition-param.cpp
+imported/clang/Sema/over_call_func.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:Sema/over.call.func.cpp
+imported/clang/Sema/postcondition-discarded-operand-dependent.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:Sema/postcondition-discarded-operand-dependent.cpp
+imported/clang/Sema/postcondition-lambda-param.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:Sema/postcondition-lambda-param.cpp
+imported/clang/Sema/postcondition-result-name-return-type.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:Sema/postcondition-result-name-return-type.cpp
+imported/clang/Sema/pr126897.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:Sema/pr126897.cpp
+imported/clang/block-scope-decl-then-def-contract.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:block-scope-decl-then-def-contract.cpp
+imported/clang/block-scope-first-decl-contract.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:block-scope-first-decl-contract.cpp
+imported/clang/codegen-debug-info.sft.cpp:fp:-DTEST_NUMBER=1 --contracts --contract_evaluation_semantic=enforce --c++26:REQUIREMENTS NOT MET:imported from clang:Contracts/codegen-debug-info.cpp
+imported/clang/codegen-debug-info.sft.cpp:fp:-DTEST_NUMBER=1 --contracts --contract_evaluation_semantic=enforce --c++26:REQUIREMENTS NOT MET:imported from clang:codegen-debug-info.cpp
+imported/clang/codegen-debug-info.sft.cpp:fp:-DTEST_NUMBER=2 --contracts --contracts_p3098 --contract_evaluation_semantic=observe --c++26 -DTHROWS:REQUIREMENTS NOT MET:imported from clang:Contracts/codegen-debug-info.cpp
+imported/clang/constexpr-contract-array-bound.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:constexpr-contract-array-bound.cpp
+imported/clang/constexpr-contract-observe-not-constant-init.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:constexpr-contract-observe-not-constant-init.cpp
+imported/clang/constexpr-contract-observe-warning-once.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:constexpr-contract-observe-warning-once.cpp
+imported/clang/constexpr-delete-nonvirtual-dtor.sft.cpp:fn:-DTEST_NUMBER=1 --c++26:REQUIREMENTS NOT MET:imported from clang:constexpr-delete-nonvirtual-dtor.cpp
+imported/clang/constexpr-double-destroy.sft.cpp:fn:-DTEST_NUMBER=1 --c++26:REQUIREMENTS NOT MET:imported from clang:constexpr-double-destroy.cpp
+imported/clang/constexpr-observe-fold-drops-runtime-check.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:constexpr-observe-fold-drops-runtime-check.cpp
+imported/clang/constexpr-observe-fold-drops-runtime-check.sft.cpp:fp:-DTEST_NUMBER=2 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:constexpr-observe-fold-drops-runtime-check.cpp
+imported/clang/constexpr-observe-nonconstant-predicate.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:constexpr-observe-nonconstant-predicate.cpp
+imported/clang/constexpr-result-name-in-lambda.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:constexpr-result-name-in-lambda.cpp
+imported/clang/constify-ref-nttp.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:constify-ref-nttp.cpp
+imported/clang/constify-structured-binding.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:constify-structured-binding.cpp
+imported/clang/constructor-contracts.sft.cpp:fp:-DTEST_NUMBER=1 --contracts --c++26:REQUIREMENTS NOT MET:imported from clang:constructor-contracts.cpp
+imported/clang/contract-assert-cxx98.sft.cpp:fp:-DTEST_NUMBER=1 --c++03 --contracts:REQUIREMENTS NOT MET:imported from clang:contract-assert-cxx98.cpp
+imported/clang/contract-capture-note-location.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:Contracts/contract-capture-note-location.cpp
+imported/clang/contract-capture-note-location.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:contract-capture-note-location.cpp
+imported/clang/contract-constexpr-repeat-call-shapes.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from clang:contract-constexpr-repeat-call-shapes.cpp
+imported/clang/contract-constexpr-side-effect-rollback.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from clang:Contracts/contract-constexpr-side-effect-rollback.cpp
+imported/clang/contract-copy-capture-constify.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:contract-copy-capture-constify.cpp
+imported/clang/contract-declarator-positions.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:contract-declarator-positions.cpp
+imported/clang/contract-explicit-copy-capture.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:contract-explicit-copy-capture.cpp
+imported/clang/contract-in-declarator-group.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:contract-in-declarator-group.cpp
+imported/clang/contract-invalid-predicate-redecl.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:contract-invalid-predicate-redecl.cpp
+imported/clang/contract-lambda-capture-constify.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:contract-lambda-capture-constify.cpp
+imported/clang/contract-on-deleted-or-defaulted.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:contract-on-deleted-or-defaulted.cpp
+imported/clang/contract-on-function-typedef.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:contract-on-function-typedef.cpp
+imported/clang/contract-redecl-mismatch-diagnostics.sft.cpp:fn:-DTEST_NUMBER=1 --contracts --c++26:REQUIREMENTS NOT MET:imported from clang:contract-redecl-mismatch-diagnostics.cpp
+imported/clang/contract-redecl-mismatch-namespace-control.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:contract-redecl-mismatch-namespace-control.cpp
+imported/clang/contract-reentrancy-basic.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:contract-reentrancy-basic.cpp
+imported/clang/contract-ref-capture-constify.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:contract-ref-capture-constify.cpp
+imported/clang/contract-sequence.sft.cpp:fp:-DTEST_NUMBER=1 --contracts --c++26:REQUIREMENTS NOT MET:imported from clang:contract-sequence.cpp
+imported/clang/contract-unexpanded-pack.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from clang:Contracts/contract-unexpanded-pack.cpp
+imported/clang/contract-violation-user-ctor.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:contract-violation-user-ctor.cpp
+imported/clang/coroutine-compat.sft.cpp:fn:-DTEST_NUMBER=1 --contracts --c++26:REQUIREMENTS NOT MET:imported from clang:coroutine-compat.cpp
+imported/clang/coroutine-postcondition-param.sft.cpp:fn:-DTEST_NUMBER=1 --contracts --c++26:REQUIREMENTS NOT MET:imported from clang:Contracts/coroutine-postcondition-param.cpp
+imported/clang/ctor-contracts-no-ctor-aliases.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:ctor-contracts-no-ctor-aliases.cpp
+imported/clang/ctor-pre-member-in-lambda.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:Contracts/ctor-pre-member-in-lambda.cpp
+imported/clang/ctor-pre-member-in-lambda.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:ctor-pre-member-in-lambda.cpp
+imported/clang/ctor-pre-qualified-member-rejected.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:ctor-pre-qualified-member-rejected.cpp
+imported/clang/ctor-pre-static-overload.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:ctor-pre-static-overload.cpp
+imported/clang/ctor-pre-unevaluated-member.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:ctor-pre-unevaluated-member.cpp
+imported/clang/decl-contract-lambda-default-arg.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:decl-contract-lambda-default-arg.cpp
+imported/clang/deduce-return-type.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:deduce-return-type.cpp
+imported/clang/default-handler-noexcept.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:default-handler-noexcept.cpp
+imported/clang/default-outofline-contract.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:default-outofline-contract.cpp
+imported/clang/deleted-violation-handler.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:deleted-violation-handler.cpp
+imported/clang/dtor-contracts-no-ctor-aliases.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:dtor-contracts-no-ctor-aliases.cpp
+imported/clang/dtor-contracts-virtual-base.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:dtor-contracts-virtual-base.cpp
+imported/clang/dtor-redecl-contracts-not-compared.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:dtor-redecl-contracts-not-compared.cpp
+imported/clang/evaluation-semantic-last-wins.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:evaluation-semantic-last-wins.cpp
+imported/clang/evaluation-semantic-set-unspecified.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:evaluation-semantic-set-unspecified.cpp
+imported/clang/explicit-spec-contract-dropped.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:explicit-spec-contract-dropped.cpp
+imported/clang/explicit-spec-contract-mismatch.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:explicit-spec-contract-mismatch.cpp
+imported/clang/explicit-spec-member-template-contracts.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:explicit-spec-member-template-contracts.cpp
+imported/clang/extension-contract-assert-without-contracts.sft.cpp:fn:-DTEST_NUMBER=1 --c++17:REQUIREMENTS NOT MET:imported from clang:extension-contract-assert-without-contracts.cpp
+imported/clang/extension-contract-assert-without-contracts.sft.cpp:fn:-DTEST_NUMBER=2 --c++26 --no_contracts:REQUIREMENTS NOT MET:imported from clang:extension-contract-assert-without-contracts.cpp
+imported/clang/friend-access-in-predicate.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:friend-access-in-predicate.cpp
+imported/clang/friend-contract-class-scope.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:friend-contract-class-scope.cpp
+imported/clang/ftm-replaceable-handler.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts -DHDR_VERSION:REQUIREMENTS NOT MET:imported from clang:ftm-replaceable-handler.cpp
+imported/clang/ftm-replaceable-handler.sft.cpp:fp:-DTEST_NUMBER=2 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:ftm-replaceable-handler.cpp
+imported/clang/generic-lambda-contract-capture.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:generic-lambda-contract-capture.cpp
+imported/clang/generic-lambda-free-function-capture.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:generic-lambda-free-function-capture.cpp
+imported/clang/generic-lambda-modifies-param.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:generic-lambda-modifies-param.cpp
+imported/clang/hidden-friend-template-pre.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:hidden-friend-template-pre.cpp
+imported/clang/label-recovery-parens.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:label-recovery-parens.cpp
+imported/clang/lambda-capture-constified-by-own-contract.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:Contracts/lambda-capture-constified-by-own-contract.cpp
+imported/clang/lambda-capture-in-contract-error.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:lambda-capture-in-contract-error.cpp
+imported/clang/lambda-contract-only-capture-constant-template.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from clang:Contracts/lambda-contract-only-capture-constant-template.cpp
+imported/clang/lambda-contract-only-capture.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:Contracts/lambda-contract-only-capture.cpp
+imported/clang/lambda-contract-only-capture.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:lambda-contract-only-capture.cpp
+imported/clang/lambda-modifies-param-in-pre.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:lambda-modifies-param-in-pre.cpp
+imported/clang/libcxx-contracts-below-cxx20.sft.cpp:fp:-DTEST_NUMBER=1 --c++17:REQUIREMENTS NOT MET:imported from clang:libcxx-contracts-below-cxx20.cpp
+imported/clang/libcxx-contracts-below-cxx20.sft.cpp:fp:-DTEST_NUMBER=2 --c++17 --contracts:REQUIREMENTS NOT MET:imported from clang:libcxx-contracts-below-cxx20.cpp
+imported/clang/local-class-in-contract-lambda.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:local-class-in-contract-lambda.cpp
+imported/clang/matrix-exceptspec-errors.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:matrix-exceptspec-errors.cpp
+imported/clang/matrix-exceptspec.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:matrix-exceptspec.cpp
+imported/clang/matrix-notional-enforce-errors-not-constant.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from clang:matrix-notional-enforce-errors-not-constant.cpp
+imported/clang/matrix-notional-enforce.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from clang:matrix-notional-enforce.cpp
+imported/clang/matrix-notional-ignore-errors-not-constant.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=ignore:REQUIREMENTS NOT MET:imported from clang:matrix-notional-ignore-errors-not-constant.cpp
+imported/clang/matrix-notional-ignore-errors.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=ignore:REQUIREMENTS NOT MET:imported from clang:matrix-notional-ignore-errors.cpp
+imported/clang/matrix-notional-ignore.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=ignore:REQUIREMENTS NOT MET:imported from clang:matrix-notional-ignore.cpp
+imported/clang/matrix-notional-observe-errors-not-constant.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:matrix-notional-observe-errors-not-constant.cpp
+imported/clang/matrix-notional-observe-errors.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:matrix-notional-observe-errors.cpp
+imported/clang/matrix-notional-observe-warnings.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:matrix-notional-observe-warnings.cpp
+imported/clang/matrix-notional-observe.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:matrix-notional-observe.cpp
+imported/clang/matrix-notional-quick-enforce-errors-not-constant.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=quick_enforce:REQUIREMENTS NOT MET:imported from clang:matrix-notional-quick-enforce-errors-not-constant.cpp
+imported/clang/matrix-notional-quick-enforce.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=quick_enforce:REQUIREMENTS NOT MET:imported from clang:matrix-notional-quick-enforce.cpp
+imported/clang/matrix-notional-run-vla.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:matrix-notional-run-vla.cpp
+imported/clang/matrix-notional-run.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:matrix-notional-run.cpp
+imported/clang/matrix-readers.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:matrix-readers.cpp
+imported/clang/matrix-sfinae-errors.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:matrix-sfinae-errors.cpp
+imported/clang/matrix-sfinae.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:matrix-sfinae.cpp
+imported/clang/member-function-contracts.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:member-function-contracts.cpp
+imported/clang/nested-assert-in-stmt-expr.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:nested-assert-in-stmt-expr.cpp
+imported/clang/nested-class-contracts.sft.cpp:fp:-DTEST_NUMBER=1 --contracts --c++26:REQUIREMENTS NOT MET:imported from clang:nested-class-contracts.cpp
+imported/clang/noexcept-violation-handler.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:noexcept-violation-handler.cpp
+imported/clang/nsdmi-lambda-contract-this.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:nsdmi-lambda-contract-this.cpp
+imported/clang/observe-warning-unused-var-eval.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:observe-warning-unused-var-eval.cpp
+imported/clang/overload-resolution-ignores-contracts.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:overload-resolution-ignores-contracts.cpp
+imported/clang/p3097-no-flag.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:p3097-no-flag.cpp
+imported/clang/p3098-capture-member-template.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:p3098-capture-member-template.cpp
+imported/clang/p3098-noflag.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:p3098-noflag.cpp
+imported/clang/p3099-message-no-flag.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:p3099-message-no-flag.cpp
+imported/clang/p3100-enum.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:p3100-enum.cpp
+imported/clang/p3100-implicit-no-flag.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:p3100-implicit-no-flag.cpp
+imported/clang/p3100-no-flag.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:p3100-no-flag.cpp
+imported/clang/p3290-no-flag.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:p3290-no-flag.cpp
+imported/clang/p3400-label-no-flag.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:p3400-label-no-flag.cpp
+imported/clang/p4283-ftm-undefined.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:p4283-ftm-undefined.cpp
+imported/clang/p4298-ftm-undefined.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:p4298-ftm-undefined.cpp
+imported/clang/p4301-report-ftm-undefined.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:p4301-report-ftm-undefined.cpp
+imported/clang/p4301-report-no-flag.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:p4301-report-no-flag.cpp
+imported/clang/post-odr-use-template-shapes.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:post-odr-use-template-shapes.cpp
+imported/clang/postcondition-const-function-pointer-param.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:postcondition-const-function-pointer-param.cpp
+imported/clang/postcondition-discarded-member-access.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from clang:Contracts/postcondition-discarded-member-access.cpp
+imported/clang/postcondition-function-param-reason.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:postcondition-function-param-reason.cpp
+imported/clang/postcondition-outer-local.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:postcondition-outer-local.cpp
+imported/clang/postcondition-redecl-no-diagnostics.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:postcondition-redecl-no-diagnostics.cpp
+imported/clang/postcondition-undeduced-result.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:postcondition-undeduced-result.cpp
+imported/clang/postcondition-unnamed-param-diagnostic.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:Contracts/postcondition-unnamed-param-diagnostic.cpp
+imported/clang/pre-without-parenthesis.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:Contracts/pre-without-parenthesis.cpp
+imported/clang/precondition-const-local-init.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:precondition-const-local-init.cpp
+imported/clang/predicate-instantiation-in-initializers.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:Contracts/predicate-instantiation-in-initializers.cpp
+imported/clang/predicate-throw-constructor.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:predicate-throw-constructor.cpp
+imported/clang/predicate-throw-default-arg.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:predicate-throw-default-arg.cpp
+imported/clang/predicate-throw-dynamic-cast.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:predicate-throw-dynamic-cast.cpp
+imported/clang/predicate-throw-new-array.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:predicate-throw-new-array.cpp
+imported/clang/qualified-friend-member-contract-mismatch.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from clang:Contracts/qualified-friend-member-contract-mismatch.cpp
+imported/clang/redecl-condition-folded.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:redecl-condition-folded.cpp
+imported/clang/redecl-contract-lambda-template.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:redecl-contract-lambda-template.cpp
+imported/clang/redecl-omit-contract-lambda.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:redecl-omit-contract-lambda.cpp
+imported/clang/redecl-post-param-const.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:redecl-post-param-const.cpp
+imported/clang/redecl-result-name-presence.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:redecl-result-name-presence.cpp
+imported/clang/redecl-unnamed-param-lambda-capture.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:redecl-unnamed-param-lambda-capture.cpp
+imported/clang/result-binding-lambda-capture.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from clang:result-binding-lambda-capture.cpp
+imported/clang/result-binding-lambda-explicit-capture.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:result-binding-lambda-explicit-capture.cpp
+imported/clang/result-binding-lambda-ref-constify.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:result-binding-lambda-ref-constify.cpp
+imported/clang/result-name-and-assertion-scope.sft.cpp:fp:-DTEST_NUMBER=1 --contracts --c++26:REQUIREMENTS NOT MET:imported from clang:result-name-and-assertion-scope.cpp
+imported/clang/result-name-attributes.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:result-name-attributes.cpp
+imported/clang/result-name-explicit-capture.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:result-name-explicit-capture.cpp
+imported/clang/result-name-init-capture.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=ignore:REQUIREMENTS NOT MET:imported from clang:Contracts/result-name-init-capture.cpp
+imported/clang/result-name-lambda-diag.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:result-name-lambda-diag.cpp
+imported/clang/result-name-misplaced.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:result-name-misplaced.cpp
+imported/clang/result-name-shadows-lambda-capture.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:result-name-shadows-lambda-capture.cpp
+imported/clang/result-name-shadows-parameter.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=ignore:REQUIREMENTS NOT MET:imported from clang:result-name-shadows-parameter.cpp
+imported/clang/result-name-shadows-template-param.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:result-name-shadows-template-param.cpp
+imported/clang/result-name-underscore.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from clang:Contracts/result-name-underscore.cpp
+imported/clang/self-name-in-own-contract.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:self-name-in-own-contract.cpp
+imported/clang/stmt-expr-local-constified.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:stmt-expr-local-constified.cpp
+imported/clang/template-decl-contract-lambda.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:template-decl-contract-lambda.cpp
+imported/clang/this-in-member-declaration-controls.sft.cpp:fn:-DTEST_NUMBER=1 --c++23:REQUIREMENTS NOT MET:imported from clang:this-in-member-declaration-controls.cpp
+imported/clang/underscore-keywords-without-p4299.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:underscore-keywords-without-p4299.cpp
+imported/clang/unused-param-in-contract.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:unused-param-in-contract.cpp
+imported/clang/variadic-contracts.sft.cpp:fp:-DTEST_NUMBER=1 --contracts --c++26:REQUIREMENTS NOT MET:imported from clang:variadic-contracts.cpp
+imported/clang/violation-handler-cv-param.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:violation-handler-cv-param.cpp
+imported/clang/virtual-contracts-require-p3097.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:virtual-contracts-require-p3097.cpp
+imported/clang/virtual-flag-error-twice.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from clang:virtual-flag-error-twice.cpp
+imported/gcc/await-in-predicate.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:await-in-predicate.C
+imported/gcc/basic-contract-eval-example-ignore.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=ignore:REQUIREMENTS NOT MET:imported from gcc:basic-contract-eval-example-ignore.C
+imported/gcc/basic_contract_eval_p14.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:basic.contract.eval.p14.C
+imported/gcc/basic_contract_eval_p17-2.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:basic.contract.eval.p17-2.C
+imported/gcc/basic_contract_eval_p17-3.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:basic.contract.eval.p17-3.C
+imported/gcc/basic_contract_eval_p17-4.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:basic.contract.eval.p17-4.C
+imported/gcc/basic_contract_eval_p17-5.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:basic.contract.eval.p17-5.C
+imported/gcc/basic_contract_eval_p17-SMF-post.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:basic.contract.eval.p17-SMF-post.C
+imported/gcc/basic_contract_eval_p17-SMF-pre.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:basic.contract.eval.p17-SMF-pre.C
+imported/gcc/basic_contract_eval_p17-SMF2.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:basic.contract.eval.p17-SMF2.C
+imported/gcc/basic_contract_eval_p17-SMF3.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:basic.contract.eval.p17-SMF3.C
+imported/gcc/basic_contract_eval_p17-SMF4.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:basic.contract.eval.p17-SMF4.C
+imported/gcc/basic_contract_eval_p17.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:basic.contract.eval.p17.C
+imported/gcc/basic_contract_eval_p4-error.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=ignore:REQUIREMENTS NOT MET:imported from gcc:basic.contract.eval.p4-error.C
+imported/gcc/basic_contract_eval_p4.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=ignore:REQUIREMENTS NOT MET:imported from gcc:basic.contract.eval.p4.C
+imported/gcc/basic_contract_eval_p8-2.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:basic.contract.eval.p8-2.C
+imported/gcc/basic_scope_contract_p1.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:basic.scope.contract.p1.C
+imported/gcc/basic_scope_contract_p2_1.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:basic.scope.contract.p2.1.C
+imported/gcc/block-scope-decl-then-def-contract.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:block-scope-decl-then-def-contract.C
+imported/gcc/block-scope-first-decl-contract.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:block-scope-first-decl-contract.C
+imported/gcc/check-err.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:cpp2a/check-err.C
+imported/gcc/concepts-requires-declarator-effect.sft.cpp:fn:-DTEST_NUMBER=1 --c++26:REQUIREMENTS NOT MET:imported from gcc:concepts-requires-declarator-effect.C
+imported/gcc/concepts-requires-declarator.sft.cpp:fn:-DTEST_NUMBER=1 --c++26:REQUIREMENTS NOT MET:imported from gcc:concepts-requires-declarator.C
+imported/gcc/constexpr-cdtor-contracts.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:constexpr-cdtor-contracts.C
+imported/gcc/constexpr-contract-array-bound.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:constexpr-contract-array-bound.C
+imported/gcc/constexpr-contract-every-problem.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:constexpr-contract-every-problem.C
+imported/gcc/constexpr-contract-observe-not-constant-init.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:constexpr-contract-observe-not-constant-init.C
+imported/gcc/constexpr-contract-observe-warning-once.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:constexpr-contract-observe-warning-once.C
+imported/gcc/constexpr-observe-fold-drops-runtime-check.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:constexpr-observe-fold-drops-runtime-check.C
+imported/gcc/constexpr-observe-nonconstant-predicate.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:constexpr-observe-nonconstant-predicate.C
+imported/gcc/constexpr-post-reference-result.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:constexpr-post-reference-result.C
+imported/gcc/constexpr-result-name-subobject.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:constexpr-result-name-subobject.C
+imported/gcc/constify-binding-ref-nttp.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:constify-binding-ref-nttp.C
+imported/gcc/constify-requires-expr.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:constify-requires-expr.C
+imported/gcc/contract-assert-run.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:contract-assert-run.C
+imported/gcc/contract-assert-vla-implicit-capture.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:contract-assert-vla-implicit-capture.C
+imported/gcc/contract-assert-warn-attributes.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:contract-assert-warn-attributes.C
+imported/gcc/contract-assume-nesting-permutations.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:contract-assume-nesting-permutations.C
+imported/gcc/contract-attributes-ignored-known.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:contract-attributes-ignored-known.C
+imported/gcc/contract-capture-note-location.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:contract-capture-note-location.C
+imported/gcc/contract-constexpr-named-result-address.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:contract-constexpr-named-result-address.C
+imported/gcc/contract-constexpr-repeat-call-shapes.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:contract-constexpr-repeat-call-shapes.C
+imported/gcc/contract-constexpr-side-effect-nested.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:contract-constexpr-side-effect-nested.C
+imported/gcc/contract-constexpr-side-effect-rollback.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:contract-constexpr-side-effect-rollback.C
+imported/gcc/contract-copy-capture-constify.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:contract-copy-capture-constify.C
+imported/gcc/contract-declarator-positions-run.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:contract-declarator-positions-run.C
+imported/gcc/contract-declarator-positions.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:contract-declarator-positions.C
+imported/gcc/contract-dependent-predicate-temporary.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:contract-dependent-predicate-temporary.C
+imported/gcc/contract-explicit-copy-capture.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:contract-explicit-copy-capture.C
+imported/gcc/contract-lambda-capture-constify.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:contract-lambda-capture-constify.C
+imported/gcc/contract-lambda-declaration-gc.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:contract-lambda-declaration-gc.C
+imported/gcc/contract-on-deleted-or-defaulted.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:contract-on-deleted-or-defaulted.C
+imported/gcc/contract-on-non-function-declarator.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:contract-on-non-function-declarator.C
+imported/gcc/contract-outofline-member-late-definition.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:contract-outofline-member-late-definition.C
+imported/gcc/contract-postcondition-constexpr.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:contract-postcondition-constexpr.C
+imported/gcc/contract-predicate-constify-lambda.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:contract-predicate-constify-lambda.C
+imported/gcc/contract-predicate-constify-storage.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:contract-predicate-constify-storage.C
+imported/gcc/contract-reentrancy-basic.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:contract-reentrancy-basic.C
+imported/gcc/contract-ref-capture-constify.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:contract-ref-capture-constify.C
+imported/gcc/contract-result-binding-identity.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:contract-result-binding-identity.C
+imported/gcc/contract-result-binding-mutation.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:contract-result-binding-mutation.C
+imported/gcc/contract-retval-destroyed-on-unwind-coro.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:contract-retval-destroyed-on-unwind-coro.C
+imported/gcc/contract-retval-destroyed-on-unwind.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:contract-retval-destroyed-on-unwind.C
+imported/gcc/contract-retval-sentinel.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:contract-retval-sentinel.C
+imported/gcc/contract-source-location-alias.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:contract-source-location-alias.C
+imported/gcc/contract-source-location-union.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:contract-source-location-union.C
+imported/gcc/contract-unexpanded-pack.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:contract-unexpanded-pack.C
+imported/gcc/contract-violation-noexcept.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:contract-violation-noexcept.C
+imported/gcc/contract-violation-user-ctor.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:contract-violation-user-ctor.C
+imported/gcc/contract_genericize.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:contract_genericize.C
+imported/gcc/contracts-class1.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:contracts-class1.C
+imported/gcc/contracts-header-below-cxx20.sft.cpp:fp:-DTEST_NUMBER=1 --c++17 --contracts:REQUIREMENTS NOT MET:imported from gcc:contracts-header-below-cxx20.C
+imported/gcc/contracts-nested-class1.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:contracts-nested-class1.C
+imported/gcc/contracts-nested-class2.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:contracts-nested-class2.C
+imported/gcc/coroutine-pre-post.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:coroutine-pre-post.C
+imported/gcc/ctor-pre-member-in-lambda.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:ctor-pre-member-in-lambda.C
+imported/gcc/ctor-pre-qualified-member.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:ctor-pre-qualified-member.C
+imported/gcc/ctor-pre-static-overload.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:ctor-pre-static-overload.C
+imported/gcc/ctor-pre-unevaluated-member.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:ctor-pre-unevaluated-member.C
+imported/gcc/dcl_contract_func_p6.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:dcl.contract.func.p6.C
+imported/gcc/dcl_contract_func_p7-pack-index.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:dcl.contract.func.p7-pack-index.C
+imported/gcc/dcl_contract_res-auto-return-parm.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:dcl.contract.res-auto-return-parm.C
+imported/gcc/dcl_contract_res_p1-2.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:dcl.contract.res.p1-2.C
+imported/gcc/dcl_contract_res_p1-NT.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:dcl.contract.res.p1-NT.C
+imported/gcc/dcl_contract_res_p1-pack.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:dcl.contract.res.p1-pack.C
+imported/gcc/dcl_contract_res_p1.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:dcl.contract.res.p1.C
+imported/gcc/debug-and-opt.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:debug-and-opt.C
+imported/gcc/decl-contract-lambda-default-arg-nsscope.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:decl-contract-lambda-default-arg-nsscope.C
+imported/gcc/decl-contract-lambda-default-arg.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:decl-contract-lambda-default-arg.C
+imported/gcc/deducing-this-no-this-in-predicate.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:deducing-this-no-this-in-predicate.C
+imported/gcc/default-outofline-adds-contract.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:default-outofline-adds-contract.C
+imported/gcc/default-outofline-contract.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:default-outofline-contract.C
+imported/gcc/deleted-violation-handler.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:deleted-violation-handler.C
+imported/gcc/dependent_contract.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:dependent_contract.C
+imported/gcc/dtor-redecl-contracts-not-compared.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:dtor-redecl-contracts-not-compared.C
+imported/gcc/evaluation-semantic-last-wins.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:evaluation-semantic-last-wins.C
+imported/gcc/evaluation-semantic-set-unspecified.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:evaluation-semantic-set-unspecified.C
+imported/gcc/explicit-spec-contract-dropped.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:explicit-spec-contract-dropped.C
+imported/gcc/explicit-spec-contract-mismatch.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:explicit-spec-contract-mismatch.C
+imported/gcc/explicit-spec-decl-renamed-params.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:explicit-spec-decl-renamed-params.C
+imported/gcc/expr_prim_id_unqual_p7-4.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:expr.prim.id.unqual.p7-4.C
+imported/gcc/expr_prim_lambda_closure_p10.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:expr.prim.lambda.closure.p10.C
+imported/gcc/extension-spelling-without-contracts.sft.cpp:fn:-DTEST_NUMBER=1 --c++17:REQUIREMENTS NOT MET:imported from gcc:extension-spelling-without-contracts.C
+imported/gcc/fold-pr125645.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:fold-pr125645.C
+imported/gcc/friend-contract-class-scope.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:friend-contract-class-scope.C
+imported/gcc/friend-redecl-namespace-mismatch.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:friend-redecl-namespace-mismatch.C
+imported/gcc/function-contract-specifier-seq-error.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:function-contract-specifier-seq-error.C
+imported/gcc/function-contract-specifier-seq.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:function-contract-specifier-seq.C
+imported/gcc/generic-lambda-contract-capture.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:generic-lambda-contract-capture.C
+imported/gcc/generic-lambda-free-function-capture.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:generic-lambda-free-function-capture.C
+imported/gcc/generic-lambda-modifies-param.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:generic-lambda-modifies-param.C
+imported/gcc/generic-lambda-pre-capture.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:generic-lambda-pre-capture.C
+imported/gcc/handler-in-linkage-spec.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:handler-in-linkage-spec.C
+imported/gcc/hidden-friend-template-pre-param.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:hidden-friend-template-pre-param.C
+imported/gcc/hidden-friend-template-pre.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:hidden-friend-template-pre.C
+imported/gcc/intro_compliance_general_p2_3_4.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:intro.compliance.general.p2.3.4.C
+imported/gcc/label-recovery-parens.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:label-recovery-parens.C
+imported/gcc/label-recovery-unterminated.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:label-recovery-unterminated.C
+imported/gcc/lambda-capture-contract-in-template.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:lambda-capture-contract-in-template.C
+imported/gcc/lambda-capture-in-contract-error.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:lambda-capture-in-contract-error.C
+imported/gcc/lambda-capture-in-contract.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:lambda-capture-in-contract.C
+imported/gcc/lambda-capture-this-predicate.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:lambda-capture-this-predicate.C
+imported/gcc/lambda-contract-in-template.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:lambda-contract-in-template.C
+imported/gcc/lambda-contract-only-capture-constant-template.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:lambda-contract-only-capture-constant-template.C
+imported/gcc/lambda-contract-only-capture-constant.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:lambda-contract-only-capture-constant.C
+imported/gcc/lambda-contract-only-capture-edges.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:lambda-contract-only-capture-edges.C
+imported/gcc/lambda-contract-only-capture-generic.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:lambda-contract-only-capture-generic.C
+imported/gcc/lambda-contract-only-capture-nested.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:lambda-contract-only-capture-nested.C
+imported/gcc/lambda-contract-only-capture-pack.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:lambda-contract-only-capture-pack.C
+imported/gcc/lambda-contract-only-capture.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:lambda-contract-only-capture.C
+imported/gcc/lambda-in-postcondition-result-name.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:lambda-in-postcondition-result-name.C
+imported/gcc/lambda-modifies-param-in-pre.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:lambda-modifies-param-in-pre.C
+imported/gcc/lambda-postcondition-param-rules.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:lambda-postcondition-param-rules.C
+imported/gcc/lambda-pre-fold-capture.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:lambda-pre-fold-capture.C
+imported/gcc/lambda.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:lambda.C
+imported/gcc/libstdcxx-no-libcontracts-dependency.sft.cpp:rp:-DTEST_NUMBER=1 --c++17:REQUIREMENTS NOT MET:imported from gcc:libstdcxx-no-libcontracts-dependency.C
+imported/gcc/local-class-in-predicate-lambda.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:local-class-in-predicate-lambda.C
+imported/gcc/matrix-exceptspec-errors.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:matrix-exceptspec-errors.C
+imported/gcc/matrix-exceptspec.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:matrix-exceptspec.C
+imported/gcc/matrix-notional-enforce-errors-not-constant.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:matrix-notional-enforce-errors-not-constant.C
+imported/gcc/matrix-notional-enforce.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:matrix-notional-enforce.C
+imported/gcc/matrix-notional-ignore-errors-not-constant.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=ignore:REQUIREMENTS NOT MET:imported from gcc:matrix-notional-ignore-errors-not-constant.C
+imported/gcc/matrix-notional-ignore.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=ignore:REQUIREMENTS NOT MET:imported from gcc:matrix-notional-ignore.C
+imported/gcc/matrix-notional-observe-errors-not-constant.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:matrix-notional-observe-errors-not-constant.C
+imported/gcc/matrix-notional-observe-warnings.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:matrix-notional-observe-warnings.C
+imported/gcc/matrix-notional-observe.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:matrix-notional-observe.C
+imported/gcc/matrix-notional-quick-enforce-errors-not-constant.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=quick_enforce:REQUIREMENTS NOT MET:imported from gcc:matrix-notional-quick-enforce-errors-not-constant.C
+imported/gcc/matrix-notional-quick-enforce.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=quick_enforce:REQUIREMENTS NOT MET:imported from gcc:matrix-notional-quick-enforce.C
+imported/gcc/matrix-notional-run-vla.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:matrix-notional-run-vla.C
+imported/gcc/matrix-notional-run.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:matrix-notional-run.C
+imported/gcc/matrix-readers-codegen.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:matrix-readers-codegen.C
+imported/gcc/matrix-readers.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:matrix-readers.C
+imported/gcc/matrix-sfinae-codegen-errors.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:matrix-sfinae-codegen-errors.C
+imported/gcc/matrix-sfinae-errors.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:matrix-sfinae-errors.C
+imported/gcc/matrix-sfinae.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:matrix-sfinae.C
+imported/gcc/member-template-spec-contracts.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:member-template-spec-contracts.C
+imported/gcc/name_mangling.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:name_mangling.C
+imported/gcc/nested-assert-in-stmt-expr.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:nested-assert-in-stmt-expr.C
+imported/gcc/nested-copy-capture-in-predicate.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:nested-copy-capture-in-predicate.C
+imported/gcc/no_contracts.sft.cpp:fn:-DTEST_NUMBER=1 --no_contracts --c++26:REQUIREMENTS NOT MET:imported from gcc:no_contracts.C
+imported/gcc/noexcept-violation-handler.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:noexcept-violation-handler.C
+imported/gcc/nsdmi-lambda-contract-this.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:nsdmi-lambda-contract-this.C
+imported/gcc/observe-warning-unused-var-eval.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:observe-warning-unused-var-eval.C
+imported/gcc/open-bug-retval-throwing-cleanup.sft.cpp:rp:-DTEST_NUMBER=1 --c++26:REQUIREMENTS NOT MET:imported from gcc:open-bug-retval-throwing-cleanup.C
+imported/gcc/open-bug-typedef-requires-clause.sft.cpp:fn:-DTEST_NUMBER=1 --c++26:REQUIREMENTS NOT MET:imported from gcc:open-bug-typedef-requires-clause.C
+imported/gcc/over_call_func_p3_1.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:over.call.func.p3.1.C
+imported/gcc/p3097-no-flag.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:p3097-no-flag.C
+imported/gcc/p3098-noflag.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:p3098-noflag.C
+imported/gcc/p3099-message-no-flag.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:p3099-message-no-flag.C
+imported/gcc/p3100-enum.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:p3100-enum.C
+imported/gcc/p3100-implicit-no-flag.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:p3100-implicit-no-flag.C
+imported/gcc/p3100-no-flag.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:p3100-no-flag.C
+imported/gcc/p3290-api-no-flag.sft.cpp:fp:-DTEST_NUMBER=1 --c++26:REQUIREMENTS NOT MET:imported from gcc:p3290-api-no-flag.C
+imported/gcc/p3400-label-no-flag.sft.cpp:fn:-DTEST_NUMBER=1 --c++26:REQUIREMENTS NOT MET:imported from gcc:p3400-label-no-flag.C
+imported/gcc/p3400-rethrow-bypass-weak-callee-2.sft.cpp:fp:-DTEST_NUMBER=1 --c++26:REQUIREMENTS NOT MET:imported from gcc:p3400-rethrow-bypass-weak-callee-2.cc
+imported/gcc/p3595-dynamic-multi-tu-2.sft.cpp:fp:-DTEST_NUMBER=1 --c++26:REQUIREMENTS NOT MET:imported from gcc:p3595-dynamic-multi-tu-2.cc
+imported/gcc/p4283-ftm-undefined.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:p4283-ftm-undefined.C
+imported/gcc/p4298-ftm-undefined.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:p4298-ftm-undefined.C
+imported/gcc/p4298-noexcept-fn-inline.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:p4298-noexcept-fn-inline.C
+imported/gcc/p4301-report-ftm-undefined.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:p4301-report-ftm-undefined.C
+imported/gcc/p4301-report-no-flag.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:p4301-report-no-flag.C
+imported/gcc/post-odr-use-template-shapes.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:post-odr-use-template-shapes.C
+imported/gcc/postcondition-const-function-pointer-param.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:postcondition-const-function-pointer-param.C
+imported/gcc/postcondition-discarded-member-access.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:postcondition-discarded-member-access.C
+imported/gcc/postcondition-discarded-member-template.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:postcondition-discarded-member-template.C
+imported/gcc/postcondition-discarded-operand-dependent.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:postcondition-discarded-operand-dependent.C
+imported/gcc/postcondition-function-param-reason.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:postcondition-function-param-reason.C
+imported/gcc/postcondition-outer-local.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:postcondition-outer-local.C
+imported/gcc/postcondition-redecl-reference-param.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:postcondition-redecl-reference-param.C
+imported/gcc/postcondition-unevaluated-operand.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:postcondition-unevaluated-operand.C
+imported/gcc/pr113968.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:pr113968.C
+imported/gcc/pr124486-copy.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:pr124486-copy.C
+imported/gcc/pr124486-ctor.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:pr124486-ctor.C
+imported/gcc/pr124486-deleted.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:pr124486-deleted.C
+imported/gcc/pr124486-dtor.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:pr124486-dtor.C
+imported/gcc/pr124486-post.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:pr124486-post.C
+imported/gcc/pr125459.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:pr125459.C
+imported/gcc/pr125574.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:pr125574.C
+imported/gcc/pr125904.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:pr125904.C
+imported/gcc/pr126038.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:pr126038.C
+imported/gcc/pr126878.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:pr126878.C
+imported/gcc/precondition-const-local-init.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:precondition-const-local-init.C
+imported/gcc/predicate-instantiation-timing.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:predicate-instantiation-timing.C
+imported/gcc/predicate-throw-array-filler.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:predicate-throw-array-filler.C
+imported/gcc/predicate-throw-delete.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:predicate-throw-delete.C
+imported/gcc/predicate-throw-not-detected.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:predicate-throw-not-detected.C
+imported/gcc/redecl-condition-folded.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:redecl-condition-folded.C
+imported/gcc/redecl-omit-contract-lambda.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:redecl-omit-contract-lambda.C
+imported/gcc/redecl-result-name-presence.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:redecl-result-name-presence.C
+imported/gcc/redecl-unnamed-param-lambda-capture.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:redecl-unnamed-param-lambda-capture.C
+imported/gcc/result-binding-lambda-capture.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:result-binding-lambda-capture.C
+imported/gcc/result-binding-lambda-ref-constify.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:result-binding-lambda-ref-constify.C
+imported/gcc/result-name-attributes.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:result-name-attributes.C
+imported/gcc/result-name-in-lambda.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:result-name-in-lambda.C
+imported/gcc/result-name-lambda-enclosing-scope.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:result-name-lambda-enclosing-scope.C
+imported/gcc/result-name-misplaced.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:result-name-misplaced.C
+imported/gcc/result-name-shadows-parameter.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=ignore:REQUIREMENTS NOT MET:imported from gcc:result-name-shadows-parameter.C
+imported/gcc/self-name-in-own-contract.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:self-name-in-own-contract.C
+imported/gcc/sfinae-contracts.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:sfinae-contracts.C
+imported/gcc/stmt-expr-local-constified.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:stmt-expr-local-constified.C
+imported/gcc/stmt-expr-local-generic-lambda-deduced-post.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:open-bug-stmt-expr-local-generic-lambda-deduced-post.C
+imported/gcc/stmt-expr-local-generic-lambda.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:stmt-expr-local-generic-lambda.C
+imported/gcc/stmt-expr-local-lambda-deduced-post.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:stmt-expr-local-lambda-deduced-post.C
+imported/gcc/stmt-expr-local-lambda-pre.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:stmt-expr-local-lambda-pre.C
+imported/gcc/template-decl-contract-lambda-class.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:template-decl-contract-lambda-class.C
+imported/gcc/template-decl-contract-lambda-nsscope.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:template-decl-contract-lambda-nsscope.C
+imported/gcc/template-decl-contract-lambda.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:template-decl-contract-lambda.C
+imported/gcc/template-post-pr125011.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:template-post-pr125011.C
+imported/gcc/template-post1.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:template-post1.C
+imported/gcc/this-in-out-of-line-member-contract.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:this-in-out-of-line-member-contract.C
+imported/gcc/throwing-violation-handler.sft.cpp:fp:-DTEST_NUMBER=1 --c++26:REQUIREMENTS NOT MET:imported from gcc:throwing-violation-handler.cc
+imported/gcc/underscore-keywords-without-p4299.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:underscore-keywords-without-p4299.C
+imported/gcc/unused_warning.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:unused_warning.C
+imported/gcc/vaargs.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:vaargs.C
+imported/gcc/violation-handler-cv-param.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:violation-handler-cv-param.C
+imported/gcc/violation-handler-signature-wording.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:violation-handler-signature-wording.C
+imported/gcc/virtual-flag-error-twice.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts:REQUIREMENTS NOT MET:imported from gcc:virtual-flag-error-twice.C
+imported/gcc/void-postcondition-firing.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:void-postcondition-firing.C
 parse/attributes.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: attributes on contract assertions and result names
 parse/param_operands.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: a precondition's parameters in nested operands (new[] bound, dependent typeid)
 parse/semantic_option_cp_gen_be.sft.cpp:fp:-DTEST_NUMBER=1 --contract_evaluation_semantic=ignore:REQUIREMENTS NOT MET:contracts: every evaluation semantic with the C++-generating back end

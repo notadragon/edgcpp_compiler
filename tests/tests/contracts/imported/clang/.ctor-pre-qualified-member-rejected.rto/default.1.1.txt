@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 18: error: in a precondition of a constructor or a postcondition of a destructor, a member must be accessed through an explicit "this"
+    C(char) pre(C::b);      // expected-error {{cannot access non-static member 'b' in the precondition of a constructor}}
+                   ^
+
+"Test_name.c", line 24: error: in a precondition of a constructor or a postcondition of a destructor, a member must be accessed through an explicit "this"
+    ~E() post(E::b);        // expected-error {{cannot access non-static member 'b' in the postcondition of a destructor}}
+                 ^
+
+2 errors detected in the compilation of "Test_name.c".

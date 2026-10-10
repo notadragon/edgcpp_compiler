@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 Test_name.c
+"Test_name.c", line 16: error: a requires-clause is not allowed here (not a templated function)
+  typedef int F (int) requires true; // { dg-error "requires-clause on typedef" }
+                      ^
+
+1 error detected in the compilation of "Test_name.c".

@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 Test_name.c
+"Test_name.c", line 15: error: assertion-control specifiers require --contracts_p3400
+    pre<my_label>(x > 0)  // { dg-error "assertion-control labels require" }
+       ^
+
+"Test_name.c", line 12: warning: variable "my_label" was declared but never referenced
+  constexpr my_label_t my_label{};
+                       ^
+
+1 error detected in the compilation of "Test_name.c".

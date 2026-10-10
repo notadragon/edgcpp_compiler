@@ -1,0 +1,42 @@
+//remark: imported from gcc:contracts-nested-class2.C
+//type: fp
+//require: BACK_END_IS_CP_GEN_BE 1
+//options: --c++26 --contracts --contract_evaluation_semantic=observe
+// { dg-do compile { target c++23 } }
+// { dg-additional-options "-fcontracts -fcontract-evaluation-semantic=observe" }
+
+void gfn3(int n) pre (n > 0 );
+
+struct Outer {
+  struct Inner {
+    void fn(int n) pre (n > 0 && bob > 1);
+  };
+
+  void fn(int m) pre (m > 1);
+
+  friend void gfn1(int p) pre (p > 0) { }
+
+  friend void gfn2(int p, Outer *) pre (p > 0) { }
+
+  friend void gfn3(int n);
+
+  static int bob;
+};
+int Outer::bob{-1};
+
+void Outer::Inner::fn(int x) { }
+void Outer::fn(int y) { }
+
+void gfn3(int n) { }
+void gfn1(int q);
+
+int main(int, char **) {
+  Outer::Inner in;
+  in.fn(-5);
+  Outer out;
+  out.fn(-6);
+  gfn1(-7);
+  gfn2(-8, &out);
+  gfn3(-9);
+}
+

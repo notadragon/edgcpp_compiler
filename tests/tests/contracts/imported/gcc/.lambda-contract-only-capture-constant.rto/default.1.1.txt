@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contract_evaluation_semantic=enforce Test_name.c
+"Test_name.c", line 28: error: "n" (declared at line 20) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto l6 = [=] { contract_assert (&n != nullptr); };	// { dg-error "not implicitly captured by a contract assertion" }
+                                      ^
+
+1 error detected in the compilation of "Test_name.c".

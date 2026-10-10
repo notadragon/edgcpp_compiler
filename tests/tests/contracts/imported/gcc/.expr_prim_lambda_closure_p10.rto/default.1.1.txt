@@ -1,0 +1,46 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 33: error: "i" (declared at line 30) cannot be implicitly captured only for contract assertions; capture it explicitly
+      pre (i > 0) {};  // { dg-error {'i' is not implicitly captured by a contract assertion} }
+           ^
+
+"Test_name.c", line 39: error: "i" (declared at line 30) cannot be implicitly captured only for contract assertions; capture it explicitly
+      contract_assert (i > 0); // { dg-error {'i' is not implicitly captured by a contract assertion} }
+                       ^
+
+"Test_name.c", line 55: error: "y" (declared at line 53) cannot be implicitly captured only for contract assertions; capture it explicitly
+      pre([=]{ return y; }()) {};  // { dg-error {'y' is not implicitly captured by a contract assertion} } outer capture of y is invalid.
+                      ^
+
+"Test_name.c", line 27: warning: variable "f1" was declared but never referenced
+    auto f1 = [=]
+         ^
+
+"Test_name.c", line 32: warning: variable "f2" was declared but never referenced
+    auto f2 = [=]
+         ^
+
+"Test_name.c", line 35: warning: variable "f3" was declared but never referenced
+    auto f3 = [i]
+         ^
+
+"Test_name.c", line 38: warning: variable "f4" was declared but never referenced
+    auto f4 = [=] {
+         ^
+
+"Test_name.c", line 42: warning: variable "f5" was declared but never referenced
+    auto f5 = [=] {
+         ^
+
+"Test_name.c", line 47: warning: variable "f6" was declared but never referenced
+    auto f6 = [=] pre (                // #1
+         ^
+
+"Test_name.c", line 54: warning: variable "f7" was declared but never referenced
+    auto f7 = [=]
+         ^
+
+"Test_name.c", line 58: warning: variable "f8" was declared but never referenced
+    auto f8 = [&] 
+         ^
+
+3 errors detected in the compilation of "Test_name.c".

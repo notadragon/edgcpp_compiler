@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 18: error: expression must be a modifiable lvalue
+  void f(int i) pre([&] { return ++i > 0; }()) {}                 // expected-error {{inside a contract}}
+                                   ^
+
+"Test_name.c", line 20: error: expression must be a modifiable lvalue
+  void f2(int i) { contract_assert([&] { return ++i > 0; }()); }  // expected-error {{inside a contract}}
+                                                  ^
+
+"Test_name.c", line 22: error: expression must be a modifiable lvalue
+  struct S { void m(int i) pre([&] { return ++i > 0; }()); };      // expected-error {{inside a contract}}
+                                              ^
+
+"Test_name.c", line 24: error: expression must be a modifiable lvalue
+  int g() post(r: [&] { return ++r > 0; }()) { return 1; }            // expected-error {{cannot assign to variable 'r' because it is considered 'const' inside of a contract}}
+                                 ^
+
+4 errors detected in the compilation of "Test_name.c".

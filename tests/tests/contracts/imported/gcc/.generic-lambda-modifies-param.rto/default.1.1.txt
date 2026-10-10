@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 17: error: expression must be a modifiable lvalue
+  void f (int i) pre ([&] (auto k) { return ++i > k; } (0)) {}	// { dg-error "read-only" }
+                                              ^
+
+"Test_name.c", line 19: error: expression must be a modifiable lvalue
+  int g () post (r: [&] (auto k) { return ++r > k; } (0)) { return 1; } // { dg-error "read-only" }
+                                            ^
+
+2 errors detected in the compilation of "Test_name.c".

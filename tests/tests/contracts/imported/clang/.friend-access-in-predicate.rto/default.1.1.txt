@@ -1,0 +1,16 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 21: error: function "ContractIsFriend::A::g" (declared at line 14) is inaccessible
+  void u(A &a) pre(a.g()) { // expected-error {{'g' is a private member}}
+                     ^
+
+"Test_name.c", line 54: error: function "TemplateFriend::A::g" (declared at line 60) is inaccessible
+    void f(T &a) pre(a.g()) // expected-error {{'g' is a private member}}
+                       ^
+          detected during instantiation of "void TemplateFriend::B<T, U>::f(T &) [with T=TemplateFriend::A, U=long]" at line 64
+
+"Test_name.c", line 55: error: function "TemplateFriend::A::g" (declared at line 60) is inaccessible
+        post(a.g())         // expected-error {{'g' is a private member}}
+               ^
+          detected during instantiation of "void TemplateFriend::B<T, U>::f(T &) [with T=TemplateFriend::A, U=long]" at line 64
+
+3 errors detected in the compilation of "Test_name.c".

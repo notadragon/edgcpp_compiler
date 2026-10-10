@@ -1,0 +1,1 @@
+fe_only -DTEST_NUMBER=2 --c++26 --contracts --contracts_p3098 --contract_evaluation_semantic=observe --c++26 -DTHROWS Test_name.c

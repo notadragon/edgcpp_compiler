@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 14: error: function "DefCtorPost::DefCtorPost()" defaulted on its first declaration cannot have a function contract specifier
+  struct DefCtorPost { DefCtorPost () post (true) = default; int x = 0; };
+                                      ^
+
+1 error detected in the compilation of "Test_name.c".

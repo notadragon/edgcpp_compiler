@@ -1,0 +1,34 @@
+//remark: imported from gcc:basic.contract.eval.p14.C
+//type: rp
+//require: BACK_END_IS_CP_GEN_BE 1
+//options: --c++26 --contracts --contract_evaluation_semantic=observe
+//use_system_includes: true
+//linker_options: -lcontracts
+//match_regex: contract violation in function void f.. at .*: check.15..*(\n|\r\n|\r)
+//match_regex: .assertion_kind: pre, semantic: observe, mode: evaluation_exception: threw an instance of .int., terminating: no.*(\n|\r\n|\r)
+// N5008 :
+// basic.contract.eval/p14
+// Note 10 : If the contract-violation handler returns normally and the evaluation semantic is observe, control flow
+// continues normally after the point of evaluation of the contract assertion. — end note
+// { dg-do run { target c++26 } }
+// { dg-additional-options "-fcontracts -fcontract-evaluation-semantic=observe" }
+// { dg-skip-if "requires hosted libstdc++ for stdc++exp" { ! hostedlib } }
+
+bool check(int i){
+  if (i > 10)
+    throw 3;
+
+  return true;
+}
+
+void f() pre(check(15)){}
+
+
+int main(int, char**)
+{
+
+  f();
+}
+
+// { dg-output "contract violation in function void f.. at .*: check.15..*(\n|\r\n|\r)" }
+// { dg-output ".assertion_kind: pre, semantic: observe, mode: evaluation_exception: threw an instance of .int., terminating: no.*(\n|\r\n|\r)" }

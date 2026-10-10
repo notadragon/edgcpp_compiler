@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contracts --c++26 Test_name.c
+"Test_name.c", line 18: error: mismatched contract condition in declaration (previous contract specifier declared at line 14)
+  constexpr int f() pre(U{} + 1); // expected-error {{function redeclaration differs in contract specifier sequence}}
+                    ^
+
+"Test_name.c", line 23: error: declaration has a different number of contracts than the previous declaration of "int g(int)"
+  constexpr int g(int x) pre(0) post(1) // expected-error {{redeclaration differs}}
+                         ^
+
+"Test_name.c", line 27: error: declaration adds contracts to "int z(int)"
+  constexpr int z(int x) pre(x); // expected-error {{redeclaration differs}}
+                         ^
+
+3 errors detected in the compilation of "Test_name.c".

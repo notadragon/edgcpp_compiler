@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 14: error: contract predicate is false in constant expression
+  constexpr const int &pick (const int &a) post (r : r > 0) { return a; } // { dg-error "contract predicate is false in constant expression" }
+                                           ^
+
+"Test_name.c", line 19: warning: variable "bad" was declared but never referenced
+  constexpr int bad = pick (z);
+                ^
+
+"Test_name.c", line 23: warning: variable "w" was declared but never referenced
+  constexpr int w = pick2 (); // OK
+                ^
+
+1 error detected in the compilation of "Test_name.c".

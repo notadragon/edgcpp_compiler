@@ -1,0 +1,749 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contract_evaluation_semantic=observe Test_name.c
+"Test_name.c", line 41: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 63: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 84: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 106: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 107: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 128: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 129: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 150: warning: contract condition is not constant
+    pre (v > 0)  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 172: warning: contract condition is not constant
+    pre (v > 0)  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 173: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 194: warning: contract condition is not constant
+    pre (v > 0)  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 195: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 217: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 238: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 261: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 282: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 305: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 326: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 348: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 349: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 370: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 371: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 393: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 410: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 426: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 443: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 444: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 460: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 461: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 477: warning: contract condition is not constant
+    pre (v > 0)  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 494: warning: contract condition is not constant
+    pre (v > 0)  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 495: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 511: warning: contract condition is not constant
+    pre (v > 0)  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 512: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 529: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 545: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 563: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 579: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 597: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 613: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 630: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 631: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 647: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 648: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 665: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 682: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 698: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 715: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 716: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 732: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 733: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 749: warning: contract condition is not constant
+    pre (v > 0)  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 766: warning: contract condition is not constant
+    pre (v > 0)  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 767: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 783: warning: contract condition is not constant
+    pre (v > 0)  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 784: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 801: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 817: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 835: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 851: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 869: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 885: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 902: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 903: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 919: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 920: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 937: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 959: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 980: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1002: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1003: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1024: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1025: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1046: warning: contract condition is not constant
+    pre (v > 0)  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1068: warning: contract condition is not constant
+    pre (v > 0)  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1069: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1090: warning: contract condition is not constant
+    pre (v > 0)  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1091: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1113: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1134: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1157: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1178: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1201: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1222: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1244: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1245: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1266: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1267: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1288: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1291: warning: contract condition is not constant
+    contract_assert (rt ());  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1311: warning: contract condition is not constant
+    pre (v > 0)  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1314: warning: contract predicate is false in constant expression
+    contract_assert (false);  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1334: warning: contract condition is not constant
+    pre (v > 0)  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1337: warning: contract condition is not constant
+    contract_assert (rt ());  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1357: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1358: warning: contract condition is not constant
+    post (r: rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1379: warning: contract condition is not constant
+    pre (v > 0)  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1380: warning: contract predicate is false in constant expression
+    post (r: false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1401: warning: contract condition is not constant
+    pre (v > 0)  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1402: warning: contract condition is not constant
+    post (r: rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1430: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1423: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1458: warning: contract condition is not constant
+    pre (v > 0)  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1451: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1486: warning: contract condition is not constant
+    pre (v > 0)  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1479: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1507: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1510: warning: contract condition is not constant
+    contract_assert (rt ());  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1525: warning: contract condition is not constant
+    pre (v > 0)  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1528: warning: contract predicate is false in constant expression
+    contract_assert (false);  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1543: warning: contract condition is not constant
+    pre (v > 0)  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1546: warning: contract condition is not constant
+    contract_assert (rt ());  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1561: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1562: warning: contract condition is not constant
+    post (r: rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1578: warning: contract condition is not constant
+    pre (v > 0)  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1579: warning: contract predicate is false in constant expression
+    post (r: false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1595: warning: contract condition is not constant
+    pre (v > 0)  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1596: warning: contract condition is not constant
+    post (r: rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1619: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1612: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1642: warning: contract condition is not constant
+    pre (v > 0)  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1635: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1665: warning: contract condition is not constant
+    pre (v > 0)  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1658: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1681: warning: contract condition is not constant
+    pre (v > 0)  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1682: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1702: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1703: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1723: warning: contract condition is not constant
+    pre (v > 0)  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1724: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1741: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1742: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1759: warning: contract condition is not constant
+    pre (v > 0)  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1760: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1776: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1777: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1793: warning: contract condition is not constant
+    pre (v > 0)  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1794: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1810: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1811: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1827: warning: contract condition is not constant
+    pre (v > 0)  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1828: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1844: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1845: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1861: warning: contract condition is not constant
+    pre (v > 0)  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1862: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1879: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1880: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1897: warning: contract condition is not constant
+    pre (v > 0)  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1898: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1914: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1915: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1931: warning: contract condition is not constant
+    pre (v > 0)  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1932: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1957: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1958: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1983: warning: contract condition is not constant
+    pre (v > 0)  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 1984: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 1995: warning: statement is unreachable
+    return 0;
+    ^
+
+"Test_name.c", line 2006: warning: contract predicate is false in constant expression
+    pre (false)  // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 2007: warning: contract condition is not constant
+    pre (rt ())  // { dg-warning "contract condition is not constant" }
+    ^
+
+"Test_name.c", line 2018: warning: statement is unreachable
+    return 0;
+    ^
+
+"Test_name.c", line 671: warning: variable "constexpr_var_pp_T_F_u_const_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 688: warning: variable "constexpr_var_pp_T_NC_u_const_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 705: warning: variable "constexpr_var_pp_F_T_u_const_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 722: warning: variable "constexpr_var_pp_F_F_u_const_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 739: warning: variable "constexpr_var_pp_F_NC_u_const_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 756: warning: variable "constexpr_var_pp_NR_T_u_const_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 773: warning: variable "constexpr_var_pp_NR_F_u_const_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 790: warning: variable "constexpr_var_pp_NR_NC_u_const_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 807: warning: variable "constexpr_var_pp_CD_F_k_const_observe::k" was declared but never referenced
+  constexpr int k = f (1);
+                ^
+
+"Test_name.c", line 824: warning: variable "constexpr_var_pp_F_CD_k_const_observe::k" was declared but never referenced
+  constexpr int k = f (1);
+                ^
+
+"Test_name.c", line 841: warning: variable "constexpr_var_pp_CD_NC_k_const_observe::k" was declared but never referenced
+  constexpr int k = f (1);
+                ^
+
+"Test_name.c", line 858: warning: variable "constexpr_var_pp_NC_CD_k_const_observe::k" was declared but never referenced
+  constexpr int k = f (1);
+                ^
+
+"Test_name.c", line 875: warning: variable "constexpr_var_pp_NR_NC_k_const_observe::k" was declared but never referenced
+  constexpr int k = f (1);
+                ^
+
+"Test_name.c", line 892: warning: variable "constexpr_var_pp_NC_NR_k_const_observe::k" was declared but never referenced
+  constexpr int k = f (1);
+                ^
+
+"Test_name.c", line 909: warning: variable "constexpr_var_pp_F_NC_k_const_observe::k" was declared but never referenced
+  constexpr int k = f (1);
+                ^
+
+"Test_name.c", line 926: warning: variable "constexpr_var_pp_NC_F_k_const_observe::k" was declared but never referenced
+  constexpr int k = f (1);
+                ^
+
+"Test_name.c", line 1515: warning: variable "constexpr_var_pa_F_NC_u_const_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 1533: warning: variable "constexpr_var_pa_NR_F_u_const_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 1551: warning: variable "constexpr_var_pa_NR_NC_u_const_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 1568: warning: variable "constexpr_var_pq_F_NC_u_const_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 1585: warning: variable "constexpr_var_pq_NR_F_u_const_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 1602: warning: variable "constexpr_var_pq_NR_NC_u_const_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 1625: warning: variable "constexpr_var_nest_F_NC_u_const_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 1648: warning: variable "constexpr_var_nest_NR_F_u_const_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 1671: warning: variable "constexpr_var_nest_NR_NC_u_const_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+

@@ -1,0 +1,5 @@
+./a.out
+custom std::handle_contract_violation called: 50 Test_name.c
+custom std::handle_contract_violation called: 44 Test_name.c
+custom std::handle_contract_violation called: 55 Test_name.c
+custom std::handle_contract_violation called: 59 Test_name.c

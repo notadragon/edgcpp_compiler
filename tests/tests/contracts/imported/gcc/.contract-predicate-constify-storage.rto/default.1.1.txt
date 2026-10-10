@@ -1,0 +1,47 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 43: error: expression must be a modifiable lvalue
+        pre (++n)      // { dg-error "increment of read-only location" }
+               ^
+
+"Test_name.c", line 44: error: expression must be a modifiable lvalue
+        pre (++i)      // { dg-error "increment of read-only location" }
+               ^
+
+"Test_name.c", line 46: error: expression must be a modifiable lvalue
+        pre (++r)      // { dg-error "increment of read-only location" }
+               ^
+
+"Test_name.c", line 47: error: the object has type qualifiers that are not compatible with the member function "X::m"
+            object type is: const X
+        pre (x.m ())   // { dg-error "discards qualifiers" }
+             ^
+
+"Test_name.c", line 55: error: expression must be a modifiable lvalue
+  void f_namespace () pre (++g_n); // { dg-error "increment of read-only location" }
+                             ^
+
+"Test_name.c", line 60: error: expression must be a modifiable lvalue
+  void f_pointer_itself () pre (++g_p); // { dg-error "increment of read-only location" }
+                                  ^
+
+"Test_name.c", line 73: error: expression must be a modifiable lvalue
+    contract_assert ((g_y = &a) != nullptr); // { dg-error "assignment of read-only location|discards qualifiers" }
+                      ^
+
+"Test_name.c", line 81: error: expression must be a modifiable lvalue
+    contract_assert (++s); // { dg-error "increment of read-only location" }
+                       ^
+
+"Test_name.c", line 86: error: expression must be a modifiable lvalue
+  void f_thread_local () pre (++t_n); // { dg-error "increment of read-only location" }
+                                ^
+
+"Test_name.c", line 94: error: expression must be a modifiable lvalue
+  void f_static_member () pre (++HasStatic::s); // { dg-error "increment of read-only location" }
+                                 ^
+
+"Test_name.c", line 102: error: expression must be a modifiable lvalue
+    contract_assert (++a); // { dg-error "increment of read-only location" }
+                       ^
+
+11 errors detected in the compilation of "Test_name.c".

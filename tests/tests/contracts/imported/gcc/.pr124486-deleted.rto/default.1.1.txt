@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 14: error: deleted function "void Del::f(int)" cannot have a function contract specifier
+  struct Del { void f (int x) pre (x > 0) = delete; };
+                              ^
+
+1 error detected in the compilation of "Test_name.c".

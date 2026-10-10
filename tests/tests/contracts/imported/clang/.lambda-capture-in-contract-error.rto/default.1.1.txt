@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 22: error: an enclosing-function local variable cannot be referenced in a lambda body unless it is in the capture list
+  void free_fn(int x) pre([] { return x > 0; }()) {}
+                                      ^
+
+"Test_name.c", line 32: error: an enclosing-function local variable cannot be referenced in a lambda body unless it is in the capture list
+    void mem(int x) pre([] { return x > 0; }()) {}
+                                    ^
+
+"Test_name.c", line 43: error: an enclosing-function local variable cannot be referenced in a lambda body unless it is in the capture list
+    auto l = [](int x) pre([] { return x > 0; }()) {};
+                                       ^
+
+"Test_name.c", line 43: warning: variable "l" was set but never used
+    auto l = [](int x) pre([] { return x > 0; }()) {};
+         ^
+
+3 errors detected in the compilation of "Test_name.c".

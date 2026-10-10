@@ -1,0 +1,59 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 26: error: value parameter "b" used in a postcondition must be declared const
+  int fn_control (int b) post (b > 0) { return b; }  // { dg-error "value parameter used in a postcondition must be const" }
+                      ^
+
+"Test_name.c", line 31: error: value parameter "b" used in a postcondition must be declared const
+    auto non_const = [] (int b) post (b > 0) { return b; };  // { dg-error "value parameter used in a postcondition must be const" }
+                             ^
+
+"Test_name.c", line 40: error: value parameter "a" used in a postcondition must be declared const
+    auto array = [] (const int a[4]) post (a[0] > 0) { return a[0]; };  // { dg-error "value parameter used in a postcondition must be const" }
+                               ^
+
+"Test_name.c", line 42: error: value parameter "f" used in a postcondition must be declared const
+    auto function = [] (int (*f) ()) post (f () > 0) { return f (); };  // { dg-error "value parameter used in a postcondition must be const" }
+                              ^
+
+"Test_name.c", line 31: warning: variable "non_const" was set but never used
+    auto non_const = [] (int b) post (b > 0) { return b; };  // { dg-error "value parameter used in a postcondition must be const" }
+         ^
+
+"Test_name.c", line 40: warning: variable "array" was set but never used
+    auto array = [] (const int a[4]) post (a[0] > 0) { return a[0]; };  // { dg-error "value parameter used in a postcondition must be const" }
+         ^
+
+"Test_name.c", line 42: warning: variable "function" was set but never used
+    auto function = [] (int (*f) ()) post (f () > 0) { return f (); };  // { dg-error "value parameter used in a postcondition must be const" }
+         ^
+
+"Test_name.c", line 46: warning: variable "by_ref" was set but never used
+    auto by_ref = [] (int &b) post (b > 0) { return b; };
+         ^
+
+"Test_name.c", line 47: warning: variable "by_const" was set but never used
+    auto by_const = [] (const int b) post (b > 0) { return b; };
+         ^
+
+"Test_name.c", line 50: warning: variable "result_only" was set but never used
+    auto result_only = [] (int b) post (r : r > 0) { return b; };
+         ^
+
+"Test_name.c", line 54: warning: variable "in_pre" was set but never used
+    auto in_pre = [] (int b) pre (b > 0) { return b; };
+         ^
+
+"Test_name.c", line 68: error: value parameter "b" used in a postcondition must be declared const
+    auto g = [] (auto b) post (b > 0) { return b; };  // { dg-error "value parameter .b. used in a postcondition must be const" }
+                      ^
+          detected during instantiation of function "lambda [](auto)->auto [with <auto-1>=int]" at line 70
+
+"Test_name.c", line 78: error: value parameter "b" used in a postcondition must be declared const
+      auto inner = [] (int b) post (b > 0) { return b; };  // { dg-error "value parameter used in a postcondition must be const" }
+                           ^
+
+"Test_name.c", line 77: warning: variable "outer" was set but never used
+    auto outer = [] {
+         ^
+
+6 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contracts --c++26 Test_name.c
+"Test_name.c", line 100: error: value parameter "x" used in a postcondition must be declared const
+  Task non_const(int x) // expected-error {{must be declared const}}
+                     ^
+
+"Test_name.c", line 108: error: parameter "x" of a coroutine cannot be odr-used in a postcondition
+  Task by_value(const int x) // expected-error {{parameter 'x' is odr-used in a postcondition of a coroutine}} \
+                          ^
+
+"Test_name.c", line 149: warning: expression has no effect
+  Task discarded(const int x) post((x, true)) { co_return; } // expected-warning {{left operand of comma operator has no effect}}
+                                    ^
+
+"Test_name.c", line 150: warning: expression has no effect
+  Task discarded_member(const Agg a) post((a.m, true)) { co_return; } // expected-warning {{left operand of comma operator has no effect}}
+                                           ^
+
+2 errors detected in the compilation of "Test_name.c".
