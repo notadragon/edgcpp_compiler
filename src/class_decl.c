@@ -792,14 +792,24 @@ the current class.  Otherwise free it for later use.
 }  /* dispose_of_curr_routine_fixup */
 
 
-void add_routine_fixup_for_specialization(a_type_ptr		class_type,
-					  a_symbol_ptr		symbol,
-					  a_func_info_block	*func_info,
-					  a_token_cache_ptr	body_cache)
+void add_routine_fixup_for_specialization(
+                                 a_type_ptr                class_type,
+                                 a_symbol_ptr              symbol,
+                                 a_func_info_block         *func_info,
+                                 a_token_cache_ptr         body_cache,
+                                 a_contract_specifier_ptr  redecl_csps)
 /*
 Create a routine fixup entry for a specialization and add it to the routine
 fixup list.  This is used for Microsoft mode specializations that can appear
-in class contexts.
+in class contexts.  body_cache holds the tokens of its body, or is NULL if
+the declaration is not a definition with a body (the entry is then made only
+for the cached operands of the function contract specifiers (P2900) of the
+specialization, which are scanned when the class is complete, as a member
+function's are; see note_cached_contract_specifiers).  redecl_csps, if not
+NULL, are the function contract specifiers, with cached operands, of this
+declaration, which redeclares a specialization declared earlier in the
+class: They are scanned then, and matched against the specialization's (see
+defer_contract_redeclaration_match).
 */
 {
   a_routine_fixup_ptr	rfp;
@@ -807,7 +817,9 @@ in class contexts.
   rfp = alloc_routine_fixup(class_type);
   rfp->symbol = symbol;
   rfp->func_info = *func_info;
-  rfp->function_body_token_cache = *body_cache;
+  if (body_cache != NULL) {
+    rfp->function_body_token_cache = *body_cache;
+  }  /* if */
   rfp->is_specialization = TRUE;
   if (is_simple_function_symbol(symbol) &&
       contract_specifiers_are_cached(
@@ -3649,8 +3661,12 @@ and for member functions of template classes.
               do_declared_type_fixup = !nonclass_prototype_instantiations;
 #endif /* GENERATE_SOURCE_SEQUENCE_LISTS */
             } else /* if (template_second_pass) */ {
-              if (nonclass_prototype_instantiations) {
-                /* Do the prototype instantiations of the default arguments. */
+              if (nonclass_prototype_instantiations && daefp != NULL) {
+                /* Do the prototype instantiations of the default arguments.
+                   (There may be none: e.g., the entry of an explicit
+                   specialization declared in the class, a placeholder that
+                   is not a template, for its function contract specifiers;
+                   see add_routine_fixup_for_specialization.) */
                 default_arg_prototype_instantiation(
                            sym, daefp, rfp->func_info.prototype_scope_symbols,
                            /*update_declared_type=*/FALSE);

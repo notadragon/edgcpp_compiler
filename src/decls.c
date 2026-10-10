@@ -10887,6 +10887,43 @@ skip_overloading:;
 }  /* decl_routine */
 
 
+static void attach_member_template_specialization_contracts(
+                              a_template_symbol_supplement_ptr  tssp,
+                              a_decl_parse_state                *dps,
+                              a_func_info_block                 *func_info,
+                              a_template_decl_info_ptr          decl_info)
+/*
+dps, func_info and decl_info describe the first declaration of an explicit
+specialization of a member template of a class template, whose template
+supplement is tssp.  The specialization has its own function contract
+specifiers (P2900), not the member template's: Attach those of this
+declaration (if any) to its routine.  Its instances are declared from the
+member template's declaration, with its parameter names, so record the
+names this declaration gives the template parameters and function
+parameters, which the specifiers use (see
+instantiate_contract_specifiers_if_needed).
+*/
+{
+  a_routine_ptr            rp = tssp->variant.function.routine;
+  a_symbol_list_entry_ptr  *p_next;
+  a_param_id_ptr           pip;
+
+  rp->contract_specifiers = NULL;
+  tssp->variant.function.contract_decl_info = NULL;
+  tssp->variant.function.contract_param_names = NULL;
+  if (dps->contract_specifiers == NULL) return;
+  attach_contract_specifiers(rp, dps, /*is_redeclaration=*/FALSE);
+  tssp->variant.function.contract_decl_info = decl_info;
+  p_next = &tssp->variant.function.contract_param_names;
+  for (pip = func_info->param_id_list; pip != NULL; pip = pip->next) {
+    a_symbol_list_entry_ptr  slep = alloc_symbol_list_entry();
+    slep->symbol = pip->symbol;
+    *p_next = slep;
+    p_next = &slep->next;
+  }  /* for */
+}  /* attach_member_template_specialization_contracts */
+
+
 void decl_function_template(a_symbol_locator            *locator,
                             a_func_info_block           *func_info,
                             a_symbol_ptr                *symbol_ptr,

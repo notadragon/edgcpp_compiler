@@ -2695,6 +2695,24 @@ typedef struct an_out_of_class_partial_spec {
 } an_out_of_class_partial_spec;
 
 
+/*
+A parameter of a non-defining redeclaration of a function template, without
+its function contract specifiers (P2900), that a postcondition odr-uses and
+whose type is dependent: Whether it is const (or a reference) is known only
+in an instance (see check_postcondition_params_of_template_redeclarations).
+*/
+typedef struct a_contract_redecl_param *a_contract_redecl_param_ptr;
+typedef struct a_contract_redecl_param {
+  a_contract_redecl_param_ptr
+		next;
+  unsigned int	param_num;
+			/* The number of the parameter (from 1). */
+  a_source_position
+		position;
+			/* The position of its declaration. */
+  a_const_char	*name;	/* Its name, or NULL if it is unnamed. */
+} a_contract_redecl_param;
+
 typedef struct a_template_symbol_supplement {
   /* Additional information about a C++ class or function template
      supplementing the information residing in the class's symbol entry. */
@@ -3188,6 +3206,32 @@ typedef struct a_template_symbol_supplement {
 			   points to the symbol for the original constructor.
 			   For a guide generated for a hypothetical
 			   constructor, this will be NULL. */
+      a_template_decl_info_ptr
+		contract_decl_info;
+			/* For an explicit specialization of a member template
+			   of a class template whose first declaration has
+			   function contract specifiers (P2900), the template
+			   declaration information of that declaration.  NULL
+			   otherwise.  The instances of the specialization
+			   are declared from the member template's
+			   declaration (see decl_cache), but its specifiers
+			   use the template parameter names of this one and
+			   the function parameter names in
+			   contract_param_names (see
+			   instantiate_contract_specifiers_if_needed). */
+      a_symbol_list_entry_ptr
+		contract_param_names;
+			/* When contract_decl_info is not NULL: an entry for
+			   each function parameter of that declaration, in
+			   order, whose symbol is that of the parameter (only
+			   its name is used), or NULL if it is unnamed. */
+      a_contract_redecl_param_ptr
+		contract_redecl_params;
+			/* The parameters of the template's non-defining
+			   redeclarations without function contract
+			   specifiers that its postconditions odr-use and
+			   whose types are dependent, checked in each instance
+			   (see a_contract_redecl_param). */
       a_bit_field
 		template_param_not_in_function_type:1;
 			/* TRUE if the function template has template
@@ -6672,6 +6716,7 @@ extern a_template_param_ptr make_copy_of_template_param_based_on_new_symbol(
 extern a_template_instance_ptr alloc_template_instance(void);
 extern a_master_instance_ptr alloc_master_instance(void);
 extern void free_param_id_list(a_param_id_ptr *pidlist);
+extern a_param_id_ptr copy_param_id_list(a_param_id_ptr  param_id_list);
 extern void clear_func_info(a_func_info_block *func_info);
 
 /*

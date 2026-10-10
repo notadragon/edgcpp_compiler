@@ -5132,6 +5132,11 @@ cleanup_state_common:
                          (unsigned long)ptr->variant.param_ref.param_num);
       disp_unsigned_long("param_ref.levels_up",
                          (unsigned long)ptr->variant.param_ref.levels_up);
+      if (ptr->variant.param_ref.pack_element_num != 0) {
+        disp_unsigned_long("param_ref.pack_element_num",
+                           (unsigned long)
+                                  ptr->variant.param_ref.pack_element_num);
+      }  /* if */
       break;
     case enk_braced_init_list:
       disp_ptr("braced_init_list", (char *)ptr->variant.braced_init_list,

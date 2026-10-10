@@ -7498,6 +7498,9 @@ cases).
     attach_attributes_to_routine_instance(rout_ptr, template_sym, proto_tssp,
                                           /*primary_only=*/TRUE);
   }  /* if */
+  /* The checks in the body need the function contract specifiers, which an
+     odr-use has usually instantiated already. */
+  instantiate_contract_specifiers_if_needed(rout_sym);
   ++(tssp->pending_instantiations);
   /* Push the template instantiation scope. */
   if (tssp->variant.function.prototype_friend_symbol != NULL &&
@@ -19552,6 +19555,203 @@ from template declaration processing, and is NULL otherwise.
     }  /* if */
   }  /* if */
 }  /* instantiate_exception_spec_if_needed_full */
+
+
+/* An entry of the stack of routines whose function contract specifiers are
+   being instantiated (see instantiate_contract_specifiers_if_needed). */
+struct a_contract_instantiation {
+  a_routine_ptr               routine;
+  a_contract_instantiation    *prev;
+};
+STATIC_THREAD a_contract_instantiation  *contract_instantiations = NULL;
+
+
+static a_symbol_ptr enter_contract_param_names(
+                                     a_param_id_ptr           param_id_list,
+                                     a_symbol_list_entry_ptr  param_names)
+/*
+param_id_list is a copy of the parameter ID list of an instance of an
+explicit specialization of a member template, whose function contract
+specifiers (P2900) use the function parameter names param_names (see
+contract_param_names in a_template_symbol_supplement).  Enter in the
+function prototype scope at the top of the scope stack a parameter symbol
+for each parameter that has a name in param_names, under that name (for a
+function parameter pack, one for its first element, as add_to_param_id_list
+does), and make its entry in param_id_list point to it, so that a pack
+expansion finds it (see find_parameter_for_pack).  The symbols leave the
+scope with it.  Return the first symbol entered, or NULL if there is none.
+*/
+{
+  a_symbol_ptr             first_sym = NULL;
+  a_param_id_ptr           pip, prev_pip = NULL;
+  a_symbol_list_entry_ptr  slep = param_names;
+
+  for (pip = param_id_list; pip != NULL && slep != NULL;
+       prev_pip = pip, pip = pip->next) {
+    a_symbol_ptr  sym;
+    if (pip->is_pack_element && prev_pip != NULL &&
+        prev_pip->is_pack_element) {
+      /* A non-initial element of a function parameter pack. */
+      continue;
+    }  /* if */
+    if (slep->symbol != NULL) {
+      sym = alloc_symbol((a_symbol_kind)sk_parameter, slep->symbol->header,
+                         &slep->symbol->decl_position);
+      sym->variant.param_id = pip;
+      sym->is_pack_element = pip->is_pack_element;
+      set_decl_sequence_number(sym);
+      add_symbol_to_symbol_table(sym, depth_scope_stack,
+                                 /*suppress_error=*/TRUE);
+      pip->symbol = sym;
+      if (first_sym == NULL) first_sym = sym;
+    }  /* if */
+    slep = slep->next;
+  }  /* for */
+  return first_sym;
+}  /* enter_contract_param_names */
+
+
+static void instantiate_contract_specifiers_full(a_symbol_ptr  sym,
+                                                 a_boolean     in_lambda_body)
+/*
+If sym is an instance of a function template, or of a member function of a
+class template, whose template has function contract specifiers (P2900) and
+whose own have not been instantiated, instantiate them now (see
+instantiate_contract_specifiers): The contract assertions of a templated
+function are instantiated when it is odr-used (see
+mark_routine_referenced_full) or its definition is instantiated (as GCC and
+Clang do), not when it is named in an unevaluated operand.  A predicate may
+odr-use the function itself, or another function whose predicate odr-uses
+this one: An instance whose specifiers are already being instantiated is
+left alone.  An explicit specialization has its own specifiers (see
+full_specialization), and so does an explicit specialization of a member
+template, whose instances' specifiers are instantiated from its own (see
+attach_member_template_specialization_contracts).
+
+The predicates of a generic lambda name its captures, as its body does
+(P2900 [expr.prim.lambda.capture]): An instance of its call operator has its
+specifiers instantiated only when its body is entered (in_lambda_body; see
+instantiate_lambda_contract_specifiers), where the template instantiation
+scope is already active and the function scope is the top scope.
+*/
+{
+  a_routine_ptr                     rp, proto_rp;
+  a_template_instance_ptr           tip;
+  a_symbol_ptr                      template_sym;
+  a_template_symbol_supplement_ptr  tssp, proto_tssp;
+  a_template_cache_ptr              tcp;
+  a_template_decl_info_ptr          decl_info;
+  a_symbol_list_entry_ptr           param_names = NULL;
+  a_symbol_ptr                      prototype_scope_symbols;
+  a_param_id_ptr                    param_id_list;
+  a_contract_instantiation          entry, *cip;
+
+  if (!contracts_enabled || !is_simple_function_symbol(sym)) return;
+  rp = sym->variant.routine.ptr;
+  tip = sym->variant.routine.instance_ptr;
+  if (tip == NULL || rp->contract_specifiers != NULL || rp->is_specialized ||
+      rp->is_prototype_instantiation || !type_is(rp->type, tk_routine) ||
+      tip->template_sym == NULL || is_artifact_of_failing_instantiation(tip) ||
+      (rp->is_lambda_body && !in_lambda_body)) {
+    return;
+  }  /* if */
+  template_sym = tip->template_sym;
+  tssp = template_supplement_for_symbol(template_sym);
+  if (symbol_is(template_sym, sk_function_template)) {
+    /* For function templates, use the prototype template if there is one
+       (as instantiate_template_function_full does). */
+    proto_tssp = template_supplement_for_symbol(
+                                         prototype_template_of(template_sym));
+    tcp = decl_cache_for_function_template(tssp);
+  } else {
+    /* A member function of a class template.  Its template declaration
+       information is that of its definition, so its contract assertions are
+       instantiated with its definition if that has not been seen yet. */
+    proto_tssp = tssp;
+    tcp = cache_for_template(tssp);
+  }  /* if */
+  proto_rp = proto_tssp->variant.function.routine;
+  if (proto_rp == NULL || proto_rp->contract_specifiers == NULL ||
+      tcp == NULL || tcp->decl_info == NULL) {
+    return;
+  }  /* if */
+  for (cip = contract_instantiations; cip != NULL; cip = cip->prev) {
+    if (cip->routine == rp) return;
+  }  /* for */
+  entry.routine = rp;
+  entry.prev = contract_instantiations;
+  contract_instantiations = &entry;
+  /* An explicit specialization of a member template has its own
+     specifiers, which use the names of its own declaration (see
+     contract_decl_info). */
+  decl_info = tcp->decl_info;
+  if (symbol_is(template_sym, sk_function_template) &&
+      proto_tssp->variant.function.contract_decl_info != NULL) {
+    decl_info = proto_tssp->variant.function.contract_decl_info;
+    param_names = proto_tssp->variant.function.contract_param_names;
+  }  /* if */
+  if (!in_lambda_body) {
+    (void)push_template_instantiation_scope(decl_info, (a_type_ptr)NULL,
+                                            rp, sym, template_sym,
+                                            rp->template_arg_list,
+                                            /*push_lex_state=*/TRUE,
+                                            PS_NO_OPTIONS);
+  }  /* if */
+  /* Recreate a function prototype scope equivalent to the original (as for
+     an exception specification; see
+     instantiate_exception_spec_if_needed_full). */
+  (void)push_scope((a_scope_kind)sck_func_prototype, NO_SCOPE_NUMBER,
+                   rp->type, (a_routine_ptr)NULL);
+  prototype_scope_symbols = tip->prototype_scope_symbols;
+  param_id_list = tip->param_id_list;
+  if (param_names != NULL) {
+    param_id_list = copy_param_id_list(param_id_list);
+    prototype_scope_symbols = enter_contract_param_names(param_id_list,
+                                                         param_names);
+  } else if (prototype_scope_symbols != NULL) {
+    reactivate_prototype_scope_symbols(prototype_scope_symbols);
+  }  /* if */
+  scope_stack_top().param_id_list = param_id_list;
+  instantiate_contract_specifiers(rp, proto_rp->contract_specifiers,
+                                  prototype_scope_symbols);
+  if (symbol_is(template_sym, sk_function_template)) {
+    check_postcondition_params_of_template_redeclarations(
+                         proto_tssp->variant.function.contract_redecl_params,
+                         rp, proto_rp, decl_info->parameters);
+  }  /* if */
+  pop_scope();
+  if (param_names != NULL) free_param_id_list(&param_id_list);
+  if (!in_lambda_body) pop_template_instantiation_scope();
+  contract_instantiations = entry.prev;
+}  /* instantiate_contract_specifiers_full */
+
+
+void instantiate_contract_specifiers_if_needed(a_symbol_ptr  sym)
+/*
+Instantiate the function contract specifiers of sym, an instance of a
+function template or of a member function of a class template, if needed
+(see instantiate_contract_specifiers_full).  Those of an instance of a
+generic lambda's call operator are instantiated with its body instead (see
+instantiate_lambda_contract_specifiers).
+*/
+{
+  instantiate_contract_specifiers_full(sym, /*in_lambda_body=*/FALSE);
+}  /* instantiate_contract_specifiers_if_needed */
+
+
+void instantiate_lambda_contract_specifiers(a_routine_ptr  rp)
+/*
+rp is an instance of the call operator of a generic lambda, whose body is
+being instantiated and has just been entered: the template instantiation
+scope is active, and the function scope, with "this", is the top scope.
+Instantiate its function contract specifiers there, if its template has any,
+so that their predicates name its captures as its body does (P2900
+[expr.prim.lambda.capture]; see instantiate_contract_specifiers_full).
+*/
+{
+  instantiate_contract_specifiers_full(symbol_for(rp),
+                                       /*in_lambda_body=*/TRUE);
+}  /* instantiate_lambda_contract_specifiers */
 
 
 void instantiate_exception_spec_if_needed(a_symbol_ptr  sym)
@@ -34672,13 +34872,17 @@ replaces it by a new symbol pointing to a new routine entry.
 
 
 static void cache_inclass_specialization_definition(
-                                          a_tmpl_decl_state_ptr  decl_state,
-                                          a_func_info_block      *func_info)
+                                     a_tmpl_decl_state_ptr     decl_state,
+                                     a_func_info_block         *func_info,
+                                     a_contract_specifier_ptr  redecl_csps)
 /*
 The current token starts a function definition for an explicit specialization
 appearing in class scope.  Cache that definition and create a corresponding
 routine fixup to scan the definition after the class is completed.  The closing
-brace is left for the caller to consume.
+brace is left for the caller to consume.  redecl_csps are the function
+contract specifiers of the definition if it redeclares a specialization
+declared earlier in the class, to be matched when the class is complete (see
+add_routine_fixup_for_specialization), and NULL otherwise.
 */
 {
   a_decl_parse_state  *dps = decl_state->decl_parse;
@@ -34691,7 +34895,8 @@ brace is left for the caller to consume.
      being defined.  This routine makes a copy of the body cache
      so body_cache should not be discarded here. */
   add_routine_fixup_for_specialization(decl_state->class_declared_in,
-                                       dps->sym, func_info, &body_cache);
+                                       dps->sym, func_info, &body_cache,
+                                       redecl_csps);
   /* Leave it to the caller to advance past the closing brace. */
   *(decl_state->final_token_ptr) = tok_rbrace;
 }  /* cache_inclass_specialization_definition */
@@ -34767,6 +34972,7 @@ that follows.
 #endif /* GENERATE_SOURCE_SEQUENCE_LISTS || EXTRA_SOURCE_POSITIONS_IN_IL */
   a_boolean			microsoft_nonstd_specialization = FALSE;
   a_boolean                     already_specialized = FALSE;
+  a_contract_specifier_ptr      inclass_redecl_csps = NULL;
 
   db_enter(3, "full_specialization");
   dps->is_explicit_specialization = TRUE;
@@ -35028,11 +35234,17 @@ that follows.
           sym = decl_dependent_class_scope_function(
                            decl_state->is_template_friend, /*expl_spec=*/TRUE,
                            &locator, dps, &func_info, &decl_pos_block);
+          /* Its function contract specifiers (P2900) are scanned in the
+             template when the class is complete (see the routine fixup
+             entry made below). */
+          attach_contract_specifiers(sym->variant.routine.ptr, dps,
+                                     /*is_redeclaration=*/FALSE);
           if (dps->is_definition) {
             /* An explicit specialization that appears in a class context.
                Cache the function body now and scan it later during the class
                fixup process. */
-            cache_inclass_specialization_definition(decl_state, &func_info);
+            cache_inclass_specialization_definition(decl_state, &func_info,
+                                                    inclass_redecl_csps);
             /* The param_id_list is needed because the func_info information
                is on the routine fixup list.  Don't discard it below. */
             keep_func_info = TRUE;
@@ -35700,6 +35912,28 @@ that follows.
                        sym);
           sym->decl_position = saved_sym_pos;
         }  /* if */
+        /* An explicit specialization has its own function contract
+           specifiers (P2900), not the template's (see
+           instantiate_contract_specifiers_if_needed): Its first declaration
+           provides them, and a redeclaration of it is matched against that
+           (see attach_contract_specifiers). */
+        if (!decl_state->is_member_decl) {
+          scan_contract_operands_of_declaration(rp, dps, &func_info);
+        }  /* if */
+        if (!already_specialized) rp->contract_specifiers = NULL;
+        if (decl_state->is_member_decl && already_specialized &&
+            rp->contract_specifiers != NULL &&
+            contract_specifiers_are_cached(dps->contract_specifiers)) {
+          /* A redeclaration in the class of a specialization declared
+             earlier in it: Its specifiers are scanned when the class is
+             complete, and matched then (see
+             add_routine_fixup_for_specialization). */
+          inclass_redecl_csps = dps->contract_specifiers;
+          dps->contract_specifiers = NULL;
+        } else {
+          attach_contract_specifiers(rp, dps,
+                                     /*is_redeclaration=*/already_specialized);
+        }  /* if */
         rp->is_specialized = TRUE;
         rp->trailing_requires_clause = NULL;
         /* Except in Microsoft and GNU modes, an explicitly specified storage
@@ -35836,7 +36070,8 @@ that follows.
             /* An explicit specialization that appears in a class context.
                Cache the function body now and scan it later during the class
                fixup process. */
-            cache_inclass_specialization_definition(decl_state, &func_info);
+            cache_inclass_specialization_definition(decl_state, &func_info,
+                                                    inclass_redecl_csps);
             /* The param_id_list is needed because the func_info information
                is on the routine fixup list.  Don't discard it below. */
             keep_func_info = TRUE;
@@ -35870,6 +36105,22 @@ that follows.
       }  /* if */
     }  /* if */
 done:
+    if (!keep_func_info && decl_state->is_member_decl && sym != NULL &&
+        sym == dps->sym && is_simple_function_symbol(sym) &&
+        (inclass_redecl_csps != NULL ||
+         contract_specifiers_are_cached(
+                          sym->variant.routine.ptr->contract_specifiers))) {
+      /* An explicit specialization declared in a class, other than a
+         definition with a body (see cache_inclass_specialization_definition),
+         whose function contract specifiers (P2900) have cached operands:
+         They are scanned when the class is complete, as a member function's
+         are (see scan_function_contract_specifiers). */
+      add_routine_fixup_for_specialization(decl_state->class_declared_in,
+                                           sym, &func_info,
+                                           (a_token_cache_ptr)NULL,
+                                           inclass_redecl_csps);
+      keep_func_info = TRUE;
+    }  /* if */
     if (!keep_func_info) done_with_func_info(func_info);
     remove_stop_token(tok_semicolon);
 #if GENERATE_SOURCE_SEQUENCE_LISTS

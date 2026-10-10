@@ -57,6 +57,26 @@ type "const std::contracts::contract_violation &".
 
 
 10/1/26  []
+Contracts (P2900): contract assertions of templates
+
+The contract assertions of function templates, of members of class
+templates, of member templates and of generic lambdas are scanned in the
+template, and each instance gets its own, scanned again from the template's
+tokens when the instance is odr-used or its definition is instantiated --
+not when it is only named in an unevaluated operand.  As in a template's
+body, a requires-expression in a predicate is substituted rather than
+parsed again, so an invalid requirement makes it false:
+
+  template <class T> void f(T x) pre(!requires { ++x; }) {}
+  void g() { f<const int>(1); }    // OK, the precondition holds
+
+The C++-generating back end prints a template from its tokens and leaves
+its instantiation to the compiler that compiles its output, so there the
+contract assertions of templates reach that compiler as written, like all
+other contract assertions.
+
+
+10/1/26  []
 Contracts (P2900): contract assertions of member functions
 
 Contract assertions on member functions, including static members,

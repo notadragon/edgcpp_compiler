@@ -40592,6 +40592,7 @@ by param_sym (sk_parameter).
      field (see il_def.h). */
   unsigned                 levels_up = 1;
   a_scope_stack_entry_ptr  ssep = &scope_stack_top();
+  a_param_id_ptr           pip = param_sym->variant.param_id;
   an_expr_node_ptr         node;
 
   /* First find the nearest enclosing function prototype scope. */
@@ -40612,10 +40613,29 @@ by param_sym (sk_parameter).
     ssep -= 1;
   }  /* while */
   node = alloc_expr_node((an_expr_node_kind)enk_param_ref);
-  node->type = param_sym->variant.param_id->type;
+  node->type = pip->type;
   node->is_lvalue = TRUE;
-  node->variant.param_ref.param_num = param_sym->variant.param_id->param_num;
+  node->variant.param_ref.param_num = pip->param_num;
   node->variant.param_ref.levels_up = levels_up;
+  if (pip->is_pack_element && !pip->is_parameter_pack) {
+    /* An element of an expanded function parameter pack (e.g., in a pack
+       expansion in the rescanned predicate of a contract assertion of an
+       instance): the elements share the pack's parameter number, so record
+       which element this is (its position among the parameters with that
+       number in the function prototype scope's parameter list). */
+    a_param_id_ptr  other_pip;
+    unsigned int    element_num = 0;
+    for (other_pip = ssep->param_id_list; other_pip != NULL;
+         other_pip = other_pip->next) {
+      if (other_pip->param_num == pip->param_num) {
+        ++element_num;
+        if (other_pip == pip) {
+          node->variant.param_ref.pack_element_num = element_num;
+          break;
+        }  /* if */
+      }  /* if */
+    }  /* for */
+  }  /* if */
   make_glvalue_expression_operand(node, result);
   result->is_id_expression = TRUE;
   /* If the parameter has a reference type, add an implicit indirection. */

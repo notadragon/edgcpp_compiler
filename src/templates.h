@@ -1197,6 +1197,8 @@ extern void copy_exc_spec_from_prototype_template(
                                   a_boolean                       *copy_error);
 
 extern void instantiate_exception_spec_if_needed(a_symbol_ptr  sym);
+extern void instantiate_contract_specifiers_if_needed(a_symbol_ptr  sym);
+extern void instantiate_lambda_contract_specifiers(a_routine_ptr  rp);
 
 extern
 void proto_instantiate_exception_spec_redecl(a_tmpl_decl_state_ptr  decl_state,

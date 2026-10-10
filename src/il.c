@@ -7464,7 +7464,8 @@ value for the indicated expression node.
       break;
     case enk_param_ref:
       expr_hash_value += 7*expr->variant.param_ref.param_num +
-                         expr->variant.param_ref.levels_up;
+                         expr->variant.param_ref.levels_up +
+                         11*expr->variant.param_ref.pack_element_num;
       break;
     case enk_fold:
       expr_hash_value += 15*(a_hash_value)expr->variant.fold.operator_token +
@@ -8583,12 +8584,15 @@ are done.
         break;
       case enk_param_ref:
         /* For two parameter references to be equivalent, they must refer to
-           the same parameter number at the same level in the stack of
-           function prototype scopes. */
+           the same parameter number (and element of an expanded parameter
+           pack) at the same level in the stack of function prototype
+           scopes. */
         eq = node1->variant.param_ref.param_num ==
                                         node2->variant.param_ref.param_num  &&
              node1->variant.param_ref.levels_up ==
-                                        node2->variant.param_ref.levels_up;
+                                        node2->variant.param_ref.levels_up &&
+             node1->variant.param_ref.pack_element_num ==
+                                   node2->variant.param_ref.pack_element_num;
         break;
       case enk_braced_init_list:
         eq = compare_expression_lists(node1->variant.braced_init_list,
@@ -28077,6 +28081,10 @@ routine as actually referenced.
     /* Make sure the exception specification of the routine, if any, has been
        instantiated. */
     instantiate_exception_spec_if_needed(assoc_sym);
+    if (instantiate) {
+      /* An odr-use instantiates its contract assertions too. */
+      instantiate_contract_specifiers_if_needed(assoc_sym);
+    }  /* if */
   }  /* if */
 }  /* mark_routine_referenced_full */
 

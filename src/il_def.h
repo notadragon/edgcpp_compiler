@@ -15748,6 +15748,18 @@ typedef struct an_expr_node {
 			     void j(T p, auto (*)(decltype(p))->T);   // L = 2
 			     void k(T p, int (*(*)(T p))[sizeof(p)]); // L = 1
 			   */
+      unsigned int
+		pack_element_num;
+			/* For a reference to an element of an expanded
+			   function parameter pack, whose elements share the
+			   pack's param_num, the number of the element within
+			   the pack (the first element is number one); zero
+			   otherwise.  For example, in the instance
+			   f<int,int> of
+			     template<class... Ts> void f(Ts... a, int b)
+			                            pre(((a > 0) && ...));
+			   the predicate refers to (1, 1) and (1, 2), and a
+			   use of b would be (2, 0). */
     } param_ref;
     /* When kind == enk_braced_init_list: */
     an_expr_node_ptr
