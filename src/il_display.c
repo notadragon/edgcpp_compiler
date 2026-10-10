@@ -6091,6 +6091,24 @@ Display the indicated contract specifier entry.
   if (ptr->label != NULL) {
     disp_ptr("label", (char*)ptr->label, iek_expr_node);
   }  /* if */
+  if (ptr->has_label_message) {
+    disp_string_ptr("label_message", ptr->label_message, iek_other_text,
+                    (sizeof_t)0);
+  }  /* if */
+  if (ptr->label_allowed_semantics != 0) {
+    disp_unsigned_long("label_allowed_semantics",
+                       (unsigned long)ptr->label_allowed_semantics);
+  }  /* if */
+  if (ptr->label_computed_semantics[1] != 0) {
+    int  v;
+    for (v = 1; v <= 4; v++) {
+      static a_const_char  *names[] = {
+        NULL, "label_computed_semantics[1]", "label_computed_semantics[2]",
+        "label_computed_semantics[3]", "label_computed_semantics[4]" };
+      disp_unsigned_long(names[v],
+                         (unsigned long)ptr->label_computed_semantics[v]);
+    }  /* for */
+  }  /* if */
   if (ptr->operand_cached) disp_boolean("operand_cached", TRUE);
 }  /* disp_contract_specifier */
 

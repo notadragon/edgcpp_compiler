@@ -5771,6 +5771,11 @@ into csp->label (see scan_contract_label in expr.c), and record its facets
   }  /* if */
   /* Skip past the tok_end_of_source. */
   (void)get_token();
+  /* The facets that bear on the semantic the front end chooses. */
+  resolve_contract_label_facets(csp);
+}  /* scan_cached_contract_label */
+
+
 a_type_ptr pointer_declarator(
                    a_type_ptr                       specifiers_type,
                    a_decl_parse_state               *state,
@@ -9303,6 +9308,10 @@ contract_specifier_predicate).
     csp->message = copy_string_to_region(file_scope_region_number,
                                          csp->message);
   }  /* if */
+  if (csp->label_message != NULL && !in_file_scope(csp->label_message)) {
+    csp->label_message = copy_string_to_region(file_scope_region_number,
+                                               csp->label_message);
+  }  /* if */
   if (!expr_has_reference_to_local_entity(pred) &&
       !expr_has_local_capturing_lambda(pred)) {
     csp->predicate = copy_expr_tree(pred, CE_ALWAYS_COPY_BACKING_EXPRESSIONS);
@@ -9363,6 +9372,7 @@ name), or NULL if there is none (see remove_contract_operand_symbols).
   }  /* if */
   saved_captures = set_postcondition_captures_in_scope(csp->captures);
   csp->predicate = scan_contract_predicate(&csp->comment, &csp->message);
+  if (csp->label != NULL) apply_contract_label_message_facet(csp);
   (void)set_postcondition_captures_in_scope(saved_captures);
   (void)set_contract_param_proxy_owner(saved_proxy_owner);
   check_function_contract_predicate(csp);

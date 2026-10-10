@@ -45,6 +45,12 @@ extern a_contract_evaluation_semantic contract_semantic_for(
                                         a_boolean                 in_ce);
 extern a_boolean contract_semantic_possible(
                                     a_contract_evaluation_semantic  semantic);
+/* In expr.c, with the probing of the facets of P3400 labels. */
+extern a_contract_evaluation_semantic apply_contract_label_facets(
+                              a_contract_specifier_ptr        csp,
+                              a_contract_evaluation_semantic  semantic,
+                              a_boolean                       in_ce);
+
 /* Conditionally close the "edg" namespace. */
 END_EDG_NAMESPACE
 

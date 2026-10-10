@@ -1444,6 +1444,11 @@ of a label (P3400) adjust it (see apply_contract_label_facets).
   }  /* for */
   /* Otherwise the default: before the configuration is built, or without
      one. */
+  if (csp->label != NULL &&
+      (csp->label_allowed_semantics != 0 ||
+       csp->label_computed_semantics[1] != 0)) {
+    semantic = apply_contract_label_facets(csp, semantic, in_ce);
+  }  /* if */
   return semantic;
 }  /* contract_semantic_for */
 

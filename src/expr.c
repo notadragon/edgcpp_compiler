@@ -38,6 +38,7 @@ expr.c -- Expression scanning routines.
 #include "lower_name.h"
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
 #include "statements.h"
+#include "contract_config.h"
 
 /* Conditionally open the "edg" namespace. */
 BEGIN_EDG_NAMESPACE
@@ -42488,6 +42489,464 @@ called.
 }  /* scan_this */
 
 
+/*
+The token caches from which the facets of P3400 labels are probed (see
+probe_contract_label_facet), each lazily initialized.  The label goes
+through the combined label "empty_label | label" of <contracts>, whose
+members exist exactly when the label's facet satisfies the library's concept
+(probed on a const object, with public access), and whose compute_semantic
+passes the label's a non-const lvalue, as GCC does.
+*/
+#define CONTRACT_LABEL_COMBINED \
+  "::std::contracts::labels::operator|(" \
+  "::std::contracts::labels::empty_label, __edg_opnd__(0))"
+STATIC_THREAD a_token_cache_ptr
+		contract_label_allowed_cache;
+			/* Whether the label allows the semantic
+			   __edg_opnd__(1). */
+STATIC_THREAD a_token_cache_ptr
+		contract_label_compute_cache;
+			/* The semantic the label computes from
+			   __edg_opnd__(1). */
+STATIC_THREAD a_token_cache_ptr
+		contract_label_message_cache;
+			/* The message the label computes from the string
+			   literal __edg_opnd__(1). */
+STATIC_THREAD a_token_cache_ptr
+		contract_label_comment_cache;
+			/* The comment the label computes from the string
+			   literal __edg_opnd__(1). */
+STATIC_THREAD a_token_cache_ptr
+		contract_label_null_message_cache;
+			/* The message the label computes from a null
+			   pointer. */
+
+
+static a_boolean probe_contract_label_facet(a_token_cache_ptr  *p_cache,
+                                            a_const_char       *text,
+                                            an_operand         *opnd_0,
+                                            an_operand         *opnd_1,
+                                            an_operand         *opnd_2,
+                                            a_source_position  *pos,
+                                            a_constant_ptr     result,
+                                            a_boolean          *not_constant)
+/*
+Probe a facet of a P3400 label: scan the expression text (ending in ";",
+cached in *p_cache) with __edg_opnd__(0), __edg_opnd__(1) and
+__edg_opnd__(2) standing for opnd_0, opnd_1 and opnd_2 (NULL if unused),
+diagnostics suppressed.  Return FALSE if it is invalid
+(the facet is absent); otherwise return TRUE, with its value in *result, or
+*not_constant set to TRUE if it is not a constant expression.
+*/
+{
+  a_boolean               present = FALSE;
+  int                     saved_n_internal_opnds = n_internal_opnds;
+  an_operand_ptr          *saved_internal_opnd_array = internal_opnd_array;
+  an_operand_ptr          opnds[3];
+  an_operand              operand;
+  an_expr_stack_entry     expr_stack_entry, *saved_expr_stack;
+  an_object_lifetime_ptr  saved_object_lifetime;
+  a_memory_region_number  region_to_switch_back_to;
+  a_boolean               saved_in_assertion_control_expression =
+                                             in_assertion_control_expression;
+
+  *not_constant = FALSE;
+  if (*p_cache == NULL) {
+    *p_cache = new_fe<a_token_cache>(/*is_reusable=*/TRUE);
+    cache_tokens_from_string(text, *p_cache, pos);
+  }  /* if */
+  rescan_persistent_reusable_cache(*p_cache);
+  n_internal_opnds = opnd_2 != NULL ? 3 : 2;
+  opnds[0] = opnd_0;
+  opnds[1] = opnd_1;
+  opnds[2] = opnd_2;
+  internal_opnd_array = opnds;  /*lint !e733 !e789*/
+  in_assertion_control_expression = FALSE;
+  save_expr_stack(&saved_expr_stack);
+  switch_to_scope_region_and_lifetime(
+                                scope_depth_to_allocate_unevaluated_operand(),
+                                &region_to_switch_back_to,
+                                &saved_object_lifetime);
+  push_expr_stack(ek_normal, &expr_stack_entry,
+                  /*force_object_lifetime=*/FALSE,
+                  /*suppress_object_lifetime=*/FALSE);
+  expr_stack->suppress_diagnostics = TRUE;
+  add_stop_token(tok_semicolon);
+  scan_expr(&operand, PREC_QUEST_MARK, EOPT_DISALLOW_COMMA_OPERATOR);
+  remove_stop_token(tok_semicolon);
+  if (!expr_stack->any_suppressed_error && !is_error_operand(&operand)) {
+    an_expr_node_ptr  node = make_node_from_operand(&operand);
+    a_diag_list       diag_list = { NULL, NULL };
+    present = TRUE;
+    if (is_constant_node(node)) {
+      copy_constant(node_constant(node), result);
+    } else if (!interpret_expr(node, /*is_constant_evaluated=*/TRUE,
+                               /*force_prvalue=*/TRUE, result, &diag_list)) {
+      *not_constant = TRUE;
+    }  /* if */
+    discard_more_info_list(&diag_list);
+  }  /* if */
+  pop_expr_stack();
+  switch_back_region_and_lifetime(region_to_switch_back_to,
+                                  saved_object_lifetime);
+  restore_expr_stack(saved_expr_stack);
+  /* Discard what remains of the cached tokens, through the ";". */
+  while (curr_token != tok_semicolon && curr_token != tok_end_of_source) {
+    (void)get_token();
+  }  /* while */
+  if (curr_token == tok_semicolon) (void)get_token();
+  in_assertion_control_expression = saved_in_assertion_control_expression;
+  internal_opnd_array = saved_internal_opnd_array;
+  n_internal_opnds = saved_n_internal_opnds;
+  return present;
+}  /* probe_contract_label_facet */
+
+
+static a_boolean contract_label_library_declared(void)
+/*
+Return TRUE if std::contracts::labels::empty_label has been declared (by
+<contracts>), which the facets of P3400 labels are probed through (see
+probe_contract_label_facet): without it a label has no facets.
+*/
+{
+  a_symbol_ptr     sym = NULL;
+  a_namespace_ptr  nsp = NULL;
+  a_const_char     *names[] = { "std", "contracts", "labels" };
+  int              i;
+
+  for (i = 0; i < 3; i++) {
+    sym = look_up_name_string_in_namespace(names[i], nsp,
+                                           IDL_MUST_BE_NAMESPACE);
+    if (sym == NULL) return FALSE;
+    sym = fundamental_symbol_of(sym);
+    if (!symbol_is(sym, sk_namespace)) return FALSE;
+    nsp = sym->variant.namespace_info.ptr;
+  }  /* for */
+  return look_up_name_string_in_namespace("empty_label", nsp,
+                                          IDL_NO_OPTIONS) != NULL;
+}  /* contract_label_library_declared */
+
+
+static a_boolean contract_label_constant(a_contract_specifier_ptr  csp,
+                                         a_constant_ptr            cp)
+/*
+Set *cp to the value of the label of the contract assertion csp (P3400), if
+it has one that is not template-dependent and <contracts> has declared the
+library the facets are probed through, and return TRUE; otherwise return
+FALSE.
+*/
+{
+  a_boolean    result = FALSE;
+  a_diag_list  diag_list = { NULL, NULL };
+
+  if (csp->label == NULL || is_error_node(csp->label) ||
+      is_template_dependent_context() || !contract_label_library_declared()) {
+    /* No facets, or not yet. */
+  } else if (is_constant_node(csp->label)) {
+    copy_constant(node_constant(csp->label), cp);
+    result = TRUE;
+  } else {
+    result = interpret_expr(csp->label, /*is_constant_evaluated=*/TRUE,
+                            /*force_prvalue=*/TRUE, cp, &diag_list);
+    discard_more_info_list(&diag_list);
+  }  /* if */
+  return result;
+}  /* contract_label_constant */
+
+
+static unsigned long contract_label_facet_value(a_constant_ptr  cp)
+/*
+Return the value of the integral or enumeration constant *cp, the value of a
+facet, or 0xFE if it is outside 0-254 (or not such a constant).
+*/
+{
+  unsigned long  result = 0xFE;
+
+  if (constant_is(cp, ck_integer)) {
+    a_boolean              ovflo;
+    a_host_large_unsigned  value = unsigned_value_of_integer_constant(cp,
+                                                                     &ovflo);
+    if (!ovflo && value <= 254 && sign_of_integer_constant(cp) >= 0) {
+      result = (unsigned long)value;
+    }  /* if */
+  }  /* if */
+  return result;
+}  /* contract_label_facet_value */
+
+
+void resolve_contract_label_facets(a_contract_specifier_ptr  csp)
+/*
+The label of the contract assertion csp (P3400) has been scanned.  Unless it
+is template-dependent (the instances' labels are resolved), record its
+facets that bear on the semantic the front end chooses (see
+contract_semantic_for): its allowed_semantics facet, which must allow some
+semantic and be a constant expression, as
+csp->label_allowed_semantics, and its compute_semantic facet, for each of
+the four semantics, as csp->label_computed_semantics (an error there is
+diagnosed when that semantic is chosen, as GCC does).
+*/
+{
+  a_constant_ptr  label_con = local_constant();
+  a_constant_ptr  value = local_constant();
+
+  csp->label_allowed_semantics = 0;
+  (void)memset(csp->label_computed_semantics, 0,
+               sizeof(csp->label_computed_semantics));
+  if (contract_label_constant(csp, label_con)) {
+    an_operand  label_opnd, sem_opnd;
+    a_boolean   not_constant;
+    int         v;
+    unsigned    allowed = 0;
+    /* allowed_semantics, probed for each value of evaluation_semantic. */
+    for (v = 1; v <= 7; v++) {
+      make_constant_operand(label_con, &label_opnd);
+      make_integer_constant_operand(&sem_opnd, (a_host_large_integer)v);
+      if (!probe_contract_label_facet(
+               &contract_label_allowed_cache,
+               "::std::contracts::evaluation_semantic_set("
+               CONTRACT_LABEL_COMBINED ".allowed_semantics).contains("
+               "::std::contracts::evaluation_semantic(__edg_opnd__(1)));",
+               &label_opnd, &sem_opnd, (an_operand *)NULL, &csp->position,
+               value, &not_constant)) {
+        /* No allowed_semantics facet. */
+        allowed = 0;
+        break;
+      } else if (not_constant) {
+        pos_ty_error(ec_contract_label_allowed_not_constant, &csp->position,
+                     make_unqualified_type(skip_typerefs(label_con->type)));
+        allowed = 0;
+        break;
+      } else if (contract_label_facet_value(value) == 1) {
+        allowed |= 1u << v;
+      }  /* if */
+      if (v == 7 && allowed == 0) {
+        pos_error(ec_contract_label_allows_no_semantics, &csp->position);
+      }  /* if */
+    }  /* for */
+    csp->label_allowed_semantics = (a_byte)allowed;
+    /* compute_semantic, for each of the four semantics. */
+    for (v = 1; v <= 4; v++) {
+      make_constant_operand(label_con, &label_opnd);
+      make_integer_constant_operand(&sem_opnd, (a_host_large_integer)v);
+      if (!probe_contract_label_facet(
+               &contract_label_compute_cache,
+               CONTRACT_LABEL_COMBINED ".compute_semantic("
+               "::std::contracts::evaluation_semantic(__edg_opnd__(1)));",
+               &label_opnd, &sem_opnd, (an_operand *)NULL, &csp->position,
+               value, &not_constant)) {
+        /* No compute_semantic facet. */
+        break;
+      }  /* if */
+      csp->label_computed_semantics[v] =
+                 (a_byte)(not_constant ? 0xFF
+                                       : contract_label_facet_value(value));
+      if (csp->label_computed_semantics[v] == 0) {
+        csp->label_computed_semantics[v] = 0xFE;
+      }  /* if */
+    }  /* for */
+  }  /* if */
+  release_local_constant(&value);
+  release_local_constant(&label_con);
+}  /* resolve_contract_label_facets */
+
+
+void apply_contract_label_message_facet(a_contract_specifier_ptr  csp)
+/*
+The predicate and diagnostic message (P3099) of the contract assertion csp
+have been scanned.  If its label (P3400) has a compute_message facet, record
+the message it computes from it (a string literal, or a null pointer if
+there is none), which must be a constant expression, as csp->label_message
+for the front end's diagnostics; a result that is not a pointer into a string
+literal is not used.  A
+compute_comment facet must be a constant expression too.
+*/
+{
+  a_constant_ptr  label_con = local_constant();
+  a_constant_ptr  value = local_constant();
+
+  if (contract_label_constant(csp, label_con)) {
+    an_operand  label_opnd, message_opnd;
+    a_boolean   present, not_constant;
+    make_constant_operand(label_con, &label_opnd);
+    if (csp->message != NULL) {
+      make_string_constant_operand(shareable_fs_string_constant(csp->message),
+                                   &message_opnd);
+      present = probe_contract_label_facet(
+                    &contract_label_message_cache,
+                    CONTRACT_LABEL_COMBINED
+                    ".compute_message(__edg_opnd__(1));",
+                    &label_opnd, &message_opnd, (an_operand *)NULL,
+                    &csp->position, value,
+                    &not_constant);
+    } else {
+      make_error_operand(&message_opnd);
+      present = probe_contract_label_facet(
+                    &contract_label_null_message_cache,
+                    CONTRACT_LABEL_COMBINED
+                    ".compute_message(static_cast<const char *>(nullptr));",
+                    &label_opnd, &message_opnd, (an_operand *)NULL,
+                    &csp->position, value,
+                    &not_constant);
+    }  /* if */
+    if (!present) {
+      /* No compute_message facet. */
+    } else if (not_constant) {
+      pos_ty_error(ec_contract_label_message_not_constant, &csp->position,
+                   make_unqualified_type(skip_typerefs(label_con->type)));
+    } else if (constant_is(value, ck_address) &&
+               value->variant.address.kind ==
+                                       (an_address_base_kind)abk_constant &&
+               constant_is(value->variant.address.variant.constant,
+                           ck_string) &&
+               value->variant.address.offset >= 0) {
+      /* A pointer into a string literal: the text from there to its
+         terminating null character. */
+      a_constant_ptr  str = value->variant.address.variant.constant;
+      a_targ_size_t   start = (a_targ_size_t)value->variant.address.offset;
+      a_targ_size_t   len = 0;
+      char            *text;
+      while (start + len < str->variant.string.length &&
+             str->variant.string.value[start + len] != '\0') {
+        len++;
+      }  /* while */
+      if (start <= str->variant.string.length) {
+        text = (char*)alloc_il((sizeof_t)(len + 1));
+        (void)memcpy(text, str->variant.string.value + start, (size_t)len);
+        text[len] = '\0';
+        csp->label_message = text;
+        csp->has_label_message = TRUE;
+      }  /* if */
+    } else if (is_zero_constant(value)) {
+      csp->label_message = NULL;
+      csp->has_label_message = TRUE;
+    }  /* if */
+    if (csp->comment != NULL) {
+      /* The comment is g++'s (the C++-generating back end puts out the
+         predicate) and is never shown here, but a compute_comment facet
+         must be a constant expression all the same, as in GCC. */
+      make_constant_operand(label_con, &label_opnd);
+      make_string_constant_operand(shareable_fs_string_constant(csp->comment),
+                                   &message_opnd);
+      if (probe_contract_label_facet(
+              &contract_label_comment_cache,
+              CONTRACT_LABEL_COMBINED ".compute_comment(__edg_opnd__(1));",
+              &label_opnd, &message_opnd, (an_operand *)NULL,
+              &csp->position, value,
+              &not_constant) &&
+          not_constant) {
+        pos_ty_error(ec_contract_label_comment_not_constant, &csp->position,
+                     make_unqualified_type(skip_typerefs(label_con->type)));
+      }  /* if */
+    }  /* if */
+  }  /* if */
+  release_local_constant(&value);
+  release_local_constant(&label_con);
+}  /* apply_contract_label_message_facet */
+
+
+/*
+The bit of a_contract_specifier::label_allowed_semantics for the evaluation
+semantic s, whose std::contracts::evaluation_semantic value is one more than
+its a_contract_evaluation_semantic value (1 for ignore to 4 for
+quick_enforce).
+*/
+#define semantic_bit(s) (1u << ((unsigned)(s) + 1))
+
+
+static int best_fit_label_semantic(int       v,
+                                   unsigned  allowed)
+/*
+Return the std::contracts::evaluation_semantic value (1 to 4) of the
+semantic in the set allowed (of bits 1 << value) that best fits the one of
+value v, as our GCC chooses it (contract_semantic_best_fit), or 0 if there
+is none: v, or failing that the nearest that checks more (quick_enforce
+last), or failing that the nearest that checks less.  (The four semantics'
+values are also GCC's levels.)
+*/
+{
+  int  w;
+
+  for (w = v; w <= 4; w++) {
+    if ((allowed & (1u << w)) != 0) return w;
+  }  /* for */
+  for (w = v - 1; w >= 1; w--) {
+    if ((allowed & (1u << w)) != 0) return w;
+  }  /* for */
+  return 0;
+}  /* best_fit_label_semantic */
+
+
+a_contract_evaluation_semantic apply_contract_label_facets(
+                              a_contract_specifier_ptr        csp,
+                              a_contract_evaluation_semantic  semantic,
+                              a_boolean                       in_ce)
+/*
+Return the evaluation semantic of the contract assertion csp, in constant
+evaluation if in_ce is TRUE, given the one the configuration gives it,
+semantic, and the facets of its label (P3400; see
+resolve_contract_label_facets), as our GCC does: the semantic that best
+fits it among those the label allows, then the one the label's
+compute_semantic facet computes from that, which must be allowed too (if
+none is allowed, observe in constant evaluation and enforce otherwise).  The
+semantics the front end does not support (assume and the noexcept ones) are
+never allowed, nor, for a check the front end generates for the
+C-generating back end, any but ignore and quick_enforce.  An error is
+issued once for each assertion.
+*/
+{
+  unsigned  supported = semantic_bit(ces_ignore) | semantic_bit(ces_observe) |
+                        semantic_bit(ces_enforce) |
+                        semantic_bit(ces_quick_enforce);
+  unsigned  allowed;
+  int       v, computed;
+
+  if (csp->label_allowed_semantics != 0) {
+    supported &= csp->label_allowed_semantics;
+  }  /* if */
+  allowed = supported;
+#if BACK_END_IS_C_GEN_BE
+  if (!in_ce) {
+    allowed &= semantic_bit(ces_ignore) | semantic_bit(ces_quick_enforce);
+  }  /* if */
+#endif /* BACK_END_IS_C_GEN_BE */
+  v = best_fit_label_semantic((int)semantic + 1, allowed);
+  if (v == 0) {
+    if (!csp->label_facet_diagnosed) {
+      csp->label_facet_diagnosed = TRUE;
+      pos_error(ec_contract_no_valid_semantic, &csp->position);
+    }  /* if */
+    /* GCC's fallback. */
+#if BACK_END_IS_C_GEN_BE
+    if (!in_ce) return ces_quick_enforce;
+#endif /* BACK_END_IS_C_GEN_BE */
+    return in_ce ? ces_observe : ces_enforce;
+  }  /* if */
+  computed = csp->label_computed_semantics[v];
+  if (computed == 0) {
+    /* No compute_semantic facet. */
+  } else if (computed == 0xFF) {
+    if (!csp->label_facet_diagnosed) {
+      csp->label_facet_diagnosed = TRUE;
+      pos_ty_error(ec_contract_label_compute_not_constant, &csp->position,
+                   make_unqualified_type(skip_typerefs(csp->label->type)));
+    }  /* if */
+  } else if (computed > 4 || (allowed & (1u << computed)) == 0) {
+    if (!csp->label_facet_diagnosed) {
+      csp->label_facet_diagnosed = TRUE;
+      pos_error(computed <= 4 && (supported & (1u << computed)) != 0
+                  /* Allowed, but not by this configuration (see the
+                     --contract_evaluation_semantic option). */
+                  ? ec_contract_computed_semantic_unsupported
+                  : ec_contract_computed_semantic_not_allowed,
+                &csp->position);
+    }  /* if */
+  } else {
+    v = computed;
+  }  /* if */
+  return (a_contract_evaluation_semantic)(v - 1);
+}  /* apply_contract_label_facets */
+
+
 static void scan_expr_splicer(a_rescan_control_block    *rcblock,
                               an_operand                *result)
 /*
@@ -60635,6 +61094,11 @@ Do one-time initialization of variables related to expression processing.
 {
   register_trans_unit_variable(already_diagnosed_fold);
   edg_get_expr_cache = NULL;
+  contract_label_allowed_cache = NULL;
+  contract_label_compute_cache = NULL;
+  contract_label_message_cache = NULL;
+  contract_label_null_message_cache = NULL;
+  contract_label_comment_cache = NULL;
 }  /* expr_one_time_init */
 
 

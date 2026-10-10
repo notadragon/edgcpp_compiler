@@ -9978,6 +9978,10 @@ our GCC does:
     for (cpp = ips->contract_problems; cpp != NULL; cpp = cpp->next) {
       a_diagnostic_ptr  dp;
       if (cpp->assertion == NULL) continue;
+      /* P3400: the message a label computes, if it does. */
+      a_const_char      *message = cpp->assertion->has_label_message
+                                     ? cpp->assertion->label_message
+                                     : cpp->assertion->message;
       if (!cpp->not_constant && message != NULL) {
         /* P3099: with the diagnostic message, as GCC does. */
         dp = pos_st_start_diagnostic(
