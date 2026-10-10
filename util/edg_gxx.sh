@@ -46,6 +46,7 @@
 # -f[no-]contracts-p4283 goes to both.
 # -f[no-]contracts-p4298 goes to both.
 # -f[no-]contracts-p4299 goes to both.
+# -f[no-]contracts-p4301 goes to both.
 #
 # Environment:
 #   EDG_GXX           the g++ to pair with
@@ -206,6 +207,10 @@ while [ $# -gt 0 ] ; do
       edg_args+=("--contracts_p4299"); gxx_args+=("$arg") ;;
     -fno-contracts-p4299)
       edg_args+=("--no_contracts_p4299"); gxx_args+=("$arg") ;;
+    -fcontracts-p4301)
+      edg_args+=("--contracts_p4301"); gxx_args+=("$arg") ;;
+    -fno-contracts-p4301)
+      edg_args+=("--no_contracts_p4301"); gxx_args+=("$arg") ;;
     -E)
       edg_only_mode=preprocess; stop_after_edg=1 ;;
     -fsyntax-only)
