@@ -3241,6 +3241,9 @@ Display the indicated variable.
   if (ptr->is_in_class_specialization) {
     disp_boolean("is_in_class_specialization", TRUE);
   }  /* if */
+  if (ptr->is_contract_specifier_var) {
+    disp_boolean("is_contract_specifier_var", TRUE);
+  }  /* if */
   disp_initializer(ptr->init_kind, &ptr->initializer,
                    ptr->is_member_constant);
   if (ptr->entities_defined_in_initializer != NULL) {

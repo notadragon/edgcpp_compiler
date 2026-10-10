@@ -1041,6 +1041,10 @@ extern a_boolean check_var_for_lambda_capture(a_variable_ptr  var,
                                               a_boolean       implicit,
                                               a_boolean       by_ref,
                                               an_error_code   *diag);
+extern a_contract_specifier_ptr set_contract_param_proxy_owner(
+                                            a_contract_specifier_ptr  csp);
+extern a_variable_ptr contract_param_proxy(a_symbol_ptr  param_sym);
+extern a_boolean in_lambda_in_cdtor_contract(void);
 
 extern a_boolean current_mode_allows_field_selection_folding(void);
 

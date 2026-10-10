@@ -1,0 +1,42 @@
+fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
+"Test_name.c", line 7: error: expression must be a modifiable lvalue
+    void f(int x) pre(++m > 0);                    // Error, *this is const
+                        ^
+
+"Test_name.c", line 8: error: expression must be a modifiable lvalue
+    void h() pre(++g);                             // Error, a global too
+                   ^
+
+"Test_name.c", line 11: error: expression must be a modifiable lvalue
+    void t() pre(this->m++ > 0);                   // Error
+                 ^
+
+"Test_name.c", line 10: error: expression must be a modifiable lvalue
+    void b() { contract_assert(++m); }             // Error
+                                 ^
+
+"Test_name.c", line 13: error: expression must be a modifiable lvalue
+  void a(int x) pre(++x > 0);                      // Error, a parameter
+                      ^
+
+"Test_name.c", line 14: error: expression must be a modifiable lvalue
+  void b(int &x) pre(++x > 0);                     // Error, through a reference
+                       ^
+
+"Test_name.c", line 15: error: expression must be a modifiable lvalue
+  int c(int x) post(r: ++r > 0);                   // Error, the result name
+                         ^
+
+"Test_name.c", line 16: error: expression must be a modifiable lvalue
+  void d() { int l = 0; contract_assert(++l); }    // Error, a local variable
+                                          ^
+
+"Test_name.c", line 17: error: expression must be a modifiable lvalue
+  void e(int x) pre(sizeof(++x) > 0);              // Error, also unevaluated
+                             ^
+
+"Test_name.c", line 19: error: expression must be a modifiable lvalue
+  void sb() { auto [u, v] = P{1, 2}; contract_assert(++u); }  // Error
+                                                       ^
+
+10 errors detected in the compilation of "Test_name.c".

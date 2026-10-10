@@ -1044,6 +1044,17 @@ typedef struct an_expr_stack_entry {
 			/* TRUE if we're in the process of building the
 			   coroutine descriptor. */
   a_bit_field
+		in_contract_predicate:1;
+			/* TRUE in the predicate of a contract assertion
+			   (P2900), including its subexpressions: an
+			   id-expression naming a variable, and "this", are
+			   const there (see
+			   constify_contract_predicate_operand).  A
+			   precondition or postcondition predicate is scanned
+			   in the function parameter scope and may use the
+			   parameters (represented by enk_param_ref
+			   nodes). */
+  a_bit_field
 		paren_as_aggregate_init:1;
 			/* Set to true when a braced initializer component has
 			   been created because a parenthesized expression-list
@@ -1105,6 +1116,12 @@ typedef struct an_expr_stack_entry {
 			   context or a new one when processing goes from
 			   the expression routines out to declaration
 			   processing and back in again. */
+  a_scope_depth	contract_predicate_depth;
+			/* When in_contract_predicate is TRUE, the depth of
+			   the top of the scope stack when the scan of the
+			   predicate began: a local entity declared in a scope
+			   deeper than that is declared within the contract
+			   assertion (see contract_predicate_scope_depth). */
   a_dynamic_init_ptr
 		destructions_preceding_expr;
 			/* Points to the dynamic initialization that was the
@@ -1460,6 +1477,12 @@ the context of preparing a coroutine's descriptor block.
 */
 #define initializing_coroutine_descriptor() \
   (expr_stack != NULL && expr_stack->in_coroutine_desc_init)
+
+/*
+Macro that returns TRUE in the predicate of a contract assertion (P2900).
+*/
+#define in_contract_predicate() \
+  (expr_stack != NULL && expr_stack->in_contract_predicate)
 
 #define in_constant_array_dimension() \
   (expr_stack != NULL && expr_stack->in_constant_array_dimension)
@@ -3420,6 +3443,52 @@ extern void exprutil_one_time_init(void);
 extern void exprutil_trans_unit_init(void);
 
 extern void exprutil_init(void);
+
+extern void constify_contract_predicate_operand(an_operand  *operand);
+
+extern void constify_contract_capture_operand(an_operand  *operand);
+
+extern void note_lambda_in_contract_predicate(a_lambda_ptr   lambda,
+                                              a_scope_depth  depth);
+
+extern a_boolean in_lambda_in_contract_predicate(void);
+extern a_boolean lambda_closure_in_contract_predicate(
+                                                   a_type_ptr  closure_class);
+extern a_scope_depth contract_predicate_depth_of_lambda(
+                                                   a_type_ptr  closure_class);
+extern a_boolean in_contract_predicate_of_lambda(a_type_ptr  closure_class);
+extern a_boolean expr_has_local_capturing_lambda(an_expr_node_ptr  expr);
+
+extern a_scope_depth contract_predicate_scope_depth(void);
+
+extern a_boolean in_contract_predicate_context(void);
+extern a_boolean in_contract_predicate_outside_lambda(void);
+
+extern a_type_ptr contract_predicate_this_type(a_type_ptr  this_type);
+extern a_boolean contract_this_is_lambda_copy(void);
+
+extern void constify_contract_this_operand(an_operand  *operand);
+
+extern void check_function_contract_predicate(
+                                              a_contract_specifier_ptr  csp);
+
+extern void check_postcondition_params_of_redeclaration(
+                          a_routine_ptr                rp,
+                          a_param_id_ptr               param_ids,
+                          a_contract_redecl_param_ptr  *p_dependent_params);
+
+extern void check_postcondition_params_of_template_redeclarations(
+                                 a_contract_redecl_param_ptr  params,
+                                 a_routine_ptr                rp,
+                                 a_routine_ptr                proto_rp,
+                                 a_template_param_ptr         templ_param_list);
+
+extern void check_postcondition_params_of_definition(
+                                              a_routine_ptr   rp,
+                                              a_variable_ptr  params,
+                                              a_boolean       is_coroutine);
+extern void mark_contract_params_used(a_routine_ptr   rp,
+                                      a_variable_ptr  params);
 
 /* Conditionally close the "edg" namespace. */
 END_EDG_NAMESPACE

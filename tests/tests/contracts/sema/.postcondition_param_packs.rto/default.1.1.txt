@@ -1,0 +1,27 @@
+fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
+"Test_name.c", line 16: error: value parameter "x" used in a postcondition must be declared const
+  template <class T> struct S { void m(T x) post(x > 0) {} };
+                                         ^
+          detected during instantiation of "void S<T>::m(T) [with T=int]" at line 20
+
+"Test_name.c", line 13: error: value parameter "a" used in a postcondition must be declared const
+  template <typename... Ts> void pi(Ts... a) post(a...[0] == 0) {}
+                                          ^
+          detected during instantiation of "void pi(Ts...) [with Ts=<int>]" at line 17
+
+"Test_name.c", line 14: error: value parameter "a" used in a postcondition must be declared const
+  template <typename... Ts> void fold(Ts... a) post((... && (a == 0))) {}
+                                            ^
+          detected during instantiation of "void fold(Ts...) [with Ts=<int>]" at line 18
+
+"Test_name.c", line 15: error: value parameter "a" used in a postcondition must be declared const
+  template <typename T> void one(T a) post(a == 0) {}
+                                   ^
+          detected during instantiation of "void one(T) [with T=int]" at line 19
+
+"Test_name.c", line 21: error: value parameter "b" used in a postcondition must be declared const
+  template <typename... Ts> void sel_nc(Ts... b) post(b...[0] == 0) {}
+                                              ^
+          detected during instantiation of "void sel_nc(Ts...) [with Ts=<int, const int>]" at line 22
+
+5 errors detected in the compilation of "Test_name.c".

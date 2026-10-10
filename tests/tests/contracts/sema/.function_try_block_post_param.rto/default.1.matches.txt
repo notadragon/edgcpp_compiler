@@ -1,0 +1,4 @@
+Matches for "line 6: error: value parameter "x" used in a postcondition must be declared const":
+  <-----------------------------------------------------------------------------
+  line 6: error: value parameter "x" used in a postcondition must be declared const
+  ----------------------------------------------------------------------------->

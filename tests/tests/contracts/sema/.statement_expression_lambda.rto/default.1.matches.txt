@@ -1,0 +1,16 @@
+Matches for "", line 18: error: expression must be a modifiable lvalue":
+  <-----------------------------------------------------------------------------
+  ", line 18: error: expression must be a modifiable lvalue
+  ----------------------------------------------------------------------------->
+Matches for "", line 19: error: expression must be a modifiable lvalue":
+  <-----------------------------------------------------------------------------
+  ", line 19: error: expression must be a modifiable lvalue
+  ----------------------------------------------------------------------------->
+Matches for "", line 31: error: statement expressions are only allowed in block scope":
+  <-----------------------------------------------------------------------------
+  ", line 31: error: statement expressions are only allowed in block scope
+  ----------------------------------------------------------------------------->
+Matches for "", line 33: error: statement expressions are only allowed in block scope":
+  <-----------------------------------------------------------------------------
+  ", line 33: error: statement expressions are only allowed in block scope
+  ----------------------------------------------------------------------------->

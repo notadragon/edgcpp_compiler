@@ -1,0 +1,90 @@
+fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
+"Test_name.c", line 34: error: "this" cannot be implicitly captured only for contract assertions; capture it explicitly
+    void h() { auto l = [&] { contract_assert(m > 0); }; l(); }       // Error
+                                              ^
+
+"Test_name.c", line 38: error: "this" cannot be implicitly captured only for contract assertions; capture it explicitly
+    void h5() { [&](auto a) { contract_assert(get() > a); }(1); }    // Error
+                                              ^
+
+"Test_name.c", line 43: error: "this" cannot be implicitly captured only for contract assertions; capture it explicitly
+    int f = [this] { [&] { contract_assert(m > 0); }(); return 1; }(); // Error
+                                           ^
+
+"Test_name.c", line 44: error: "this" cannot be implicitly captured only for contract assertions; capture it explicitly
+    int g = [&] { contract_assert(this->m > 0); return 1; }();       // Error
+                                  ^
+
+"Test_name.c", line 48: error: "x" (declared at line 46) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto l1 = [=] { contract_assert(x > 0); };                       // Error
+                                    ^
+
+"Test_name.c", line 49: error: "x" (declared at line 46) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto l2 = [&](auto a) { contract_assert(x > a); return a; };     // Error
+                                            ^
+
+"Test_name.c", line 53: error: "x" (declared at line 46) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto l6 = [=] { return [=] { contract_assert(x > 0); }; };       // Error
+                                                 ^
+
+"Test_name.c", line 54: error: "x" (declared at line 46) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto l7 = [=] { contract_assert([=] { return x > 0; }()); };     // Error
+                                                 ^
+
+"Test_name.c", line 56: error: "x" (declared at line 46) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto l9 = [=] { contract_assert([x] { return x > 0; }()); };     // Error
+                                     ^
+
+"Test_name.c", line 57: error: "lambda []()->auto::y" (declared at line 57) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto l10 = [y = x] { [=] { contract_assert(y > 0); }(); };       // Error
+                                               ^
+
+"Test_name.c", line 58: error: "x" (declared at line 46) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto l11 = [&] { contract_assert(x > 0); contract_assert(x < 9); };  // Error
+                                     ^
+
+"Test_name.c", line 61: error: "x" (declared at line 46) cannot be implicitly captured only for contract assertions; capture it explicitly
+      contract_assert([=] { contract_assert(x > 0); return x > 1; }());  // Error
+                                            ^
+
+"Test_name.c", line 63: error: "x" (declared at line 46) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto l14 = [&] { [&] { contract_assert(x > 0); }(); (void)x; };  // Error
+                                           ^
+
+"Test_name.c", line 73: error: "a" (declared at line 72) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto l = [&] { contract_assert(a > 0); };                        // Error
+                                   ^
+
+"Test_name.c", line 77: error: "x" (declared at line 76) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto l = [=] { contract_assert(x > 0); };                        // Error
+                                   ^
+
+"Test_name.c", line 83: error: "ts" (declared at line 82) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto l = [=] { contract_assert(((ts > 0) && ...)); };            // Error
+                                     ^
+
+"Test_name.c", line 93: error: "this" cannot be implicitly captured only for contract assertions; capture it explicitly
+    void g() { auto s = [&] pre(m > 0) {}; s(); }                  // Error
+                                ^
+
+"Test_name.c", line 98: error: "i" (declared at line 96) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto p1 = [=] pre(i > 0) {};                                     // Error
+                      ^
+
+"Test_name.c", line 101: error: "i" (declared at line 96) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto p4 = [=](const int a) post(i > a) {};                       // Error
+                                    ^
+
+"Test_name.c", line 102: error: "y" (declared at line 97) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto p5 = [=] pre([=] { return y; }()) {};                       // Error
+                                   ^
+
+"Test_name.c", line 108: error: "i" (declared at line 96) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto p8 = [=] { return [=] pre(i > 0) {}; };                     // Error
+                                   ^
+
+"Test_name.c", line 109: error: "i" (declared at line 96) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto p9 = [=] { (void)i; return [=] pre(i > 0) {}; };            // Error
+                                            ^
+
+22 errors detected in the compilation of "Test_name.c".

@@ -2594,6 +2594,7 @@ Clear the fields of the given variable to default values.
   vp->is_template_param_object    = FALSE;
   vp->compiler_generated          = FALSE;
   vp->is_in_class_specialization  = FALSE;
+  vp->is_contract_specifier_var   = FALSE;
   vp->init_kind                   = (an_init_kind)initk_none;
   /* Clear field of all variants for union-as-struct testing. */
   vp->initializer.constant        = NULL;
@@ -5596,6 +5597,7 @@ entry is allocated in the current memory region.
   entry->explicit_return_type = FALSE;
   entry->has_parameter_decl = FALSE;
   entry->has_template_param_list = FALSE;
+  entry->appears_in_contract_predicate = FALSE;
   entry->start_position = null_source_position;
 #if EXTRA_SOURCE_POSITIONS_IN_IL
   entry->capture_end_position = null_source_position;
@@ -5635,6 +5637,8 @@ in the current memory region.
   entry->parenthesized_init = FALSE;
   entry->field_pending = FALSE;
   entry->const_capture = FALSE;
+  entry->used_in_contracts = FALSE;
+  entry->used_outside_contracts = FALSE;
   entry->position = null_source_position;
 #if EXTRA_SOURCE_POSITIONS_IN_IL
   entry->end_position = null_source_position;

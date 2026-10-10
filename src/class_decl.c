@@ -2359,12 +2359,16 @@ capture described by lcp.  Return the field entry.
         /* A capture of "this" or "*this" in a context with no "this"
            variable. */
         a_variable_ptr  this_var;
-        is_this = variable_this_exists(&this_var, &field_type);
-        check_assertion(is_this && this_var == NULL);
-        if (!by_reference) {
-          /* Capture of "*this". */
+        if (by_reference) {
+          is_this = variable_this_exists(&this_var, &field_type);
+        } else {
+          /* Capture of "*this": a copy of the object, whose type is not made
+             const by a contract predicate (P2900) the lambda is in (see
+             contract_predicate_this_type). */
+          is_this = variable_this_exists_for_copy(&this_var, &field_type);
           field_type = type_pointed_to(field_type);
         }  /* if */
+        check_assertion(is_this && this_var == NULL);
       } else {
         expect_error();
         set_to_error_locator(locator);
@@ -2658,9 +2662,22 @@ being done.
      the point of the reference that necessitated the capture.)  If the capture
      is in a class reactivation scope (i.e., for a lambda in a field
      initializer), use file scope memory. */
-  switch_il_region(scope_is(&scope_stack[depth], sck_class_reactivation) ?
-                                         file_scope_region_number :
-                                         scope_stack[depth].il_memory_region);
+  { a_scope_depth  region_depth = depth;
+    if (!in_file_scope(lambda)) {
+      /* A lambda in the predicate of a local lambda's own precondition or
+         postcondition (P2900) makes its captures in the function parameter
+         scope pushed for the predicate (see scan_lambda_contract_operands),
+         but is local to the function that scope is pushed in: allocate the
+         captures with the lambda. */
+      while (region_depth > DEPTH_OF_FILE_SCOPE &&
+             scope_is(&scope_stack[region_depth], sck_func_prototype)) {
+        --region_depth;
+      }  /* while */
+    }  /* if */
+    switch_il_region(scope_is(&scope_stack[depth], sck_class_reactivation) ?
+                                    file_scope_region_number :
+                                    scope_stack[region_depth].il_memory_region);
+  }
   lcp = alloc_capture_for_lambda(lambda);
   if (fp == NULL) {
     lcp->captured.variable = vp;
@@ -2767,6 +2784,104 @@ be done because the intermediate lambda does not allow implicit captures.
 }  /* add_lambda_capture */
 
 
+static void note_lambda_capture_use(a_variable_ptr  vp,
+                                    a_field_ptr     fp)
+/*
+A local entity -- the variable vp (possibly "this"), the init-capture fp, or,
+with both NULL, "this" in a context with no "this" variable -- has been named
+in the current lambda (or in the capture list of a lambda in it), and has a
+capture entry there.  For P2900 [expr.prim.lambda.closure], record on that
+capture, and on the implicit captures of the enclosing lambdas through which
+it is made, whether the name appears within or outside the contract
+assertions of the lambda concerned: an implicit capture made only for names
+within them is ill-formed (see check_contract_only_implicit_captures).  The
+name is within the contract assertions of the innermost lambda if it is in a
+contract predicate; it is within those of an enclosing lambda also if it is in
+a lambda that appears in a contract predicate.  For a parameter pack, every
+element of the pack is noted.
+*/
+{
+  uint32_t  param_num = 0;
+
+  if (vp != NULL && vp->is_parameter && vp->is_pack_element) {
+    param_num = vp->variant.assoc_param_type->param_num;
+  }  /* if */
+  for (;;) {
+    a_boolean      in_contract = in_contract_predicate();
+    a_lambda_ptr   lambda;
+    a_scope_depth  sd = NO_SCOPE_DEPTH;
+    for (;;) {
+      a_lambda_capture_ptr  lcp;
+      sd = scope_depth_for_capture(vp, sd, &lambda);
+      if (lambda == NULL) break;
+      lcp = find_lambda_capture(lambda, vp, fp);
+      if (lcp == NULL) break;
+      if (in_contract) {
+        lcp->used_in_contracts = TRUE;
+      } else {
+        lcp->used_outside_contracts = TRUE;
+      }  /* if */
+      /* The captures of the enclosing lambdas through which an explicit
+         capture (or an init-capture) is made were made by its capture
+         list, which is not within its contract assertions. */
+      if (!lcp->is_implicit) break;
+      if (lambda->appears_in_contract_predicate) in_contract = TRUE;
+    }  /* for */
+    if (param_num == 0) break;
+    vp = vp->next;
+    if (vp == NULL || vp->variant.assoc_param_type->param_num != param_num) {
+      break;
+    }  /* if */
+  }  /* for */
+}  /* note_lambda_capture_use */
+
+
+static void check_contract_only_implicit_captures(a_lambda_ptr  lambda)
+/*
+The body of the given lambda has been scanned.  Issue an error for each of its
+implicit captures that is made only for names within its contract assertions
+(see note_lambda_capture_use): P2900 [expr.prim.lambda.closure] makes that
+ill-formed, so that adding a contract assertion to a program cannot cause
+additional captures.
+*/
+{
+  a_lambda_capture_ptr  lcp;
+
+  for (lcp = lambda->capture_list; lcp != NULL; lcp = lcp->next) {
+    if (lcp->is_implicit && lcp->used_in_contracts &&
+        !lcp->used_outside_contracts && !lcp->field_pending) {
+      if (lcp->is_indirect_init_capture) {
+        pos_sy_error(ec_contract_only_implicit_capture, &lcp->position,
+                     symbol_for(lcp->captured.init_capture_field));
+      } else if (lcp->captured.variable == NULL ||
+                 lcp->captured.variable->is_this_parameter) {
+        pos_error(ec_contract_only_implicit_this_capture, &lcp->position);
+      } else {
+        pos_sy_error(ec_contract_only_implicit_capture, &lcp->position,
+                     symbol_for(lcp->captured.variable));
+      }  /* if */
+      /* The captures of the enclosing lambdas made for this one (which may
+         be made only for contract assertions too) get no error of their
+         own. */
+      { a_lambda_ptr          outer = lambda;
+        a_lambda_capture_ptr  src = lcp;
+        while (src->is_implicit &&
+               src->capture_info.source_closure_field != NULL &&
+               (outer = enclosing_lambda_of(outer)) != NULL) {
+          a_field_ptr  source_field = src->capture_info.source_closure_field;
+          for (src = outer->capture_list;
+               src != NULL && src->closure_field != source_field;
+               src = src->next) {
+          }  /* for */
+          if (src == NULL) break;
+          src->used_outside_contracts = TRUE;
+        }  /* while */
+      }
+    }  /* if */
+  }  /* for */
+}  /* check_contract_only_implicit_captures */
+
+
 a_lambda_capture_ptr lambda_capture_for_variable(
                                           a_variable_ptr         vp,
                                           a_source_position_ptr  pos,
@@ -2787,6 +2902,7 @@ created return NULL and:
 {
   a_lambda_ptr          lambda = get_current_lambda();
   a_lambda_capture_ptr  lcp;
+  a_variable_ptr        named_vp = vp;
 
   check_assertion(lambda != NULL);
   if (rvalue_only != NULL) *rvalue_only = FALSE;
@@ -2823,10 +2939,16 @@ created return NULL and:
                         ec_not_captured_this_in_lambda :
                         ec_not_captured_local_var_in_lambda;
       }  /* if */
-    } else if (rp->is_template_function && !rp->is_prototype_instantiation) {
+    } else if (rp->is_template_function && !rp->is_prototype_instantiation &&
+               !((vp == NULL || vp->is_contract_specifier_var) &&
+                 is_template_dependent_context() &&
+                 in_lambda_in_contract_predicate())) {
       /* We're attempting to capture during the real instantiation of a
          generic lambda, but all captures should have been determined during
-         the prototype instantiation.  A valid program can get here if there
+         the prototype instantiation.  (A lambda in a contract predicate of a
+         template, scanned in the template, is not such an instantiation:
+         its captures of the specifier's variables and of "this" are made
+         there.)  A valid program can get here if there
          is a capture default, but the variable is constant-valued and only
          used as a prvalue.  Otherwise, this is an error. */
       if (vp != NULL) {
@@ -2882,6 +3004,9 @@ created return NULL and:
       pos_error(err_code, pos);
     }  /* if */
   }  /* if */
+  if (lcp != NULL && contracts_enabled) {
+    note_lambda_capture_use(named_vp, (a_field_ptr)NULL);
+  }  /* if */
   return lcp;
 }  /* lambda_capture_for_variable */
 
@@ -2932,6 +3057,9 @@ can be created, return NULL and issue an error at the given position.
       if (err_code != ec_no_error) {
         pos_error(err_code, pos);
       }  /* if */
+    }  /* if */
+    if (lcp != NULL && contracts_enabled) {
+      note_lambda_capture_use((a_variable_ptr)NULL, fp);
     }  /* if */
   }  /* if */
   return lcp;
@@ -35152,6 +35280,21 @@ caller has already moved past the '[', and this routine leaves the trailing
                 /* A direct or indirect capture of an init-capture in an
                    enclosing lambda. */
                 field = sym->variant.field.ptr;
+              } else if (symbol_is(sym, sk_parameter) &&
+                         in_contract_predicate_context() &&
+                         (var = contract_param_proxy(sym)) != NULL) {
+                /* A parameter of a function captured by a lambda in the
+                   predicate of one of its preconditions or postconditions
+                   (P2900): Capture the variable that stands for it there. */
+                an_error_code  diag = ec_no_error;
+                sym_hdr = symbol_for(var)->header;
+                if (!check_var_for_lambda_capture(var, /*implicit=*/FALSE,
+                                                  by_ref, &diag)) {
+                  pos_error(diag, &error_position);
+                  var = NULL;
+                } else if (diag != ec_no_error) {
+                  pos_warning(diag, &error_position);
+                }  /* if */
               } else {
                 sym_error(ec_not_a_variable, sym);
               }  /* if */
@@ -35184,6 +35327,11 @@ caller has already moved past the '[', and this routine leaves the trailing
                                      by_ref || (is_this && !is_star_this),
                                      &capture_pos, &no_impl_capture);
             check_assertion(lcp != NULL);
+            if (contracts_enabled) {
+              /* The capture names the entity in the enclosing lambdas, if
+                 any, which may capture it implicitly. */
+              note_lambda_capture_use(var, field);
+            }  /* if */
           }  /* if */
         }  /* if */
         if (lcp != NULL) {
@@ -36156,6 +36304,18 @@ For example:
      declarator.  (E.g., this lambda expression could itself appear in a
      default argument.) */
   curr_default_args = NULL;
+  { a_scope_depth  pred_depth = contract_predicate_scope_depth();
+    if (pred_depth != NO_SCOPE_DEPTH) {
+      /* The lambda is in the predicate of a contract assertion (P2900),
+         perhaps in the body of another lambda in it. */
+      note_lambda_in_contract_predicate(lambda, pred_depth);
+    }  /* if */
+  }
+  if (in_contract_predicate()) {
+    /* The lambda is in the predicate of a contract assertion, not in the
+       body of another lambda in it (see note_lambda_capture_use). */
+    lambda->appears_in_contract_predicate = TRUE;
+  }  /* if */
   /* Start a new stop token context. */
   push_stop_token_stack();
   check_assertion(curr_token == tok_lbracket);
@@ -36227,6 +36387,7 @@ For example:
        generate a lambda conversion function. */
     scan_lambda_body(lambda, &func_info, &last_tsn);
   }  /* if */
+  if (contracts_enabled) check_contract_only_implicit_captures(lambda);
   { /* Generate conversion functions and special member functions. */
     a_generated_special_function_descr  gsfd;
     init_generated_special_function_descr(&gsfd);

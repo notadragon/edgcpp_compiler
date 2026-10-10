@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
+"Test_name.c", line 6: error: in a precondition of a constructor or a postcondition of a destructor, a member must be accessed through an explicit "this"
+    T(int v) pre(m > 0) : m(v) {}                  // Error
+                 ^
+
+"Test_name.c", line 7: error: in a precondition of a constructor or a postcondition of a destructor, a member must be accessed through an explicit "this"
+    T() pre(get() > 0) : m(0) {}                   // Error, a member function too
+            ^
+
+"Test_name.c", line 8: error: in a precondition of a constructor or a postcondition of a destructor, a member must be accessed through an explicit "this"
+    ~T() post(m > 0) {}                            // Error
+              ^
+
+3 errors detected in the compilation of "Test_name.c".

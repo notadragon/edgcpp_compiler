@@ -4582,6 +4582,10 @@ is set to TRUE.
       root_sssep->last_dep_statement = csp;
     }  /* if */
     rp->is_coroutine = TRUE;
+    /* A coroutine's postconditions cannot use its parameters (P2900). */
+    check_postcondition_params_of_definition(
+                      rp, innermost_function_scope->variant.routine.parameters,
+                      /*is_coroutine=*/TRUE);
     if (!rp->is_declared_constexpr && !rp->is_consteval) {
       rp->is_constexpr = FALSE;
     }

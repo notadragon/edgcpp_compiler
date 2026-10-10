@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
+"Test_name.c", line 10: error: expression must be a modifiable lvalue
+  void g() { int j = 0; contract_assert(({ ++j; }) > 0); }               // Error
+                                             ^
+
+"Test_name.c", line 11: error: expression must be a modifiable lvalue
+  void h() { int j = 0; contract_assert(({ if (j) { ++j; } j; }) > 0); } // Error
+                                                      ^
+
+"Test_name.c", line 15: error: expression must be a modifiable lvalue
+    void f() { contract_assert(({ ++m; }) > 0); }                       // Error
+                                    ^
+
+3 errors detected in the compilation of "Test_name.c".

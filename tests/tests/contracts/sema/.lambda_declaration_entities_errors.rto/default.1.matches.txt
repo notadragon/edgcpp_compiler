@@ -1,0 +1,48 @@
+Matches for "line 18: error: expression must be a modifiable lvalue":
+  <-----------------------------------------------------------------------------
+  line 18: error: expression must be a modifiable lvalue
+  ----------------------------------------------------------------------------->
+Matches for "line 19: error: expression must be a modifiable lvalue":
+  <-----------------------------------------------------------------------------
+  line 19: error: expression must be a modifiable lvalue
+  ----------------------------------------------------------------------------->
+Matches for "line 21: error: expression must be a modifiable lvalue":
+  <-----------------------------------------------------------------------------
+  line 21: error: expression must be a modifiable lvalue
+  ----------------------------------------------------------------------------->
+Matches for "line 22: error: expression must be a modifiable lvalue":
+  <-----------------------------------------------------------------------------
+  line 22: error: expression must be a modifiable lvalue
+  ----------------------------------------------------------------------------->
+Matches for "line 24: error: expression must be a modifiable lvalue":
+  <-----------------------------------------------------------------------------
+  line 24: error: expression must be a modifiable lvalue
+  ----------------------------------------------------------------------------->
+Matches for "line 25: error: expression must be a modifiable lvalue":
+  <-----------------------------------------------------------------------------
+  line 25: error: expression must be a modifiable lvalue
+  ----------------------------------------------------------------------------->
+Matches for "line 27: error: value parameter "x" used in a postcondition must be declared const":
+  <-----------------------------------------------------------------------------
+  line 27: error: value parameter "x" used in a postcondition must be declared const
+  ----------------------------------------------------------------------------->
+Matches for "line 28: error: value parameter "x" used in a postcondition must be declared const":
+  <-----------------------------------------------------------------------------
+  line 28: error: value parameter "x" used in a postcondition must be declared const
+  ----------------------------------------------------------------------------->
+Matches for "line 31: error: an enclosing-function local variable cannot be referenced":
+  <-----------------------------------------------------------------------------
+  line 31: error: an enclosing-function local variable cannot be referenced
+  ----------------------------------------------------------------------------->
+Matches for "line 32: error: an enclosing-function local variable cannot be referenced":
+  <-----------------------------------------------------------------------------
+  line 32: error: an enclosing-function local variable cannot be referenced
+  ----------------------------------------------------------------------------->
+Matches for "line 35: error: in a precondition of a constructor or a postcondition of a destructor":
+  <-----------------------------------------------------------------------------
+  line 35: error: in a precondition of a constructor or a postcondition of a destructor
+  ----------------------------------------------------------------------------->
+Matches for "line 37: error: in a precondition of a constructor or a postcondition of a destructor":
+  <-----------------------------------------------------------------------------
+  line 37: error: in a precondition of a constructor or a postcondition of a destructor
+  ----------------------------------------------------------------------------->

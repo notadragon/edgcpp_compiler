@@ -18109,6 +18109,16 @@ expression (i.e., id-expression or member access).
   }  /* if */
   /* Note that skip_parens is not called here, because parentheses are
      significant. */
+  if (expr != NULL && in_contract_predicate_context() &&
+      is_operation_node(expr) &&
+      node_operator_is(expr, eok_lvalue_adjust) && expr->compiler_generated &&
+      operand->is_id_expression && !operand->id_expression_was_parenthesized) {
+    /* The const of a name in a contract predicate (see
+       constify_contract_predicate_operand) is not part of its declared
+       type. */
+    expr = strip_ref_indirect(expr->variant.operation.operands,
+                              /*parens_also=*/FALSE);
+  }  /* if */
   if (expr != NULL && is_operation_node(expr) && !operand->is_parenthesized &&
       (node_operator_is(expr, eok_dot_field) ||
        node_operator_is(expr, eok_points_to_field) ||
@@ -29926,6 +29936,59 @@ expression; stmt has just been allocated, so it cannot already be on the list.
 }  /* record_file_scope_statement_expr */
 
 
+static a_boolean stmt_expr_allowed_in_contract_predicate(void)
+/*
+A GNU statement expression begins in a scope that is not a block scope.
+Return TRUE if it is directly in the predicate of a precondition or
+postcondition (P2900) of a lambda.  Such a predicate is scanned in the
+function parameter scope of the lambda's call operator, pushed on the scope
+of its body (see scan_lambda_contract_operands), so the statements are in
+that function, as in GCC.  In a template-dependent context, it is scanned
+with the lambda's declarator instead, where there is no function for them
+(see scan_function_contract_specifiers).
+*/
+{
+  a_boolean           result = FALSE;
+  a_decl_parse_state  *dps;
+
+  if (in_contract_predicate() &&
+      expr_stack->contract_predicate_depth == depth_scope_stack &&
+      scope_is(&scope_stack_top(), sck_func_prototype) &&
+      (dps = scope_stack_top().decl_parse_state) != NULL) {
+    if (dps->is_lambda) {
+      /* The first scan, in a template-dependent context. */
+      result = TRUE;
+    } else if (dps->sym != NULL &&
+               (dps->sym->kind == (a_symbol_kind)sk_routine ||
+                dps->sym->kind == (a_symbol_kind)sk_member_function)) {
+      /* A scan from cached tokens, for the call operator rp (see
+         init_decl_parse_state_for_contract_rescan). */
+      a_routine_ptr  rp = dps->sym->variant.routine.ptr;
+      result = rp != NULL && rp->is_lambda_body;
+    }  /* if */
+  }  /* if */
+  return result;
+}  /* stmt_expr_allowed_in_contract_predicate */
+
+
+static a_boolean is_param_in_contract_statement_expression(
+                                                       a_symbol_ptr  sym_ptr)
+/*
+sym_ptr is a function parameter named outside the body of its function.
+Return TRUE if the name is in a GNU statement expression in the predicate of
+a precondition or postcondition (P2900) of that function (see
+stmt_expr_allowed_in_contract_predicate): The parameter can be used there as
+in the predicate itself.
+*/
+{
+  a_scope_depth  depth = scope_stack_top().contract_predicate_depth;
+
+  return depth > 0 && depth <= depth_scope_stack &&
+         scope_is(&scope_stack[depth], sck_func_prototype) &&
+         scope_stack[depth].number == sym_ptr->decl_scope;
+}  /* is_param_in_contract_statement_expression */
+
+
 static void scan_gnu_statement_expression(an_operand        *result,
                                           a_source_position *start_position)
 /*
@@ -29960,7 +30023,8 @@ already been consumed.
     err = TRUE;
   }  /* if */
   if (expr_stack->expression_kind != (an_expression_kind)ek_sizeof &&
-      (!is_local_scope_kind(scope_stack_top().kind) ||
+      ((!is_local_scope_kind(scope_stack_top().kind) &&
+        !stmt_expr_allowed_in_contract_predicate()) ||
        innermost_function_scope == NULL ||
        expr_stack->is_default_arg_expression ||
        scope_stack_top().in_template_arg_list)) {
@@ -29989,10 +30053,21 @@ already been consumed.
        statements are not part of any expression we may currently be
        inside of.  Likewise the object lifetime stack. */
     an_expr_stack_entry_ptr saved_expr_stack;
+    a_scope_depth           pred_depth = contract_predicate_scope_depth(),
+                            saved_pred_depth =
+                                   scope_stack_top().contract_predicate_depth;
 #if GENERATE_SOURCE_SEQUENCE_LISTS
     a_boolean               saved_sses_disallowed;
 #endif /* GENERATE_SOURCE_SEQUENCE_LISTS */
     save_expr_stack(&saved_expr_stack);
+    if (pred_depth != NO_SCOPE_DEPTH) {
+      /* The statement expression is in the predicate of a contract
+         assertion (P2900): So are its statements, though they are not part
+         of the expression being scanned.  The block scope pushed for them
+         inherits this (see contract_predicate_scope_depth). */
+      check_assertion(pred_depth != 0);
+      scope_stack_top().contract_predicate_depth = pred_depth;
+    }  /* if */
 #if GENERATE_SOURCE_SEQUENCE_LISTS
     saved_sses_disallowed = source_sequence_entries_disallowed;
 #endif /* GENERATE_SOURCE_SEQUENCE_LISTS */
@@ -30013,6 +30088,7 @@ already been consumed.
                                  /*is_statement_expr=*/TRUE,
                                  saved_expr_stack->marked_as_gnu_extension,
                                  &expr_type);
+    scope_stack_top().contract_predicate_depth = saved_pred_depth;
     if (sp->kind == (a_statement_kind)stmk_block &&
         sp->variant.block.extra_info->assoc_scope != NULL) {
       sp->variant.block.extra_info->assoc_scope->is_stmt_expr_block = TRUE;
@@ -39472,6 +39548,16 @@ currently in the header of a lambda.
        lambda. */
   }  /* if */
 look_for_var:
+  if (var != NULL && var->is_contract_specifier_var) {
+    /* A variable of a precondition or postcondition specifier (P2900) is
+       captured from the function parameter scope in which the predicate is
+       scanned (where its symbol is declared), as if declared there. */
+    a_symbol_ptr  var_sym = symbol_for(var);
+    if (var_sym != NULL && scope_is(&scope_stack[sd], sck_func_prototype) &&
+        scope_stack[sd].number == var_sym->decl_scope) {
+      goto done;
+    }  /* if */
+  }  /* if */
   /* Skip any function prototype scopes from lambda headers or
      block externs. */
   for (; scope_is(&scope_stack[sd], sck_func_prototype); --sd) {
@@ -39597,6 +39683,147 @@ routine.
   }  /* if */
   return decl_in_curr_rout;
 }  /* var_declared_in_current_routine */
+
+
+/* The precondition or postcondition specifier whose operand is being scanned,
+   which owns the parameter proxies made for it (see contract_param_proxy);
+   NULL otherwise. */
+STATIC_THREAD a_contract_specifier_ptr  contract_param_proxy_owner = NULL;
+
+
+a_contract_specifier_ptr set_contract_param_proxy_owner(
+                                            a_contract_specifier_ptr  csp)
+/*
+Make csp, a precondition or postcondition specifier whose operand is about to
+be scanned in its function parameter scope, the owner of the parameter
+proxies that contract_param_proxy makes, and return the previous owner, which
+is restored by passing it back once the operand has been scanned.
+*/
+{
+  a_contract_specifier_ptr  prev = contract_param_proxy_owner;
+
+  contract_param_proxy_owner = csp;
+  return prev;
+}  /* set_contract_param_proxy_owner */
+
+
+a_variable_ptr contract_param_proxy(a_symbol_ptr  param_sym)
+/*
+param_sym (sk_parameter) is named in the body of a lambda, or in the capture
+list of one, in the operand of a precondition or postcondition specifier
+being scanned (see set_contract_param_proxy_owner).  If it is a parameter of
+the function declared, return the variable that stands for it there (see
+a_contract_specifier::param_proxies), making it if it does not exist yet;
+otherwise return NULL.  A parameter has no variable outside the function's
+body, and the lambda captures the proxy as it would capture a local variable
+of an enclosing function.  The initializer of a proxy is the parameter
+reference (an enk_param_ref) that the parameter's name gives in the
+predicate itself: It identifies the parameter where the predicate is
+evaluated (see param_variable_for_param_ref).
+*/
+{
+  a_contract_specifier_ptr  csp = contract_param_proxy_owner;
+  a_scope_depth             sd = contract_predicate_scope_depth();
+  a_param_id_ptr            pip = param_sym->variant.param_id;
+  unsigned int              element_num = 0;
+  a_variable_ptr            proxy, *p_next;
+  an_expr_node_ptr          param_ref;
+  a_dynamic_init_ptr        dip;
+  a_memory_region_number    region_to_switch_back_to;
+  a_symbol_locator          loc;
+  a_symbol_ptr              sym;
+
+  if (csp == NULL || sd == NO_SCOPE_DEPTH || pip == NULL) return NULL;
+  /* The function parameter scope declaring the parameter encloses the
+     predicate. */
+  for (; sd > DEPTH_OF_FILE_SCOPE; --sd) {
+    if (scope_is(&scope_stack[sd], sck_func_prototype) &&
+        scope_stack[sd].number == param_sym->decl_scope) {
+      break;
+    }  /* if */
+  }  /* for */
+  if (sd <= DEPTH_OF_FILE_SCOPE) return NULL;
+  if (pip->is_pack_element && !pip->is_parameter_pack) {
+    /* An element of an expanded function parameter pack: Find which
+       element it is (as make_param_ref_operand does). */
+    a_param_id_ptr  other_pip;
+    for (other_pip = scope_stack[sd].param_id_list; other_pip != NULL;
+         other_pip = other_pip->next) {
+      if (other_pip->param_num == pip->param_num) {
+        ++element_num;
+        if (other_pip == pip) break;
+      }  /* if */
+    }  /* for */
+    if (other_pip == NULL) element_num = 0;
+  }  /* if */
+  for (p_next = &csp->param_proxies; (proxy = *p_next) != NULL;
+       p_next = &proxy->next) {
+    param_ref = proxy->initializer.dynamic->variant.expression;
+    if (param_ref->variant.param_ref.param_num == pip->param_num &&
+        param_ref->variant.param_ref.pack_element_num == element_num) {
+      return proxy;
+    }  /* if */
+  }  /* for */
+  /* The proxy belongs to the specifier, which is in file-scope memory (see
+     declare_contract_result_name in declarator.c). */
+  switch_to_file_scope_region(&region_to_switch_back_to);
+  proxy = make_variable(pip->type, (a_storage_class)sc_auto, NO_SCOPE_DEPTH);
+  proxy->is_contract_specifier_var = TRUE;
+  param_ref = alloc_expr_node((an_expr_node_kind)enk_param_ref);
+  param_ref->type = pip->type;
+  param_ref->is_lvalue = TRUE;
+  param_ref->compiler_generated = TRUE;
+  param_ref->variant.param_ref.param_num = pip->param_num;
+  param_ref->variant.param_ref.levels_up = 0;
+  param_ref->variant.param_ref.pack_element_num = element_num;
+  dip = alloc_dynamic_init(dik_expression);
+  dip->variant.expression = param_ref;
+  dip->variable = proxy;
+  proxy->init_kind = (an_init_kind)initk_dynamic;
+  proxy->initializer.dynamic = dip;
+  switch_back_to_original_region(region_to_switch_back_to);
+  /* A symbol of its own, in no scope's symbol table (the parameter is still
+     what lookup finds), gives the proxy the parameter's name and declaring
+     scope. */
+  make_locator_for_symbol(param_sym, &loc);
+  sym = make_symbol((a_symbol_kind)sk_variable, &loc);
+  sym->variant.variable.ptr = proxy;
+  sym->decl_scope = param_sym->decl_scope;
+  /* Like the parameter it stands for, it has a value. */
+  sym->value_has_been_set = TRUE;
+  set_source_corresp(&proxy->source_corresp, sym);
+  *p_next = proxy;
+  return proxy;
+}  /* contract_param_proxy */
+
+
+a_boolean in_lambda_in_cdtor_contract(void)
+/*
+Return TRUE if the current context is the body of a lambda in the predicate
+of a constructor's precondition or of a destructor's postcondition (outside
+a template), whose operand is being scanned (see
+set_contract_param_proxy_owner).
+*/
+{
+  a_contract_specifier_ptr  csp = contract_param_proxy_owner;
+  a_scope_depth             sd;
+  a_decl_parse_state_ptr    dps;
+  a_routine_ptr             rp;
+
+  if (csp == NULL || !in_lambda_in_contract_predicate() ||
+      is_template_dependent_context()) {
+    return FALSE;
+  }  /* if */
+  sd = contract_predicate_scope_depth();
+  if (sd == NO_SCOPE_DEPTH || sd > depth_scope_stack) return FALSE;
+  dps = scope_stack[sd].decl_parse_state;
+  if (dps == NULL || dps->sym == NULL || !is_simple_function_symbol(dps->sym)) {
+    return FALSE;
+  }  /* if */
+  rp = dps->sym->variant.routine.ptr;
+  return (csp->kind == ctk_pre && special_kind_is(rp, sfk_constructor)) ||
+         (csp->kind == ctk_post && special_kind_is(rp, sfk_destructor));
+}  /* in_lambda_in_cdtor_contract */
 
 
 static a_boolean variable_auto_decl_underway(a_variable_ptr var_ptr)
@@ -39746,7 +39973,8 @@ as from a lambda body.
 {
   a_boolean  result = FALSE;
 
-  if (var->source_corresp.is_local_to_function) {
+  if (var->source_corresp.is_local_to_function ||
+      var->is_contract_specifier_var) {
     a_lambda_capture_ptr  lcp;
     for (lcp = lambda->capture_list; lcp != NULL; lcp = lcp->next) {
       if (!lcp->is_init_capture && !lcp->is_indirect_init_capture &&
@@ -39767,10 +39995,12 @@ as from a lambda body.
            not been pushed; compare against the closure class instead. */
         limit_depth = get_innermost_closure_scope_depth();
       }  /* if */
-      if (var->source_corresp.parent_scope != NULL &&
-          var->source_corresp.parent_scope->depth_in_scope_stack <
-                                                                limit_depth) {
-        /* The variable is declared outside the lambda. */
+      if (var->is_contract_specifier_var ||
+          (var->source_corresp.parent_scope != NULL &&
+           var->source_corresp.parent_scope->depth_in_scope_stack <
+                                                               limit_depth)) {
+        /* The variable is declared outside the lambda (a variable of a
+           precondition or postcondition specifier always is). */
         if (lambda->has_capture_default && !lambda->default_is_by_reference) {
           result = TRUE;
         }  /* if */
@@ -39779,6 +40009,67 @@ as from a lambda body.
   }  /* if */
   return result;
 }  /* var_is_copy_captured */
+
+
+static a_boolean contract_predicate_makes_const(
+                                         a_symbol_ptr    sym_ptr,
+                                         a_variable_ptr  var,
+                                         a_field_ptr     init_capture_field)
+/*
+sym_ptr is the symbol for an entity named by an id-expression in the current
+context: a variable, a parameter, a structured binding, a non-type template
+parameter, or an init-capture.  var is the variable, if sym_ptr is for one,
+and init_capture_field the field, if sym_ptr is for an init-capture;
+otherwise they are NULL.  Return TRUE if the id-expression is const by P2900
+[expr.prim.id.unqual]: it appears in the predicate of a contract assertion C
+(see contract_predicate_scope_depth), possibly in a lambda body or a
+statement expression in it, the entity is declared outside C, and no lambda
+in C captures it by copy (the id-expression then names a member of the
+closure type, which is not made const).
+*/
+{
+  a_scope_depth  pred_depth = contract_predicate_scope_depth(), sd;
+
+  if (pred_depth == NO_SCOPE_DEPTH) return FALSE;
+  if (var != NULL) {
+    a_variable_ptr  cap;
+    for (cap = postcondition_captures_in_scope; cap != NULL;
+         cap = cap->next) {
+      /* A postcondition capture (P3098) is not const: its predicate may
+         modify it. */
+      if (cap == var) return FALSE;
+    }  /* for */
+  }  /* if */
+  for (sd = depth_scope_stack; sd > pred_depth; --sd) {
+    a_scope_stack_entry  *ssep = &scope_stack[sd];
+    if (ssep->number == sym_ptr->decl_scope) {
+      /* The entity is declared within C. */
+      return FALSE;
+    }  /* if */
+    if ((scope_is(ssep, sck_class_struct_union) ||
+         scope_is(ssep, sck_class_reactivation)) &&
+        ssep->assoc_type != NULL &&
+        class_type_supp(ssep->assoc_type)->is_lambda_closure_class) {
+      /* A lambda in C, between the id-expression and the declaration. */
+      a_lambda_ptr  lambda = get_lambda_for_closure_class(ssep->assoc_type);
+      if (lambda == NULL) {
+        /* Not yet recorded. */
+      } else if (var != NULL) {
+        if (var_is_copy_captured(lambda, var)) return FALSE;
+      } else if (init_capture_field != NULL) {
+        a_lambda_capture_ptr  lcp;
+        for (lcp = lambda->capture_list; lcp != NULL; lcp = lcp->next) {
+          if (lcp->is_indirect_init_capture &&
+              lcp->captured.init_capture_field == init_capture_field &&
+              !lcp->capture_by_reference) {
+            return FALSE;
+          }  /* if */
+        }  /* for */
+      }  /* if */
+    }  /* if */
+  }  /* for */
+  return TRUE;
+}  /* contract_predicate_makes_const */
 
 
 static a_boolean var_is_reference_to_constant_address(a_variable_ptr  vp)
@@ -39894,8 +40185,14 @@ a capture).
   /* This sort of bad reference is only possible when we are inside a local
      class (the class itself or one of its member functions) or a
      default argument expression.  Note that inside_local_class is TRUE
-     also when we're inside a lambda body. */
-  if (inside_local_class || expr_stack->is_default_arg_expression) {
+     also when we're inside a lambda body (in a function).  A variable of a
+     precondition or postcondition specifier, named in a lambda in its
+     predicate, is captured like a local variable of an enclosing function,
+     also where there is none. */
+  if (inside_local_class || expr_stack->is_default_arg_expression ||
+      (symbol_is(sym_ptr, sk_variable) &&
+       sym_ptr->variant.variable.ptr->is_contract_specifier_var &&
+       in_lambda_in_contract_predicate())) {
     a_scope_stack_entry  *func_proto_ssep;
     var = variable_for_symbol(sym_ptr);
     if (add_const != NULL &&
@@ -39959,16 +40256,21 @@ a capture).
       /* A reference to a local variable.  Get the variable for the symbol. */
       check_assertion_str(sym_ptr->kind == (a_symbol_kind)sk_variable,
                           "bad_nested_function_variable_ref: bad sym kind");
-      if (var->source_corresp.enclosing_routine == NULL) {
+      if (var->source_corresp.enclosing_routine == NULL &&
+          !(var->is_contract_specifier_var &&
+            in_lambda_in_contract_predicate())) {
         /* Block extern declarations create symbols that are local but
            point to variables that are external.  The reference is okay
-           in such a case. */
+           in such a case.  (A variable of a precondition or postcondition
+           specifier has no enclosing routine either, but a lambda in its
+           predicate captures it.) */
       } else if (expr_stack->is_default_arg_expression) {
         /* A default argument expression cannot refer to a local variable.
            The standard does not draw a distinction between automatic and
            static variables.  Parameter variables also fall out here. */
         bad_ref = TRUE;
-      } else if (var_declared_in_current_routine(var)) {
+      } else if (!var->is_contract_specifier_var &&
+                 var_declared_in_current_routine(var)) {
         /* The variable is declared in the current routine, so the
            reference is fine. */
       } else if (var_has_static_or_thread_storage_duration(var)) {
@@ -40695,7 +40997,9 @@ if rescan_is_template_id is TRUE, and return the result in *operand
       change_refs_to_error(rep);
       rep = NULL;
     } else {
-      a_boolean  rvalue_only = FALSE, add_const = FALSE;
+      a_boolean     rvalue_only = FALSE, add_const = FALSE,
+                    capture_made_const = FALSE;
+      a_symbol_ptr  init_capture_sym = NULL;
       if (warning_on_for_init_difference) {
         /* Unless it is a qualified-name reference, if sym_ptr is visible with
            new-style for-init declaration scoping but would be hidden using
@@ -40732,6 +41036,14 @@ if rescan_is_template_id is TRUE, and return the result in *operand
             set_has_address_of_flag_if_needed(sym_ptr->variant.constant, TRUE);
           }  /* if */
           make_sym_constant_operand(sym_ptr, result);
+          if (sym_ptr->is_template_param &&
+              is_reference_type(sym_ptr->variant.constant->type) &&
+              contract_predicate_makes_const(sym_ptr, (a_variable_ptr)NULL,
+                                             (a_field_ptr)NULL)) {
+            /* A template parameter of reference type declared outside a
+               contract assertion, named in its predicate (P2900): const. */
+            constify_contract_predicate_operand(result);
+          }  /* if */
           set_operand_id_details_from_locator(result, &locator);
           if (curr_expr_kind_is(ek_integral_constant) &&
               curr_expr_kind_is_traditional_const()) {
@@ -40856,6 +41168,15 @@ variable:
               make_qualified_type(result->variant.expression->type, TQ_CONST);
             }  /* if */
             result->pending_capture = TRUE;
+            if (lambda_capture->capture_by_reference &&
+                in_lambda_in_contract_predicate() &&
+                contract_predicate_makes_const(sym_ptr, var_ptr,
+                                               (a_field_ptr)NULL)) {
+              /* A capture by reference in a lambda in a contract predicate
+                 (P2900): const, as in the predicate. */
+              constify_contract_capture_operand(result);
+              capture_made_const = TRUE;
+            }  /* if */
             if (is_variably_modified_type(result->type)) {
               /* Capturing a variable-length array is not well supported at
                  this time.  It really should capture a pointer to the array
@@ -40985,6 +41306,11 @@ variable:
               }  /* if */
             }   /* if */
           }  /* if */
+          if (!capture_made_const &&
+              contract_predicate_makes_const(sym_ptr, var_ptr,
+                                             (a_field_ptr)NULL)) {
+            constify_contract_predicate_operand(result);
+          }  /* if */
           if (is_error_operand(result)) {
             change_refs_to_error(rep);
             rep = NULL;
@@ -41093,6 +41419,7 @@ normal_function:
                 break;
               } else {
                 an_expr_node_ptr  this_var_node;
+                init_capture_sym = sym_ptr;
                 /* Create a "this" operand explicitly (the ordinary path
                    ignores closure types). */
                 this_var_node = this_expr_node_for_lambda_closure(
@@ -41274,6 +41601,14 @@ normal_function:
           if (nonstd_field_folding_case) {
             restore_constant_expression_kind(saved_expr_kind,
                                              saved_traditional);
+          }  /* if */
+          if (init_capture_sym != NULL && !is_error_operand(result) &&
+              contract_predicate_makes_const(
+                                init_capture_sym, (a_variable_ptr)NULL,
+                                init_capture_sym->variant.field.ptr)) {
+            /* An init-capture declared outside a contract assertion, named
+               in its predicate (P2900): const. */
+            constify_contract_predicate_operand(result);
           }  /* if */
           break;
         case sk_member_function:
@@ -41500,6 +41835,15 @@ type_identifier_case:
              (in the body, we'd have found the corresponding sk_variable
              instead).  This is only possible in a function declarator or
              in requires-expressions (which may have parameters). */
+          if (in_lambda_body() && in_lambda_in_contract_predicate() &&
+              (var_ptr = contract_param_proxy(sym_ptr)) != NULL) {
+            /* A parameter named in the body of a lambda in the predicate of
+               one of the function's preconditions or postconditions
+               (P2900): The lambda uses, and captures, the variable that
+               stands for it there. */
+            sym_ptr = symbol_for(var_ptr);
+            goto variable;
+          }  /* if */
           if (expr_is_inside_default_arg_expression() ||
               (curr_expr_is_potentially_evaluated() &&
                !expr_stack->is_vla_dimension_expression &&
@@ -41509,8 +41853,11 @@ type_identifier_case:
             /* Within a function declarator, a parameter can only be used
                outside default argument expressions and even then only in 
                  (a) an unevaluated context (like decltype(p)),
-                 (b) a requirement (N5046 [expr.prim.req]), or
-                 (c) the dimension of a VLA parameter. */
+                 (b) a requirement (N5046 [expr.prim.req]),
+                 (c) the dimension of a VLA parameter, or
+                 (d) the predicate of a precondition or postcondition
+                     (P2900), including a statement expression in it (see
+                     scan_gnu_statement_expression). */
             error_and_make_error_operand(ec_param_not_allowed, result);
             change_refs_to_error(rep);
             rep = NULL;
@@ -41554,6 +41901,10 @@ type_identifier_case:
                  void f(a, int b[sizeof(a)]);
                Create an enk_param_ref operand to represent the use. */
             make_param_ref_operand(result, sym_ptr);
+            if (contract_predicate_makes_const(sym_ptr, (a_variable_ptr)NULL,
+                                               (a_field_ptr)NULL)) {
+              constify_contract_predicate_operand(result);
+            }  /* if */
           }  /* if */
           break;
         case sk_concept_template:
@@ -53179,6 +53530,11 @@ rcblock parameter for this function).
     discard_curr_construct_pragmas();
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
   }  /* if */
+  if (in_contract_predicate_outside_lambda()) {
+    /* P2900 [expr.await]. */
+    pos_st_error(ec_contract_predicate_await, &operator_position,
+                 "co_yield");
+  }  /* if */
   operator_tok_seq_number = curr_token_sequence_number;
   /* Scan the operand. */
   (void)get_token();
@@ -53238,6 +53594,12 @@ rcblock parameter for this function).
   /* Normal, non-rescan, processing. */
   operator_position = pos_curr_token;
   operator_tok_seq_number = curr_token_sequence_number;
+  if (in_contract_predicate_outside_lambda()) {
+    /* P2900 [expr.await]: An await-expression in a contract predicate can
+       appear only in a lambda-expression in it. */
+    pos_st_error(ec_contract_predicate_await, &operator_position,
+                 "co_await");
+  }  /* if */
   /* Scan the operand. */
   (void)get_token();
   scan_expr(&operand, PREC_PREFIX, EOPT_NO_OPTIONS);

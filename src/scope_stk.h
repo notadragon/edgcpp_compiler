@@ -1562,6 +1562,13 @@ typedef struct a_scope_stack_entry {
 			   Contains the scope depth of the scope that is
 			   part of both the template definition context and
 			   the context at the point of instantiation. */
+  a_scope_depth	contract_predicate_depth;
+			/* For a local scope of a statement expression in the
+			   predicate of a contract assertion (P2900), and the
+			   local scopes nested in it, the depth recorded for
+			   that assertion (see contract_predicate_scope_depth
+			   and scan_statement_expression).  Zero otherwise (a
+			   predicate is never scanned at file scope). */
   a_scope_depth	saved_depth_of_initial_lookup_scope;
 			/* The previous value of the global variable
 			   depth_of_initial_lookup_scope when a new scope

@@ -3129,10 +3129,12 @@ the scope being pushed.
         kind == (a_scope_kind)sck_class_struct_union ||
         kind == (a_scope_kind)sck_class_reactivation) {
       /* If we are entering a class context or a lambda, don't inherit the
-         discarded statement context, nor the "if consteval" context. */
+         discarded statement context, nor the "if consteval" context, nor
+         the statement expression in a contract predicate. */
     } else {
       ssep->in_discarded_statement = (ssep-1)->in_discarded_statement;
       ssep->in_consteval_context = (ssep-1)->in_consteval_context;
+      ssep->contract_predicate_depth = (ssep-1)->contract_predicate_depth;
     }  /* if */
   }  /* if */
   ssep->is_rescan = (options & PS_IS_RESCAN) != 0;
@@ -5777,6 +5779,12 @@ class to be defined.
        function in which the lambda was defined, use the existing context. */
     if (lambda_scope->depth_in_scope_stack == orig_depth &&
         orig_depth != DEPTH_OF_FILE_SCOPE) {
+      use_existing_context = TRUE;
+    } else if (in_contract_predicate_of_lambda(lambda_class)) {
+      /* The lambda is in the predicate of a contract assertion (P2900)
+         that is still being scanned, whose context (e.g., the function
+         parameter scope of a declaration, with the parameters and the
+         result name) is on the stack. */
       use_existing_context = TRUE;
     }  /* if */
     is_real_lambda_instantiation = TRUE;

@@ -1765,6 +1765,10 @@ as in a decltype.
   new_entry->marked_as_gnu_extension |= old_entry->marked_as_gnu_extension;
 #endif /* GNU_EXTENSIONS_ALLOWED */
   new_entry->in_coroutine_desc_init |= old_entry->in_coroutine_desc_init;
+  if (old_entry->in_contract_predicate) {
+    new_entry->in_contract_predicate = TRUE;
+    new_entry->contract_predicate_depth = old_entry->contract_predicate_depth;
+  }  /* if */
   new_entry->paren_as_aggregate_init |= old_entry->paren_as_aggregate_init;
   new_entry->range_based_for_range |= old_entry->range_based_for_range;
   new_entry->in_constant_array_dimension |=
@@ -1885,6 +1889,8 @@ is pushed regardless of any of the other factors.
   new_entry->fold_prvalue_if_possible = FALSE;
   new_entry->in_call_argument = FALSE;
   new_entry->in_coroutine_desc_init = FALSE;
+  new_entry->in_contract_predicate = FALSE;
+  new_entry->contract_predicate_depth = NO_SCOPE_DEPTH;
   new_entry->paren_as_aggregate_init = FALSE;
   new_entry->expr_will_be_discarded = FALSE;
   new_entry->statement_expression_seen = FALSE;
@@ -17596,6 +17602,13 @@ be returned for a C mode const variable.
   an_init_kind       init_kind;
   an_initializer_ptr init;
 
+  if (var->is_contract_specifier_var) {
+    /* A variable of a precondition or postcondition specifier (e.g., a
+       parameter proxy of type "const int", whose initializer names the
+       parameter) designates a different object at each evaluation of the
+       predicate: It never has a constant value. */
+    return NULL;
+  }  /* if */
   if (var->is_template_variable && var->is_constexpr &&
       !var->is_prototype_instantiation && !var->is_nonreal &&
       var->init_kind == (an_init_kind)initk_none) {
@@ -28103,6 +28116,1175 @@ for each compilation.
   /* Do initialization for overload.c: */
   overload_init();
 }  /* exprutil_init */
+
+
+/*
+Contract predicates (P2900): constification.
+*/
+
+void constify_contract_predicate_operand(an_operand  *operand)
+/*
+operand, in the predicate of a contract assertion (P2900), is for an
+id-expression naming a variable, a parameter, a structured binding, the
+result name of a postcondition, a template parameter of reference type, or
+an init-capture, declared outside the assertion (see
+contract_predicate_makes_const in expr.c).  Make it a const lvalue: P2900
+[expr.prim.id.unqual], such an id-expression in a contract predicate is
+const, so that a predicate cannot modify what it names (for a reference, the
+object it refers to).  A use that is not a glvalue (e.g., a constant) is left
+alone.  The const is added by a compiler-generated eok_lvalue_adjust, which
+decltype of the id-expression looks through (see decltype_from_operand).
+*/
+{
+  a_type_ptr        type = operand->type;
+  an_operand        orig_operand;
+  an_expr_node_ptr  node;
+
+  if (!is_expression_operand(operand) ||
+      !is_glvalue_node(operand->variant.expression) ||
+      is_error_type(type) || is_function_type(type) ||
+      is_const_qualified_type(type)) {
+    return;
+  }  /* if */
+  orig_operand = *operand;
+  node = make_node_from_operand(operand);
+  node = add_cast_to_glvalue(node, make_qualified_type(type, TQ_CONST));
+  make_lvalue_or_rvalue_expression_operand(node, operand);
+  restore_operand_details_incl_ref(operand, &orig_operand);
+}  /* constify_contract_predicate_operand */
+
+
+void constify_contract_capture_operand(an_operand  *operand)
+/*
+operand is for an id-expression naming a variable captured by reference, in
+the body of a lambda in a contract predicate (see
+note_lambda_in_contract_predicate).  Make it a const lvalue, as in the
+predicate itself.  The use is rewritten to access the capture later, so its
+type is changed in place (as for a capture by copy in a lambda that is not
+mutable).
+*/
+{
+  a_type_ptr  type = operand->type;
+
+  if (!is_expression_operand(operand) || is_error_type(type) ||
+      is_function_type(type) || is_const_qualified_type(type)) {
+    return;
+  }  /* if */
+  operand->type = make_qualified_type(type, TQ_CONST);
+  operand->variant.expression->type =
+           make_qualified_type(operand->variant.expression->type, TQ_CONST);
+}  /* constify_contract_capture_operand */
+
+
+/* The lambdas that appear in contract predicates, each mapped to one more
+   than the scope depth recorded for the innermost contract assertion
+   containing it (see note_lambda_in_contract_predicate; zero, the value of
+   an absent key, means none). */
+STATIC_THREAD Ptr_map<a_lambda_ptr, a_scope_depth>
+                     *lambdas_in_contract_predicates = NULL;
+
+
+void note_lambda_in_contract_predicate(a_lambda_ptr   lambda,
+                                       a_scope_depth  depth)
+/*
+Record that lambda appears in the predicate of a contract assertion, at any
+depth of lambdas, and that depth is the scope depth recorded for the
+innermost such assertion (see contract_predicate_scope_depth).  In the
+lambda's body, an id-expression naming a variable declared outside the
+assertion is const, as in the predicate, and so is the object "this" points
+to (see in_contract_predicate_context).
+*/
+{
+  if (lambdas_in_contract_predicates == NULL) {
+    lambdas_in_contract_predicates =
+                    new_fe<Ptr_map<a_lambda_ptr, a_scope_depth>>(4u);
+  }  /* if */
+  lambdas_in_contract_predicates->map_or_replace(lambda, depth + 1);
+}  /* note_lambda_in_contract_predicate */
+
+
+a_boolean in_lambda_in_contract_predicate(void)
+/*
+Return TRUE if the innermost lambda body being scanned is that of a lambda
+in a contract predicate (see note_lambda_in_contract_predicate).
+*/
+{
+  a_lambda_ptr  lambda;
+
+  if (lambdas_in_contract_predicates == NULL) return FALSE;
+  lambda = get_current_lambda();
+  return lambda != NULL && lambdas_in_contract_predicates->get(lambda) != 0;
+}  /* in_lambda_in_contract_predicate */
+
+
+a_boolean lambda_closure_in_contract_predicate(a_type_ptr  closure_class)
+/*
+Return TRUE if closure_class is the closure type of a lambda in a contract
+predicate (see note_lambda_in_contract_predicate).
+*/
+{
+  a_lambda_ptr  lambda;
+
+  if (lambdas_in_contract_predicates == NULL) return FALSE;
+  lambda = get_lambda_for_closure_class(closure_class);
+  return lambda != NULL && lambdas_in_contract_predicates->get(lambda) != 0;
+}  /* lambda_closure_in_contract_predicate */
+
+
+a_scope_depth contract_predicate_depth_of_lambda(a_type_ptr  closure_class)
+/*
+If closure_class is the closure type of a lambda in a contract predicate (see
+note_lambda_in_contract_predicate), return the depth of the top of the scope
+stack when the scan of the innermost such predicate began (see
+contract_predicate_scope_depth); otherwise return NO_SCOPE_DEPTH.
+*/
+{
+  a_lambda_ptr   lambda;
+  a_scope_depth  depth_plus_one;
+
+  if (lambdas_in_contract_predicates == NULL) return NO_SCOPE_DEPTH;
+  lambda = get_lambda_for_closure_class(closure_class);
+  if (lambda == NULL) return NO_SCOPE_DEPTH;
+  depth_plus_one = lambdas_in_contract_predicates->get(lambda);
+  return depth_plus_one != 0 ? depth_plus_one - 1 : NO_SCOPE_DEPTH;
+}  /* contract_predicate_depth_of_lambda */
+
+
+a_boolean in_contract_predicate_of_lambda(a_type_ptr  closure_class)
+/*
+Return TRUE if closure_class is the closure type of a lambda in a contract
+predicate (see note_lambda_in_contract_predicate), and the current context is
+within that predicate (see contract_predicate_scope_depth).
+*/
+{
+  a_scope_depth  depth = contract_predicate_depth_of_lambda(closure_class);
+
+  /* The predicate's scan began at a scope that is still active, if the
+     current context is within it. */
+  return depth != NO_SCOPE_DEPTH && depth > DEPTH_OF_FILE_SCOPE &&
+         depth <= depth_scope_stack &&
+         contract_predicate_scope_depth() == depth;
+}  /* in_contract_predicate_of_lambda */
+
+
+static void find_local_capturing_lambda(
+                                   a_dynamic_init_ptr                  dip,
+                                   an_expr_or_stmt_traversal_block_ptr tblock)
+/*
+Tree-walk routine for expr_has_local_capturing_lambda: Set tblock->result if
+dip initializes the closure object of a local lambda that captures something
+(other than by an init-capture).
+*/
+{
+  a_lambda_capture_ptr  lcp;
+
+  if (dip->kind != (a_dynamic_init_kind)dik_lambda ||
+      in_file_scope(dip->variant.constant.lambda)) {
+    return;
+  }  /* if */
+  for (lcp = dip->variant.constant.lambda->capture_list; lcp != NULL;
+       lcp = lcp->next) {
+    if (!lcp->is_init_capture) {
+      tblock->result = TRUE;
+      tblock->terminate = TRUE;
+      break;
+    }  /* if */
+  }  /* for */
+}  /* find_local_capturing_lambda */
+
+
+a_boolean expr_has_local_capturing_lambda(an_expr_node_ptr  expr)
+/*
+Return TRUE if expr contains a local lambda that captures something, such as
+a lambda in the predicate of a lambda's own precondition that captures one of
+its parameters (through a proxy, see contract_param_proxy in expr.c): Its
+captures are local to the function, which expr_has_reference_to_local_entity
+does not see.
+*/
+{
+  an_expr_or_stmt_traversal_block  tblock;
+
+  clear_expr_or_stmt_traversal_block(&tblock);
+  tblock.process_dynamic_init = find_local_capturing_lambda;
+  traverse_expr(expr, &tblock);
+  return tblock.result;
+}  /* expr_has_local_capturing_lambda */
+
+
+a_scope_depth contract_predicate_scope_depth(void)
+/*
+If the current context is within the predicate of a contract assertion C
+(P2900) -- directly, in a GNU statement expression in it, or in the body of
+a lambda in it, at any depth -- return the depth of the top of the scope
+stack when the scan of the predicate of C began, where C is the innermost
+such assertion.  An entity declared in a scope at a greater depth is
+declared within C; any other is declared outside C ([expr.prim.id.unqual]).
+Otherwise, return NO_SCOPE_DEPTH.
+*/
+{
+  a_scope_depth  depth = NO_SCOPE_DEPTH;
+
+  if (in_contract_predicate()) {
+    depth = expr_stack->contract_predicate_depth;
+  } else if (depth_scope_stack != NO_SCOPE_DEPTH &&
+             scope_stack_top().contract_predicate_depth != 0) {
+    /* In a statement expression in a predicate (see
+       scan_statement_expression). */
+    depth = scope_stack_top().contract_predicate_depth;
+  } else if (lambdas_in_contract_predicates != NULL) {
+    a_lambda_ptr  lambda = get_current_lambda();
+    if (lambda != NULL) {
+      a_scope_depth  depth_plus_one =
+                                   lambdas_in_contract_predicates->get(lambda);
+      if (depth_plus_one != 0) depth = depth_plus_one - 1;
+    }  /* if */
+  }  /* if */
+  return depth;
+}  /* contract_predicate_scope_depth */
+
+
+a_boolean in_contract_predicate_context(void)
+/*
+Return TRUE if the current context is within the predicate of a contract
+assertion, including in a statement expression or in the body of a lambda in
+it (see contract_predicate_scope_depth).
+*/
+{
+  return contract_predicate_scope_depth() != NO_SCOPE_DEPTH;
+}  /* in_contract_predicate_context */
+
+
+a_boolean in_contract_predicate_outside_lambda(void)
+/*
+Return TRUE if the current context is within the predicate of a contract
+assertion, directly or in a GNU statement expression in it, but not in the
+body of a lambda in it (see contract_predicate_scope_depth).
+*/
+{
+  return in_contract_predicate() ||
+         (depth_scope_stack != NO_SCOPE_DEPTH &&
+          scope_stack_top().contract_predicate_depth != 0);
+}  /* in_contract_predicate_outside_lambda */
+
+
+a_type_ptr contract_predicate_this_type(a_type_ptr  this_type)
+/*
+Return the type of "this" in the predicate of a contract assertion, where
+the type of "this" in the current context is this_type: P2900
+[expr.prim.this], it points to a const object there.
+*/
+{
+  a_type_ptr  class_type;
+
+  if (this_type == NULL || !is_pointer_type(this_type)) return this_type;
+  class_type = type_pointed_to(skip_typerefs(this_type));
+  if (is_const_qualified_type(class_type)) return this_type;
+  return make_pointer_type(make_qualified_type(class_type, TQ_CONST));
+}  /* contract_predicate_this_type */
+
+
+a_boolean contract_this_is_lambda_copy(void)
+/*
+Return TRUE if "this", in the body of a lambda in a contract predicate,
+designates a mutable lambda's own copy of the object: The lambda is mutable
+and captures *this by copy, or it captures "this" from an enclosing lambda
+whose copy of *this is not const.  That copy, a member of a closure object,
+is not const (see contract_predicate_this_type).
+*/
+{
+  a_lambda_ptr          lambda;
+  a_lambda_capture_ptr  lcp;
+
+  if (!in_lambda_body()) return FALSE;
+  lambda = get_current_lambda();
+  if (lambda == NULL) return FALSE;
+  for (lcp = lambda->capture_list; lcp != NULL; lcp = lcp->next) {
+    a_field_ptr  source_field;
+    if (lcp->is_init_capture || lcp->is_indirect_init_capture) continue;
+    source_field = lcp->field_pending ? (a_field_ptr)NULL
+                                      : lcp->capture_info.source_closure_field;
+    if (source_field != NULL) {
+      if (source_field->is_captured_this) {
+        /* "this" or *this, through an enclosing lambda's capture: a copy
+           of *this there is a member that is not a pointer. */
+        a_type_ptr  ftp = skip_typerefs(source_field->type);
+        return !is_pointer_type(ftp) &&
+               (lcp->capture_by_reference ? !is_const_qualified_type(ftp)
+                                          : lambda->is_mutable);
+      }  /* if */
+    } else if (lcp->is_param_ref_capture ||
+               (lcp->captured.variable != NULL &&
+                lcp->captured.variable->is_this_parameter)) {
+      /* "this" or *this from the enclosing function. */
+      return !lcp->capture_by_reference && lambda->is_mutable;
+    }  /* if */
+  }  /* for */
+  return FALSE;
+}  /* contract_this_is_lambda_copy */
+
+
+void constify_contract_this_operand(an_operand  *operand)
+/*
+operand is a use of "this" in the predicate of a contract assertion: Cast it
+to a pointer to const (see contract_predicate_this_type).
+*/
+{
+  a_type_ptr  new_type;
+
+  if (!is_expression_operand(operand)) return;
+  new_type = contract_predicate_this_type(operand->type);
+  if (new_type != operand->type) {
+    cast_operand(new_type, operand, /*is_implicit_cast=*/TRUE);
+  }  /* if */
+}  /* constify_contract_this_operand */
+
+
+/*
+Contract predicates (P2900): parameters odr-used in postconditions.
+*/
+
+/* The routine called for each parameter use found by
+   for_each_postcondition_param_use, with the enk_param_ref node of the use. */
+typedef void a_postcondition_param_use_function(an_expr_node_ptr  param_ref);
+STATIC_THREAD a_postcondition_param_use_function
+                              *postcondition_param_use_function = NULL;
+
+/* The parameter proxies (see a_contract_specifier::param_proxies) of the
+   postcondition whose predicate is being walked by
+   for_each_postcondition_param_use. */
+STATIC_THREAD a_variable_ptr  postcondition_param_proxies = NULL;
+
+/* The enk_param_ref nodes, in the predicate being walked by
+   for_each_postcondition_param_use, that are potential results of a
+   discarded-value expression (see note_discarded_potential_results), or NULL
+   if there are none. */
+STATIC_THREAD Ptr_set<an_expr_node_ptr>
+                              *discarded_postcondition_param_refs = NULL;
+
+/* An entry in the list of parameters already diagnosed by
+   report_postcondition_param. */
+typedef struct a_reported_postcondition_param
+                                      *a_reported_postcondition_param_ptr;
+typedef struct a_reported_postcondition_param {
+  a_reported_postcondition_param_ptr
+                next;
+                        /* The next entry in the list. */
+  a_source_position
+                position;
+                        /* The position of the parameter's declaration. */
+  a_const_char  *name;
+                        /* The name of the parameter, or NULL. */
+} a_reported_postcondition_param;
+
+/* The parameter declarations already diagnosed by report_postcondition_param,
+   identified by their positions: A parameter is diagnosed once, although its
+   declaration can be checked more than once (its function's postconditions
+   and its definition, or a template and its instances). */
+STATIC_THREAD a_reported_postcondition_param_ptr
+                              reported_postcondition_params = NULL;
+
+
+static void note_discarded_potential_results(an_expr_node_ptr  expr)
+/*
+expr is a discarded-value expression in a postcondition predicate, to which
+the lvalue-to-rvalue conversion is not applied, or one of its potential
+results.  Record each use of a parameter that is among its potential results
+in discarded_postcondition_param_refs: [basic.def.odr], such a use does not
+odr-use the parameter.  A prvalue has none.
+*/
+{
+  while (expr != NULL && (expr->is_lvalue || expr->is_xvalue)) {
+    an_expr_node_ptr  op1;
+    if (expr->kind == (an_expr_node_kind)enk_param_ref) {
+      if (discarded_postcondition_param_refs == NULL) {
+        discarded_postcondition_param_refs =
+                                    new_fe<Ptr_set<an_expr_node_ptr>>(4u);
+      }  /* if */
+      discarded_postcondition_param_refs->add(expr);
+      break;
+    }  /* if */
+    if (expr->kind != (an_expr_node_kind)enk_operation) break;
+    op1 = expr->variant.operation.operands;
+    switch (expr->variant.operation.kind) {
+      case eok_lvalue_adjust:
+        /* Only the compiler-generated adjustment that makes a name in a
+           contract predicate const (see
+           constify_contract_predicate_operand) is transparent. */
+        if (!expr->compiler_generated) return;
+        expr = op1;
+        break;
+      case eok_parens:
+        expr = op1;
+        break;
+      case eok_comma:
+        /* The potential results of the right operand. */
+        expr = op1->next;
+        break;
+      case eok_dot_field:
+      case eok_pm_field:
+        /* E1.m and E1.*pm: those of E1. */
+        expr = op1;
+        break;
+      case eok_question:
+        /* A glvalue conditional expression: those of the second and third
+           operands. */
+        note_discarded_potential_results(op1->next);
+        expr = op1->next->next;
+        break;
+      default:
+        return;
+    }  /* switch */
+  }  /* while */
+}  /* note_discarded_potential_results */
+
+
+static a_boolean discarded_volatile_glvalue_is_converted(
+                                                       an_expr_node_ptr  expr)
+/*
+expr is a discarded-value glvalue of volatile-qualified type in a contract
+predicate.  Return TRUE if it has one of the forms to which [expr.context]
+applies the lvalue-to-rvalue conversion.  This is the test of
+expr_gets_volatile_lvalue_to_rvalue_conv, which does not apply in a
+predicate: There a name is a parameter reference (enk_param_ref), and is
+wrapped in the adjustment that makes it const (see
+constify_contract_predicate_operand).
+*/
+{
+  for (;;) {
+    an_expr_node_ptr  op1;
+    if (expr->kind == (an_expr_node_kind)enk_param_ref ||
+        expr->kind == (an_expr_node_kind)enk_variable) {
+      /* id-expression. */
+      return TRUE;
+    }  /* if */
+    if (expr->kind != (an_expr_node_kind)enk_operation) return FALSE;
+    op1 = expr->variant.operation.operands;
+    switch (expr->variant.operation.kind) {
+      case eok_lvalue_adjust:
+        if (!expr->compiler_generated) return FALSE;
+        expr = op1;
+        break;
+      case eok_parens:
+        expr = op1;
+        break;
+      case eok_subscript:
+      case eok_dot_field:
+      case eok_points_to_field:
+      case eok_indirect:
+      case eok_pm_field:
+      case eok_pm_points_to_field:
+        return TRUE;
+      case eok_question:
+        return discarded_volatile_glvalue_is_converted(op1->next) &&
+               discarded_volatile_glvalue_is_converted(op1->next->next);
+      case eok_comma:
+        expr = op1->next;
+        break;
+      default:
+        return FALSE;
+    }  /* switch */
+  }  /* for */
+}  /* discarded_volatile_glvalue_is_converted */
+
+
+static void note_discarded_value_expression(an_expr_node_ptr  expr)
+/*
+expr is a discarded-value expression (the left operand of a comma, or the
+operand of a cast to void) in a postcondition predicate: Record the uses of
+parameters among its potential results (see
+note_discarded_potential_results), unless the lvalue-to-rvalue conversion is
+applied to it.
+*/
+{
+  if ((expr->is_lvalue || expr->is_xvalue) &&
+      is_volatile_qualified_type(expr->type) &&
+      discarded_volatile_glvalue_is_converted(expr)) {
+    return;
+  }  /* if */
+  note_discarded_potential_results(expr);
+}  /* note_discarded_value_expression */
+
+
+static an_expr_node_ptr captured_param_proxy_ref(
+                                           a_lambda_capture_ptr  lcp,
+                                           a_variable_ptr        proxies)
+/*
+lcp is a capture of a lambda in the predicate of a precondition or
+postcondition whose parameter proxies are proxies (see
+a_contract_specifier::param_proxies).  If it captures one of them, return
+the parameter reference that identifies the parameter it stands for (its
+initializer); otherwise return NULL.
+*/
+{
+  a_variable_ptr  vp;
+
+  if (lcp->is_init_capture || lcp->is_indirect_init_capture ||
+      lcp->captured.variable == NULL ||
+      !lcp->captured.variable->is_contract_specifier_var) {
+    return NULL;
+  }  /* if */
+  for (vp = proxies; vp != NULL; vp = vp->next) {
+    if (vp == lcp->captured.variable) {
+      return vp->initializer.dynamic->variant.expression;
+    }  /* if */
+  }  /* for */
+  return NULL;
+}  /* captured_param_proxy_ref */
+
+
+static void find_postcondition_param_use(
+                                   an_expr_node_ptr                    expr,
+                                   an_expr_or_stmt_traversal_block_ptr tblock)
+/*
+Tree-walk routine for for_each_postcondition_param_use: Report each use of a
+parameter of the function (an enk_param_ref outside any nested parameter
+list, other than "this") that odr-uses it: not in an unevaluated operand, and
+not as a potential result of a discarded-value expression.  The walk visits
+an operation before its operands, so the latter are known when the uses are
+reached.
+*/
+{
+  switch (expr->kind) {
+    case enk_sizeof:
+    case enk_alignof:
+    case enk_sizeof_pack:
+    case enk_requires:
+      tblock->suppress_subtree_walk = TRUE;
+      break;
+    case enk_typeid:
+      if (!expr->variant.typeid_info.is_dynamic) {
+        /* The operand is unevaluated unless it is a glvalue of polymorphic
+           class type ([expr.typeid]), which is not marked dynamic when the
+           type of the complete object is known. */
+        an_expr_node_ptr  operand =
+                           expr->variant.typeid_info.type_with_opt_expr->next;
+        if (operand == NULL || !is_glvalue_node(operand) ||
+            !is_polymorphic_class_type(operand->type)) {
+          tblock->suppress_subtree_walk = TRUE;
+        }  /* if */
+      }  /* if */
+      break;
+    case enk_operation:
+      switch (expr->variant.operation.kind) {
+        case eok_noexcept:
+          tblock->suppress_subtree_walk = TRUE;
+          break;
+        case eok_comma:
+          note_discarded_value_expression(expr->variant.operation.operands);
+          break;
+        case eok_cast:
+          if (is_void_type(expr->type)) {
+            note_discarded_value_expression(expr->variant.operation.operands);
+          }  /* if */
+          break;
+        default:
+          break;
+      }  /* switch */
+      break;
+    case enk_param_ref:
+      if (expr->variant.param_ref.levels_up == 0 &&
+          expr->variant.param_ref.param_num != 0 &&
+          (discarded_postcondition_param_refs == NULL ||
+           !discarded_postcondition_param_refs->contains(expr))) {
+        postcondition_param_use_function(expr);
+      }  /* if */
+      break;
+    default:
+      break;
+  }  /* switch */
+}  /* find_postcondition_param_use */
+
+
+static void find_postcondition_param_capture(
+                                   a_dynamic_init_ptr                  dip,
+                                   an_expr_or_stmt_traversal_block_ptr tblock)
+/*
+Tree-walk routine for for_each_postcondition_param_use: Report each
+parameter that the initialization of a closure object, dip, captures
+(through its proxy, see captured_param_proxy_ref): The capture odr-uses it.
+*/
+{
+  a_lambda_capture_ptr  lcp;
+
+  if (dip->kind != (a_dynamic_init_kind)dik_lambda) return;
+  for (lcp = dip->variant.constant.lambda->capture_list; lcp != NULL;
+       lcp = lcp->next) {
+    an_expr_node_ptr  param_ref =
+                   captured_param_proxy_ref(lcp, postcondition_param_proxies);
+    if (param_ref != NULL) postcondition_param_use_function(param_ref);
+  }  /* for */
+}  /* find_postcondition_param_capture */
+
+
+static void for_each_postcondition_param_use(
+                               a_contract_specifier_ptr            csp,
+                               a_boolean                           only_csp,
+                               a_postcondition_param_use_function  *func)
+/*
+Call func for each use of a parameter that odr-uses it (see
+find_postcondition_param_use) in the predicate of the postcondition csp, or
+if only_csp is FALSE of every postcondition in the list that csp begins.  In
+a template-dependent context, a predicate that is instantiation-dependent is
+skipped: What it odr-uses is known only in the instances.
+*/
+{
+  an_expr_or_stmt_traversal_block  tblock;
+  a_postcondition_param_use_function
+                                   *saved_func =
+                                              postcondition_param_use_function;
+  Ptr_set<an_expr_node_ptr>        *saved_discarded =
+                                           discarded_postcondition_param_refs;
+  a_boolean                        in_template =
+                                             is_template_dependent_context();
+
+  a_variable_ptr                   saved_proxies =
+                                                  postcondition_param_proxies;
+
+  postcondition_param_use_function = func;
+  for (; csp != NULL; csp = only_csp ? NULL : csp->next) {
+    an_expr_node_ptr  pred = contract_specifier_predicate(csp);
+    if (csp->kind != ctk_post || pred == NULL) continue;
+    if (in_template && expr_is_instantiation_dependent(pred)) continue;
+    postcondition_param_proxies = csp->param_proxies;
+    discarded_postcondition_param_refs = NULL;
+    clear_expr_or_stmt_traversal_block(&tblock);
+    tblock.process_expr = find_postcondition_param_use;
+    tblock.process_dynamic_init = find_postcondition_param_capture;
+    traverse_expr(pred, &tblock);
+    if (discarded_postcondition_param_refs != NULL) {
+      delete_fe(&discarded_postcondition_param_refs);
+    }  /* if */
+  }  /* for */
+  postcondition_param_use_function = saved_func;
+  discarded_postcondition_param_refs = saved_discarded;
+  postcondition_param_proxies = saved_proxies;
+}  /* for_each_postcondition_param_use */
+
+
+static a_type_ptr param_ref_type(an_expr_node_ptr  param_ref)
+/*
+Return the type of the parameter used by param_ref (an enk_param_ref), as
+declared on the declaration whose function parameter scope was active when
+the use was scanned (with its top-level cv-qualifiers, which a
+lvalue-to-rvalue conversion drops from the node's type).
+*/
+{
+  a_type_ptr  type = param_ref->type;
+
+  if (!param_ref->is_lvalue && !param_ref->is_xvalue &&
+      param_ref->orig_lvalue_type != NULL) {
+    type = param_ref->orig_lvalue_type;
+  }  /* if */
+  return type;
+}  /* param_ref_type */
+
+
+static a_boolean postcondition_param_type_is_exempt(a_type_ptr  type,
+                                                    a_boolean   is_pack)
+/*
+Return TRUE if a parameter of type type, which is a function parameter pack
+if is_pack is TRUE, is not subject to the rules for the parameters a
+postcondition odr-uses: a reference, or in a template-dependent context, a
+pack or a parameter whose type is dependent (which can be a reference, or
+const, in an instance).  An erroneous type is also exempt.
+*/
+{
+  return type == NULL || is_error_type(type) ||
+         is_any_reference_type(type) ||
+         (is_template_dependent_context() &&
+          (is_pack || is_template_dependent_type(type)));
+}  /* postcondition_param_type_is_exempt */
+
+
+static void report_postcondition_param(a_source_position  *pos,
+                                       a_const_char       *name,
+                                       an_error_code      ec)
+/*
+Issue error ec, which names a parameter, for the declaration of the parameter
+named name (NULL if it is unnamed) at position pos, unless it has already
+been issued for that declaration.  An unnamed parameter is reported with
+ec_contract_post_unnamed_param_not_const instead.
+*/
+{
+  a_reported_postcondition_param_ptr  rpp;
+
+  for (rpp = reported_postcondition_params; rpp != NULL; rpp = rpp->next) {
+    if (rpp->position.seq == pos->seq &&
+        rpp->position.column == pos->column && rpp->name == name) {
+      return;
+    }  /* if */
+  }  /* for */
+  rpp = new_fe<a_reported_postcondition_param>();
+  rpp->next = reported_postcondition_params;
+  rpp->position = *pos;
+  rpp->name = name;
+  reported_postcondition_params = rpp;
+  if (name == NULL) {
+    pos_error(ec_contract_post_unnamed_param_not_const, pos);
+  } else {
+    pos_st_error(ec, pos, name);
+  }  /* if */
+}  /* report_postcondition_param */
+
+
+static void check_declared_postcondition_param(an_expr_node_ptr  param_ref)
+/*
+for_each_postcondition_param_use routine for
+check_function_contract_predicate: param_ref is a use, which odr-uses it, of
+a parameter of the declaration whose function parameter scope is the current
+scope.  The type of the use is that of the parameter on this declaration:
+For an element of an expanded parameter pack, which the parameter number does
+not identify (the elements share the pack's number), it is that of the
+element used.
+*/
+{
+  a_symbol_ptr  sym;
+  unsigned int  param_num = param_ref->variant.param_ref.param_num;
+  a_type_ptr    type = param_ref_type(param_ref);
+
+  for (sym = assoc_pointers_block_of(&scope_stack_top())->symbols;
+       sym != NULL; sym = sym->next_in_scope) {
+    if (sym->kind == (a_symbol_kind)sk_parameter &&
+        sym->variant.param_id->param_num == param_num) {
+      a_param_id_ptr  pip = sym->variant.param_id;
+      if (!postcondition_param_type_is_exempt(type,
+                                              pip->is_parameter_pack &&
+                                              !pip->is_pack_element) &&
+          !is_const_qualified_type(type)) {
+        report_postcondition_param(&sym->decl_position,
+                                   sym->header->identifier,
+                                   ec_contract_post_param_not_const);
+      }  /* if */
+      break;
+    }  /* if */
+  }  /* for */
+}  /* check_declared_postcondition_param */
+
+
+static void find_implicit_this_use(
+                                   an_expr_node_ptr                    expr,
+                                   an_expr_or_stmt_traversal_block_ptr tblock)
+/*
+Tree-walk routine for check_function_contract_predicate: Diagnose each
+implicit use of "this" (a compiler-generated enk_param_ref for parameter
+zero), which accesses a member without "this->".
+*/
+{
+  if (expr->kind == (an_expr_node_kind)enk_param_ref &&
+      expr->variant.param_ref.levels_up == 0 &&
+      expr->variant.param_ref.param_num == 0 && expr->compiler_generated) {
+    pos_error(ec_contract_implicit_this_in_cdtor, &expr->position);
+  }  /* if */
+  (void)tblock;
+}  /* find_implicit_this_use */
+
+
+void check_function_contract_predicate(a_contract_specifier_ptr  csp)
+/*
+csp is a precondition or postcondition whose predicate has just been scanned
+on a function declaration, whose function parameter scope is the current
+scope.  Check the rules of P2900 [dcl.contract.func] for what the predicate
+uses:
+  - A parameter that a postcondition odr-uses, if it is not a reference, must
+    be declared const.  In a template, where the parameters of the instances
+    are checked when their specifiers are instantiated, a parameter whose
+    type is not dependent is also checked in the template (as GCC does).
+  - In a precondition of a constructor or a postcondition of a destructor, a
+    non-static member can be named only through an explicit "this".
+*/
+{
+  a_decl_parse_state_ptr  dps = scope_stack_top().decl_parse_state;
+
+  an_expr_node_ptr        pred = contract_specifier_predicate(csp);
+
+  if (pred == NULL) return;
+  if (csp->kind == ctk_post) {
+    for_each_postcondition_param_use(csp, /*only_csp=*/TRUE,
+                                     check_declared_postcondition_param);
+  }  /* if */
+  if (is_template_dependent_context()) return;
+  if (dps != NULL && dps->sym != NULL &&
+      is_simple_function_symbol(dps->sym)) {
+    a_routine_ptr  rp = dps->sym->variant.routine.ptr;
+    if ((csp->kind == ctk_pre && special_kind_is(rp, sfk_constructor)) ||
+        (csp->kind == ctk_post && special_kind_is(rp, sfk_destructor))) {
+      an_expr_or_stmt_traversal_block  tblock;
+      clear_expr_or_stmt_traversal_block(&tblock);
+      tblock.process_expr = find_implicit_this_use;
+      traverse_expr(pred, &tblock);
+    }  /* if */
+    if (csp->captures != NULL && special_kind_is(rp, sfk_constructor)) {
+      /* P3098: so in the initializers of a constructor's postcondition
+         captures, which are evaluated with its preconditions. */
+      an_expr_or_stmt_traversal_block  tblock;
+      a_variable_ptr                   cap;
+      clear_expr_or_stmt_traversal_block(&tblock);
+      tblock.process_expr = find_implicit_this_use_in_capture;
+      for (cap = csp->captures; cap != NULL; cap = cap->next) {
+        if (cap->initializer.dynamic->variant.expression != NULL) {
+          traverse_expr(cap->initializer.dynamic->variant.expression,
+                        &tblock);
+        }  /* if */
+      }  /* for */
+    }  /* if */
+  }  /* if */
+}  /* check_function_contract_predicate */
+
+
+/* The parameters of the redeclaration being checked by
+   check_postcondition_params_of_redeclaration. */
+STATIC_THREAD a_param_id_ptr  postcondition_check_param_ids = NULL;
+
+
+static void check_redeclared_postcondition_param(an_expr_node_ptr  param_ref)
+/*
+for_each_postcondition_param_use routine for
+check_postcondition_params_of_redeclaration.
+*/
+{
+  a_param_id_ptr  pip;
+  unsigned int    param_num = param_ref->variant.param_ref.param_num;
+
+  for (pip = postcondition_check_param_ids; pip != NULL; pip = pip->next) {
+    if (pip->param_num == param_num) break;
+  }  /* for */
+  if (pip == NULL || pip->is_parameter_pack || pip->is_pack_element ||
+      postcondition_param_type_is_exempt(pip->type, /*is_pack=*/FALSE) ||
+      is_const_qualified_type(pip->type)) {
+    return;
+  }  /* if */
+  if (pip->symbol != NULL) {
+    report_postcondition_param(&pip->symbol->decl_position,
+                               pip->symbol->header->identifier,
+                               ec_contract_post_param_not_const);
+  } else {
+    report_postcondition_param(&pip->type_pos, (a_const_char *)NULL,
+                               ec_contract_post_param_not_const);
+  }  /* if */
+}  /* check_redeclared_postcondition_param */
+
+
+void check_postcondition_params_of_redeclaration(
+                          a_routine_ptr                rp,
+                          a_param_id_ptr               param_ids,
+                          a_contract_redecl_param_ptr  *p_dependent_params)
+/*
+rp is a function, whose earlier declaration has its function contract
+specifiers, and which is being redeclared, without them and not as a
+definition (see check_postcondition_params_of_definition), with the
+parameters param_ids.  Check them against P2900 [dcl.contract.func]: a
+parameter that a postcondition odr-uses, if it is not a reference, must be
+declared const in every declaration, including those without the
+postcondition.  For a function template, p_dependent_params is its list of
+redeclared parameters whose types are dependent (see
+a_contract_redecl_param), to which those of this redeclaration are added:
+What the postconditions odr-use, and whether such a parameter is const, are
+known only in an instance (see
+check_postcondition_params_of_template_redeclarations).  Otherwise it is
+NULL.
+*/
+{
+  a_contract_specifier_ptr  csp;
+
+  if (rp->contract_specifiers == NULL) return;
+  postcondition_check_param_ids = param_ids;
+  for_each_postcondition_param_use(rp->contract_specifiers,
+                                   /*only_csp=*/FALSE,
+                                   check_redeclared_postcondition_param);
+  postcondition_check_param_ids = NULL;
+  if (p_dependent_params == NULL || !is_template_dependent_context()) return;
+  for (csp = rp->contract_specifiers; csp != NULL; csp = csp->next) {
+    if (csp->kind == ctk_post) break;
+  }  /* for */
+  if (csp == NULL) return;
+  for (; param_ids != NULL; param_ids = param_ids->next) {
+    a_contract_redecl_param_ptr  crp;
+    a_source_position            *pos;
+      if (param_ids->is_parameter_pack || param_ids->is_pack_element ||
+        param_ids->type == NULL ||
+        !is_template_dependent_type(param_ids->type) ||
+        is_any_reference_type(param_ids->type) ||
+        is_const_qualified_type(param_ids->type)) {
+      continue;
+    }  /* if */
+    pos = param_ids->symbol != NULL ? &param_ids->symbol->decl_position
+                                    : &param_ids->type_pos;
+    crp = new_fe<a_contract_redecl_param>();
+    crp->param_num = param_ids->param_num;
+    crp->position = *pos;
+    crp->name = param_ids->symbol != NULL
+                               ? param_ids->symbol->header->identifier : NULL;
+    crp->next = *p_dependent_params;
+    *p_dependent_params = crp;
+  }  /* for */
+}  /* check_postcondition_params_of_redeclaration */
+
+
+/* The state of check_postcondition_params_of_template_redeclarations. */
+STATIC_THREAD a_contract_redecl_param_ptr
+                              template_redecl_check_params = NULL;
+STATIC_THREAD a_routine_ptr   template_redecl_check_routine = NULL;
+STATIC_THREAD a_routine_ptr   template_redecl_check_proto_routine = NULL;
+STATIC_THREAD a_template_param_ptr
+                              template_redecl_check_templ_params = NULL;
+
+
+static void check_template_redecl_postcondition_param(
+                                                 an_expr_node_ptr  param_ref)
+/*
+for_each_postcondition_param_use routine for
+check_postcondition_params_of_template_redeclarations.  The declarations of a
+function template differ in their parameters only in top-level qualifiers, so
+the type of a redeclared parameter that is not const is that of the
+template's prototype, from which they are removed.
+*/
+{
+  a_contract_redecl_param_ptr  crp;
+  a_param_type_ptr             ptp;
+  a_type_ptr                   type = NULL;
+  a_boolean                    copy_error = FALSE;
+  unsigned int                 param_num =
+                                       param_ref->variant.param_ref.param_num;
+
+  for (crp = template_redecl_check_params; crp != NULL; crp = crp->next) {
+    if (crp->param_num != param_num) continue;
+    if (type == NULL) {
+      unsigned int  n = 1;
+      a_ctws_state  ctws_state;
+      ptp = skip_typerefs(template_redecl_check_proto_routine->type)->
+                                     variant.routine.extra_info->param_type_list;
+      for (; ptp != NULL && n != param_num; ptp = ptp->next, ++n) {
+        if (ptp->is_parameter_pack) return;
+      }  /* for */
+      if (ptp == NULL || ptp->is_parameter_pack) return;
+      init_ctws_state(&ctws_state);
+      type = copy_type_with_substitution(
+                            ptp->type,
+                            template_redecl_check_routine->template_arg_list,
+                            template_redecl_check_templ_params,
+                            &crp->position, CTWS_NO_OPTIONS, &copy_error,
+                            &ctws_state);
+      if (copy_error || type == NULL ||
+          postcondition_param_type_is_exempt(type, /*is_pack=*/FALSE) ||
+          is_const_qualified_type(type)) {
+        return;
+      }  /* if */
+    }  /* if */
+    report_postcondition_param(&crp->position, crp->name,
+                               ec_contract_post_param_not_const);
+  }  /* for */
+}  /* check_template_redecl_postcondition_param */
+
+
+void check_postcondition_params_of_template_redeclarations(
+                                 a_contract_redecl_param_ptr  params,
+                                 a_routine_ptr                rp,
+                                 a_routine_ptr                proto_rp,
+                                 a_template_param_ptr         templ_param_list)
+/*
+rp is an instance of a function template, whose function contract specifiers
+have just been instantiated; proto_rp is the template's prototype routine,
+and templ_param_list the template parameter list for rp's template
+arguments.  params are the parameters of the template's redeclarations
+whose types are dependent (see check_postcondition_params_of_redeclaration):
+Check each that a postcondition of rp odr-uses, with its type in rp, against
+P2900 [dcl.contract.func].  Each declaration is diagnosed once, for the
+first instance in which it is not const.
+*/
+{
+  if (params == NULL || rp->contract_specifiers == NULL) return;
+  template_redecl_check_params = params;
+  template_redecl_check_routine = rp;
+  template_redecl_check_proto_routine = proto_rp;
+  template_redecl_check_templ_params = templ_param_list;
+  for_each_postcondition_param_use(rp->contract_specifiers,
+                                   /*only_csp=*/FALSE,
+                                   check_template_redecl_postcondition_param);
+  template_redecl_check_params = NULL;
+  template_redecl_check_routine = NULL;
+  template_redecl_check_proto_routine = NULL;
+  template_redecl_check_templ_params = NULL;
+}  /* check_postcondition_params_of_template_redeclarations */
+
+
+/* The parameter variables of the function definition being checked by
+   check_postcondition_params_of_definition, and whether it is a
+   coroutine. */
+STATIC_THREAD a_variable_ptr  postcondition_check_params = NULL;
+STATIC_THREAD a_boolean       postcondition_check_coroutine = FALSE;
+
+
+static void check_defined_postcondition_param(an_expr_node_ptr  param_ref)
+/*
+for_each_postcondition_param_use routine for
+check_postcondition_params_of_definition.  The parameter variables are
+matched by their parameter numbers, which the elements of an expanded
+parameter pack share: If all the elements of the definition's pack are const,
+or none is, the one used is known to be; otherwise the type of the use (that
+of the element used, on the declaration with the postcondition) decides.
+*/
+{
+  a_variable_ptr  vp, found = NULL;
+  unsigned int    n, param_num = param_ref->variant.param_ref.param_num;
+  a_boolean       any_const = FALSE, any_non_const = FALSE;
+
+  for (n = 1, vp = postcondition_check_params; vp != NULL;
+       ++n, vp = vp->next) {
+    a_param_type_ptr  ptp = vp->variant.assoc_param_type;
+    if ((ptp != NULL ? ptp->param_num : n) != param_num) continue;
+    if (symbol_for(vp) == NULL || vp->is_pack ||
+        postcondition_param_type_is_exempt(vp->type, /*is_pack=*/FALSE)) {
+      return;
+    }  /* if */
+    if (found == NULL) found = vp;
+    if (is_const_qualified_type(vp->type)) {
+      any_const = TRUE;
+    } else {
+      any_non_const = TRUE;
+    }  /* if */
+  }  /* for */
+  if (found == NULL) return;
+  if (any_const && any_non_const) {
+    /* A pack with const and non-const elements. */
+    a_type_ptr  type = param_ref_type(param_ref);
+    any_non_const = type != NULL && !is_const_qualified_type(type);
+  }  /* if */
+  if (postcondition_check_coroutine) {
+    report_postcondition_param(&symbol_for(found)->decl_position,
+                               symbol_for(found)->header->identifier,
+                               ec_contract_post_param_in_coroutine);
+  } else if (any_non_const) {
+    report_postcondition_param(&symbol_for(found)->decl_position,
+                               symbol_for(found)->header->identifier,
+                               ec_contract_post_param_not_const);
+  }  /* if */
+}  /* check_defined_postcondition_param */
+
+
+void check_postcondition_params_of_definition(a_routine_ptr   rp,
+                                              a_variable_ptr  params,
+                                              a_boolean       is_coroutine)
+/*
+rp is a function being defined, whose parameter variables are params, or a
+coroutine (is_coroutine).  Check its parameters against P2900
+[dcl.contract.func]: a parameter that a postcondition odr-uses, if it is not
+a reference, must be declared const in every declaration (here, the
+definition), and in a coroutine it cannot be odr-used at all (a coroutine
+works on copies of its parameters).  In a template, only the parameters whose
+types are not dependent are checked (see check_function_contract_predicate).
+*/
+{
+  if (rp->contract_specifiers == NULL) return;
+  postcondition_check_params = params;
+  postcondition_check_coroutine = is_coroutine;
+  for_each_postcondition_param_use(rp->contract_specifiers,
+                                   /*only_csp=*/FALSE,
+                                   check_defined_postcondition_param);
+  postcondition_check_params = NULL;
+  postcondition_check_coroutine = FALSE;
+}  /* check_postcondition_params_of_definition */
+
+
+
+/* The parameter variables of the definition whose contract assertions are
+   being walked by mark_contract_params_used. */
+STATIC_THREAD a_variable_ptr  contract_used_params = NULL;
+
+/* The parameter proxies (see a_contract_specifier::param_proxies) of the
+   contract assertion being walked by mark_contract_params_used. */
+STATIC_THREAD a_variable_ptr  contract_used_proxies = NULL;
+
+
+static void mark_contract_param_use(
+                       an_expr_node_ptr                               expr,
+                       ARG_UNUSED an_expr_or_stmt_traversal_block_ptr tblock)
+/*
+Tree-walk routine for mark_contract_params_used: mark the parameter
+variables that a use of a parameter, expr, names as used.
+*/
+{
+  a_variable_ptr  vp;
+  unsigned int    n;
+
+  if (expr->kind != enk_param_ref ||
+      expr->variant.param_ref.levels_up != 0 ||
+      expr->variant.param_ref.param_num == 0) {
+    return;
+  }  /* if */
+  for (n = 1, vp = contract_used_params; vp != NULL; ++n, vp = vp->next) {
+    a_param_type_ptr  ptp = vp->variant.assoc_param_type;
+    if ((ptp != NULL ? ptp->param_num : n) ==
+                                       expr->variant.param_ref.param_num) {
+      vp->used = TRUE;
+    }  /* if */
+  }  /* for */
+}  /* mark_contract_param_use */
+
+
+static void mark_contract_param_capture(
+                                   a_dynamic_init_ptr                  dip,
+                                   an_expr_or_stmt_traversal_block_ptr tblock)
+/*
+Tree-walk routine for mark_contract_params_used: mark the parameter
+variables that the initialization of a closure object, dip, captures
+(through their proxies, see captured_param_proxy_ref) as used.
+*/
+{
+  a_lambda_capture_ptr  lcp;
+
+  if (dip->kind != (a_dynamic_init_kind)dik_lambda) return;
+  for (lcp = dip->variant.constant.lambda->capture_list; lcp != NULL;
+       lcp = lcp->next) {
+    an_expr_node_ptr  param_ref =
+                         captured_param_proxy_ref(lcp, contract_used_proxies);
+    if (param_ref != NULL) mark_contract_param_use(param_ref, tblock);
+  }  /* for */
+}  /* mark_contract_param_capture */
+
+
+void mark_contract_params_used(a_routine_ptr   rp,
+                               a_variable_ptr  params)
+/*
+rp is a function being defined, whose parameter variables are params.  Mark
+as used each parameter that its contract assertions' predicates, or the
+initializers of its postconditions' captures (P3098), name: such a use is
+scanned on the declaration, before the parameter variables exist, so a
+parameter used only there would otherwise be diagnosed as set but never
+used when the body assigns to it.
+*/
+{
+  a_contract_specifier_ptr         csp;
+  an_expr_or_stmt_traversal_block  tblock;
+  a_variable_ptr                   saved_params = contract_used_params;
+  a_variable_ptr                   saved_proxies = contract_used_proxies;
+
+  contract_used_params = params;
+  for (csp = rp->contract_specifiers; csp != NULL; csp = csp->next) {
+    an_expr_node_ptr  pred = contract_specifier_predicate(csp);
+    a_variable_ptr    cap;
+    if (csp->awaits_return_type_deduction) {
+      /* Scanned after the body (see scan_postconditions_awaiting_deduction
+         in declarator.c), too late for the diagnostics issued when the
+         function scope is popped: any parameter may be used there. */
+      a_variable_ptr  vp;
+      for (vp = params; vp != NULL; vp = vp->next) vp->used = TRUE;
+      continue;
+    }  /* if */
+    clear_expr_or_stmt_traversal_block(&tblock);
+    tblock.process_expr = mark_contract_param_use;
+    tblock.process_dynamic_init = mark_contract_param_capture;
+    contract_used_proxies = csp->param_proxies;
+    if (pred != NULL) traverse_expr(pred, &tblock);
+    for (cap = csp->captures; cap != NULL; cap = cap->next) {
+      if (cap->initializer.dynamic != NULL &&
+          cap->initializer.dynamic->variant.expression != NULL) {
+        traverse_expr(cap->initializer.dynamic->variant.expression, &tblock);
+      }  /* if */
+    }  /* for */
+  }  /* for */
+  contract_used_params = saved_params;
+  contract_used_proxies = saved_proxies;
+}  /* mark_contract_params_used */
 
 /* Conditionally close the "edg" namespace. */
 END_EDG_NAMESPACE

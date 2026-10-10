@@ -11744,6 +11744,17 @@ typedef struct a_variable {
 			/* TRUE if this is a specialized template instance
 			   and the specialization was declared within the
 			   enclosing class. */
+  a_bit_field
+		is_contract_specifier_var:1;
+			/* TRUE if this variable belongs to a precondition or
+			   postcondition specifier (P2900) and is on no
+			   scope's variables list: the result name of a
+			   postcondition, one of its captures (P3098), or a
+			   proxy for a parameter of the function named by a
+			   lambda in the predicate (see the specifier's
+			   param_proxies field).  A lambda in the predicate
+			   captures it like a local variable of an enclosing
+			   function. */
   an_init_kind	init_kind;
 			/* Kind of initialization, if any.
 			   When init_kind == initk_function_local (local
@@ -18106,6 +18117,11 @@ typedef struct a_lambda {
 			   parameter list.  In cases where this is TRUE, any
 			   lambda attributes are present in the token cache of
 			   the template. */
+  a_bit_field	appears_in_contract_predicate:1;
+			/* TRUE if the lambda appears in the predicate of a
+			   contract assertion (P2900), not counting one in
+			   the body of a lambda within that predicate.  For
+			   use by the front end only. */
   a_source_position
 		start_position;
 			/* Position of the "[" that begins the lambda. */
@@ -18266,6 +18282,18 @@ typedef struct a_lambda_capture {
 			   expression (either the current lambda expression or
 			   an enclosing one).  Always FALSE if is_init_capture
 			   is TRUE. */
+  a_bit_field
+		used_in_contracts:1;
+			/* TRUE if the captured entity is named in the lambda
+			   within the lambda's contract assertions (P2900).
+			   For use by the front end only. */
+  a_bit_field
+		used_outside_contracts:1;
+			/* TRUE if the captured entity is named in the lambda
+			   other than within the lambda's contract assertions
+			   (P2900).  An implicit capture for which
+			   used_in_contracts is TRUE and this is FALSE is
+			   ill-formed.  For use by the front end only. */
   a_source_position
 		position;
 			/* The source position of the name of the captured

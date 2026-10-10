@@ -9949,6 +9949,67 @@ the parameters.
   }  /* if */
 }  /* declarator */
 
+
+a_boolean contract_operands_wait_for_declaration(a_decl_parse_state  *dps,
+                                                 a_func_info_block   *func_info,
+                                                 a_symbol_locator    *loc)
+/*
+Return TRUE if the operands of the function contract specifiers of the
+declaration described by dps, func_info and loc are to be cached and scanned
+once the function is declared (see scan_contract_operands_of_declaration):
+A function's name is in scope from the end of its declarator
+([basic.scope.pdecl]), so its contract assertions may name it, but the
+declarator is scanned before the function is declared.  This is done for a
+function declared by an unqualified name outside a class, not in a template
+(a member function is found in its class, and the name of a template is
+declared before its declarator is scanned).
+*/
+{
+  return func_info != NULL && !dps->is_lambda &&
+         !dps->is_inclass_member_function_decl &&
+         (dps->dso_flags & DSO_FRIEND) == 0 &&
+         !loc->is_class_member && !loc->is_qualified_name &&
+         !scope_is(&scope_stack_top(), sck_class_struct_union) &&
+         !is_template_dependent_context();
+}  /* contract_operands_wait_for_declaration */
+
+
+void scan_contract_operands_of_declaration(a_routine_ptr       rp,
+                                           a_decl_parse_state  *dps,
+                                           a_func_info_block   *func_info)
+/*
+The function rp has just been declared by the declaration described by dps
+and func_info.  Scan the operands of its function contract specifiers
+(dps->contract_specifiers) if they were cached until now (see
+contract_operands_wait_for_declaration), with the function parameter scope
+of the declaration reactivated.
+*/
+{
+  a_contract_specifier_ptr  csp;
+
+  for (csp = dps->contract_specifiers; csp != NULL; csp = csp->next) {
+    if (csp->operand_cached) break;
+  }  /* for */
+  if (csp == NULL ||
+      scope_is(&scope_stack_top(), sck_class_struct_union)) {
+    /* Nothing cached, or a friend's, scanned when its class is complete. */
+    return;
+  }  /* if */
+  /* Access is checked as from the function (e.g., a friend), as for its
+     default arguments. */
+  (void)push_scope((a_scope_kind)sck_function_access, NO_SCOPE_NUMBER,
+                   (a_type_ptr)NULL, rp);
+  (void)push_scope((a_scope_kind)sck_func_prototype, func_info->scope_number,
+                   dps->type, (a_routine_ptr)NULL);
+  reactivate_prototype_scope_symbols(func_info->prototype_scope_symbols);
+  scan_cached_contract_specifiers(rp, dps->contract_specifiers,
+                                  func_info->prototype_scope_symbols,
+                                  /*keep_tokens=*/FALSE);
+  pop_scope();
+  pop_scope();
+}  /* scan_contract_operands_of_declaration */
+
+
 void declarator_one_time_init(void)
 /*
 Do one-time initialization of static variables defined in this file.
