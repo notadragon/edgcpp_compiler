@@ -4234,6 +4234,14 @@ Display the indicated routine.
     disp_ptr("contract_specifiers", (char *)ptr->contract_specifiers,
              iek_contract_specifier);
   }  /* if */
+  if (ptr->contract_interface_wrapper != NULL) {
+    disp_ptr("contract_interface_wrapper",
+             (char *)ptr->contract_interface_wrapper, iek_routine);
+  }  /* if */
+  if (ptr->contract_interface_target != NULL) {
+    disp_ptr("contract_interface_target",
+             (char *)ptr->contract_interface_target, iek_routine);
+  }  /* if */
   if (ptr->is_virtual) {
     disp_unsigned_long("number.virtual_function",
                        (unsigned long)ptr->number.virtual_function);

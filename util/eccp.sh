@@ -919,6 +919,7 @@ check_abbreviation()
 --contract_evaluation_semantic
 --contract_group_evaluation_semantic
 --contracts
+--contracts_p3097
 --contracts_p3850
 --cpfe_only
 --cppcli
@@ -1092,6 +1093,7 @@ check_abbreviation()
 --no_concepts
 --no_const_string_literals
 --no_contracts
+--no_contracts_p3097
 --no_contracts_p3850
 --no_cppcli
 --no_cppcx
@@ -1925,6 +1927,8 @@ process_option()
          --no_contracts | \
          --contracts_p3850 | \
          --no_contracts_p3850 | \
+         --contracts_p3097 | \
+         --no_contracts_p3097 | \
          --bit_precise_integers | \
          --no_bit_precise_integers | \
          --force_vtbl | \

@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3097 --contract_evaluation_semantic=enforce Test_name.c
+"Test_name.c", line 20: error: contract predicate is false in constant expression
+    constexpr virtual int f (int x) const pre (x > 0) { return x; } // { dg-error "contract predicate is false in constant expression" }
+                                          ^
+
+"Test_name.c", line 26: error: contract predicate is false in constant expression
+    constexpr int f (int x) const override pre (x > 1) { return x; } // { dg-error "contract predicate is false in constant expression" }
+                                           ^
+
+"Test_name.c", line 26: error: contract predicate is false in constant expression
+    constexpr int f (int x) const override pre (x > 1) { return x; } // { dg-error "contract predicate is false in constant expression" }
+                                           ^
+
+"Test_name.c", line 37: warning: variable "ok" was declared but never referenced
+  constexpr int ok = call (2);
+                ^
+
+"Test_name.c", line 38: warning: variable "bad_iface" was declared but never referenced
+  constexpr int bad_iface = call (0);	// interface precondition
+                ^
+
+"Test_name.c", line 39: warning: variable "bad_own" was declared but never referenced
+  constexpr int bad_own = call (1);	// D's own precondition
+                ^
+
+3 errors detected in the compilation of "Test_name.c".

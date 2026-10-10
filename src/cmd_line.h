@@ -392,6 +392,7 @@ enum an_option_kind {
   optk_contract_configuration_file,
   optk_contract_group_evaluation_semantic,
   optk_contracts_p3850,
+  optk_contracts_p3097,
   optk_last		/* Must be last. */
 };
 
@@ -2991,6 +2992,12 @@ EXTERN_THREAD a_boolean
 			   enabled (--contracts_p3850): this enables contracts
 			   and each paper's own option, unless that option is
 			   given. */
+
+EXTERN_THREAD a_boolean
+		contracts_p3097_enabled;
+			/* TRUE if P3097 (contracts for virtual functions) is
+			   enabled: a virtual function can have function
+			   contract specifiers. */
 
 EXTERN_THREAD a_boolean
 		incognito;

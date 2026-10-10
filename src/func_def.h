@@ -91,6 +91,8 @@ extern void require_definitions_of_virtual_functions_in_class(
 
 extern a_coroutine_descr_ptr get_coroutine_descr(a_routine_ptr rp);
 
+extern a_routine_ptr make_contract_interface_wrapper(a_routine_ptr  vf);
+
 /* Conditionally close the "edg" namespace. */
 END_EDG_NAMESPACE
 

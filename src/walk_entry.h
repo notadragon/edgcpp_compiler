@@ -1561,6 +1561,12 @@ handle_next_entry:
                  iek_requires_clause);
         walk_list(eptr->contract_specifiers, a_contract_specifier_ptr,
                   iek_contract_specifier);
+        /* The interface wrapper of a virtual function, and the function of
+           such a wrapper (both on the routines list). */
+        remap_ptr_not_needed(eptr->contract_interface_wrapper, a_routine_ptr,
+                             iek_routine);
+        remap_ptr_not_needed(eptr->contract_interface_target, a_routine_ptr,
+                             iek_routine);
 #if MICROSOFT_EXTENSIONS_ALLOWED
         walk_list(eptr->overridden_functions, an_il_entity_list_entry_ptr,
                   iek_il_entity_list_entry);

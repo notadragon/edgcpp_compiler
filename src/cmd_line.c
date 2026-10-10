@@ -1834,6 +1834,12 @@ Initialize the option information table.
   add_option_description(optk_contracts_p3850, "no_contracts_p3850", '\0',
                          /*value=*/FALSE, /*arg_required=*/FALSE,
                          pchek_command_line);
+  add_option_description(optk_contracts_p3097, "contracts_p3097", '\0',
+                         /*value=*/TRUE, /*arg_required=*/FALSE,
+                         pchek_command_line);
+  add_option_description(optk_contracts_p3097, "no_contracts_p3097", '\0',
+                         /*value=*/FALSE, /*arg_required=*/FALSE,
+                         pchek_command_line);
 }  /* initialize_option_descriptions */
 
 
@@ -4005,6 +4011,9 @@ setting is used, and to set various unmentioned settings as needed.
     command_line_error(ec_cl_contracts_option_only_in_cplusplus);
   }  /* if */
   contracts_enabled = FALSE;
+  if (option_kind_used[(int)optk_contracts_p3097] && contracts_p3097_enabled) {
+    command_line_error(ec_cl_contracts_option_only_in_cplusplus);
+  }  /* if */
   if (option_kind_used[(int)optk_array_new_and_delete]) {
     command_line_error(ec_cl_array_new_and_delete_option_only_in_cplusplus);
   }  /* if */
@@ -12341,6 +12350,9 @@ enable_microsoft_mode:
       case optk_contracts_p3850:
         contracts_p3850_enabled = opt_value;
         break;
+      case optk_contracts_p3097:
+        contracts_p3097_enabled = opt_value;
+        break;
      default:
         /* It should not be possible to get here. */
         unexpected_condition();
@@ -12367,6 +12379,16 @@ enable_microsoft_mode:
     emulate_gnu_abi_bugs = TRUE;
   }  /* if */
 #endif /* IA64_ABI */
+  if (contracts_p3850_enabled &&
+      !option_kind_used[(int)optk_contracts_p3097]) {
+    /* --contracts_p3850 enables P3097, unless --[no_]contracts_p3097 is
+       given. */
+    contracts_p3097_enabled = TRUE;
+  }  /* if */
+  if (contracts_p3097_enabled && !option_kind_used[(int)optk_contracts]) {
+    /* So does --contracts_p3097 contracts. */
+    contracts_enabled = TRUE;
+  }  /* if */
   /* Check for consistent specification of dialects and language modes. */
   check_dialect_and_language_modes();
   /* Based on dialect and language mode settings, check for consistency of
@@ -13954,6 +13976,7 @@ variables declared in cmd_line.h.
   contracts_enabled = FALSE;
   contract_evaluation_semantic = DEFAULT_CONTRACT_EVALUATION_SEMANTIC;
   contracts_p3850_enabled = FALSE;
+  contracts_p3097_enabled = FALSE;
   incognito = DEFAULT_INCOGNITO;
   keep_restrict_in_signatures = FALSE;
   attributes_on_using_declarations = FALSE;

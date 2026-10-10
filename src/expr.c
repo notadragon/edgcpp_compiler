@@ -42799,6 +42799,12 @@ text buffer so the caller should copy it quickly.
 #endif /* BACK_END_IS_CP_GEN_BE */
   } else {
     a_routine_ptr rp = function_scope->variant.routine.ptr;
+    if (rp->contract_interface_target != NULL) {
+      /* An interface wrapper names its virtual function in the reports of
+         the contract violations it checks (see
+         make_contract_interface_wrapper). */
+      rp = rp->contract_interface_target;
+    }  /* if */
     pos_in_temp_text_buffer = 0;
     switch (token) {
       case tok_func_name:

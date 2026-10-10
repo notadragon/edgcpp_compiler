@@ -12082,6 +12082,11 @@ command line -D options.
         /* g++ defines __cpp_contracts whenever contracts are enabled, which
            --contracts can do in any C++ mode. */
         a_const_char  *contracts_value = "202502L";
+        if (contracts_p3097_enabled) {
+          /* P3097 (contracts for virtual functions) has no macro of its
+             own; GCC raises the value instead. */
+          contracts_value = "202609L";
+        }  /* if */
         (void)enter_predef_macro(contracts_value, "__cpp_contracts",
                                  /*cannot_be_redefined=*/TRUE,
                                  /*ref_suppresses_pch_file=*/FALSE);

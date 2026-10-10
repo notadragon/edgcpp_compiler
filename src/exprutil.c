@@ -19570,6 +19570,16 @@ error cases.
   call_node->position = *pos;
   call_node->compiler_generated = compiler_generated;
   call_node->variant.operation.is_virtual_call = is_virtual;
+  if (CONTRACT_CHECKS_IN_FRONT_END && contracts_p3097_enabled &&
+      contracts_enabled && is_virtual && rout != NULL &&
+      rout->contract_specifiers != NULL &&
+      !is_template_dependent_context() &&
+      depth_template_declaration_scope == NO_SCOPE_DEPTH) {
+    /* The checks of the statically chosen function's contract assertions
+       (P3097) are in a wrapper that IL lowering makes the call call (see
+       make_contract_interface_wrapper). */
+    (void)make_contract_interface_wrapper(rout);
+  }  /* if */
   call_node->variant.operation.is_conversion_call = is_conversion;
   call_node->variant.operation.arg_dependent_lookup_suppressed_on_call =
                                                      arg_dep_lookup_suppressed;

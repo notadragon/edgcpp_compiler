@@ -1,0 +1,5 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3097 Test_name.c
+"Test_name.c", line 14: warning: ignoring return value from routine declared with "nodiscard" attribute
+  void u (B &b) { b.v (1); }	// { dg-warning "ignoring return value of .virtual int B::v\\(int\\)." }
+                      ^
+

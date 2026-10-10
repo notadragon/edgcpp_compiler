@@ -3934,6 +3934,211 @@ empty statement block.
 }  /* define_special_member_function */
 
 
+static void add_contract_interface_call(a_routine_ptr  vf,
+                                        a_scope_ptr    scope)
+/*
+Put into the body of the interface wrapper of the virtual function vf, whose
+definition scope is scope (see make_contract_interface_wrapper), the virtual
+call of vf that returns its value, passing on the wrapper's arguments as
+they are: "this", a reference parameter's object, a parameter of class type
+passed by copy constructor as an lvalue (IL lowering passes its address,
+which is the address the wrapper received), and any other parameter's value.
+A class result is returned by the call's initialization of the wrapper's
+result, which IL lowering makes the call return to the wrapper's caller.
+*/
+{
+  an_expr_node_ptr     fn = function_rvalue_expr(vf), *p_arg = &fn->next, call;
+  an_expr_node_ptr     call_node = NULL;
+  a_variable_ptr       vp;
+  an_operand           result;
+  an_expr_stack_entry  expr_stack_entry;
+  a_type_ptr           return_type =
+                         skip_typerefs(vf->type)->variant.routine.return_type;
+  a_source_position    *pos = &vf->source_corresp.decl_position;
+  a_statement_ptr      stmt, *p_stmt = &scope->assoc_block->variant.block.
+                                                                    statements;
+
+  push_expr_stack(ek_normal, &expr_stack_entry,
+                  /*force_object_lifetime=*/FALSE,
+                  /*suppress_object_lifetime=*/FALSE);
+  /* A class result initializes the wrapper's result, with no temporary (as
+     in "return f();"). */
+  expr_stack->allow_call_with_incomplete_return_type = TRUE;
+  *p_arg = var_rvalue_expr(scope->variant.routine.this_param_variable);
+  p_arg = &(*p_arg)->next;
+  for (vp = scope->variant.routine.parameters; vp != NULL; vp = vp->next) {
+    an_expr_node_ptr  arg;
+    if (is_any_reference_type(vp->type)) {
+      arg = add_ref_indirection_to_node(var_rvalue_expr(vp));
+    } else if (vp->variant.assoc_param_type != NULL &&
+               vp->variant.assoc_param_type->passed_via_copy_constructor) {
+      arg = var_lvalue_expr(vp);
+    } else {
+      arg = var_rvalue_expr(vp);
+    }  /* if */
+    vp->source_corresp.referenced = TRUE;
+    *p_arg = arg;
+    p_arg = &arg->next;
+  }  /* for */
+  make_function_call(fn, vf->type, /*is_virtual=*/TRUE,
+                     /*virtual_suppressed=*/FALSE,
+                     /*selector_is_object_pointer=*/TRUE,
+                     /*compiler_generated=*/TRUE, /*is_conversion=*/FALSE,
+                     /*arg_dep_lookup_suppressed=*/FALSE,
+                     /*qualified_function_name=*/FALSE,
+                     /*found_through_adl=*/FALSE,
+                     /*uses_operator_syntax=*/FALSE, pos, pos, pos, &result,
+                     (a_boolean *)NULL, &call_node);
+  call = make_node_from_operand(&result);
+  pop_expr_stack();
+  if (is_void_type(skip_typerefs(return_type))) {
+    stmt = alloc_statement(stmk_expr, /*compiler_generated=*/TRUE);
+    stmt->position = *pos;
+    stmt->expr = call;
+    set_expr_result_not_used(call);
+    stmt->parent = scope->assoc_block;
+    *p_stmt = stmt;
+    p_stmt = &stmt->next;
+    call = NULL;
+  }  /* if */
+  stmt = alloc_statement(stmk_return, /*compiler_generated=*/TRUE);
+  stmt->position = *pos;
+  stmt->parent = scope->assoc_block;
+  if (call != NULL &&
+      is_class_struct_union_type(skip_typerefs(return_type))) {
+    /* The call itself initializes the result (as for "return f();"). */
+    a_dynamic_init_ptr  dip =
+                        alloc_dynamic_init(dik_class_result_via_ctor);
+    dip->variant.expression = call_node;
+    stmt->variant.return_dynamic_init = dip;
+  } else {
+    stmt->expr = call;
+  }  /* if */
+  *p_stmt = stmt;
+}  /* add_contract_interface_call */
+
+
+a_routine_ptr make_contract_interface_wrapper(a_routine_ptr  vf)
+/*
+vf is a virtual function with contract assertions, which a virtual call
+calls, in a configuration where the front end generates the checks of
+contract assertions.  Return its interface wrapper (P3097), made if not made
+yet: a compiler-generated, non-virtual inline member function of vf's class
+with vf's parameters, whose definition checks vf's preconditions and
+postconditions (see prepare_contract_interface_checks) around a virtual call
+of vf, passing on the wrapper's arguments as they are (see
+add_contract_interface_call).  IL lowering makes a virtual call of vf
+call the wrapper instead.  Return NULL if vf's class is not complete.
+*/
+{
+  a_routine_ptr                  wrapper;
+  a_type_ptr                     class_type = parent_class_of(vf);
+  a_type_ptr                     src_type = skip_typerefs(vf->type), rtp;
+  a_routine_type_supplement_ptr  rtsp;
+  a_param_type_ptr               src_ptp, ptp, *p_ptp;
+  a_symbol_locator               loc;
+  a_symbol_ptr                   sym;
+  char                           name[64];
+  a_memory_region_number         region_to_switch_back_to;
+
+  if (vf->contract_interface_wrapper != NULL) {
+    return vf->contract_interface_wrapper;
+  }  /* if */
+  if (is_incomplete_type(class_type) ||
+      class_type->variant.class_struct_union.is_nonreal_class ||
+      scope_is_null_or_placeholder(class_type_supp(class_type)->assoc_scope)) {
+    return NULL;
+  }  /* if */
+  if (src_type->variant.routine.extra_info->has_ellipsis) {
+    /* The arguments of the ellipsis cannot be passed on. */
+    return NULL;
+  }  /* if */
+  /* The routine and its type are file-scope entities. */
+  switch_to_file_scope_region(&region_to_switch_back_to);
+  /* The type: vf's, with a parameter list of its own. */
+  rtp = alloc_type((a_type_kind)tk_routine);
+  rtp->variant.routine.return_type = src_type->variant.routine.return_type;
+  rtsp = rtp->variant.routine.extra_info;
+  *rtsp = *src_type->variant.routine.extra_info;
+  rtsp->assoc_routine = NULL;
+  rtsp->assoc_routine_is_ctor = FALSE;
+  rtsp->assoc_routine_is_dtor = FALSE;
+  rtsp->param_type_list = NULL;
+  p_ptp = &rtsp->param_type_list;
+  for (src_ptp = src_type->variant.routine.extra_info->param_type_list;
+       src_ptp != NULL;
+       src_ptp = src_ptp->next) {
+    ptp = alloc_param_type(src_ptp->type);
+    *ptp = *src_ptp;
+    ptp->next = NULL;
+    *p_ptp = ptp;
+    p_ptp = &ptp->next;
+  }  /* for */
+  /* The routine, named apart from vf (its parameter types tell overloads
+     apart in the mangled name), placed after vf on the routines list. */
+  wrapper = alloc_routine();
+  wrapper->type = rtp;
+  wrapper->source_corresp = vf->source_corresp;
+  (void)sprintf(name, "__edg_contract_interface_%lu",
+                (unsigned long)vf->number.virtual_function);
+  clear_locator(&loc, &vf->source_corresp.decl_position);
+  (void)find_symbol(name, (sizeof_t)strlen(name), &loc);
+  sym = alloc_symbol((a_symbol_kind)sk_member_function, loc.symbol_header,
+                     &vf->source_corresp.decl_position);
+  sym->variant.routine.ptr = wrapper;
+  wrapper->source_corresp.assoc_info = (char *)sym;
+  wrapper->source_corresp.name = loc.symbol_header->identifier;
+  wrapper->source_corresp.trans_unit_corresp = NULL;
+  wrapper->source_corresp.name_references = NULL;
+  wrapper->source_corresp.referenced = FALSE;
+  wrapper->source_corresp.attributes = NULL;
+  wrapper->source_corresp.has_associated_attribute = FALSE;
+  wrapper->source_corresp.has_associated_pragma = FALSE;
+#if NEED_NAME_MANGLING
+  wrapper->source_corresp.unmangled_name_or_mangled_encoding = NULL;
+  wrapper->source_corresp.name_has_been_mangled = FALSE;
+#if GNU_EXTENSIONS_ALLOWED
+  wrapper->source_corresp.entity_marked = FALSE;
+#endif /* GNU_EXTENSIONS_ALLOWED */
+#endif /* NEED_NAME_MANGLING */
+#if MAINTAIN_NEEDED_FLAGS
+  wrapper->source_corresp.needed = FALSE;
+#endif /* MAINTAIN_NEEDED_FLAGS */
+#if GENERATE_SOURCE_SEQUENCE_LISTS
+  wrapper->source_corresp.source_sequence_entry = NULL;
+#endif /* GENERATE_SOURCE_SEQUENCE_LISTS */
+  wrapper->storage_class = vf->storage_class;
+  wrapper->compiler_generated = TRUE;
+  set_inline_flag(wrapper, TRUE);
+  wrapper->contract_interface_target = vf;
+  vf->contract_interface_wrapper = wrapper;
+  wrapper->next = vf->next;
+  vf->next = wrapper;
+  if (curr_translation_unit->file_scope_pointers_block.last_routine == vf) {
+    curr_translation_unit->file_scope_pointers_block.last_routine = wrapper;
+  }  /* if */
+  switch_back_to_original_region(region_to_switch_back_to);
+  /* The definition. */
+  { a_module_entity_stack_state   tmp_mod(sym->module_entity);
+    a_generated_func_def_context  context;
+    a_scope_ptr                   scope =
+                         begin_definition_of_generated_function(wrapper, rtp,
+                                                                class_type,
+                                                                &context);
+    for (ptp = rtsp->param_type_list; ptp != NULL; ptp = ptp->next) {
+      (void)implicitly_generated_param_variable(ptp);
+    }  /* for */
+    scope->assoc_block = alloc_statement(stmk_block,
+                                         /*compiler_generated=*/TRUE);
+    prepare_contract_interface_checks();
+    add_contract_interface_call(vf, scope);
+    protect_contract_captures();
+    end_definition_of_generated_function(wrapper, scope, &context);
+  }
+  return wrapper;
+}  /* make_contract_interface_wrapper */
+
+
 static a_statement_ptr make_return_false_stmt_if_false_expr(
                                                        an_expr_node_ptr  cond)
 /*

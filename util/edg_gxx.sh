@@ -38,6 +38,7 @@
 # -f[no-]contracts-p3850 (every extension paper) goes to both; g++ gets it
 # unchanged, so it enables there even the papers the front end does not
 # implement yet.
+# -f[no-]contracts-p3097 goes to both.
 #
 # Environment:
 #   EDG_GXX           the g++ to pair with
@@ -166,6 +167,10 @@ while [ $# -gt 0 ] ; do
       edg_args+=("--contracts_p3850"); gxx_args+=("$arg") ;;
     -fno-contracts-p3850)
       edg_args+=("--no_contracts_p3850"); gxx_args+=("$arg") ;;
+    -fcontracts-p3097)
+      edg_args+=("--contracts_p3097"); gxx_args+=("$arg") ;;
+    -fno-contracts-p3097)
+      edg_args+=("--no_contracts_p3097"); gxx_args+=("$arg") ;;
     -E)
       edg_only_mode=preprocess; stop_after_edg=1 ;;
     -fsyntax-only)

@@ -1,6 +1,23 @@
 Version 7.0, September 28, 2026
 
 10/3/26  []
+Contracts (P3097): contracts for virtual functions
+
+The new --[no_]contracts_p3097 option (implied by --contracts_p3850, and
+enabling contracts unless --[no_]contracts is given) lets a virtual function
+have function contract specifiers, and raises __cpp_contracts to 202609L.
+In a virtual call the contract assertions of the statically chosen function
+(the interface) are checked around those of the final overrider (the
+implementation): interface preconditions, implementation preconditions, the
+body, implementation postconditions, interface postconditions.  A qualified
+call, and a call through a pointer to member, check only the function
+called.  The front end does so in constant evaluation; through edg_gxx.sh
+(which passes -f[no-]contracts-p3097 to both the front end and g++) g++
+checks them at run time, and so do the checks generated for the C-generating
+back end, in a wrapper of the statically chosen function (not if C-variadic).
+
+
+10/3/26  []
 Contracts (P3850): --contracts_p3850
 
 The new --[no_]contracts_p3850 option enables contracts (unless
