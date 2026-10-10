@@ -1,2 +1,20 @@
 fe_only -DTEST_NUMBER=8 --no_il_lower --il_display --c++20 Test_name.c
-/usr/bin/bash: line 1: enumerate_addrs: command not found
+file-scope class-type-supplement#1
+template_arg_list:       
+  type:                  file-scope type#1: T
+  type:                  file-scope type#2: U
+type:                    file-scope type#3: int
+kind:                    enk_constant
+constant:                file-scope constant#1: 1
+position.seq:            122
+type:                    file-scope type#3: int
+kind:                    enk_constant
+constant:                file-scope constant#2: 2
+position.seq:            122
+  name:                  file-scope id-name#1: "v"
+type:                    file-scope type#4: ns::C<ns::ns2::B>::D
+template_arg_list:       
+  type:                  file-scope type#5: T
+template_arg_list:       
+  type:                  file-scope type#6: ns::ns2::B
+  explicitly_specified:  TRUE

@@ -1,2 +1,52 @@
 fe_only -DTEST_NUMBER=3 --no_il_lower --il_display --c++20 Test_name.c
-/usr/bin/bash: line 1: enumerate_addrs: command not found
+file-scope class-type-supplement#1
+template_arg_list:       
+  constant:              file-scope constant#1: I
+template_arg_list:       
+  type:                  file-scope type#1: T
+template_arg_list:       
+  type:                  file-scope type#2: U
+template_arg_list:       
+  type:                  file-scope type#3: T
+  constant:              file-scope constant#2: J
+template_arg_list:       
+  type:                  file-scope type#4: T *
+  explicitly_specified:  TRUE
+template_arg_list:       
+  constant:              file-scope constant#3: 1
+  explicitly_specified:  TRUE
+template_arg_list:       
+  type:                  file-scope type#5: int
+  explicitly_specified:  TRUE
+template_arg_list:       
+  type:                  file-scope type#3: T
+  explicitly_specified:  TRUE
+template_arg_list:       
+  constant:              file-scope constant#4: J
+  explicitly_specified:  TRUE
+template_arg_list:       
+  type:                  file-scope type#5: int
+  explicitly_specified:  TRUE
+  constant:              file-scope constant#5: 2
+  explicitly_specified:  TRUE
+template_arg_list:       
+  constant:              file-scope constant#6: I
+template_arg_list:       
+  type:                  file-scope type#6: T
+template_arg_list:       
+  constant:              file-scope constant#7: 1
+  explicitly_specified:  TRUE
+template_arg_list:       
+  constant:              file-scope constant#8: 2
+  explicitly_specified:  TRUE
+template_arg_list:       
+  type:                  file-scope type#5: int
+  explicitly_specified:  TRUE
+template_arg_list:       
+  type:                  file-scope type#7: int *
+  explicitly_specified:  TRUE
+template_arg_list:       
+  type:                  file-scope type#5: int
+  explicitly_specified:  TRUE
+  constant:              file-scope constant#9: 3
+  explicitly_specified:  TRUE

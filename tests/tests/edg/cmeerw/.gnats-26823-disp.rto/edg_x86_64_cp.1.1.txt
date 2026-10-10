@@ -1,0 +1,119 @@
+fe_only -DTEST_NUMBER=1 --no_il_lower --il_display --c++26 Test_name.c
+file-scope expr-node#1
+type:                    file-scope type#1: int
+kind:                    enk_constant
+constant:                file-scope constant#1: 0
+position.seq:            22
+type:                    file-scope type#1: int
+kind:                    enk_constant
+constant:                file-scope constant#2: I
+position.seq:            25
+type:                    file-scope type#1: int
+kind:                    enk_constant
+constant:                file-scope constant#3: Is
+position.seq:            33
+type:                    file-scope type#1: int
+kind:                    enk_constant
+constant:                file-scope constant#4: 0
+position.seq:            33
+type:                    file-scope type#2: <unnamed>
+kind:                    enk_pack_index
+expr:                    file-scope expr-node#2
+index_expr:              file-scope expr-node#3
+position.seq:            33
+type:                    file-scope type#3: unsigned long
+kind:                    enk_operation
+operation.kind:          eok_cast
+operands:                file-scope expr-node#4
+position.seq:            33
+type:                    file-scope type#1: int
+kind:                    enk_constant
+constant:                file-scope constant#3: Is
+position.seq:            36
+type:                    file-scope type#1: int
+kind:                    enk_constant
+constant:                file-scope constant#5: J
+position.seq:            36
+type:                    file-scope type#2: <unnamed>
+kind:                    enk_pack_index
+expr:                    file-scope expr-node#5
+index_expr:              file-scope expr-node#6
+position.seq:            36
+type:                    file-scope type#3: unsigned long
+kind:                    enk_operation
+operation.kind:          eok_cast
+operands:                file-scope expr-node#7
+position.seq:            36
+type:                    file-scope type#1: int
+kind:                    enk_constant
+constant:                file-scope constant#6: I
+position.seq:            8
+type:                    file-scope type#1: int
+kind:                    enk_constant
+constant:                file-scope constant#7: Js
+position.seq:            11
+type:                    file-scope type#1: int
+kind:                    enk_constant
+constant:                file-scope constant#8: I
+position.seq:            11
+type:                    file-scope type#2: <unnamed>
+kind:                    enk_pack_index
+expr:                    file-scope expr-node#8
+index_expr:              file-scope expr-node#9
+position.seq:            11
+type:                    file-scope type#4: auto
+kind:                    enk_operation
+operation.kind:          eok_cast
+operands:                file-scope expr-node#10
+position.seq:            11
+type:                    file-scope type#1: int
+kind:                    enk_constant
+constant:                file-scope constant#9: Js
+position.seq:            14
+type:                    file-scope type#1: int
+kind:                    enk_constant
+constant:                file-scope constant#10: I
+position.seq:            14
+type:                    file-scope type#2: <unnamed>
+kind:                    enk_pack_index
+expr:                    file-scope expr-node#11
+index_expr:              file-scope expr-node#12
+position.seq:            14
+type:                    file-scope type#5: decltype(Js...[I])
+kind:                    enk_temp_init
+position.seq:            14
+type:                    file-scope type#5: decltype(Js...[I])
+kind:                    enk_constant
+constant:                file-scope constant#11: (decltype(Js...[I]))<expression>
+position.seq:            14
+type:                    file-scope type#6: auto
+kind:                    enk_operation
+operation.kind:          eok_cast
+operands:                file-scope expr-node#13
+position.seq:            14
+type:                    file-scope type#1: int
+kind:                    enk_constant
+constant:                file-scope constant#12: Js
+position.seq:            17
+type:                    file-scope type#1: int
+kind:                    enk_constant
+constant:                file-scope constant#13: I
+position.seq:            17
+type:                    file-scope type#2: <unnamed>
+is_parenthesized:        TRUE
+kind:                    enk_pack_index
+expr:                    file-scope expr-node#14
+index_expr:              file-scope expr-node#15
+position.seq:            17
+type:                    file-scope type#7: decltype(Js...[I])
+kind:                    enk_temp_init
+position.seq:            17
+type:                    file-scope type#7: decltype(Js...[I])
+kind:                    enk_constant
+constant:                file-scope constant#14: (decltype(Js...[I]))<expression>
+position.seq:            17
+type:                    file-scope type#8: auto
+kind:                    enk_operation
+operation.kind:          eok_cast
+operands:                file-scope expr-node#16
+position.seq:            17

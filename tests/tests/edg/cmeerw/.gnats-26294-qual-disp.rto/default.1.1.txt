@@ -1,2 +1,38 @@
 fe_only -DTEST_NUMBER=1 --no_il_lower --il_display --c++20 Test_name.c
-/usr/bin/bash: line 1: enumerate_addrs: command not found
+file-scope variable#1
+  name:                  file-scope id-name#1: "i"
+  decl_position.seq:     22
+type:                    file-scope type#1: ns::INT
+  name:                  file-scope id-name#2: "ir1"
+  decl_position.seq:     24
+type:                    file-scope type#2: ns::INT &
+  name:                  file-scope id-name#3: "gir1"
+  decl_position.seq:     25
+type:                    file-scope type#3: INT &
+  name:                  file-scope id-name#4: "ir2"
+  decl_position.seq:     26
+type:                    file-scope type#2: ns::INT &
+  name:                  file-scope id-name#5: "gir2"
+  decl_position.seq:     27
+type:                    file-scope type#2: ns::INT &
+  name:                  file-scope id-name#6: "c1"
+  decl_position.seq:     29
+type:                    file-scope type#4: C
+  name:                  file-scope id-name#7: "c2"
+  decl_position.seq:     30
+type:                    file-scope type#4: C
+  name:                  file-scope id-name#8: "c3"
+  decl_position.seq:     31
+type:                    file-scope type#4: C
+  name:                  file-scope id-name#9: "c4"
+  decl_position.seq:     32
+type:                    file-scope type#4: C
+  name:                  file-scope id-name#10: "t1"
+  decl_position.seq:     36
+type:                    file-scope type#5: C::type
+  name:                  file-scope id-name#11: "t2"
+  decl_position.seq:     37
+type:                    file-scope type#5: C::type
+  name:                  file-scope id-name#12: "t3"
+  decl_position.seq:     38
+type:                    file-scope type#5: C::type

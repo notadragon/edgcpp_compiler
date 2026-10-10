@@ -1,0 +1,34 @@
+fe_only -DTEST_NUMBER=6 --no_il_lower --il_display --c++20 Test_name.c
+file-scope class-type-supplement#1
+template_arg_list:       
+  type:                  file-scope type#1: T
+  type:                  file-scope type#2: U
+template_arg_list:       
+  type:                  file-scope type#3: T
+  explicitly_specified:  TRUE
+type:                    file-scope type#4: int
+kind:                    enk_constant
+constant:                file-scope constant#1: 1
+position.seq:            30
+type:                    file-scope type#5: T::N<T>
+kind:                    enk_temp_init
+position.seq:            30
+type:                    file-scope type#4: int
+kind:                    enk_constant
+constant:                file-scope constant#2: 1
+position.seq:            31
+type:                    file-scope type#5: T::N<T>
+kind:                    enk_temp_init
+position.seq:            31
+type:                    file-scope type#6: <unnamed>
+kind:                    enk_operation
+operation.kind:          eok_comma
+operands:                file-scope expr-node#1
+position.seq:            30
+type:                    file-scope type#7: auto
+kind:                    enk_operation
+operation.kind:          eok_cast
+operands:                file-scope expr-node#2
+position.seq:            30
+  name:                  file-scope id-name#1: "var"
+type:                    file-scope type#7: auto

@@ -1,2 +1,13 @@
 fe_only -DTEST_NUMBER=1 --no_il_lower --il_display --c++20 Test_name.c
-/usr/bin/bash: line 1: enumerate_addrs: command not found
+file-scope class-type-supplement#1
+template_arg_list:       
+  type:                  file-scope type#1: T
+  explicitly_specified:  TRUE
+template_arg_list:       
+  type:                  file-scope type#2: C<T>
+  explicitly_specified:  TRUE
+template_arg_list:       
+  type:                  file-scope type#3: C<T>
+  explicitly_specified:  TRUE
+template_arg_list:       
+  type:                  file-scope type#1: T

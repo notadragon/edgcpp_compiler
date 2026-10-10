@@ -1,2 +1,15 @@
 fe_only -DTEST_NUMBER=1 --c++11 --gn 150200 --no_il_lower --il_display Test_name.c
-/usr/bin/bash: line 1: enumerate_addrs: command not found
+file-scope class-type-supplement#1
+template_arg_list:       
+  constant:              file-scope constant#1: N
+  type:                  file-scope type#1: T
+  is_pack_element:       TRUE
+  is_pack:               TRUE
+template_arg_list:       
+  constant:              file-scope constant#2: Is
+  is_pack_element:       TRUE
+  is_pack:               TRUE
+template_arg_list:       
+  constant:              file-scope constant#3: __integer_pack(I)...
+  explicitly_specified:  TRUE
+  is_pack_element:       TRUE

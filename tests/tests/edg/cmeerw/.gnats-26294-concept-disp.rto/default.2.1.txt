@@ -1,2 +1,24 @@
 fe_only -DTEST_NUMBER=2 --no_il_lower --il_display --c++20 Test_name.c
-/usr/bin/bash: line 1: enumerate_addrs: command not found
+file-scope expr-node#1
+type:                    file-scope type#1: bool
+kind:                    enk_constant
+constant:                file-scope constant#1: true
+position.seq:            7
+  name:                  file-scope id-name#1: "C"
+kind:                    templk_concept
+type:                    file-scope type#1: bool
+kind:                    enk_concept_id
+concept_id.args:         
+  type:                  file-scope type#2: int
+  explicitly_specified:  TRUE
+position.seq:            23
+type:                    file-scope type#1: bool
+kind:                    enk_concept_id
+concept_id.args:         
+  type:                  file-scope type#3: INT1
+  explicitly_specified:  TRUE
+position.seq:            26
+  name:                  file-scope id-name#2: "f"
+kind:                    templk_function
+  name:                  file-scope id-name#3: "g"
+kind:                    templk_function

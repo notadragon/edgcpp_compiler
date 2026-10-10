@@ -1,0 +1,31 @@
+fe_only -DTEST_NUMBER=2 --no_il_lower --il_display --c++20 Test_name.c
+file-scope class-type-supplement#1
+template_arg_list:       
+  type:                  file-scope type#1: <unnamed>
+template_arg_list:       
+  type:                  file-scope type#2: T
+  explicitly_specified:  TRUE
+template_arg_list:       
+  type:                  file-scope type#3: <unnamed>
+template_arg_list:       
+  type:                  file-scope type#4: <unnamed>
+  name:                  file-scope id-name#1: "m1"
+  decl_position.seq:     23
+type:                    file-scope type#5: T::A
+  name:                  file-scope id-name#2: "m2"
+  decl_position.seq:     25
+type:                    file-scope type#6: TT<T>::B
+  name:                  file-scope id-name#3: "m3"
+  decl_position.seq:     27
+type:                    file-scope type#7: T::D<T>
+template_arg_list:       
+  type:                  file-scope type#2: T
+  explicitly_specified:  TRUE
+  name:                  file-scope id-name#4: "m4"
+  decl_position.seq:     29
+type:                    file-scope type#8: TT<T>::E<T>
+template_arg_list:       
+  type:                  file-scope type#2: T
+template_arg_list:       
+  type:                  file-scope type#2: T
+  explicitly_specified:  TRUE

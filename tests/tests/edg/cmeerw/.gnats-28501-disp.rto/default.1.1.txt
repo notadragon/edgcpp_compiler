@@ -1,2 +1,43 @@
 fe_only -DTEST_NUMBER=1 --c++11 --no_il_lower --il_display Test_name.c
-/usr/bin/bash: line 1: enumerate_addrs: command not found
+file-scope class-type-supplement#1
+assoc_template:          file-scope template#1
+template_arg_list:       
+  type:                  file-scope type#1: <unnamed>
+assoc_template:          file-scope template#2
+template_arg_list:       
+  type:                  file-scope type#2: U
+  type:                  file-scope type#3: <unnamed>
+assoc_template:          file-scope template#3
+template_arg_list:       
+  type:                  file-scope type#4: U
+  explicitly_specified:  TRUE
+assoc_template:          file-scope template#2
+template_arg_list:       
+  type:                  file-scope type#4: U
+  explicitly_specified:  TRUE
+  type:                  file-scope type#5: C<int (As, ...)>::A<U>
+assoc_template:          file-scope template#4
+template_arg_list:       
+  type:                  file-scope type#6: int (As...)
+  explicitly_specified:  TRUE
+partial_spec_template_arg_list:
+  type:                  file-scope type#7: As
+assoc_template:          file-scope template#1
+template_arg_list:       
+  type:                  file-scope type#8: int (As, ...)
+  explicitly_specified:  TRUE
+assoc_template:          file-scope template#5
+template_arg_list:       
+  type:                  file-scope type#9: U
+  type:                  file-scope type#10: <unnamed>
+assoc_template:          file-scope template#2
+template_arg_list:       
+  type:                  file-scope type#11: U
+  explicitly_specified:  TRUE
+  type:                  file-scope type#12: C<int (int)>::A<U>
+assoc_template:          file-scope template#4
+template_arg_list:       
+  type:                  file-scope type#13: int (int)
+  explicitly_specified:  TRUE
+partial_spec_template_arg_list:
+  type:                  file-scope type#14: int

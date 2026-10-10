@@ -1,2 +1,17 @@
 fe_only -DTEST_NUMBER=1 --no_il_lower --il_display --c++20 Test_name.c
-/usr/bin/bash: line 1: enumerate_addrs: command not found
+file-scope variable-template-info#1
+template_arg_list:       
+  type:                  file-scope type#1: T
+  type:                  file-scope type#2: U
+  name:                  file-scope id-name#1: "var"
+  decl_position.seq:     7
+template_info:           file-scope variable-template-info#1
+  name:                  file-scope id-name#2: "i"
+  decl_position.seq:     14
+template_arg_list:       
+  type:                  file-scope type#3: int
+  explicitly_specified:  TRUE
+  type:                  file-scope type#3: int
+  name:                  file-scope id-name#1: "var"
+  decl_position.seq:     7
+template_info:           file-scope variable-template-info#2

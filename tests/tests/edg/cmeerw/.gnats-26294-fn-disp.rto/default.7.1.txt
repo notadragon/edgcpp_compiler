@@ -1,2 +1,14 @@
 fe_only -DTEST_NUMBER=7 --no_il_lower --il_display --c++20 Test_name.c
-/usr/bin/bash: line 1: enumerate_addrs: command not found
+file-scope constant#1
+  name:                  file-scope id-name#1: "J"
+  decl_position.seq:     9
+kind:                    ck_template_param
+kind:                    tpck_param
+  name:                  file-scope id-name#2: "I"
+  decl_position.seq:     9
+kind:                    ck_template_param
+kind:                    tpck_param
+  name:                  file-scope id-name#2: "I"
+  decl_position.seq:     9
+kind:                    ck_template_param
+kind:                    tpck_param

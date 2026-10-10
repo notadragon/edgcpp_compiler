@@ -1,2 +1,26 @@
 fe_only -DTEST_NUMBER=1 -w --no_il_lower --il_display --c++20 Test_name.c
-/usr/bin/bash: line 1: enumerate_addrs: command not found
+func-scope constant#1
+  decl_position.seq:     39
+type:                    file-scope type#1: int A::B::*
+kind:                    ck_ptr_to_member
+  decl_position.seq:     45
+type:                    file-scope type#2: int A::B::*
+kind:                    ck_ptr_to_member
+type:                    file-scope type#3: void (*)()
+kind:                    enk_routine
+routine:                 file-scope routine#1: f
+position.seq:            38
+type:                    file-scope type#4: void
+kind:                    enk_operation
+operation.kind:          eok_call
+operands:                func-scope expr-node#1
+position.seq:            38
+type:                    file-scope type#5: void (*)()
+kind:                    enk_routine
+routine:                 file-scope routine#2: g
+position.seq:            44
+type:                    file-scope type#4: void
+kind:                    enk_operation
+operation.kind:          eok_call
+operands:                func-scope expr-node#2
+position.seq:            44
