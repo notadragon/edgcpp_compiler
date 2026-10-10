@@ -20227,14 +20227,19 @@ Do IL lowering of the indicated statement and everything under it.
     switch (statement->kind) {
       case stmk_empty:
         /* If the statement includes an [[assume(...)]] attribute, lower
-           its operand. */
+           its operand.  The operand is not the expression of the statement,
+           so no statement is passed: a call at its top would otherwise be
+           inlined by overwriting the statement with the inlined code, which
+           would then be executed although the operand is never evaluated,
+           and would drop the attribute (and the file-scope entry that
+           refers its operand) from the IL. */
         for (an_attribute  *ap = statement->attributes;
              ap != NULL;
              ap = ap->next) {
           if (ap->kind == ak_assume) {
             an_expr_node  *expr = expr_node_from_attribute_arg(ap->arguments);
             if (expr != NULL) {
-              lower_full_expr(expr, statement);
+              lower_full_expr(expr, (a_statement_ptr)NULL);
             }  /* if */
           }  /* if */
         }  /* for */
