@@ -1,6 +1,26 @@
 Version 7.0, September 28, 2026
 
 10/4/26  []
+Contracts (P4298): nonthrowing evaluation semantics
+
+The new --[no_]contracts_p4298 option (implied by --contracts_p3850, and
+enabling contracts unless --[no_]contracts is given) adds the
+noexcept_observe and noexcept_enforce contract evaluation semantics, which
+act as observe and enforce but terminate the program if the violation
+handler exits with an exception, and predefines
+__cpp_contracts_nonthrowing_semantics as 202609L:
+
+  --contract_evaluation_semantic=noexcept_enforce
+
+They can be chosen with --contract_evaluation_semantic, by a P3595
+configuration, and by the facets of an assertion-control specifier's label
+(P3400), whose best fit prefers the variant of the configured semantic's
+kind, as GCC does.  In constant evaluation they are enforce and observe.
+Without the option a noexcept semantic is replaced by its throwing variant
+with a warning.  Through edg_gxx.sh g++ implements them at run time.
+
+
+10/4/26  []
 Contracts (P4283): requires-clauses on contract assertions
 
 The new --[no_]contracts_p4283 option (implied by --contracts_p3850, and

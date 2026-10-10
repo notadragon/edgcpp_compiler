@@ -1,0 +1,1 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3850 --contract_evaluation_semantic=noexcept_observe Test_name.c

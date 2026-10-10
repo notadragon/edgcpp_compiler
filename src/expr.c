@@ -42692,6 +42692,8 @@ diagnosed when that semantic is chosen, as GCC does).
   csp->label_allowed_semantics = 0;
   (void)memset(csp->label_computed_semantics, 0,
                sizeof(csp->label_computed_semantics));
+  (void)memset(csp->label_computed_noexcept_semantics, 0,
+               sizeof(csp->label_computed_noexcept_semantics));
   if (contract_label_constant(csp, label_con)) {
     an_operand  label_opnd, sem_opnd;
     a_boolean   not_constant;
@@ -42744,6 +42746,25 @@ diagnosed when that semantic is chosen, as GCC does).
         csp->label_computed_semantics[v] = 0xFE;
       }  /* if */
     }  /* for */
+    if (contracts_p4298_enabled && csp->label_computed_semantics[1] != 0) {
+      /* compute_semantic for the noexcept semantics too (P4298). */
+      for (v = 6; v <= 7; v++) {
+        a_byte  *p_computed = &csp->label_computed_noexcept_semantics[v - 6];
+        make_constant_operand(label_con, &label_opnd);
+        make_integer_constant_operand(&sem_opnd, (a_host_large_integer)v);
+        if (!probe_contract_label_facet(
+                 &contract_label_compute_cache,
+                 CONTRACT_LABEL_COMBINED ".compute_semantic("
+                 "::std::contracts::evaluation_semantic(__edg_opnd__(1)));",
+                 &label_opnd, &sem_opnd, (an_operand *)NULL, &csp->position,
+                 value, &not_constant)) {
+          break;
+        }  /* if */
+        *p_computed = (a_byte)(not_constant
+                                 ? 0xFF : contract_label_facet_value(value));
+        if (*p_computed == 0) *p_computed = 0xFE;
+      }  /* for */
+    }  /* if */
     /* The group names (P3400). */
     resolve_contract_label_groups(csp, label_con);
   }  /* if */
@@ -42902,6 +42923,10 @@ issued once for each assertion.
   unsigned  allowed;
   int       v, computed;
 
+  if (contracts_p4298_enabled) {
+    /* With the noexcept semantics (P4298). */
+    return apply_contract_label_facets_p4298(csp, semantic, in_ce);
+  }  /* if */
   if (csp->label_allowed_semantics != 0) {
     supported &= csp->label_allowed_semantics;
   }  /* if */
@@ -55909,6 +55934,202 @@ expression.
   restore_expr_stack(saved_expr_stack);
   return result_node;
 }  /* scan_concept_expression */
+
+
+/*
+The evaluation semantics with P4298 (the noexcept semantics), in the facets
+of assertion-control objects (P3400; see apply_contract_label_facets).  A
+semantic is identified by its std::contracts::evaluation_semantic value: 1
+ignore, 2 observe, 3 enforce, 4 quick_enforce, 6 noexcept_observe, 7
+noexcept_enforce (5, assume, is P3100's and never allowed).
+*/
+
+static int contract_semantic_value(a_contract_evaluation_semantic  semantic)
+/*
+Return the std::contracts::evaluation_semantic value of semantic.
+*/
+{
+  switch (semantic) {
+    case ces_ignore:           return 1;
+    case ces_observe:          return 2;
+    case ces_enforce:          return 3;
+    case ces_quick_enforce:    return 4;
+    case ces_noexcept_observe: return 6;
+    case ces_noexcept_enforce: return 7;
+    default:
+      unexpected_condition();
+      return 3;
+  }  /* switch */
+}  /* contract_semantic_value */
+
+
+static a_contract_evaluation_semantic contract_semantic_of_value(int  v)
+/*
+Return the evaluation semantic whose std::contracts::evaluation_semantic
+value is v (one of contract_semantic_value's).
+*/
+{
+  switch (v) {
+    case 1: return ces_ignore;
+    case 2: return ces_observe;
+    case 3: return ces_enforce;
+    case 4: return ces_quick_enforce;
+    case 6: return ces_noexcept_observe;
+    case 7: return ces_noexcept_enforce;
+    default:
+      unexpected_condition();
+      return ces_enforce;
+  }  /* switch */
+}  /* contract_semantic_of_value */
+
+
+static int contract_semantic_level(int  v)
+/*
+Return the level of the semantic of std::contracts::evaluation_semantic
+value v, as our GCC orders them (contract_semantic_level): 1 ignore, 2
+observe and noexcept_observe, 3 enforce and noexcept_enforce, 4
+quick_enforce; -1 for a value that is no supported semantic.
+*/
+{
+  switch (v) {
+    case 1:          return 1;
+    case 2: case 6:  return 2;
+    case 3: case 7:  return 3;
+    case 4:          return 4;
+    default:         return -1;
+  }  /* switch */
+}  /* contract_semantic_level */
+
+
+static int label_semantic_at_level(int        level,
+                                   unsigned   allowed,
+                                   a_boolean  prefer_throwing)
+/*
+Return the value of the semantic of the given level in the set allowed (of
+bits 1 << value), the throwing variant first if prefer_throwing is TRUE and
+the noexcept one first otherwise, or 0 if there is none.
+*/
+{
+  int  a = 0, b = 0;
+
+  switch (level) {
+    case 1:
+      a = 1;
+      break;
+    case 2:
+      a = prefer_throwing ? 2 : 6;
+      b = prefer_throwing ? 6 : 2;
+      break;
+    case 3:
+      a = prefer_throwing ? 3 : 7;
+      b = prefer_throwing ? 7 : 3;
+      break;
+    case 4:
+      a = 4;
+      break;
+    default:
+      break;
+  }  /* switch */
+  if (a != 0 && (allowed & (1u << a)) != 0) return a;
+  if (b != 0 && (allowed & (1u << b)) != 0) return b;
+  return 0;
+}  /* label_semantic_at_level */
+
+
+static int noexcept_best_fit_label_semantic(int       v,
+                                            unsigned  allowed)
+/*
+Return the value of the semantic in the set allowed that best fits the one
+of value v, as our GCC chooses it (contract_semantic_best_fit): at v's level,
+then the nearest higher level, then the nearest lower one, preferring at
+each level the variant (throwing or noexcept) of v's kind; 0 if there is
+none.
+*/
+{
+  int        level = contract_semantic_level(v), l, r;
+  a_boolean  prefer_throwing = v == 2 || v == 3;
+
+  if (level < 0) return 0;
+  r = label_semantic_at_level(level, allowed, prefer_throwing);
+  if (r != 0) return r;
+  for (l = level + 1; l <= 4; l++) {
+    r = label_semantic_at_level(l, allowed, prefer_throwing);
+    if (r != 0) return r;
+  }  /* for */
+  for (l = level - 1; l >= 1; l--) {
+    r = label_semantic_at_level(l, allowed, prefer_throwing);
+    if (r != 0) return r;
+  }  /* for */
+  return 0;
+}  /* noexcept_best_fit_label_semantic */
+
+
+a_contract_evaluation_semantic apply_contract_label_facets_p4298(
+                              a_contract_specifier_ptr        csp,
+                              a_contract_evaluation_semantic  semantic,
+                              a_boolean                       in_ce)
+/*
+Return the evaluation semantic of the contract assertion csp given the one
+the configuration gives it, as apply_contract_label_facets does, with the
+noexcept semantics (P4298) among those a label may allow and compute (for a
+check the front end generates for the C-generating back end, still only
+ignore and quick_enforce).
+*/
+{
+  unsigned  supported = (1u << 1) | (1u << 2) | (1u << 3) | (1u << 4) |
+                        (1u << 6) | (1u << 7);
+  unsigned  allowed;
+  int       v, computed;
+
+  if (csp->label_allowed_semantics != 0) {
+    supported &= csp->label_allowed_semantics;
+  }  /* if */
+  allowed = supported;
+#if BACK_END_IS_C_GEN_BE
+  if (!in_ce) {
+    allowed &= (1u << 1) | (1u << 4);
+  }  /* if */
+#endif /* BACK_END_IS_C_GEN_BE */
+  v = noexcept_best_fit_label_semantic(contract_semantic_value(semantic),
+                                       allowed);
+  if (v == 0) {
+    if (!csp->label_facet_diagnosed) {
+      csp->label_facet_diagnosed = TRUE;
+      pos_error(ec_contract_no_valid_semantic, &csp->position);
+    }  /* if */
+    /* GCC's fallback. */
+#if BACK_END_IS_C_GEN_BE
+    if (!in_ce) return ces_quick_enforce;
+#endif /* BACK_END_IS_C_GEN_BE */
+    return in_ce ? ces_observe : ces_enforce;
+  }  /* if */
+  computed = v <= 4 ? csp->label_computed_semantics[v]
+                    : csp->label_computed_noexcept_semantics[v - 6];
+  if (computed == 0) {
+    /* No compute_semantic facet. */
+  } else if (computed == 0xFF) {
+    if (!csp->label_facet_diagnosed) {
+      csp->label_facet_diagnosed = TRUE;
+      pos_ty_error(ec_contract_label_compute_not_constant, &csp->position,
+                   make_unqualified_type(skip_typerefs(csp->label->type)));
+    }  /* if */
+  } else if (contract_semantic_level(computed) < 0 ||
+             (allowed & (1u << computed)) == 0) {
+    if (!csp->label_facet_diagnosed) {
+      csp->label_facet_diagnosed = TRUE;
+      pos_error(contract_semantic_level(computed) >= 0 &&
+                (supported & (1u << computed)) != 0
+                  /* Allowed, but not by this configuration (see the
+                     --contract_evaluation_semantic option). */
+                  ? ec_contract_computed_semantic_unsupported
+                  : ec_contract_computed_semantic_not_allowed,
+                &csp->position);
+    }  /* if */
+  } else {
+    v = computed;
+  }  /* if */
+  return contract_semantic_of_value(v);
+}  /* apply_contract_label_facets_p4298 */
 
 
 static void rescan_braced_init_list(an_expr_node_ptr       expr,

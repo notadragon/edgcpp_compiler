@@ -1,0 +1,34 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contracts_p4298 --contracts_p3400 --contract_evaluation_semantic=observe -DP4298=1 Test_name.c
+"Test_name.c", line 38: warning: contract predicate is false in constant expression
+  constexpr int a(int x) pre<OnlyNoexceptObserve{}>(x > 0) { return x; }
+                         ^
+
+"Test_name.c", line 39: warning: contract predicate is false in constant expression
+  constexpr int b(int x) pre<ObserveLevel{}>(x > 0) { return x; }
+                         ^
+
+"Test_name.c", line 40: error: contract predicate is false in constant expression
+  constexpr int c(int x) pre<ComputeNoexceptEnforce{}>(x > 0) { return x; }
+                         ^
+
+"Test_name.c", line 41: warning: contract predicate is false in constant expression
+  constexpr int d(int x) pre<ComputeNoexceptObserve{}>(x > 0) { return x; }
+                         ^
+
+"Test_name.c", line 42: warning: variable "va" was declared but never referenced
+  constexpr int va = a(0);
+                ^
+
+"Test_name.c", line 43: warning: variable "vb" was declared but never referenced
+  constexpr int vb = b(0);
+                ^
+
+"Test_name.c", line 44: warning: variable "vc" was declared but never referenced
+  constexpr int vc = c(0);
+                ^
+
+"Test_name.c", line 45: warning: variable "vd" was declared but never referenced
+  constexpr int vd = d(0);
+                ^
+
+1 error detected in the compilation of "Test_name.c".

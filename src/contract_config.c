@@ -671,6 +671,11 @@ not enabled (contract_semantic_best_fit): ignore for assume (without
 {
   a_contract_evaluation_semantic  result;
 
+  if (contracts_p4298_enabled) {
+    /* The noexcept semantics are supported (P4298). */
+    if (semantic == cs_noexcept_observe) return ces_noexcept_observe;
+    if (semantic == cs_noexcept_enforce) return ces_noexcept_enforce;
+  }  /* if */
   switch (semantic) {
     case cs_ignore:
     case cs_assume:
@@ -713,6 +718,10 @@ evaluation, on the callee side (no caller-side checks are generated).
       p_warned = &warned_noexcept_enforce;
     } else if (entry->semantic == cs_noexcept_observe) {
       p_warned = &warned_noexcept_observe;
+    }  /* if */
+    if (contracts_p4298_enabled) {
+      /* Supported (P4298). */
+      p_warned = NULL;
     }  /* if */
     if (p_warned != NULL && !*p_warned) {
       *p_warned = TRUE;
@@ -1257,6 +1266,12 @@ processed.
   entry->has_semantic = TRUE;
   /* The first four semantics are in the same order in both types. */
   entry->semantic = (a_config_semantic)contract_evaluation_semantic;
+  if (contract_evaluation_semantic == ces_noexcept_observe) {
+    /* The P4298 semantics are not (see a_config_semantic). */
+    entry->semantic = cs_noexcept_observe;
+  } else if (contract_evaluation_semantic == ces_noexcept_enforce) {
+    entry->semantic = cs_noexcept_enforce;
+  }  /* if */
   append_config_entry(entry);
 }  /* init_contract_config */
 
@@ -1464,6 +1479,16 @@ of a label (P3400) adjust it (see apply_contract_label_facets).
       (csp->label_allowed_semantics != 0 ||
        csp->label_computed_semantics[1] != 0)) {
     semantic = apply_contract_label_facets(csp, semantic, in_ce);
+  }  /* if */
+  if (in_ce) {
+    /* No exception leaves a violation handler in constant evaluation, so
+       the noexcept semantics (P4298) are enforce and observe there, as in
+       GCC. */
+    if (semantic == ces_noexcept_enforce) {
+      semantic = ces_enforce;
+    } else if (semantic == ces_noexcept_observe) {
+      semantic = ces_observe;
+    }  /* if */
   }  /* if */
   return semantic;
 }  /* contract_semantic_for */

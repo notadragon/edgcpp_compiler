@@ -3753,6 +3753,8 @@ ec_contract_label_comment_not_constant;;"the compute_comment facet of assertion-
 ec_contract_requires_needs_option;;"requires clause on contract assertions requires --contracts_p4283"
 ec_contract_requires_not_templated;;"requires clause on contract assertion only allowed on templated functions"
 ec_contract_redecl_requires_mismatch;;"mismatched requires clause on contract assertion in declaration (previous contract specifier declared %p)"
+ec_cl_noexcept_observe_needs_p4298;;"--contract_evaluation_semantic=noexcept_observe requires --contracts_p4298; observe is used instead"
+ec_cl_noexcept_enforce_needs_p4298;;"--contract_evaluation_semantic=noexcept_enforce requires --contracts_p4298; enforce is used instead"
 ec_contract_result_name_shadows_init_capture;;"the result name of a postcondition cannot have the same name as an init-capture of the lambda"
  ###############################################################################
 

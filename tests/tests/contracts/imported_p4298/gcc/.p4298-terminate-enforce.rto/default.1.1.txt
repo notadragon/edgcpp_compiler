@@ -1,0 +1,5 @@
+eccp -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p4298 --contract_evaluation_semantic=noexcept_enforce Test_name.c
+"Test_name.c", line 15: warning: variable "terminate_called" was set but never used
+  static bool terminate_called = false;
+              ^
+

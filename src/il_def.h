@@ -12377,6 +12377,10 @@ typedef struct a_contract_specifier {
 			   for v (0xFE if outside 1-254, 0xFF if not a
 			   constant expression); all are 0 if the label has
 			   no such facet.  Element 0 is unused. */
+  a_byte	label_computed_noexcept_semantics[2];
+			/* Likewise for the values 6 (noexcept_observe) and 7
+			   (noexcept_enforce), with P4298; all are 0 without
+			   it. */
   a_const_char	*label_message;
 			/* When has_label_message is TRUE, the message the
 			   label's compute_message facet (P3400) computes, for

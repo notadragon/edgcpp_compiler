@@ -398,6 +398,7 @@ enum an_option_kind {
   optk_contracts_p3290,
   optk_contracts_p3400,
   optk_contracts_p4283,
+  optk_contracts_p4298,
   optk_last		/* Must be last. */
 };
 
@@ -2984,6 +2985,10 @@ enum a_contract_evaluation_semantic {
 			   the program is terminated if it returns. */
   ces_quick_enforce,	/* A violation terminates the program without
 			   calling the violation handler. */
+  ces_noexcept_observe,	/* P4298: as ces_observe, but the program is
+			   terminated if the violation handler exits with an
+			   exception. */
+  ces_noexcept_enforce,	/* P4298: as ces_enforce, likewise. */
 };
 
 EXTERN_THREAD a_contract_evaluation_semantic
@@ -3030,6 +3035,13 @@ EXTERN_THREAD a_boolean
 			   templated function can have a requires-clause,
 			   and is discarded from an instance whose
 			   constraints it does not satisfy. */
+
+EXTERN_THREAD a_boolean
+		contracts_p4298_enabled;
+			/* TRUE if P4298 (nonthrowing evaluation semantics)
+			   is enabled: the noexcept_observe and
+			   noexcept_enforce evaluation semantics can be
+			   chosen. */
 
 EXTERN_THREAD a_boolean
 		contracts_p3290_enabled;
