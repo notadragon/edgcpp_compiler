@@ -1,0 +1,5 @@
+eccp -DTEST_NUMBER=1 --c++26 --c++26 --contracts_p3290 Test_name.c
+"Test_name.c", line 19: warning: variable "handler_called" was set but never used
+  static bool handler_called = false;
+              ^
+

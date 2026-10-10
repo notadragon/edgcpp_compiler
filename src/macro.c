@@ -12513,6 +12513,16 @@ command line -D options.
   }  /* if */
   /* In GNU C/C++ mode, enter the macros that GNU compilers define. */
   if (gnu_mode) init_gnu_predefined_macros();
+  if (contracts_enabled && contracts_p3290_enabled &&
+      (gnu_mode || clang_mode)) {
+    /* P3290 (integrating existing assertions): the vendor macro of the
+       compiler emulated, which its standard library tests. */
+    (void)enter_predef_macro("202609L",
+                             clang_mode ? "__clang_contracts_p3290"
+                                        : "__gcc_contracts_p3290",
+                             /*cannot_be_redefined=*/TRUE,
+                             /*ref_suppresses_pch_file=*/FALSE);
+  }  /* if */
   if (building_runtime) {
     /* Define macros used to pass configuration information to the
        runtime library. */

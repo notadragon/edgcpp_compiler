@@ -536,6 +536,52 @@ imported_p3097/gcc/pr124486-accepted.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contra
 imported_p3097/gcc/pure-virtual-dependent-predicate-codegen.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3097:REQUIREMENTS NOT MET:imported from gcc:pure-virtual-dependent-predicate-codegen.C
 imported_p3097/gcc/pure-virtual-interface-contract-run.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3097 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:imported from gcc:pure-virtual-interface-contract-run.C
 imported_p3097/gcc/virtual-wrapper-nodiscard.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3097:REQUIREMENTS NOT MET:imported from gcc:virtual-wrapper-nodiscard.C
+imported_p3290/clang/Runnable/p3290-api-location.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3290:REQUIREMENTS NOT MET:imported from clang:Runnable/p3290-api-location.cpp
+imported_p3290/clang/Runnable/p3290-api-nothrow.sft.cpp:ra:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3290:REQUIREMENTS NOT MET:imported from clang:Runnable/p3290-api-nothrow.cpp
+imported_p3290/clang/Runnable/p3290-api-nullptr.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3290:REQUIREMENTS NOT MET:imported from clang:Runnable/p3290-api-nullptr.cpp
+imported_p3290/clang/Runnable/p3290-api-quick.sft.cpp:ra:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3290:REQUIREMENTS NOT MET:imported from clang:Runnable/p3290-api-quick.cpp
+imported_p3290/clang/Runnable/p3290-api-throw-propagates.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3290:REQUIREMENTS NOT MET:imported from clang:Runnable/p3290-api-throw-propagates.cpp
+imported_p3290/clang/Runnable/p3290-api.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3290:REQUIREMENTS NOT MET:imported from clang:Runnable/p3290-api.cpp
+imported_p3290/clang/Runnable/p3290-assert-h.sft.cpp:ra:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3290 -D__STDC_WANT_ASSERT_USES_CONTRACTS__:REQUIREMENTS NOT MET:imported from clang:Runnable/p3290-assert-h.cpp
+imported_p3290/clang/Runnable/p3290-assert-ndebug.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3290 -DNDEBUG -D__STDC_WANT_ASSERT_USES_CONTRACTS__:REQUIREMENTS NOT MET:imported from clang:Runnable/p3290-assert-ndebug.cpp
+imported_p3290/clang/Runnable/p3290-assert-redefine.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3290 -D__STDC_WANT_ASSERT_USES_CONTRACTS__:REQUIREMENTS NOT MET:imported from clang:Runnable/p3290-assert-redefine.cpp
+imported_p3290/clang/Runnable/p3290-assert-throw.sft.cpp:ra:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3290 -D__STDC_WANT_ASSERT_USES_CONTRACTS__:REQUIREMENTS NOT MET:imported from clang:Runnable/p3290-assert-throw.cpp
+imported_p3290/clang/Runnable/p3290-assert.sft.cpp:ra:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3290 -D__STDC_WANT_ASSERT_USES_CONTRACTS__:REQUIREMENTS NOT MET:imported from clang:Runnable/p3290-assert.cpp
+imported_p3290/clang/Runnable/p3290-template.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3290:REQUIREMENTS NOT MET:imported from clang:Runnable/p3290-template.cpp
+imported_p3290/clang/cassert-comma-expression.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3290:REQUIREMENTS NOT MET:imported from clang:cassert-comma-expression.cpp
+imported_p3290/clang/cassert-integration-cxx20.sft.cpp:fp:-DTEST_NUMBER=1 --c++20 --contracts_p3290:REQUIREMENTS NOT MET:imported from clang:cassert-integration-cxx20.cpp
+imported_p3290/clang/p3290-assert-ftm-assert-h.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3290:REQUIREMENTS NOT MET:imported from clang:p3290-assert-ftm-assert-h.cpp
+imported_p3290/clang/p3290-assert-ftm-version.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3290:REQUIREMENTS NOT MET:imported from clang:p3290-assert-ftm-version.cpp
+imported_p3290/clang/p3290-assert-ftm.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3290:REQUIREMENTS NOT MET:imported from clang:p3290-assert-ftm.cpp
+imported_p3290/clang/p3290-assert-ftm.sft.cpp:fp:-DTEST_NUMBER=2 --c++26 --contracts --contracts_p3290 -DHDR_VERSION:REQUIREMENTS NOT MET:imported from clang:p3290-assert-ftm.cpp
+imported_p3290/clang/p3290-assert-ftm.sft.cpp:fp:-DTEST_NUMBER=3 --c++26 --contracts --contracts_p3290 -DHDR_ASSERT_H:REQUIREMENTS NOT MET:imported from clang:p3290-assert-ftm.cpp
+imported_p3290/clang/p3290-assert-ftm.sft.cpp:fp:-DTEST_NUMBER=4 --c++26 --contracts --contracts_p3290 -DHDR_BOTH_12 -D__STDC_WANT_ASSERT_USES_CONTRACTS__:REQUIREMENTS NOT MET:imported from clang:p3290-assert-ftm.cpp
+imported_p3290/clang/p3290-assert-ftm.sft.cpp:fp:-DTEST_NUMBER=5 --c++26 --contracts --contracts_p3290 -DHDR_BOTH_21 -D__STDC_WANT_ASSERT_USES_CONTRACTS__:REQUIREMENTS NOT MET:imported from clang:p3290-assert-ftm.cpp
+imported_p3290/gcc/cassert-integration-cxx20.sft.cpp:rp:-DTEST_NUMBER=1 --c++20 --contracts_p3290:REQUIREMENTS NOT MET:imported from gcc:cassert-integration-cxx20.C
+imported_p3290/gcc/default-handler-manual-mode.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3290:REQUIREMENTS NOT MET:imported from gcc:default-handler-manual-mode.C
+imported_p3290/gcc/p3290-api-constexpr.sft.cpp:fn:-DTEST_NUMBER=1 --c++26 --contracts --contracts_p3290:REQUIREMENTS NOT MET:imported from gcc:p3290-api-constexpr.C
+imported_p3290/gcc/p3290-api-decl.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts_p3290:REQUIREMENTS NOT MET:imported from gcc:p3290-api-decl.C
+imported_p3290/gcc/p3290-api-enforce.sft.cpp:ra:-DTEST_NUMBER=1 --c++26 --contracts_p3290:REQUIREMENTS NOT MET:imported from gcc:p3290-api-enforce.C
+imported_p3290/gcc/p3290-api-ftm.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts_p3290:REQUIREMENTS NOT MET:imported from gcc:p3290-api-ftm.C
+imported_p3290/gcc/p3290-api-location.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts_p3290:REQUIREMENTS NOT MET:imported from gcc:p3290-api-location.C
+imported_p3290/gcc/p3290-api-nothrow-enforce.sft.cpp:ra:-DTEST_NUMBER=1 --c++26 --contracts_p3290:REQUIREMENTS NOT MET:imported from gcc:p3290-api-nothrow-enforce.C
+imported_p3290/gcc/p3290-api-nothrow-observe.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts_p3290:REQUIREMENTS NOT MET:imported from gcc:p3290-api-nothrow-observe.C
+imported_p3290/gcc/p3290-api-nothrow.sft.cpp:ra:-DTEST_NUMBER=1 --c++26 --contracts_p3290:REQUIREMENTS NOT MET:imported from gcc:p3290-api-nothrow.C
+imported_p3290/gcc/p3290-api-nullptr.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts_p3290:REQUIREMENTS NOT MET:imported from gcc:p3290-api-nullptr.C
+imported_p3290/gcc/p3290-api-observe.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts_p3290:REQUIREMENTS NOT MET:imported from gcc:p3290-api-observe.C
+imported_p3290/gcc/p3290-api-quick.sft.cpp:ra:-DTEST_NUMBER=1 --c++26 --contracts_p3290:REQUIREMENTS NOT MET:imported from gcc:p3290-api-quick.C
+imported_p3290/gcc/p3290-api-throw-propagates.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts_p3290:REQUIREMENTS NOT MET:imported from gcc:p3290-api-throw-propagates.C
+imported_p3290/gcc/p3290-assert-abort.sft.cpp:ra:-DTEST_NUMBER=1 --c++26 --contracts_p3290 -D__STDC_WANT_ASSERT_USES_CONTRACTS__:REQUIREMENTS NOT MET:imported from gcc:p3290-assert-abort.C
+imported_p3290/gcc/p3290-assert-basic.sft.cpp:ra:-DTEST_NUMBER=1 --c++26 --contracts_p3290 -D__STDC_WANT_ASSERT_USES_CONTRACTS__:REQUIREMENTS NOT MET:imported from gcc:p3290-assert-basic.C
+imported_p3290/gcc/p3290-assert-default.sft.cpp:ra:-DTEST_NUMBER=1 --c++26 --contracts_p3290:REQUIREMENTS NOT MET:imported from gcc:p3290-assert-default.C
+imported_p3290/gcc/p3290-assert-ftm-assert-h.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts_p3290:REQUIREMENTS NOT MET:imported from gcc:p3290-assert-ftm-assert-h.C
+imported_p3290/gcc/p3290-assert-ftm-version.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts_p3290:REQUIREMENTS NOT MET:imported from gcc:p3290-assert-ftm-version.C
+imported_p3290/gcc/p3290-assert-ftm.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts_p3290:REQUIREMENTS NOT MET:imported from gcc:p3290-assert-ftm.C
+imported_p3290/gcc/p3290-assert-h.sft.cpp:ra:-DTEST_NUMBER=1 --c++26 --contracts_p3290 -D__STDC_WANT_ASSERT_USES_CONTRACTS__:REQUIREMENTS NOT MET:imported from gcc:p3290-assert-h.C
+imported_p3290/gcc/p3290-assert-ndebug.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts_p3290 -DNDEBUG -D__STDC_WANT_ASSERT_USES_CONTRACTS__:REQUIREMENTS NOT MET:imported from gcc:p3290-assert-ndebug.C
+imported_p3290/gcc/p3290-assert-redefine.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts_p3290 -D__STDC_WANT_ASSERT_USES_CONTRACTS__:REQUIREMENTS NOT MET:imported from gcc:p3290-assert-redefine.C
+imported_p3290/gcc/p3290-assert-throw.sft.cpp:ra:-DTEST_NUMBER=1 --c++26 --contracts_p3290 -D__STDC_WANT_ASSERT_USES_CONTRACTS__:REQUIREMENTS NOT MET:imported from gcc:p3290-assert-throw.C
+imported_p3290/gcc/p3290-template.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts_p3290:REQUIREMENTS NOT MET:imported from gcc:p3290-template.C
 imported_p3595/clang/constexpr-config-parse/test.mft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_configuration_file=constexpr-config-parse.json:REQUIREMENTS NOT MET:imported from clang:constexpr-config-parse.cpp
 imported_p3595/clang/dyn-enforced-shared-block-eh/test.mft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_configuration_file=dyn-enforced-shared-block-eh.json:REQUIREMENTS NOT MET:imported from clang:dyn-enforced-shared-block-eh.cpp
 imported_p3595/clang/dynamic-selection-late-include/test.mft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts --contract_configuration_file=dynamic-selection-late-include.json:REQUIREMENTS NOT MET:imported from clang:dynamic-selection-late-include.cpp
@@ -592,6 +638,13 @@ imported_p3850/gcc/contract-friend-deferred-mismatch.sft.cpp:fn:-DTEST_NUMBER=1 
 imported_p3850/gcc/contract-reentrancy-p3850.sft.cpp:fp:-DTEST_NUMBER=1 --c++26 --contracts_p3850:REQUIREMENTS NOT MET:imported from gcc:contract-reentrancy-p3850.C
 imported_p3850/gcc/postcondition-throw-escapes-try.sft.cpp:rp:-DTEST_NUMBER=1 --c++26 --contracts_p3850 --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:postcondition-throw-escapes-try.C
 imported_p3850/gcc/postcondition-throw-noexcept-terminate.sft.cpp:ra:-DTEST_NUMBER=1 --c++26 --contracts_p3850 --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:imported from gcc:postcondition-throw-noexcept-terminate.C
+p3290/assert.sft.cpp:rn:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: with P3290, assert from <cassert> reports a violation to the contract violation handler, then aborts
+p3290/macro.sft.cpp:fp:-DTEST_NUMBER=1 --c++23 --contracts_p3850:REQUIREMENTS NOT MET:contracts: with contracts, --contracts_p3290 (or --contracts_p3850, unless --[no_]contracts_p3290 is given) predefines our GCC's P3290 macro, and enables contracts
+p3290/macro.sft.cpp:fp:-DTEST_NUMBER=2 --contracts_p3850 --no_contracts_p3290:REQUIREMENTS NOT MET:contracts: with contracts, --contracts_p3290 (or --contracts_p3850, unless --[no_]contracts_p3290 is given) predefines our GCC's P3290 macro, and enables contracts
+p3290/macro.sft.cpp:fp:-DTEST_NUMBER=3 --c++23 --contracts_p3290:REQUIREMENTS NOT MET:contracts: with contracts, --contracts_p3290 (or --contracts_p3850, unless --[no_]contracts_p3290 is given) predefines our GCC's P3290 macro, and enables contracts
+p3290/macro.sft.cpp:fp:-DTEST_NUMBER=4 --c++23 --contracts_p3290 --no_contracts:REQUIREMENTS NOT MET:contracts: with contracts, --contracts_p3290 (or --contracts_p3850, unless --[no_]contracts_p3290 is given) predefines our GCC's P3290 macro, and enables contracts
+p3290/macro.sft.cpp:fp:-DTEST_NUMBER=5 --c++26 --contracts_p3290 --no_contracts_p3850:REQUIREMENTS NOT MET:contracts: with contracts, --contracts_p3290 (or --contracts_p3850, unless --[no_]contracts_p3290 is given) predefines our GCC's P3290 macro, and enables contracts
+p3290/macro.sft.cpp:fp:-DTEST_NUMBER=6 --c++26:REQUIREMENTS NOT MET:contracts: with contracts, --contracts_p3290 (or --contracts_p3850, unless --[no_]contracts_p3290 is given) predefines our GCC's P3290 macro, and enables contracts
 p3850/implies.sft.cpp:fp:-DTEST_NUMBER=1 --c++23 --contracts_p3850:REQUIREMENTS NOT MET:contracts: --contracts_p3850 enables contracts, unless --[no_]contracts is given
 p3850/implies.sft.cpp:fp:-DTEST_NUMBER=2 --c++23 --contracts_p3850 --no_contracts:REQUIREMENTS NOT MET:contracts: --contracts_p3850 enables contracts, unless --[no_]contracts is given
 p3850/implies.sft.cpp:fp:-DTEST_NUMBER=3 --c++23 --contracts_p3850 --no_contracts_p3850:REQUIREMENTS NOT MET:contracts: --contracts_p3850 enables contracts, unless --[no_]contracts is given
