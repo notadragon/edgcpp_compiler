@@ -2288,6 +2288,19 @@ typedef int an_expr_copy_options_set;
 			   member initializer expression, i.e., making a
 			   constructor-specific use of the scanned
 			   expression. */
+#define CE_COPYING_DEAD_DEFAULT_ARG_EXPR 0x100000
+			/* TRUE if this copy operation is copying a default
+			   argument expression for a call that is potentially
+			   evaluated but not evaluated (e.g., one in the
+			   unselected operand of a conditional operator whose
+			   condition is a constant).  Such a copy is made with
+			   CE_COPY_NOT_EVALUATED instead of
+			   CE_COPYING_EVALUATED_DEFAULT_ARG_EXPR, so no
+			   destructions or instantiations are recorded for it,
+			   but it is still a real use of the default argument:
+			   An immediate invocation in it must still be
+			   evaluated, so deferred source location builtins in
+			   it are folded for the call site. */
 #define CE_CONST_EVAL_SUB_EXPRESSION 0x40000
 			/* TRUE if this copy operation is copying an operand of
 			   an expression in an immediate evaluation context. */
