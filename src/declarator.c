@@ -8699,6 +8699,303 @@ past_postfix_declarator_operators:
 }  /* r_declarator */
 
 
+static void cache_postcondition_capture_list(a_contract_specifier_ptr  csp,
+                                             a_boolean                 skip)
+/*
+The current token is the "[" that begins the capture list of the
+postcondition csp (P3098).  Cache its tokens (between the brackets) in
+csp->capture_token_cache, from which the captures are scanned with the
+operand (see scan_postcondition_captures), or if skip is TRUE, skip them.
+*/
+{
+  a_token_set_array  stop_tokens;
+
+  (void)get_token();
+  clear_token_set_array(stop_tokens);
+  incr_token_set_array_element(stop_tokens, tok_rbracket);
+  incr_token_set_array_element(stop_tokens, tok_semicolon);
+  if (skip) {
+    cache_token_stream((a_token_cache *)NULL, stop_tokens);
+  } else {
+    csp->capture_token_cache = new_fe<a_token_cache>(/*reusable=*/TRUE);
+    cache_token_stream(csp->capture_token_cache, stop_tokens);
+    terminate_token_cache(csp->capture_token_cache);
+  }  /* if */
+  (void)required_token(tok_rbracket, ec_exp_rbracket);
+}  /* cache_postcondition_capture_list */
+
+
+static void skip_postcondition_capture(void)
+/*
+Skip the rest of a postcondition capture in error, up to the comma that ends
+it or the end of the capture list.
+*/
+{
+  while (curr_token != tok_comma && curr_token != tok_end_of_source) {
+    (void)get_token();
+  }  /* while */
+}  /* skip_postcondition_capture */
+
+
+/*
+A postcondition capture as it is scanned (see scan_postcondition_captures):
+its initializers are all scanned before any capture is declared.
+*/
+typedef struct a_scanned_post_capture *a_scanned_post_capture_ptr;
+typedef struct a_scanned_post_capture {
+  a_scanned_post_capture_ptr
+		next;
+  a_symbol_locator
+		locator;
+			/* The capture's identifier. */
+  a_source_position
+		position;
+  a_type_ptr	type;	/* The deduced type of the capture. */
+  an_expr_node_ptr
+		initializer;
+			/* Converted to type. */
+  a_boolean	is_pack;
+			/* TRUE for a pack, in a template. */
+  a_boolean	is_pack_element;
+			/* TRUE for an element of a pack, in an instance. */
+} a_scanned_post_capture;
+
+
+static a_scanned_post_capture_ptr scan_postcondition_capture(
+                                      a_scanned_post_capture_ptr  first,
+                                      a_source_position           *pos,
+                                      a_boolean                   check_dup)
+/*
+Scan a postcondition capture at pos whose identifier is the current token:
+"name = initializer", or "name" for a parameter of that name (see
+scan_postcondition_captures).  first is the list of the captures already
+scanned, which the capture must not duplicate if check_dup is TRUE (FALSE
+for a non-initial element of a pack).  Return the scanned capture, or NULL
+after an error.
+*/
+{
+  a_scanned_post_capture_ptr  spc, dup;
+
+  spc = (a_scanned_post_capture_ptr)alloc_fe(sizeof(a_scanned_post_capture));
+  spc->next = NULL;
+  spc->locator = locator_for_curr_id;
+  spc->position = *pos;
+  spc->is_pack = FALSE;
+  spc->is_pack_element = FALSE;
+  for (dup = check_dup ? first : NULL; dup != NULL; dup = dup->next) {
+    if (dup->locator.symbol_header == spc->locator.symbol_header) {
+      pos_st_error(ec_post_capture_duplicate, pos,
+                   spc->locator.symbol_header->identifier);
+      break;
+    }  /* if */
+  }  /* for */
+  if (next_token() == tok_assign) {
+    (void)get_token();
+    (void)get_token();
+  } else {
+    /* A simple capture names a parameter. */
+    a_symbol_ptr  sym;
+    for (sym = assoc_pointers_block_of(&scope_stack_top())->symbols;
+         sym != NULL; sym = sym->next_in_scope) {
+      if (sym->header == spc->locator.symbol_header &&
+          sym->kind == (a_symbol_kind)sk_parameter) {
+        break;
+      }  /* if */
+    }  /* for */
+    if (sym == NULL) {
+      pos_error(ec_post_capture_not_parameter, pos);
+      skip_postcondition_capture();
+      return NULL;
+    }  /* if */
+  }  /* if */
+  if (dup == NULL) {
+    spc->initializer = scan_postcondition_capture_initializer(&spc->type);
+    return spc;
+  }  /* if */
+  if (curr_token != tok_comma && curr_token != tok_ellipsis &&
+      curr_token != tok_end_of_source) {
+    a_type_ptr  type;
+    (void)scan_postcondition_capture_initializer(&type);
+  }  /* if */
+  return NULL;
+}  /* scan_postcondition_capture */
+
+
+static a_symbol_ptr scan_postcondition_captures(
+                                            a_contract_specifier_ptr  csp,
+                                            a_token_cache             *cache)
+/*
+Scan the capture list of the postcondition csp (P3098) from cache, which
+holds its tokens, in the reactivated function parameter scope, and declare
+the captures in it (see a_contract_specifier::captures).  A capture is
+"name = initializer", or "name" for a parameter of that name (as
+"name = name"); either can be a pack ("...name = initializer", "name..."),
+which in an instance is a capture per element.  All the initializers are
+scanned before any capture is declared, so an initializer sees the
+parameters, not an earlier capture; the captures then hide the parameters in
+the predicate.  Return the symbol of the first capture declared, or NULL.
+*/
+{
+  a_scanned_post_capture_ptr  first = NULL, *p_next = &first, spc,
+                              prev_spc = NULL;
+  a_symbol_ptr                first_sym = NULL;
+  a_variable_ptr              *p_next_var = &csp->captures;
+
+  rescan_reusable_cache(a_reusable_token_cache(cache));
+  while (curr_token != tok_end_of_source) {
+    a_pack_expansion_stack_entry_ptr  pesep;
+    a_boolean                         any_more, check_dup = TRUE;
+    /* A capture may be a pack, "...name = initializer" or "name..." (a
+       function parameter pack), a pack expansion whose elements are the
+       captures of an instance (as for a lambda's init-capture; see
+       scan_lambda_capture_list). */
+    any_more = begin_potential_pack_expansion_context(&pesep);
+    if (!any_more) {
+      /* A pack with no elements, skipped up to the token that follows it;
+         at the end of the list, only up to its last token (the end of the
+         cache has that token's sequence number). */
+      skip_postcondition_capture();
+    }  /* if */
+    while (any_more) {
+      a_source_position           pos = pos_curr_token;
+      a_boolean                   is_init_pack = curr_token == tok_ellipsis;
+      a_pack_expansion_descr_ptr  pedp;
+      spc = NULL;
+      if (is_init_pack) {
+        if (!is_variadic_template_context()) {
+          pos_error(ec_expansion_contains_no_packs, &pos);
+        }  /* if */
+        record_pack_expansion_ellipsis();
+        pos = pos_curr_token;
+      }  /* if */
+      if (curr_token == tok_this ||
+          (curr_token == tok_star && next_token() == tok_this)) {
+        pos_error(ec_post_capture_this, &pos);
+        skip_postcondition_capture();
+      } else if (curr_token == tok_assign ||
+                 (curr_token == tok_ampersand &&
+                  (next_token() == tok_comma ||
+                   next_token() == tok_end_of_source))) {
+        pos_error(ec_post_capture_default, &pos);
+        skip_postcondition_capture();
+      } else if (curr_token == tok_ampersand) {
+        pos_error(ec_post_capture_by_reference, &pos);
+        skip_postcondition_capture();
+      } else if (curr_token != tok_identifier ||
+                 (is_init_pack && next_token() != tok_assign)) {
+        pos_error(ec_post_capture_exp_identifier, &pos);
+        skip_postcondition_capture();
+      } else {
+        spc = scan_postcondition_capture(first, &pos, check_dup);
+      }  /* if */
+      pedp = end_potential_pack_expansion_context(pesep,
+                                                  /*is_declarator=*/
+                                                  is_init_pack);
+      if (!is_init_pack && curr_token == tok_ellipsis) {
+        /* "name..." outside a variadic template. */
+        pos_error(ec_expansion_contains_no_packs, &pos_curr_token);
+        (void)get_token();
+      }  /* if */
+      if (spc != NULL) {
+        if (pedp != NULL) {
+          /* A pack, in a template. */
+          spc->is_pack = TRUE;
+        } else if (pesep != NULL && pesep->instantiation_descr != NULL) {
+          /* An element of a pack, in an instance. */
+          spc->is_pack_element = TRUE;
+        }  /* if */
+        *p_next = spc;
+        p_next = &spc->next;
+      }  /* if */
+      any_more = advance_to_next_pack_element(pesep);
+      check_dup = FALSE;
+    }  /* while */
+    if (curr_token == tok_comma) {
+      (void)get_token();
+    } else if (curr_token != tok_end_of_source) {
+      pos_error(ec_exp_rbracket, &pos_curr_token);
+      while (curr_token != tok_end_of_source) (void)get_token();
+    }  /* if */
+  }  /* while */
+  /* Skip past the tok_end_of_source. */
+  (void)get_token();
+  for (spc = first; spc != NULL; spc = spc->next) {
+    a_memory_region_number  region_to_switch_back_to;
+    a_variable_ptr          vp;
+    a_dynamic_init_ptr      dip;
+    a_symbol_ptr            sym;
+    an_expr_node_ptr        init = spc->initializer;
+    /* The variable belongs to the specifier, which is in file-scope memory
+       (see declare_contract_result_name), as does its initializer. */
+    switch_to_file_scope_region(&region_to_switch_back_to);
+    vp = make_variable(spc->type, (a_storage_class)sc_auto, NO_SCOPE_DEPTH);
+    vp->is_contract_specifier_var = TRUE;
+    if (init != NULL && in_file_scope(csp) && !in_file_scope(init)) {
+      init = copy_expr_tree(init, CE_ALWAYS_COPY_BACKING_EXPRESSIONS);
+    }  /* if */
+    dip = alloc_dynamic_init(dik_expression);
+    dip->variant.expression = init;
+    dip->variable = vp;
+    vp->init_kind = (an_init_kind)initk_dynamic;
+    vp->initializer.dynamic = dip;
+    vp->has_explicit_initializer = TRUE;
+    switch_back_to_original_region(region_to_switch_back_to);
+    vp->is_pack = spc->is_pack;
+    vp->is_pack_element = spc->is_pack_element;
+    sym = make_symbol((a_symbol_kind)sk_variable, &spc->locator);
+    sym->variant.variable.ptr = vp;
+    set_source_corresp(&vp->source_corresp, sym);
+    if (spc->is_pack_element) {
+      sym->is_pack_element = TRUE;
+      if (prev_spc != NULL && prev_spc->is_pack_element &&
+          prev_spc->locator.symbol_header == spc->locator.symbol_header) {
+        /* A non-initial element of a pack is not in the symbol table: the
+           expansions of the pack find it from the initial element's symbol
+           (see find_post_capture_for_pack in scope_stk.c). */
+        sym = NULL;
+      }  /* if */
+    }  /* if */
+    if (sym != NULL) {
+      /* A capture hides the parameter of the same name. */
+      add_symbol_to_symbol_table(sym, depth_scope_stack,
+                                 /*suppress_error=*/TRUE);
+      if (first_sym == NULL) first_sym = sym;
+    }  /* if */
+    prev_spc = spc;
+    *p_next_var = vp;
+    p_next_var = &vp->next;
+  }  /* for */
+  return first_sym;
+}  /* scan_postcondition_captures */
+
+
+static void unlink_contract_result_name(
+                                     a_symbol_ptr  result_sym,
+                                     a_symbol_ptr  prototype_scope_symbols);
+
+
+static void remove_contract_operand_symbols(
+                                     a_symbol_ptr  first_sym,
+                                     a_symbol_ptr  prototype_scope_symbols)
+/*
+The operand of a function contract specifier has been scanned (see
+scan_contract_specifier_operand), and first_sym is the first symbol it
+declared (a capture or the result name), which, with those that follow it,
+leaves the scope with its predicate: remove them, and unlink them from the
+reactivated prototype-scope symbols prototype_scope_symbols (see
+unlink_contract_result_name).
+*/
+{
+  a_symbol_ptr  sym, next;
+
+  for (sym = first_sym; sym != NULL; sym = next) {
+    next = sym->next_in_scope;
+    remove_symbol(sym);
+  }  /* for */
+  unlink_contract_result_name(first_sym, prototype_scope_symbols);
+}  /* remove_contract_operand_symbols */
+
+
 static void scan_trailing_requires_clause(a_decl_parse_state  *dps,
                                           a_func_info_block   *func_info,
                                           a_symbol_locator    *loc)
@@ -9166,6 +9463,18 @@ a template-dependent context, and scanned in the body of its call operator
     csp->position = pos_curr_token;
     (void)get_token();
     scan_contract_assertion_attributes();
+    if (curr_token == tok_lbracket) {
+      /* A capture list (P3098). */
+      if (csp->kind != ctk_post) {
+        pos_error(ec_post_capture_not_post, &pos_curr_token);
+        cache_postcondition_capture_list(csp, /*skip=*/TRUE);
+      } else if (!contracts_p3098_enabled) {
+        pos_error(ec_post_capture_needs_option, &pos_curr_token);
+        cache_postcondition_capture_list(csp, /*skip=*/TRUE);
+      } else {
+        cache_postcondition_capture_list(csp, skip);
+      }  /* if */
+    }  /* if */
     if (!required_token(tok_lparen, ec_exp_lparen)) break;
     awaits_deduction = FALSE;
     if (!skip && csp->kind == ctk_post && dps->has_deducible_return_type &&
@@ -10112,6 +10421,12 @@ first difference.
     }  /* if */
     if ((prev->result_name == NULL) != (curr->result_name == NULL)) {
       pos2_diagnostic(es_error, ec_contract_redecl_result_name_mismatch,
+                      &curr->position, &prev->position);
+      return;
+    }  /* if */
+    if (!equiv_postcondition_captures(prev->captures, curr->captures)) {
+      /* P3098: the same captures as written, or none on both. */
+      pos2_diagnostic(es_error, ec_contract_redecl_captures_mismatch,
                       &curr->position, &prev->position);
       return;
     }  /* if */

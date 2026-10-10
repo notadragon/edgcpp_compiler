@@ -3727,6 +3727,17 @@ ec_contract_message_not_string_literal;;"a diagnostic message that is not a stri
 ec_contract_message_encoding_prefix;;"a diagnostic message cannot have an encoding prefix"
 ec_contract_redecl_message_mismatch;;"mismatched contract diagnostic message in declaration (previous contract specifier declared %p)"
 ec_contract_predicate_false_in_constexpr_message;;"contract predicate is false in constant expression (%s)"
+ec_post_capture_not_post;;"a capture list is allowed only on a postcondition"
+ec_post_capture_needs_option;;"postcondition captures require --contracts_p3098"
+ec_post_capture_this;;"\"this\" cannot be captured in a postcondition"
+ec_post_capture_default;;"a capture default is not allowed in a postcondition"
+ec_post_capture_by_reference;;"capture by reference is not allowed in a postcondition"
+ec_post_capture_exp_identifier;;"expected an identifier in a postcondition capture"
+ec_post_capture_not_parameter;;"only a function parameter can be captured without an initializer in a postcondition"
+ec_post_capture_duplicate;;"%sq is captured more than once in the postcondition"
+REMOVED;ec_post_capture_unsupported_here;;"postcondition captures are not yet supported in this configuration"
+ec_contract_redecl_captures_mismatch;;"mismatched postcondition captures in declaration (previous contract specifier declared %p)"
+ec_post_capture_implicit_this_in_ctor;;"in a postcondition capture of a constructor, a member must be accessed through an explicit \"this\""
 ec_contract_result_name_shadows_init_capture;;"the result name of a postcondition cannot have the same name as an init-capture of the lambda"
  ###############################################################################
 

@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contracts_p3098 Test_name.c
+"Test_name.c", line 11: error: mismatched postcondition captures in declaration (previous contract specifier declared at line 8)
+  int f(int x) post [y = x + 0] (r: r > y);
+               ^
+
+"Test_name.c", line 13: error: mismatched postcondition captures in declaration (previous contract specifier declared at line 12)
+  int g(int x) post [y = x, z = x] (true);
+               ^
+
+"Test_name.c", line 14: error: mismatched postcondition captures in declaration (previous contract specifier declared at line 12)
+  int g(int x) post [z = x] (true);
+               ^
+
+"Test_name.c", line 17: error: value parameter "x" used in a postcondition must be declared const
+  int h(int x) post [y = x] (x > 0);
+            ^
+
+"Test_name.c", line 17: error: mismatched contract condition in declaration (previous contract specifier declared at line 15)
+  int h(int x) post [y = x] (x > 0);
+               ^
+
+5 errors detected in the compilation of "Test_name.c".

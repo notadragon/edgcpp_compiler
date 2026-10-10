@@ -1,0 +1,46 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3098 --contract_evaluation_semantic=enforce Test_name.c
+"Test_name.c", line 33: error: parameter pack "xs" was referenced but not expanded
+  int p3 (T... xs) post [xs] (true) { return 0; }		// { dg-error "not expanded" }
+                         ^
+
+"Test_name.c", line 35: error: parameter pack "xs" was referenced but not expanded
+  int p4 (T... xs) post [y = xs] (true) { return 0; }		// { dg-error "not expanded" }
+                             ^
+
+"Test_name.c", line 37: error: parameter pack "y" was referenced but not expanded
+  int p5 (T... xs) post [...y = xs] (y > 0) { return 0; }	// { dg-error "not expanded" }
+                                     ^
+
+"Test_name.c", line 43: error: expected an identifier in a postcondition capture
+  int bad (T... xs) post [...xs] (((xs > 0) && ...)) { return 0; }	// { dg-error "no initializer is written .xs\\.\\.\\.., not .\\.\\.\\.xs." }
+                             ^
+
+"Test_name.c", line 43: error: pack expansion does not make use of any argument packs
+  int bad (T... xs) post [...xs] (((xs > 0) && ...)) { return 0; }	// { dg-error "no initializer is written .xs\\.\\.\\.., not .\\.\\.\\.xs." }
+                          ^
+
+"Test_name.c", line 45: error: expected an identifier in a postcondition capture
+  int bad2 (T... xs) post [...xs...] (((xs > 0) && ...)) { return 0; }	// { dg-error "no initializer" }
+                              ^
+
+"Test_name.c", line 45: error: pack expansion does not make use of any argument packs
+  int bad2 (T... xs) post [...xs...] (((xs > 0) && ...)) { return 0; }	// { dg-error "no initializer" }
+                           ^
+
+"Test_name.c", line 49: error: parameter pack "xs" was referenced but not expanded
+  int d3 (T... xs) post [xs] (true);			// { dg-error "not expanded" }
+                         ^
+
+"Test_name.c", line 51: error: parameter pack "y" was referenced but not expanded
+  int d5 (T... xs) post [...y = xs] (y > 0);		// { dg-error "not expanded" }
+                                     ^
+
+"Test_name.c", line 53: error: expected an identifier in a postcondition capture
+  int d6 (T... xs) post [...xs] (((xs > 0) && ...));	// { dg-error "no initializer" }
+                            ^
+
+"Test_name.c", line 53: error: pack expansion does not make use of any argument packs
+  int d6 (T... xs) post [...xs] (((xs > 0) && ...));	// { dg-error "no initializer" }
+                         ^
+
+11 errors detected in the compilation of "Test_name.c".

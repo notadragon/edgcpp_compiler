@@ -8229,6 +8229,80 @@ argument substitutions.
 }  /* equiv_requires_expr_substs */
 
 
+/* The capture variables of the two postconditions whose predicates are being
+   compared (P3098; see equiv_postcondition_predicates), which correspond to
+   each other in order; NULL otherwise. */
+STATIC_THREAD a_variable_ptr  compared_captures_1 = NULL;
+STATIC_THREAD a_variable_ptr  compared_captures_2 = NULL;
+
+
+static a_boolean corresponding_compared_captures(a_variable_ptr  var1,
+                                                 a_variable_ptr  var2)
+/*
+Return TRUE if var1 and var2 are corresponding capture variables of the
+postconditions being compared (see compared_captures_1).
+*/
+{
+  a_variable_ptr  c1 = compared_captures_1, c2 = compared_captures_2;
+
+  for (; c1 != NULL && c2 != NULL; c1 = c1->next, c2 = c2->next) {
+    if (c1 == var1) return c2 == var2;
+  }  /* for */
+  return FALSE;
+}  /* corresponding_compared_captures */
+
+
+a_boolean equiv_postcondition_captures(a_variable_ptr  captures1,
+                                       a_variable_ptr  captures2)
+/*
+Return TRUE if captures1 and captures2, the capture lists (P3098) of
+corresponding postconditions on two declarations of a function, are the same
+as written: as many, with the same names in the same order, and initializers
+that are the same as written (see equiv_contract_predicates).
+*/
+{
+  a_variable_ptr  c1 = captures1, c2 = captures2;
+
+  for (; c1 != NULL && c2 != NULL; c1 = c1->next, c2 = c2->next) {
+    an_expr_node_ptr  init1 = c1->initializer.dynamic->variant.expression;
+    an_expr_node_ptr  init2 = c2->initializer.dynamic->variant.expression;
+    if (!same_name(&c1->source_corresp, &c2->source_corresp) ||
+        init1 == NULL || init2 == NULL ||
+        !equiv_contract_predicates(init1, (a_variable_ptr)NULL,
+                                   init2, (a_variable_ptr)NULL)) {
+      return FALSE;
+    }  /* if */
+  }  /* for */
+  return c1 == NULL && c2 == NULL;
+}  /* equiv_postcondition_captures */
+
+
+a_boolean equiv_postcondition_predicates(an_expr_node_ptr  pred1,
+                                         a_variable_ptr    result_name1,
+                                         a_variable_ptr    captures1,
+                                         an_expr_node_ptr  pred2,
+                                         a_variable_ptr    result_name2,
+                                         a_variable_ptr    captures2)
+/*
+Like equiv_contract_predicates, for the predicates of two postconditions
+whose capture lists (P3098), captures1 and captures2, correspond (see
+equiv_postcondition_captures): corresponding captures are the same.
+*/
+{
+  a_boolean       result;
+  a_variable_ptr  saved_captures_1 = compared_captures_1;
+  a_variable_ptr  saved_captures_2 = compared_captures_2;
+
+  compared_captures_1 = captures1;
+  compared_captures_2 = captures2;
+  result = equiv_contract_predicates(pred1, result_name1, pred2,
+                                     result_name2);
+  compared_captures_1 = saved_captures_1;
+  compared_captures_2 = saved_captures_2;
+  return result;
+}  /* equiv_postcondition_predicates */
+
+
 an_expr_node_ptr unwrap_if_tpck_expression(an_expr_node_ptr  expr)
 /*
 If the given expression is for a constant of ck_template_param/tpck_expression
@@ -23448,6 +23522,35 @@ options is a set of options for the copy.
 }  /* copy_list_of_expr_trees */
 
 
+/*
+The captures of the postcondition whose predicate is being copied, for
+copy_contract_predicate (P3098; see set_contract_copy_captures).
+*/
+STATIC_THREAD a_variable_ptr
+		contract_copy_captures;
+			/* The capture variables of the postcondition whose
+			   predicate is being copied (P3098; see
+			   set_contract_copy_captures), or NULL. */
+STATIC_THREAD a_variable_ptr
+		*contract_copy_capture_vars;
+			/* The variables that replace them, in the same
+			   order. */
+
+
+void set_contract_copy_captures(a_variable_ptr  captures,
+                                a_variable_ptr  *replacements)
+/*
+Make the copies of a predicate that follow (see copy_contract_predicate)
+replace the capture variables captures of its postcondition (P3098; linked
+through their "next" fields) by the variables replacements[0], [1], ...;
+pass NULL captures to stop.
+*/
+{
+  contract_copy_captures = captures;
+  contract_copy_capture_vars = replacements;
+}  /* set_contract_copy_captures */
+
+
 static a_boolean lambda_expr_captures_something(a_lambda_ptr lambda)
 /*
 Return TRUE if the provided lambda expression captures something, FALSE
@@ -24269,6 +24372,29 @@ copied again.
 end_of_routine:;
   return expr_copy;
 }  /* i_copy_expr_tree */
+
+
+a_dynamic_init_ptr copy_contract_capture_init(a_dynamic_init_ptr  dip,
+                                              a_variable_ptr      params,
+                                              a_variable_ptr      param_proxies)
+/*
+Copy dip, the initialization of the temporary in which the initializer of a
+postcondition capture (P3098) makes a class object, into the body of a
+function, as copy_contract_predicate copies a predicate: params and
+param_proxies are the parameter variables of the function definition and the
+specifier's parameter proxies.  The copy, like that of any temporary's
+initialization, is put on a destruction list of the current context.
+*/
+{
+  a_dynamic_init_ptr  copy;
+
+  contract_copy_params = params;
+  contract_copy_param_proxies = param_proxies;
+  copy = copy_dynamic_init(dip, CE_SUBSTITUTE_CONTRACT_NAMES);
+  contract_copy_params = NULL;
+  contract_copy_param_proxies = NULL;
+  return copy;
+}  /* copy_contract_capture_init */
 
 
 an_expr_node_ptr copy_expr_tree(an_expr_node_ptr         expr,

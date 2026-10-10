@@ -25,6 +25,8 @@ config/c_gen_semantics.sft.cpp:fc:-DTEST_NUMBER=2 --contract_configuration=[{"ou
 config/c_gen_semantics.sft.cpp:fc:-DTEST_NUMBER=3 --contract_group_evaluation_semantic=a:observe:REQUIREMENTS NOT MET:contracts: in the C-generating configuration an entry may give only ignore or quick_enforce outside constant evaluation, and no dynamic output
 config/il_display.sft.cpp:fp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: the checks generated for the C-generating back end follow the configuration: the postcondition is ignored, so it gets no check
 constexpr/explicit_specialization_in_class.sft.cpp:fn:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: an explicit specialization declared in a class evaluates its own contract assertions, naming later members, in constant evaluation
+p3098/captures_lambda_cgen.sft.cpp:rn:-DTEST_NUMBER=2 -DBAD=1:REQUIREMENTS NOT MET:contracts: P3098: a lambda in a postcondition's predicate names a capture, with the C-generating back end (EDG-75)
+p3098/captures_lambda_cgen.sft.cpp:rp:-DTEST_NUMBER=1 -DBAD=0:REQUIREMENTS NOT MET:contracts: P3098: a lambda in a postcondition's predicate names a capture, with the C-generating back end (EDG-75)
 parse/il_display.sft.cpp:fp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: contract specifiers and contract_assert in the IL
 parse/semantic_option_c_gen_be.sft.cpp:fc:-DTEST_NUMBER=1 --contract_evaluation_semantic=observe:REQUIREMENTS NOT MET:contracts: the C-generating back end supports only ignore and quick_enforce
 parse/semantic_option_c_gen_be.sft.cpp:fc:-DTEST_NUMBER=2 --contract_evaluation_semantic=enforce:REQUIREMENTS NOT MET:contracts: the C-generating back end supports only ignore and quick_enforce

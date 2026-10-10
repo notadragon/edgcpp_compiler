@@ -1,6 +1,34 @@
 Version 7.0, September 28, 2026
 
 10/3/26  []
+Contracts (P3098): postcondition captures
+
+The new --[no_]contracts_p3098 option (implied by --contracts_p3850, and
+enabling contracts unless --[no_]contracts is given) lets a postcondition
+have a capture list before its operand, and predefines
+__cpp_contracts_postcondition_captures as 202609L:
+
+  void push(int x) post [n = size()] (size() == n + 1);
+  int f(int x) post [x] (r: r > x);    // x: a copy of the parameter
+
+A capture is "name = initializer" or the name of a parameter; its type is
+deduced as for "auto", and it is not const in the predicate.  All the
+initializers see the parameters (not an earlier capture); the captures hide
+the parameters in the predicate.  "this", capture defaults and captures by
+reference are errors, as are capture lists on preconditions and
+contract_assert statements; "...c = e" and "p..." are pack captures.  Two
+declarations of a function must give the same captures, as written.  In
+constant evaluation the captures are initialized with the preconditions,
+in order, and used by the postcondition when the call completes; then the
+captures whose type has a nontrivial destructor are destroyed, in reverse
+order.  Through
+edg_gxx.sh (which passes -f[no-]contracts-p3098 to both the front end and
+g++) g++ checks them at run time.  The checks the front end generates for
+the C-generating back end initialize the captures with the preconditions, in
+order, and destroy them after the postconditions are checked.
+
+
+10/3/26  []
 Contracts (P3099): user-defined diagnostic messages
 
 The new --[no_]contracts_p3099 option (implied by --contracts_p3850, and

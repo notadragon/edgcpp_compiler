@@ -28000,6 +28000,24 @@ of floating point number.
   return result;
 }  /* exponent_bits */
 
+
+static void find_implicit_this_use_in_capture(
+                                   an_expr_node_ptr                    expr,
+                                   an_expr_or_stmt_traversal_block_ptr tblock)
+/*
+Tree-walk routine for check_function_contract_predicate: Diagnose each
+implicit use of "this" (see find_implicit_this_use) in the initializer of a
+postcondition capture of a constructor (P3098).
+*/
+{
+  if (expr->kind == (an_expr_node_kind)enk_param_ref &&
+      expr->variant.param_ref.levels_up == 0 &&
+      expr->variant.param_ref.param_num == 0 && expr->compiler_generated) {
+    pos_error(ec_post_capture_implicit_this_in_ctor, &expr->position);
+  }  /* if */
+  (void)tblock;
+}  /* find_implicit_this_use_in_capture */
+
 #endif /* CHECKING */
 
 void exprutil_init(void)

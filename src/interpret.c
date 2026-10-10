@@ -10049,6 +10049,212 @@ with the given stmk_decl statement is usable as a constant expression.
 }  /* decl_stmt_only_has_known_constant_variables */
 
 
+static a_dynamic_init_ptr elided_capture_temp_init(a_variable_ptr  cap)
+/*
+cap is a postcondition capture (P3098) whose type is a class with a
+nontrivial destructor.  If its initializer makes the object in a temporary
+(by a copy constructor, say), return the temporary's dynamic initialization,
+which initializes the capture itself, the temporary being elided (as in the
+C-generating checks; see make_contract_capture_inits in statements.c), and
+which gives its destructor.  Otherwise, return NULL.
+*/
+{
+  an_expr_node_ptr  init;
+
+  if (cap->init_kind != (an_init_kind)initk_dynamic ||
+      cap->initializer.dynamic == NULL ||
+      !dyn_init_is(cap->initializer.dynamic, dik_expression)) {
+    return NULL;
+  }  /* if */
+  init = cap->initializer.dynamic->variant.expression;
+  if (init != NULL && init->kind == (an_expr_node_kind)enk_object_lifetime) {
+    init = init->variant.object_lifetime.expr;
+  }  /* if */
+  if (init == NULL || init->kind != (an_expr_node_kind)enk_temp_init ||
+      init->variant.init.dynamic_init == NULL ||
+      init->variant.init.dynamic_init->destructor == NULL) {
+    return NULL;
+  }  /* if */
+  return init->variant.init.dynamic_init;
+}  /* elided_capture_temp_init */
+
+
+static a_boolean destroy_postcondition_captures(
+                                         an_interpreter_state      *ips,
+                                         a_contract_specifier_ptr  csp,
+                                         a_variable_ptr            cap,
+                                         a_variable_ptr            end)
+/*
+Destroy the capture variables of the postcondition csp (P3098) from cap up to
+but not including end (NULL for all of them), made by
+init_postcondition_captures, in reverse order: those whose type is a class
+with a nontrivial destructor.  Return FALSE if a destructor's evaluation is
+not a constant expression.
+*/
+{
+  a_boolean           result = TRUE;
+  a_dynamic_init_ptr  tdip;
+
+  if (cap == end) return TRUE;
+  if (!destroy_postcondition_captures(ips, csp, cap->next, end)) {
+    result = FALSE;
+  }  /* if */
+  if (!is_error_type(cap->type) &&
+      type_has_nontrivial_destructor(cap->type) &&
+      (tdip = elided_capture_temp_init(cap)) != NULL) {
+    a_byte  *storage = NULL;
+    get_stack_bytes(ips, cap, storage);
+    if (storage != NULL &&
+        !do_constexpr_dtor(ips, tdip->destructor, &csp->position, storage,
+                           storage, /*nonvirtual=*/TRUE)) {
+      result = FALSE;
+    }  /* if */
+  }  /* if */
+  return result;
+}  /* destroy_postcondition_captures */
+
+
+static a_boolean release_postcondition_captures(
+                                         an_interpreter_state      *ips,
+                                         a_contract_specifier_ptr  csp,
+                                         a_variable_ptr            end)
+/*
+Destroy the capture variables of the postcondition csp (P3098) made by
+init_postcondition_captures, up to but not including end (NULL for all of
+them), and undo their mappings.  Return FALSE if a destructor's evaluation is
+not a constant expression.
+*/
+{
+  a_variable_ptr  cap;
+  a_boolean       result;
+  a_boolean       saved_suspend_diag_list = ips->suspend_diag_list;
+
+  /* The reasons a destructor is not constant are not reported (as for an
+     initializer; see init_postcondition_captures). */
+  ips->suspend_diag_list = TRUE;
+  result = destroy_postcondition_captures(ips, csp, csp->captures, end);
+  ips->suspend_diag_list = saved_suspend_diag_list;
+  for (cap = csp->captures; cap != end; cap = cap->next) {
+    do_constexpr_unmap_variable(ips, cap);
+  }  /* for */
+  return result;
+}  /* release_postcondition_captures */
+
+
+static a_boolean init_elided_capture(an_interpreter_state  *ips,
+                                     a_variable_ptr        cap,
+                                     a_dynamic_init_ptr    tdip,
+                                     a_byte                *storage,
+                                     a_source_position     *pos)
+/*
+Initialize the postcondition capture cap (P3098), at storage, with tdip, the
+initialization of the temporary its initializer makes (see
+elided_capture_temp_init), as a full expression.  Unlike the temporary, the
+capture is not destroyed at the end of the full expression, but after its
+postcondition is evaluated (see release_postcondition_captures).  Return
+FALSE if the initialization is not a constant expression.
+*/
+{
+  a_boolean              result = TRUE;
+  a_storage_stack_state  saved_stack_for_full_expr;
+  a_type_ptr             tp = skip_typerefs(cap->type);
+  a_byte_count           var_size = value_bytes_for_type(ips, tp, &result);
+  a_var_postfix          *postfix;
+  a_constexpr_address    dst_addr;
+
+  if (!result) return FALSE;
+  do_host_alignment(&var_size);
+  postfix = (a_var_postfix*)(storage+var_size);
+  save_storage_stack(ips, saved_stack_for_full_expr);
+  set_active_address(ips, &dst_addr, storage, storage);
+  dst_addr.alloc_seq_number = postfix->alloc_seq_number;
+  if (do_constexpr_dynamic_init(ips, tdip, pos, dst_addr)) {
+    mark_subobject_initialized(storage, storage);
+  } else {
+    do_constexpr_fail(result);
+  }  /* if */
+  restore_storage_stack(ips, saved_stack_for_full_expr, result);
+  return result;
+}  /* init_elided_capture */
+
+
+static a_boolean init_postcondition_captures(an_interpreter_state      *ips,
+                                             a_contract_specifier_ptr  csp,
+                                             a_routine_ptr             routine)
+/*
+The preconditions of a call of routine are being evaluated (see
+evaluate_function_contracts), and csp is one of its postconditions, which has
+captures (P3098).  Unless its evaluation semantic is ignore, allocate and
+initialize the capture variables, which its predicate uses when the call
+completes, and which are then destroyed (see release_postcondition_captures).
+Return TRUE if they are, FALSE if not: under ignore, or if an initializer is
+not a core constant expression, which is recorded as a problem with the
+assertion (see record_contract_problem).
+*/
+{
+  a_contract_evaluation_semantic  semantic =
+                      contract_semantic_for(csp, routine,
+                                            /*in_constant_evaluation=*/TRUE);
+  a_variable_ptr                  cap;
+
+  if (semantic == ces_ignore) return FALSE;
+  for (cap = csp->captures; cap != NULL; cap = cap->next) {
+    a_boolean           ok = TRUE;
+    a_type_ptr          ctp = skip_typerefs(cap->type);
+    a_dynamic_init_ptr  tdip = NULL;
+    a_byte              *storage;
+    if (is_error_type(ctp) ||
+        (is_class_struct_union_type(ctp) &&
+         has_deleted_or_nontrivial_destructor(
+                                       symbol_supplement_for_class(ctp)) &&
+         (tdip = elided_capture_temp_init(cap)) == NULL)) {
+      /* (A class object with a destructor is always made in a
+         temporary.) */
+      ok = FALSE;
+    } else {
+      a_boolean  saved_suspend_diag_list = ips->suspend_diag_list;
+      storage = do_constexpr_alloc_variable(ips, cap, &ok);
+      if (ok) {
+        /* The reasons an initializer is not constant are not reported. */
+        ips->suspend_diag_list = TRUE;
+        if (tdip != NULL) {
+          ok = init_elided_capture(ips, cap, tdip, storage, &csp->position);
+        } else {
+          ok = do_constexpr_init_variable(ips, cap, storage, &csp->position);
+        }  /* if */
+        ok = ok && !ips->input_error;
+        ips->suspend_diag_list = saved_suspend_diag_list;
+        if (!ok) do_constexpr_unmap_variable(ips, cap);
+      }  /* if */
+    }  /* if */
+    if (!ok) {
+      (void)release_postcondition_captures(ips, csp, cap);
+      if (!ips->input_error) {
+        record_contract_problem(ips, csp, /*not_constant=*/TRUE, semantic);
+      }  /* if */
+      return FALSE;
+    }  /* if */
+  }  /* for */
+  return TRUE;
+}  /* init_postcondition_captures */
+
+
+static a_boolean postcondition_captures_initialized(
+                                         an_interpreter_state      *ips,
+                                         a_contract_specifier_ptr  csp)
+/*
+Return TRUE if the captures of the postcondition csp (P3098) were initialized
+by init_postcondition_captures for the call whose postconditions are being
+evaluated.
+*/
+{
+  a_byte  *storage;
+
+  get_mapped_ptr(&ips->map, csp->captures, storage);
+  return storage != NULL;
+}  /* postcondition_captures_initialized */
+
+
 static void process_stmt_work(an_interpreter_state      *ips,
                               an_interpreter_work_item  *item)
 /*

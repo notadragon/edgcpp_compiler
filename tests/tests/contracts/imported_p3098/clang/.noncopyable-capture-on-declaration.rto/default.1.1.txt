@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3098 Test_name.c
+"Test_name.c", line 19: error: function "NC::NC(const NC &)" (declared at line 17) cannot be referenced -- it is a deleted function
+  int f(NC p) post [p] (true);     // expected-error {{call to deleted constructor of 'NC'}}
+                    ^
+
+"Test_name.c", line 20: error: function "NC::NC(const NC &)" (declared at line 17) cannot be referenced -- it is a deleted function
+  int g(NC p) post [q = p] (true); // expected-error {{call to deleted constructor of 'NC'}}
+                        ^
+
+"Test_name.c", line 22: error: function "NC::NC(const NC &)" (declared at line 17) cannot be referenced -- it is a deleted function
+  int h(NC p) post [p] (true)      // expected-error {{call to deleted constructor of 'NC'}}
+                    ^
+
+"Test_name.c", line 27: error: function "NC::NC(const NC &)" (declared at line 17) cannot be referenced -- it is a deleted function
+  auto l = [](NC p) post [p] (true) { return 0; }; // expected-error {{call to deleted constructor of 'NC'}}
+                          ^
+
+4 errors detected in the compilation of "Test_name.c".

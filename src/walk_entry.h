@@ -4275,6 +4275,10 @@ handle_class_type_supplement_for_class:
       walk_list(eptr->param_proxies, a_variable_ptr, iek_variable);
       walk_string_ptr(eptr->comment, iek_other_text, 0);
       walk_string_ptr(eptr->message, iek_other_text, 0);
+      /* The capture variables are on no scope's variables list either;
+         the capture list's token cache is for front end use only. */
+      walk_list(eptr->captures, a_variable_ptr, iek_variable);
+      conditionally_clear_fe_pointer(eptr->capture_token_cache);
       /* The token cache pointer is for front end use only. */
       conditionally_clear_fe_pointer(eptr->token_cache);
 #undef eptr

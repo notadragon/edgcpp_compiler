@@ -1,0 +1,6 @@
+./a.out
+start
+kind 6 semantic 6 mode 2
+body
+end
+capture destroyed

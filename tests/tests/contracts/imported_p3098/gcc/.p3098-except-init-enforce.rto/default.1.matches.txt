@@ -1,0 +1,10 @@
+Matches for "contract violation in function int f.int. at .*(\n|\r\n|\r)":
+  <-----------------------------------------------------------------------------
+  contract violation in function int f(int) at Test_name.c:21: true
+  
+  ----------------------------------------------------------------------------->
+Matches for ".assertion_kind: post_capture, semantic: enforce, mode: evaluation_exception.*(\n|\r\n|\r)":
+  <-----------------------------------------------------------------------------
+  [assertion_kind: post_capture, semantic: enforce, mode: evaluation_exception: threw an instance of 'int', terminating: yes]
+  
+  ----------------------------------------------------------------------------->

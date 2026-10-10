@@ -11416,6 +11416,7 @@ in such cases.
   switch (kind) {
     case prk_variable:
     case prk_binding:
+    case prk_post_capture:
       prp->curr_argument.variable = NULL;
       break;
     case prk_template_param:
@@ -12361,6 +12362,35 @@ in *elements.
 }  /* find_init_capture_for_pack */
 
 
+static a_variable_ptr find_post_capture_for_pack(
+				a_pack_reference_ptr	prp,
+				uint32_t		*elements)
+/*
+Return the initial element of the postcondition capture pack (P3098) of the
+instance whose predicate is being scanned, the pack that prp, from the
+template, refers to, or NULL if it has no elements.  Return the number of
+elements in *elements.  The elements are consecutive captures of the same
+name (see scan_postcondition_captures in declarator.c).
+*/
+{
+  a_variable_ptr	vp, result_vp = NULL;
+  a_const_char		*capture_name = prp->symbol->header->identifier;
+
+  *elements = 0;
+  for (vp = postcondition_captures_being_scanned(); vp != NULL;
+       vp = vp->next) {
+    if (vp->is_pack_element && vp->source_corresp.name != NULL &&
+        strcmp(vp->source_corresp.name, capture_name) == 0) {
+      if (result_vp == NULL) result_vp = vp;
+      (*elements)++;
+    } else if (result_vp != NULL) {
+      break;
+    }  /* if */
+  }  /* for */
+  return result_vp;
+}  /* find_post_capture_for_pack */
+
+
 static a_template_arg_ptr find_placeholder_arg_for_pack(
 				a_template_param_ptr	templ_param_list,
 				a_template_arg_ptr	templ_arg_list,
@@ -12719,6 +12749,17 @@ lengths) *err is set to TRUE, FALSE otherwise.
         if (!found && ctws_state != NULL) ctws_state->unexpanded_pack = TRUE;
         new_prp->curr_argument.template_arg = tap;
         new_prp->template_param = tpp;
+      } else if (prp->kind == prk_post_capture) {
+        a_variable_ptr	vp;
+        vp = find_post_capture_for_pack(prp, &elements_for_pack);
+        if (vp != NULL) {
+          new_prp->curr_argument.variable = vp;
+          new_prp->primary_pack_symbol = symbol_for(vp);
+          new_prp->primary_pack_symbol->variant.variable.ptr = vp;
+        } else {
+          new_prp->primary_pack_symbol = NULL;
+          not_found = TRUE;
+        }  /* if */
       } else if (prp->kind == prk_init_capture) {
         a_field_ptr	fp;
         a_symbol_ptr	sym;
@@ -12931,7 +12972,8 @@ pack expansion stack entry for which the symbols are to be updated.
         set_template_param_symbol_to_error(sym);
       }  /* if */
     } else if (param_prp->kind == prk_variable ||
-               param_prp->kind == prk_binding) {
+               param_prp->kind == prk_binding ||
+               param_prp->kind == prk_post_capture) {
       if (arg_prp->primary_pack_symbol != NULL) {
         arg_prp->primary_pack_symbol->variant.variable.ptr =
                                                arg_prp->curr_argument.variable;
@@ -14339,6 +14381,21 @@ TRUE is returned if there are any more elements in the pack.  FALSE otherwise.
             update_template_param_symbol(sym, tap);
           }  /* if */
         }  /* if */
+      } else if (param_prp->kind == prk_post_capture) {
+        /* A postcondition capture: the elements are consecutive (see
+           find_post_capture_for_pack). */
+        a_variable_ptr	vp = arg_prp->curr_argument.variable;
+        a_variable_ptr	next_vp = vp == NULL ? NULL : vp->next;
+        if (next_vp == NULL || !next_vp->is_pack_element ||
+            next_vp->source_corresp.name == NULL ||
+            strcmp(next_vp->source_corresp.name,
+                   vp->source_corresp.name) != 0) {
+          arg_prp->curr_argument.variable = NULL;
+          done = TRUE;
+        } else {
+          arg_prp->curr_argument.variable = next_vp;
+          arg_prp->primary_pack_symbol->variant.variable.ptr = next_vp;
+        }  /* if */
       } else if (param_prp->kind == prk_init_capture) {
         /* A lambda init-capture. */
         a_field_ptr	fp = arg_prp->curr_argument.field;
@@ -14617,6 +14674,9 @@ form.
         } else if (symbol_is(pack_symbol, sk_variable)) {
           if (pack_symbol->variant.variable.ptr->is_struct_binding) {
             kind = prk_binding;
+          } else if (pack_symbol->variant.variable.ptr
+                                               ->is_contract_specifier_var) {
+            kind = prk_post_capture;
           } else {
             kind = prk_variable;
           }  /* if */
@@ -14646,8 +14706,9 @@ form.
           if (pip->uses_only_enclosing_pack) {
             prp->uses_enclosing_pack = TRUE;
           }  /* if */
-        } else if (kind == prk_init_capture) {
-          /* No additional information is needed for an init-capture. */
+        } else if (kind == prk_init_capture || kind == prk_post_capture) {
+          /* No additional information is needed for an init-capture or a
+             postcondition capture. */
         } else if (kind == prk_bases) {
           prp->direct_bases = direct_bases;
         } else {

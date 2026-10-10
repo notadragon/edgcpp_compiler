@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3098 Test_name.c
+"Test_name.c", line 24: error: mismatched postcondition captures in declaration (previous contract specifier declared at line 23)
+  int g1(int i) post (r: r >= 0); // { dg-error "mismatched contract condition" }
+                ^
+
+"Test_name.c", line 28: error: mismatched postcondition captures in declaration (previous contract specifier declared at line 27)
+  int g2(const int i, const int j) post [i, j] (r: r >= i); // { dg-error "mismatched postcondition captures" }
+                                   ^
+
+"Test_name.c", line 32: error: mismatched postcondition captures in declaration (previous contract specifier declared at line 31)
+  int g3(int i) post [x = i + 1] (r: r > 0); // { dg-error "mismatched postcondition captures" }
+                ^
+
+"Test_name.c", line 37: error: mismatched postcondition captures in declaration (previous contract specifier declared at line 36)
+  int g4(int i) post [b = i] (r: r >= b); // { dg-error "mismatched contract condition" }
+                ^
+
+4 errors detected in the compilation of "Test_name.c".

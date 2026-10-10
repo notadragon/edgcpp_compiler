@@ -1,0 +1,4 @@
+Matches for "line 5: error: postcondition captures require --contracts_p3098":
+  <-----------------------------------------------------------------------------
+  line 5: error: postcondition captures require --contracts_p3098
+  ----------------------------------------------------------------------------->

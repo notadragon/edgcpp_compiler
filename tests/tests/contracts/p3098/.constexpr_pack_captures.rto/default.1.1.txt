@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contracts_p3098 --contract_evaluation_semantic=quick_enforce Test_name.c
+"Test_name.c", line 15: error: contract predicate is false in constant expression
+    post [...ys = xs] (r: r == (ys + ... + 1)) { return sum(xs...); }
+    ^
+
+"Test_name.c", line 36: error: contract condition is not constant
+  constexpr int nc(const R &r) post [s = r] (true) { return 0; }
+                               ^
+
+2 errors detected in the compilation of "Test_name.c".

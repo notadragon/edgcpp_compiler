@@ -1,0 +1,38 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3098 Test_name.c
+"Test_name.c", line 20: error: capture by reference is not allowed in a postcondition
+    post [&i] (true);       // { dg-error "capture-by-reference not allowed" }
+          ^
+
+"Test_name.c", line 23: error: capture by reference is not allowed in a postcondition
+    post [&i = i] (true);   // { dg-error "capture-by-reference not allowed" }
+          ^
+
+"Test_name.c", line 26: error: a capture default is not allowed in a postcondition
+    post [=] (true);         // { dg-error "default capture not allowed" }
+          ^
+
+"Test_name.c", line 29: error: a capture default is not allowed in a postcondition
+    post [&] (true);         // { dg-error "default capture not allowed" }
+          ^
+
+"Test_name.c", line 33: error: "this" cannot be captured in a postcondition
+      post [this] (true);    // { dg-error "cannot capture" }
+            ^
+
+"Test_name.c", line 35: error: "this" cannot be captured in a postcondition
+      post [*this] (true);   // { dg-error "cannot capture" }
+            ^
+
+"Test_name.c", line 40: error: only a function parameter can be captured without an initializer in a postcondition
+    post [global_var] (true);    // { dg-error "only function parameters can be captured" }
+          ^
+
+"Test_name.c", line 43: error: a capture list is allowed only on a postcondition
+    pre [i] (i > 0);        // { dg-error "only allowed on" }
+        ^
+
+"Test_name.c", line 46: error: a capture list is allowed only on a postcondition
+    contract_assert [i] (i > 0); // { dg-error "only allowed on" }
+                    ^
+
+9 errors detected in the compilation of "Test_name.c".

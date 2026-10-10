@@ -1,0 +1,3 @@
+./a.out
+contract violation in function int f(int) at Test_name.c:26: true
+[assertion_kind: post_capture, semantic: observe, mode: evaluation_exception: threw an instance of 'int', terminating: no]

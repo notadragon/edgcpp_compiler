@@ -1,0 +1,52 @@
+Matches for "line 19: error: "this" cannot be captured in a postcondition":
+  <-----------------------------------------------------------------------------
+  line 19: error: "this" cannot be captured in a postcondition
+  ----------------------------------------------------------------------------->
+Matches for "line 20: error: a capture default is not allowed in a postcondition":
+  <-----------------------------------------------------------------------------
+  line 20: error: a capture default is not allowed in a postcondition
+  ----------------------------------------------------------------------------->
+Matches for "line 21: error: capture by reference is not allowed in a postcondition":
+  <-----------------------------------------------------------------------------
+  line 21: error: capture by reference is not allowed in a postcondition
+  ----------------------------------------------------------------------------->
+Matches for "line 22: error: only a function parameter can be captured without an initializer in a postcondition":
+  <-----------------------------------------------------------------------------
+  line 22: error: only a function parameter can be captured without an initializer in a postcondition
+  ----------------------------------------------------------------------------->
+Matches for "line 23: error: "x" is captured more than once in the postcondition":
+  <-----------------------------------------------------------------------------
+  line 23: error: "x" is captured more than once in the postcondition
+  ----------------------------------------------------------------------------->
+Matches for "line 24: error: a capture list is allowed only on a postcondition":
+  <-----------------------------------------------------------------------------
+  line 24: error: a capture list is allowed only on a postcondition
+  ----------------------------------------------------------------------------->
+Matches for "line 26: error: a capture list is allowed only on a postcondition":
+  <-----------------------------------------------------------------------------
+  line 26: error: a capture list is allowed only on a postcondition
+  ----------------------------------------------------------------------------->
+Matches for "line 27: error: pack expansion does not make use of any argument packs":
+  <-----------------------------------------------------------------------------
+  line 27: error: pack expansion does not make use of any argument packs
+  ----------------------------------------------------------------------------->
+Matches for "line 28: error: pack expansion does not make use of any argument packs":
+  <-----------------------------------------------------------------------------
+  line 28: error: pack expansion does not make use of any argument packs
+  ----------------------------------------------------------------------------->
+Matches for "line 29: error: parameter pack "xs" was referenced but not expanded":
+  <-----------------------------------------------------------------------------
+  line 29: error: parameter pack "xs" was referenced but not expanded
+  ----------------------------------------------------------------------------->
+Matches for "line 30: error: pack expansion does not make use of any argument packs":
+  <-----------------------------------------------------------------------------
+  line 30: error: pack expansion does not make use of any argument packs
+  ----------------------------------------------------------------------------->
+Matches for "line 31: error: parameter pack "y" was referenced but not expanded":
+  <-----------------------------------------------------------------------------
+  line 31: error: parameter pack "y" was referenced but not expanded
+  ----------------------------------------------------------------------------->
+Matches for "line 32: error: "y" is captured more than once in the postcondition":
+  <-----------------------------------------------------------------------------
+  line 32: error: "y" is captured more than once in the postcondition
+  ----------------------------------------------------------------------------->

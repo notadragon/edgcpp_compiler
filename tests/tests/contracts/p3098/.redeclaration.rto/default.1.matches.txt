@@ -1,0 +1,16 @@
+Matches for "line 11: error: mismatched postcondition captures in declaration":
+  <-----------------------------------------------------------------------------
+  line 11: error: mismatched postcondition captures in declaration
+  ----------------------------------------------------------------------------->
+Matches for "line 13: error: mismatched postcondition captures in declaration":
+  <-----------------------------------------------------------------------------
+  line 13: error: mismatched postcondition captures in declaration
+  ----------------------------------------------------------------------------->
+Matches for "line 14: error: mismatched postcondition captures in declaration":
+  <-----------------------------------------------------------------------------
+  line 14: error: mismatched postcondition captures in declaration
+  ----------------------------------------------------------------------------->
+Matches for "line 17: error: mismatched contract condition in declaration":
+  <-----------------------------------------------------------------------------
+  line 17: error: mismatched contract condition in declaration
+  ----------------------------------------------------------------------------->

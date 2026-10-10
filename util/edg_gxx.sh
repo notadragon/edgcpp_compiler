@@ -40,6 +40,7 @@
 # implement yet.
 # -f[no-]contracts-p3097 goes to both.
 # -f[no-]contracts-p3099 goes to both.
+# -f[no-]contracts-p3098 goes to both.
 # -f[no-]contracts-p3290 goes to both.
 #
 # Environment:
@@ -177,6 +178,10 @@ while [ $# -gt 0 ] ; do
       edg_args+=("--contracts_p3099"); gxx_args+=("$arg") ;;
     -fno-contracts-p3099)
       edg_args+=("--no_contracts_p3099"); gxx_args+=("$arg") ;;
+    -fcontracts-p3098)
+      edg_args+=("--contracts_p3098"); gxx_args+=("$arg") ;;
+    -fno-contracts-p3098)
+      edg_args+=("--no_contracts_p3098"); gxx_args+=("$arg") ;;
     -fcontracts-p3290)
       edg_args+=("--contracts_p3290"); gxx_args+=("$arg") ;;
     -fno-contracts-p3290)

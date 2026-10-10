@@ -31,6 +31,7 @@
 #   --[no_]contracts_p3850       -> the g++ spelling (front end and g++)
 #   --[no_]contracts_p3097       -> the g++ spelling (front end and g++)
 #   --[no_]contracts_p3099       -> the g++ spelling (front end and g++)
+#   --[no_]contracts_p3098       -> the g++ spelling (front end and g++)
 #   --[no_]contracts_p3290       -> the g++ spelling (front end and g++)
 #   -D, -U, -I, -l, -L, -Wl,...  -> unchanged (edg_gxx.sh routes them)
 #   --verbose_driver_debug       -> dropped
@@ -113,6 +114,10 @@ while [ $# -gt 0 ] ; do
       args+=(-fcontracts-p3099) ;;
     --no_contracts_p3099)
       args+=(-fno-contracts-p3099) ;;
+    --contracts_p3098)
+      args+=(-fcontracts-p3098) ;;
+    --no_contracts_p3098)
+      args+=(-fno-contracts-p3098) ;;
     --contracts_p3290)
       args+=(-fcontracts-p3290) ;;
     --no_contracts_p3290)

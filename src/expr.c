@@ -35701,6 +35701,101 @@ class type if necessary.  In modern C++ modes, this routine implements
 }  /* process_boolean_controlling_expression */
 
 
+/* The capture variables of the postcondition whose predicate is being
+   scanned (P3098; see set_postcondition_captures_in_scope); NULL otherwise. */
+STATIC_THREAD a_variable_ptr  postcondition_captures_in_scope = NULL;
+
+
+a_variable_ptr set_postcondition_captures_in_scope(a_variable_ptr  captures)
+/*
+Make captures, the capture variables (P3098) of the postcondition whose
+predicate is about to be scanned, the ones contract_predicate_makes_const
+leaves alone (a capture is not const), and return the previous ones, which
+are restored by passing them back once the predicate has been scanned.
+*/
+{
+  a_variable_ptr  prev = postcondition_captures_in_scope;
+
+  postcondition_captures_in_scope = captures;
+  return prev;
+}  /* set_postcondition_captures_in_scope */
+
+
+a_variable_ptr postcondition_captures_being_scanned(void)
+/*
+Return the capture variables (P3098) of the postcondition whose predicate is
+being scanned (see set_postcondition_captures_in_scope), or NULL.
+*/
+{
+  return postcondition_captures_in_scope;
+}  /* postcondition_captures_being_scanned */
+
+
+an_expr_node_ptr scan_postcondition_capture_initializer(a_type_ptr  *p_type)
+/*
+Scan the initializer of a postcondition capture (P3098), an
+assignment-expression, in the contract scope, as the predicate is (see
+scan_contract_predicate).  Return in *p_type the type of the capture, as for
+"auto x = initializer" (std::decay_t of the initializer's type), and return
+the initializer converted to it, as a parameter passed by value is (a copy,
+for a class), as a full expression.
+*/
+{
+  an_expr_node_ptr        result;
+  an_operand              operand;
+  an_expr_stack_entry     *saved_expr_stack;
+  an_expr_stack_entry     expr_stack_entry;
+  an_object_lifetime_ptr  saved_object_lifetime;
+  a_memory_region_number  region_to_switch_back_to;
+  a_type_ptr              type;
+
+  save_expr_stack(&saved_expr_stack);
+  switch_to_scope_region_and_lifetime(
+                                scope_depth_to_allocate_unevaluated_operand(),
+                                &region_to_switch_back_to,
+                                &saved_object_lifetime);
+  if (curr_object_lifetime != NULL &&
+      curr_object_lifetime->kind == olk_expr_temporary) {
+    curr_object_lifetime = curr_object_lifetime->parent_lifetime;
+  }  /* if */
+  push_expr_stack(ek_normal, &expr_stack_entry,
+                  /*force_object_lifetime=*/FALSE,
+                  /*suppress_object_lifetime=*/FALSE);
+  expr_stack->in_contract_predicate = TRUE;
+  expr_stack->contract_predicate_depth = depth_scope_stack;
+  scan_expr(&operand, PREC_ASSIGNMENT, EOPT_DISALLOW_COMMA_OPERATOR);
+  eliminate_unusual_operand_kinds(&operand);
+  if (is_error_operand(&operand)) {
+    type = error_type();
+  } else {
+    a_param_type_ptr  ptp;
+    a_boolean         copied = is_a_glvalue(&operand);
+    type = decay_type(operand.type);
+    ptp = alloc_param_type(type);
+    set_arg_transfer_method_flag(ptp, &operand.position);
+    prep_argument_operand(&operand, ptp, (a_conv_descr_ptr)NULL,
+                          ec_incompatible_param);
+    if (copied && is_class_struct_union_type(skip_typerefs(type))) {
+      /* The capture is destroyed after the postcondition is evaluated: its
+         destructor must be accessible and not deleted.  (For a prvalue
+         initializer, the temporary materialized into it is checked.) */
+      a_type_ptr  class_type = skip_typerefs(type);
+      (void)expr_select_destructor(class_type, class_type,
+                                   &operand.position,
+                                   /*honor_virtual=*/FALSE);
+    }  /* if */
+  }  /* if */
+  result = make_node_from_operand(&operand);
+  result = wrap_up_full_expression(result);
+  pop_expr_stack();
+  switch_back_region_and_lifetime(region_to_switch_back_to,
+                                  saved_object_lifetime);
+  restore_expr_stack(saved_expr_stack);
+  *p_type = type;
+  return result;
+}  /* scan_postcondition_capture_initializer */
+
+
 an_expr_node_ptr process_boolean_attribute_expression(an_expr_node_ptr expr)
 /*
 The specified expression has appeared in an attribute argument and is

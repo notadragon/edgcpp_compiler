@@ -5218,6 +5218,169 @@ Return the statement for the try/catch.
 }  /* wrap_coroutine_body_in_try_block */
 
 
+static a_statement_ptr if_contract_flag(a_variable_ptr   flag,
+                                        a_statement_ptr  stmts);
+
+
+static a_boolean is_contract_capture_destruction(a_statement_ptr  stmt)
+/*
+Return TRUE if stmt is the destruction of a postcondition capture made by
+make_contract_capture_inits: an explicit call of a destructor.
+*/
+{
+  an_expr_node_ptr  expr = stmt->expr;
+
+  return stmt->kind == (a_statement_kind)stmk_expr && expr != NULL &&
+         expr->kind == (an_expr_node_kind)enk_operation &&
+         expr->variant.operation.kind ==
+                              (an_expr_operator_kind)eok_dot_member_call &&
+         expr->variant.operation.operands->kind ==
+                                          (an_expr_node_kind)enk_routine &&
+         expr->variant.operation.operands->variant.routine.ptr->
+                       special_kind == (a_special_function_kind)sfk_destructor;
+}  /* is_contract_capture_destruction */
+
+
+static a_statement_ptr copy_contract_capture_destructions(
+                                                     a_statement_ptr  stmts)
+/*
+Return a copy, in no statement sequence, of the destructions of
+postcondition captures in the list stmts (the epilogue of the current
+function definition, see prepare_contract_checks_for_lowering): the explicit
+destructor calls, and the "if (flag)" around those of a postcondition whose
+captures might not have been made (see if_contract_flag).
+*/
+{
+  a_statement_ptr  copies = NULL, *p_copy = &copies, stmt;
+
+  for (; stmts != NULL; stmts = stmts->next) {
+    a_statement_ptr  copy = NULL;
+    if (is_contract_capture_destruction(stmts)) {
+      an_expr_node_ptr  call = function_rvalue_expr(
+                stmts->expr->variant.operation.operands->variant.routine.ptr);
+      call->next = var_lvalue_expr(node_variable(
+                               stmts->expr->variant.operation.operands->next));
+      call = make_operator_node((an_expr_operator_kind)eok_dot_member_call,
+                                void_type(), call);
+      call->variant.operation.eval_left_to_right = TRUE;
+      set_expr_result_not_used(call);
+      copy = alloc_statement(stmk_expr, /*compiler_generated=*/TRUE);
+      copy->position = stmts->position;
+      copy->expr = call;
+    } else if (stmts->kind == (a_statement_kind)stmk_if &&
+               !stmts->is_contract_check &&
+               stmts->variant.if_stmt.then_statement->kind ==
+                                              (a_statement_kind)stmk_block) {
+      a_statement_ptr  block = stmts->variant.if_stmt.then_statement;
+      if (block->variant.block.statements != NULL &&
+          is_contract_capture_destruction(block->variant.block.statements)) {
+        copy = if_contract_flag(node_variable(stmts->expr),
+                                copy_contract_capture_destructions(
+                                            block->variant.block.statements));
+      }  /* if */
+    }  /* if */
+    if (copy != NULL) {
+      *p_copy = copy;
+      for (stmt = copy; stmt->next != NULL; stmt = stmt->next) {}
+      p_copy = &stmt->next;
+    }  /* if */
+  }  /* for */
+  return copies;
+}  /* copy_contract_capture_destructions */
+
+
+void protect_contract_captures(void)
+/*
+The body of the current function definition has been scanned.  In a
+configuration where the front end generates the checks of contract
+assertions, if the checks destroy postcondition captures (P3098) at the end
+of the epilogue (see make_contract_capture_inits), put the body in a try
+block whose handler destroys them and rethrows, so that an exception that
+leaves the body destroys them too:
+
+  try { body } catch (...) { destructions; throw; }
+
+(as wrap_coroutine_body_in_try_block wraps a coroutine's body).  The
+prologue, which makes the captures, and the epilogue stay outside it.
+*/
+{
+  a_routine_ptr    rp = current_routine_entry();
+  a_scope_ptr      sp = innermost_function_scope;
+  a_statement_ptr  outer, func_body, block, try_stmt, handler_block, stmt;
+  a_statement_ptr  dtors;
+  a_handler_ptr    handler;
+
+  if (!exceptions_enabled || rp->is_coroutine || sp == NULL) return;
+  dtors = copy_contract_capture_destructions(
+                                     sp->variant.routine.contract_epilogue);
+  if (dtors == NULL) return;
+  outer = sp->assoc_block;
+  if (outer != NULL && outer->kind == (a_statement_kind)stmk_try_block) {
+    /* A function-try-block, whose handlers are inside: a block around it
+       becomes the body, as IL lowering would make (see
+       put_block_around_try_block).  Not for a constructor or destructor,
+       whose function-try-block lowering handles specially (EDG-87). */
+    a_statement_ptr  try_block = outer;
+    if (rp->special_kind == (a_special_function_kind)sfk_constructor ||
+        rp->special_kind == (a_special_function_kind)sfk_destructor) {
+      return;
+    }  /* if */
+    outer = alloc_statement(stmk_block, /*compiler_generated=*/TRUE);
+    outer->position = try_block->position;
+    outer->variant.block.statements = try_block;
+    try_block->parent = outer;
+    sp->assoc_block = outer;
+  }  /* if */
+  if (outer == NULL || outer->kind != (a_statement_kind)stmk_block) return;
+  func_body = outer->variant.block.statements;
+  /* Move the body into the block of the try. */
+  block = alloc_statement(stmk_block, /*compiler_generated=*/TRUE);
+  block->position = outer->position;
+  block->variant.block.statements = func_body;
+  for (stmt = func_body; stmt != NULL; stmt = stmt->next) {
+    stmt->parent = block;
+  }  /* for */
+  try_stmt = alloc_statement(stmk_try_block, /*compiler_generated=*/TRUE);
+  try_stmt->position = outer->position;
+  try_stmt->variant.try_block->statement = block;
+  block->parent = try_stmt;
+  try_stmt->parent = outer;
+  outer->variant.block.statements = try_stmt;
+  push_object_lifetime(iek_try_supplement, (char *)try_stmt->variant.try_block,
+                       (an_object_lifetime_kind)olk_try_block);
+  push_object_lifetime(iek_block, (char *)block->variant.block.extra_info,
+                       olk_block);
+  transfer_coroutine_lifetime(sp->lifetime);
+  (void)pop_object_lifetime();
+  /* The handler: the destructions, then a rethrow. */
+  (void)push_scope((a_scope_kind)sck_block, NO_SCOPE_NUMBER,
+                   /*assoc_type=*/NULL, /*assoc_routine=*/NULL);
+  try_stmt->variant.try_block->handlers = handler = alloc_handler();
+  handler->catch_position = outer->position;
+  set_block_scope_handler(handler);
+  handler_block = alloc_statement(stmk_block, /*compiler_generated=*/TRUE);
+  handler_block->position = outer->position;
+  handler_block->variant.block.extra_info->assoc_scope =
+                                                  scope_stack_top().il_scope;
+  handler_block->parent = try_stmt;
+  handler->statement = handler_block;
+  for (stmt = dtors; stmt->next != NULL; stmt = stmt->next) {}
+  stmt->next = alloc_statement(stmk_expr, /*compiler_generated=*/TRUE);
+  stmt->next->position = outer->position;
+  stmt->next->expr = alloc_expr_node((an_expr_node_kind)enk_throw);
+  stmt->next->expr->type = void_type();
+  stmt->next->expr->variant.throw_info = NULL;
+  stmt->next->expr->result_is_not_used = TRUE;
+  handler_block->variant.block.statements = dtors;
+  for (stmt = dtors; stmt != NULL; stmt = stmt->next) {
+    stmt->parent = handler_block;
+  }  /* for */
+  pop_scope();
+  rp->contains_try_block = TRUE;
+  (void)pop_object_lifetime();
+}  /* protect_contract_captures */
+
+
 static void empty_statement(a_boolean compiler_generated)
 /*
 Do processing appropriate to an empty statement -- typically, just a
@@ -6598,6 +6761,204 @@ clause.
 
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
 
+static a_variable_ptr alloc_contract_check_variable(a_type_ptr  type);
+static an_expr_node_ptr contract_violation_call(
+                                  a_contract_specifier_ptr        csp,
+                                  a_contract_violation_call_kind  call_kind);
+static a_statement_ptr make_contract_try_block(
+                                       a_statement_ptr    statements,
+                                       an_expr_node_ptr   exception_call,
+                                       a_source_position  *pos,
+                                       a_boolean          append);
+
+
+static a_statement_ptr make_contract_flag_assignment(a_variable_ptr  flag,
+                                                     a_boolean       value,
+                                                     a_source_position *pos)
+/*
+Return an expression statement, in no statement sequence, at pos, that
+assigns value to the bool variable flag.
+*/
+{
+  a_statement_ptr  stmt = alloc_statement(stmk_expr,
+                                          /*compiler_generated=*/TRUE);
+  a_type_ptr       type = boolean_result_type();
+
+  stmt->position = *pos;
+  stmt->expr = make_assignment_expr(var_lvalue_expr(flag),
+                                    which_binary_operator(tok_assign, type),
+                                    node_for_integer_constant(
+                                              value ? 1L : 0L,
+                                              type->variant.integer.int_kind));
+  set_expr_result_not_used(stmt->expr);
+  return stmt;
+}  /* make_contract_flag_assignment */
+
+
+static a_statement_ptr make_contract_capture_inits(
+                                      a_contract_specifier_ptr  csp,
+                                      a_variable_ptr            *replacements,
+                                      a_variable_ptr            *p_flag,
+                                      a_statement_ptr           *p_dtors)
+/*
+csp is a postcondition with captures (P3098) of the current function
+definition, which is checked.  Return a list of statements, in no statement
+sequence, that initialize a variable of the definition for each of its
+captures, in order, with a copy of the capture's initializer in which the
+parameters are those of the definition (see copy_contract_predicate), and
+put the variables in replacements[0], [1], ....  Where an initializer might
+throw, the initializations are in a try block whose handler handles the
+violation of kind post_capture by the exception, and a bool variable,
+returned in *p_flag (otherwise NULL), is set once they are done: the
+postcondition is checked, and the captures destroyed, only if it is set.
+Return in *p_dtors a list of statements that destroy the captures that have
+a nontrivial destructor, in reverse order, for after the postconditions'
+checks.
+*/
+{
+  a_variable_ptr       cv, local;
+  a_statement_ptr      inits = NULL, *p_init = &inits, stmt;
+  a_boolean            might_throw = FALSE;
+  sizeof_t             n;
+
+  *p_flag = NULL;
+  *p_dtors = NULL;
+  for (cv = csp->captures, n = 0; cv != NULL; cv = cv->next, n++) {
+    an_expr_node_ptr      init = NULL, temp;
+    a_dynamic_init_ptr    dip;
+    an_expr_stack_entry   *saved_expr_stack;
+    an_expr_stack_entry   expr_stack_entry;
+    local = alloc_contract_check_variable(cv->type);
+    replacements[n] = local;
+    if (cv->init_kind == (an_init_kind)initk_dynamic &&
+        cv->initializer.dynamic != NULL) {
+      init = cv->initializer.dynamic->variant.expression;
+    }  /* if */
+    if (init == NULL || is_error_node(init) || is_error_type(cv->type)) {
+      continue;
+    }  /* if */
+    temp = init;
+    if (temp->kind == (an_expr_node_kind)enk_object_lifetime) {
+      temp = temp->variant.object_lifetime.expr;
+    }  /* if */
+    if (temp->kind == (an_expr_node_kind)enk_temp_init) {
+      /* A class object, made in a temporary (by a copy constructor, say):
+         the temporary is elided, a copy of its initialization initializing
+         the variable, with an object lifetime of its own for the
+         temporaries in it, as for a declaration. */
+      an_object_lifetime_ptr  olp;
+      a_dynamic_init_ptr      *p_dip;
+      push_object_lifetime(iek_dynamic_init, (char *)NULL,
+                           (an_object_lifetime_kind)olk_expr_temporary);
+      olp = curr_object_lifetime;
+      dip = copy_contract_capture_init(
+                  temp->variant.init.dynamic_init,
+                  innermost_function_scope->variant.routine.parameters,
+                  csp->param_proxies);
+      for (p_dip = &olp->destructions;
+           *p_dip != NULL && *p_dip != dip;
+           p_dip = &(*p_dip)->next_in_destruction_list) {}
+      if (*p_dip == dip) *p_dip = dip->next_in_destruction_list;
+      dip->next_in_destruction_list = NULL;
+      dip->lifetime = NULL;
+      dip->has_temporary_lifetime = FALSE;
+      bind_object_lifetime(olp, iek_dynamic_init, (char *)dip);
+      (void)pop_object_lifetime();
+      /* (A constructor might throw.) */
+      if (exceptions_enabled) might_throw = TRUE;
+    } else {
+      save_expr_stack(&saved_expr_stack);
+      push_expr_stack(ek_normal, &expr_stack_entry,
+                      /*force_object_lifetime=*/FALSE,
+                      /*suppress_object_lifetime=*/FALSE);
+      init = copy_contract_predicate(init,
+                                     innermost_function_scope->
+                                                   variant.routine.parameters,
+                                     csp->param_proxies,
+                                     (a_variable_ptr)NULL,
+                                     (a_variable_ptr)NULL);
+      init = wrap_up_full_expression(init);
+      pop_expr_stack();
+      restore_expr_stack(saved_expr_stack);
+      if (exceptions_enabled && expr_might_throw(init)) might_throw = TRUE;
+      dip = alloc_dynamic_init(dik_expression);
+      dip->variant.expression = init;
+    }  /* if */
+    dip->variable = local;
+    local->init_kind = (an_init_kind)initk_dynamic;
+    local->initializer.dynamic = dip;
+    local->has_explicit_initializer = TRUE;
+    stmt = alloc_statement(stmk_init, /*compiler_generated=*/TRUE);
+    stmt->position = csp->position;
+    stmt->variant.dynamic_init = dip;
+    *p_init = stmt;
+    p_init = &stmt->next;
+    if (type_has_nontrivial_destructor(local->type)) {
+      /* local.~T(), as an explicit destructor call is. */
+      a_type_ptr        class_type = skip_typerefs(local->type);
+      a_routine_ptr     dtor = expr_select_destructor(class_type, class_type,
+                                                      &csp->position,
+                                                      /*honor_virtual=*/
+                                                      FALSE);
+      an_expr_node_ptr  call;
+      if (dtor == NULL) continue;
+      call = function_rvalue_expr(dtor);
+      call->next = var_lvalue_expr(local);
+      call = make_operator_node((an_expr_operator_kind)eok_dot_member_call,
+                                void_type(), call);
+      call->variant.operation.eval_left_to_right = TRUE;
+      set_expr_result_not_used(call);
+      dtor->source_corresp.referenced = TRUE;
+      stmt = alloc_statement(stmk_expr, /*compiler_generated=*/TRUE);
+      stmt->position = csp->position;
+      stmt->expr = call;
+      stmt->next = *p_dtors;
+      *p_dtors = stmt;
+    }  /* if */
+  }  /* for */
+  if (might_throw) {
+    an_expr_node_ptr  exception_call =
+                      contract_violation_call(csp, cvck_capture_exception);
+    a_variable_ptr    flag = alloc_contract_check_variable(
+                                                      boolean_result_type());
+    a_statement_ptr   clear;
+    if (exception_call == NULL) return inits;
+    *p_init = make_contract_flag_assignment(flag, TRUE, &csp->position);
+    clear = make_contract_flag_assignment(flag, FALSE, &csp->position);
+    clear->next = make_contract_try_block(inits, exception_call,
+                                          &csp->position,
+                                          /*append=*/FALSE);
+    inits = clear;
+    *p_flag = flag;
+  }  /* if */
+  return inits;
+}  /* make_contract_capture_inits */
+
+
+static a_statement_ptr if_contract_flag(a_variable_ptr   flag,
+                                        a_statement_ptr  stmts)
+/*
+Return "if (flag) { stmts }", in no statement sequence, for the list of
+statements stmts of the checks of a postcondition with captures (see
+make_contract_capture_inits); return stmts if flag is NULL.
+*/
+{
+  a_statement_ptr  if_stmt, block, stmt;
+
+  if (flag == NULL || stmts == NULL) return stmts;
+  if_stmt = alloc_statement(stmk_if, /*compiler_generated=*/TRUE);
+  if_stmt->position = stmts->position;
+  if_stmt->expr = var_rvalue_expr(flag);
+  block = alloc_statement(stmk_block, /*compiler_generated=*/TRUE);
+  block->position = stmts->position;
+  block->parent = if_stmt;
+  block->variant.block.statements = stmts;
+  for (stmt = stmts; stmt != NULL; stmt = stmt->next) stmt->parent = block;
+  if_stmt->variant.if_stmt.then_statement = block;
+  return if_stmt;
+}  /* if_contract_flag */
+
+
 static void continue_statement(void)
 /*
 Scan a "continue" statement and add it to the current statement sequence.
@@ -7496,6 +7857,20 @@ sequence.  The syntax is:
   /* Advance over the "contract_assert". */
   (void)get_token();
   scan_contract_assertion_attributes();
+  if (curr_token == tok_lbracket) {
+    /* A capture list (P3098) is for postconditions only: skip it. */
+    int  depth = 0;
+    pos_error(ec_post_capture_not_post, &pos_curr_token);
+    do {
+      if (curr_token == tok_lbracket) {
+        depth++;
+      } else if (curr_token == tok_rbracket) {
+        depth--;
+      }  /* if */
+      (void)get_token();
+    } while (depth > 0 && curr_token != tok_semicolon &&
+             curr_token != tok_end_of_source);
+  }  /* if */
   if (required_token(tok_lparen, ec_exp_lparen)) {
     csp->predicate = scan_contract_predicate(&csp->comment, &csp->message);
     (void)required_token(tok_rparen, ec_exp_rparen);

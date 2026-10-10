@@ -394,6 +394,7 @@ enum an_option_kind {
   optk_contracts_p3850,
   optk_contracts_p3097,
   optk_contracts_p3099,
+  optk_contracts_p3098,
   optk_contracts_p3290,
   optk_last		/* Must be last. */
 };
@@ -3006,6 +3007,12 @@ EXTERN_THREAD a_boolean
 			/* TRUE if P3099 (user-defined diagnostic messages)
 			   is enabled: a contract assertion can have a
 			   diagnostic message after its predicate. */
+
+EXTERN_THREAD a_boolean
+		contracts_p3098_enabled;
+			/* TRUE if P3098 (postcondition captures) is enabled:
+			   a postcondition can have a capture list before its
+			   operand. */
 
 EXTERN_THREAD a_boolean
 		contracts_p3290_enabled;
