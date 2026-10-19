@@ -20614,6 +20614,7 @@ indication in *rcblock).
   a_boolean         err = FALSE, unevaluated_scan_done = FALSE;
   a_boolean         microsoft_template_arg_case = FALSE;
   a_boolean         runtime_case = FALSE;
+  a_boolean         operand_evaluated = FALSE;
   an_expr_stack_entry
                     expr_stack_entry;
   a_memory_region_number
@@ -20868,6 +20869,10 @@ reparse:
         expr_pos_error(ec_member_ref_requires_object,
                        &objectless_nonstatic_data_ref_pos);
       }  /* if */
+      /* A glvalue of polymorphic class type is evaluated
+         ([expr.typeid]/3), even where its dynamic type is known and so is
+         not looked up at run time (runtime_case cleared below). */
+      operand_evaluated = TRUE;
       runtime_case = TRUE;
       if (operator_not_allowed_in_cpp11_constant_expr(&operator_position)) {
         err = TRUE;
@@ -20893,8 +20898,9 @@ reparse:
           expr_pos_error(ec_bad_constant_operator, &start_position);
         }  /* if */
         runtime_case = FALSE;
+        operand_evaluated = FALSE;
       }  /* if */
-      if (runtime_case && rcblock == NULL && !unevaluated_scan_done &&
+      if (operand_evaluated && rcblock == NULL && !unevaluated_scan_done &&
           diagnostic_counters.total.errors == saved_error_count) {
         /* We have only performed an unevaluated expression parse at this
            point, but the type of the expression is such that the expression
@@ -20920,7 +20926,7 @@ reparse:
       make_constant = TRUE;
     }  /* if */
     if (alep != NULL) {
-      if (!runtime_case) {
+      if (!operand_evaluated) {
         /* This turned out to be an unevaluated context.  Discard the object
            lifetime if one was recorded. */
         if (alep->variant.expr.lifetime != NULL) {
@@ -20943,10 +20949,10 @@ reparse:
     end_caching_fetched_tokens();
     reparse_tsn = NO_TOKEN_SEQUENCE_NUMBER;
   }  /* if */
-  if (!runtime_case) {
-    /* If this is not a runtime case, the expression is not evaluated,
-       which means any operators not valid for a C++11 constant expression
-       that appear within the operand don't count. */
+  if (!operand_evaluated) {
+    /* The expression is not evaluated, which means any operators not valid
+       for a C++11 constant expression that appear within the operand don't
+       count. */
     if (constexpr_enabled) {
       expr_stack->constant_expr_ruled_out= saved_cpp11_constant_expr_ruled_out;
     }  /* if */
