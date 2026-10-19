@@ -917,6 +917,34 @@ command-line option.
 #endif /* ifndef DEFAULT_OUTPUT_MODE */
 
 /*
+The default contract evaluation semantic (see contract_evaluation_semantic in
+cmd_line.h).  It can be overridden by the --contract_evaluation_semantic
+command-line option.  The C-generating back end supports only ignore and
+quick_enforce (its exception handling cannot propagate an exception out of a
+violation handler), so quick_enforce is its default.
+*/
+#ifndef DEFAULT_CONTRACT_EVALUATION_SEMANTIC
+#if BACK_END_IS_C_GEN_BE
+#define DEFAULT_CONTRACT_EVALUATION_SEMANTIC ces_quick_enforce
+#else /* !BACK_END_IS_C_GEN_BE */
+#define DEFAULT_CONTRACT_EVALUATION_SEMANTIC ces_enforce
+#endif /* BACK_END_IS_C_GEN_BE */
+#endif /* ifndef DEFAULT_CONTRACT_EVALUATION_SEMANTIC */
+
+/*
+Flag that is TRUE if the front end generates the checks of contract
+assertions (P2900) itself, as ordinary statements of the IL, which it does
+for the C-generating back end.  Any other back end receives the contract
+assertions in the IL (the routines' contract specifiers and
+stmk_contract_assert statements) and implements them; the C++-generating back
+end puts them out as written, leaving them to the compiler of its output as
+it does templates and coroutines.
+*/
+#ifndef CONTRACT_CHECKS_IN_FRONT_END
+#define CONTRACT_CHECKS_IN_FRONT_END BACK_END_IS_C_GEN_BE
+#endif /* ifndef CONTRACT_CHECKS_IN_FRONT_END */
+
+/*
 Flag that is TRUE if the front end should default to hiding EDG-specific
 macros (and thus attempt to conceal that the EDG front end is being used).
 This is the default value of the global variable incognito, which can be

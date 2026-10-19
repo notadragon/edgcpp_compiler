@@ -1806,6 +1806,15 @@ Initialize the option information table.
                          /*arg_required=*/FALSE, pchek_command_line);
   add_option_description(optk_incognito, "no_incognito", '\0', /*value=*/FALSE,
                          /*arg_required=*/FALSE, pchek_command_line);
+  add_option_description(optk_contracts, "contracts", '\0', /*value=*/TRUE,
+                         /*arg_required=*/FALSE, pchek_command_line);
+  add_option_description(optk_contracts, "no_contracts", '\0',
+                         /*value=*/FALSE, /*arg_required=*/FALSE,
+                         pchek_command_line);
+  add_option_description(optk_contract_evaluation_semantic,
+                         "contract_evaluation_semantic", '\0',
+                         /*value=*/TRUE, /*arg_required=*/TRUE,
+                         pchek_command_line);
 }  /* initialize_option_descriptions */
 
 
@@ -3970,6 +3979,10 @@ setting is used, and to set various unmentioned settings as needed.
   if (option_kind_used[(int)optk_rtti]) {
     command_line_error(ec_cl_rtti_option_only_in_cplusplus);
   }  /* if */
+  if (option_kind_used[(int)optk_contracts] && contracts_enabled) {
+    command_line_error(ec_cl_contracts_option_only_in_cplusplus);
+  }  /* if */
+  contracts_enabled = FALSE;
   if (option_kind_used[(int)optk_array_new_and_delete]) {
     command_line_error(ec_cl_array_new_and_delete_option_only_in_cplusplus);
   }  /* if */
@@ -4449,6 +4462,9 @@ default mode (e.g., exception handling).
     embed_enabled = TRUE;
     struct_binding_packs_enabled = TRUE;
     pack_indexing_enabled = TRUE;
+    if (!option_kind_used[(int)optk_contracts]) {
+      contracts_enabled = TRUE;
+    }  /* if */
   }  /* if */
   /* Disable "false" as a null pointer constant in C++11 mode (as per Core
      issue 903). */
@@ -12256,6 +12272,41 @@ enable_microsoft_mode:
       case optk_incognito:
         incognito = opt_value;
         break;
+      case optk_contracts:
+        contracts_enabled = opt_value;
+        break;
+      case optk_contract_evaluation_semantic:
+        { a_const_char *semantic_string = opt_arg;
+
+          if (strcmp(semantic_string, "ignore") == 0) {
+            contract_evaluation_semantic = ces_ignore;
+          } else if (strcmp(semantic_string, "observe") == 0) {
+            contract_evaluation_semantic = ces_observe;
+          } else if (strcmp(semantic_string, "enforce") == 0) {
+            contract_evaluation_semantic = ces_enforce;
+          } else if (strcmp(semantic_string, "quick_enforce") == 0) {
+            contract_evaluation_semantic = ces_quick_enforce;
+          } else {
+            str_command_line_error(
+                               ec_cl_invalid_contract_evaluation_semantic,
+                               semantic_string);
+          }  /* if */
+#if BACK_END_IS_C_GEN_BE
+          if (contract_evaluation_semantic != ces_ignore &&
+              contract_evaluation_semantic != ces_quick_enforce) {
+            /* The C-generating back end implements exception handling
+               with setjmp/longjmp, which cannot carry an exception out of
+               a violation handler compiled elsewhere; only the semantics
+               that can never let an exception escape a check (ignore,
+               which does not evaluate the predicate, and quick_enforce,
+               which never calls the handler) are supported. */
+            str_command_line_error(
+                     ec_cl_contract_evaluation_semantic_needs_cp_gen_be,
+                     semantic_string);
+          }  /* if */
+#endif /* BACK_END_IS_C_GEN_BE */
+        }
+        break;
      default:
         /* It should not be possible to get here. */
         unexpected_condition();
@@ -13857,6 +13908,8 @@ variables declared in cmd_line.h.
 #endif /* UNICODE_VULNERABILITY_DETECTION_SUPPORTED */
   old_id_chars = FALSE;
   output_mode = DEFAULT_OUTPUT_MODE;
+  contracts_enabled = FALSE;
+  contract_evaluation_semantic = DEFAULT_CONTRACT_EVALUATION_SEMANTIC;
   incognito = DEFAULT_INCOGNITO;
   keep_restrict_in_signatures = FALSE;
   attributes_on_using_declarations = FALSE;
