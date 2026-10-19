@@ -23425,6 +23425,80 @@ to 10 nested anonymous unions.
 }  /* anon_union_field_is_active_field */
 
 
+static a_boolean member_of_unconstructed_object(an_interpreter_state  *ips,
+                                                a_constexpr_address   *cap,
+                                                a_type_ptr            obj_type)
+/*
+A non-static member is about to be selected from the object of class type
+obj_type at *cap (an address in interpreter storage).  Return TRUE if that
+object is, or is within,
+a member that a constructor being interpreted is still to initialize with a
+non-trivial constructor: Referring to a member of it before its constructor
+begins is undefined behavior ([class.cdtor]/1).  Such a constructor is
+interpreting its mem-initializers (an iwk_ctor item in phase iwp_1st_resume;
+in phase iwp_start, while preconditions are evaluated, its payload is not yet
+set), and the member comes after the one it is initializing.  Not detected:
+base classes, variant members, and members of aggregates being initialized.
+*/
+{
+  an_interpreter_work_item  *item;
+  a_byte_count              obj_size;
+  a_boolean                 ok = TRUE;
+
+  if (complete_object_is_initialized(cap->complete_object)) {
+    /* No constructor of a subobject is running. */
+    return FALSE;
+  }  /* if */
+  obj_type = skip_typerefs(obj_type);
+  obj_size = value_bytes_for_type(ips, obj_type, &ok);
+  if (!ok) return FALSE;
+  for (item = ips->work_stack->top; item != ips->work_stack->floor;
+       item = item->below) {
+    an_init_work            *iw = &item->variant.init;
+    a_constructor_init_ptr  ctor_init;
+    if (item->kind != iwk_ctor || item->phase != iwp_1st_resume ||
+        iw->dest.complete_object != cap->complete_object ||
+        obj_type == parent_class_of(
+               ((a_dynamic_init_ptr)item->il_entry)->variant.constructor.ptr)) {
+      /* (A member of the object being constructed can share its address,
+         e.g., after an empty [[no_unique_address]] member.) */
+      continue;
+    }  /* if */
+    for (ctor_init = iw->next_ctor_init; ctor_init != NULL;
+         ctor_init = ctor_init->next) {
+      a_field_ptr         fp;
+      a_dynamic_init_ptr  dip;
+      a_routine_ptr       ctor;
+      a_byte_count        offset, size;
+      a_byte              *start;
+      if (ctor_init->kind != cik_field) continue;
+      fp = ctor_init->variant.field;
+      if (type_is(parent_class_of(fp), tk_union) ||
+          (symbol_for(fp) != NULL &&
+           symbol_for(fp)->variant.field.anonymous_parent_object != NULL)) {
+        continue;
+      }  /* if */
+      dip = ctor_init->use_field_initializer ? fp->initializer
+                                             : ctor_init->initializer;
+      if (dip == NULL || !dyn_init_is(dip, dik_constructor)) continue;
+      ctor = dip->variant.constructor.ptr;
+      if (ctor == NULL || ctor->is_trivial_default_constructor ||
+          ctor->is_trivial_copy_function) {
+        continue;
+      }  /* if */
+      get_mapped_byte_count(&persistent_map, fp, offset);
+      start = iw->dest.address+offset;
+      size = value_bytes_for_type(ips, skip_typerefs(fp->type), &ok);
+      if (ok && cap->address >= start &&
+          cap->address+obj_size <= start+size) {
+        return TRUE;
+      }  /* if */
+    }  /* for */
+  }  /* for */
+  return FALSE;
+}  /* member_of_unconstructed_object */
+
+
 static void process_ctor_work(an_interpreter_state      *ips,
                               an_interpreter_work_item  *item)
 /*
@@ -32026,6 +32100,11 @@ the value representation of the integer value.
                 do_constexpr_fail(result);
                 info_with_pos(ec_constexpr_null_dereference, &expr->position,
                               ips);
+              } else if (member_of_unconstructed_object(ips, &result_addr,
+                                                        opnd1_type)) {
+                do_constexpr_fail(result);
+                info_with_pos(ec_constexpr_member_before_construction,
+                              &expr->position, ips);
               } else {
                 result_addr.flags &= (unsigned char)~CA_ARRAY_ELEMENT;
                 if (type_is(parent_class_of(field), tk_union)) {
@@ -32136,6 +32215,11 @@ the value representation of the integer value.
                 do_constexpr_fail(result);
                 info_with_pos(ec_constexpr_null_dereference, &expr->position,
                               ips);
+              } else if (member_of_unconstructed_object(ips, &result_addr,
+                                                        opnd1_type)) {
+                do_constexpr_fail(result);
+                info_with_pos(ec_constexpr_member_before_construction,
+                              &expr->position, ips);
               } else {
                 result_addr.flags &= (unsigned char)~CA_ARRAY_ELEMENT;
                 if (type_is(parent_class_of(field), tk_union)) {
