@@ -397,6 +397,7 @@ enum an_option_kind {
   optk_contracts_p3098,
   optk_contracts_p3290,
   optk_contracts_p3400,
+  optk_contracts_p4283,
   optk_last		/* Must be last. */
 };
 
@@ -3021,6 +3022,14 @@ EXTERN_THREAD a_boolean
 			   labels) is enabled: a contract assertion can have
 			   an assertion-control specifier ("<label>"), and
 			   "contract_control" is a keyword. */
+
+EXTERN_THREAD a_boolean
+		contracts_p4283_enabled;
+			/* TRUE if P4283 (requires-clauses on contract
+			   assertions) is enabled: a contract assertion of a
+			   templated function can have a requires-clause,
+			   and is discarded from an instance whose
+			   constraints it does not satisfy. */
 
 EXTERN_THREAD a_boolean
 		contracts_p3290_enabled;

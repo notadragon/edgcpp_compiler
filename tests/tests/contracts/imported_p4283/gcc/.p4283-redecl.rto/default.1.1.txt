@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p4283 Test_name.c
+"Test_name.c", line 28: error: mismatched requires clause on contract assertion in declaration (previous contract specifier declared at line 24)
+    pre requires(std::floating_point<T>) (x > 0);  // { dg-error "mismatched" }
+    ^
+
+1 error detected in the compilation of "Test_name.c".

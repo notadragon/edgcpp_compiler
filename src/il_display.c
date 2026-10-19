@@ -6091,6 +6091,15 @@ Display the indicated contract specifier entry.
   if (ptr->label != NULL) {
     disp_ptr("label", (char*)ptr->label, iek_expr_node);
   }  /* if */
+  if (ptr->requires_constraint != NULL) {
+    disp_ptr("requires_constraint", (char*)ptr->requires_constraint,
+             iek_expr_node);
+  }  /* if */
+  if (ptr->local_requires_clause) {
+    disp_boolean("local_requires_clause", TRUE);
+    disp_ptr("requires_sexpr", (char*)ptr->requires_sexpr,
+             iek_scoped_expression);
+  }  /* if */
   if (ptr->has_label_message) {
     disp_string_ptr("label_message", ptr->label_message, iek_other_text,
                     (sizeof_t)0);

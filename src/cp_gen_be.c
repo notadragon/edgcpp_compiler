@@ -18002,6 +18002,25 @@ Render a C11 _Generic construct.
 }  /* gen_c11_generic */
 
 
+static void gen_contract_requires_clause(a_contract_specifier_ptr  csp)
+/*
+Generate the requires-clause (P4283) of the contract assertion csp, if it has
+one.  Only an assertion of a template does, which is generated from the IL
+when it belongs to a generic lambda (a template is otherwise generated from
+its tokens).  The constraint is parenthesized, as a lambda's trailing
+requires-clause is, so that the operand does not continue it.
+*/
+{
+  an_expr_node_ptr  constraint = contract_specifier_requires_constraint(csp);
+
+  if (constraint != NULL && !is_error_node(constraint)) {
+    write_tok_str(" requires (");
+    gen_expression(constraint);
+    write_tok_str(")");
+  }  /* if */
+}  /* gen_contract_requires_clause */
+
+
 static void write_code_string(a_const_char *p)
 /*
 Write a string of code (e.g., a template or an asm function body).  Newline
@@ -18221,6 +18240,7 @@ rout_type.
     set_output_position(&csp->position);
     write_tok_str(csp->kind == ctk_pre ? " pre" : " post");
     gen_contract_label(csp);
+    gen_contract_requires_clause(csp);
     if (csp->captures == NULL) {
       write_tok_ch('(');
     } else {
@@ -22608,6 +22628,7 @@ one that yields the value) of a statement expression.
         if (csp->predicate != NULL && !is_error_node(csp->predicate)) {
           write_tok_str("contract_assert");
           gen_contract_label(csp);
+          gen_contract_requires_clause(csp);
           write_tok_ch('(');
           /* Process any tags declared within the expression. */
           skip_embedded_declarations();

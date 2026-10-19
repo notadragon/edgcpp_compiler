@@ -15310,6 +15310,31 @@ ck_template_param/tpck_expression constant.
 }  /* expr_node_from_tpck_expression */
 
 
+an_expr_node_ptr contract_specifier_requires_constraint(
+                                         a_contract_specifier_ptr  csp)
+/*
+Return the constraint of the requires-clause of the contract assertion csp
+(P4283), wherever it is (see a_contract_specifier::local_requires_clause):
+NULL if there is none, or if it is in the memory region of a function whose
+scope is gone.
+*/
+{
+  an_expr_node_ptr  result = NULL;
+
+  if (csp->local_requires_clause) {
+    a_scoped_expression_ptr  sexpr = csp->requires_sexpr;
+    check_assertion(sexpr->source_corresp.enclosing_routine != NULL);
+    result = find_local_expr_node_in_scope(
+                   (char*)sexpr, lerk_scoped_expr,
+                   scope_for_routine_or_null(
+                                     sexpr->source_corresp.enclosing_routine));
+  } else {
+    result = csp->requires_constraint;
+  }  /* if */
+  return result;
+}  /* contract_specifier_requires_constraint */
+
+
 an_expr_node_ptr expr_node_from_constant(a_constant_ptr cp)
 /*
 Return the expression node, if any, associated with cp: the backing

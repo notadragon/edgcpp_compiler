@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 23: error: requires clause on contract assertions requires --contracts_p4283
+    pre requires(true) (x > 0)  // { dg-error "requires clause on contract assertions requires '-fcontracts-p4283'" }
+        ^
+
+"Test_name.c", line 24: error: requires clause on contract assertions requires --contracts_p4283
+    post requires(true) (x > 0);  // { dg-error "requires clause on contract assertions requires '-fcontracts-p4283'" }
+         ^
+
+"Test_name.c", line 29: error: requires clause on contract assertions requires --contracts_p4283
+    pre requires C<T> (x > 0)  // { dg-error "requires clause on contract assertions requires '-fcontracts-p4283'" }
+        ^
+
+"Test_name.c", line 30: error: requires clause on contract assertions requires --contracts_p4283
+    pre requires C<T> (x > 1);  // { dg-error "requires clause on contract assertions requires '-fcontracts-p4283'" }
+        ^
+
+"Test_name.c", line 35: error: requires clause on contract assertions requires --contracts_p4283
+    post requires(true) (r: r > 0)  // { dg-error "requires clause on contract assertions requires '-fcontracts-p4283'" }
+         ^
+
+"Test_name.c", line 43: error: requires clause on contract assertions requires --contracts_p4283
+    contract_assert requires(true) (x > 0);  // { dg-error "requires clause on contract assertions requires '-fcontracts-p4283'" }
+                    ^
+
+"Test_name.c", line 44: error: requires clause on contract assertions requires --contracts_p4283
+    contract_assert requires C<T> (x > 0);  // { dg-error "requires clause on contract assertions requires '-fcontracts-p4283'" }
+                    ^
+
+7 errors detected in the compilation of "Test_name.c".
