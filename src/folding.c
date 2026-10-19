@@ -10937,6 +10937,7 @@ pseudo_call can be NULL if that information is not needed.
       case bfk_va_end:
       case bfk_va_copy:
       case bfk_varargs_start:
+      case bufk_c23_va_start:
 #endif /* GCC_BUILTIN_VARARGS */
         if (pseudo_call != NULL) *pseudo_call = TRUE;
         FALLTHROUGH
