@@ -1590,6 +1590,8 @@ enum a_token_kind : unsigned short {
   tok_builtin_is_structural,
   tok_contract_assert,
   tok_contract_control,
+  tok_p4299_pre,
+  tok_p4299_post,
   /* Placeholder for last position in enumeration. */
   tok_last
 };
@@ -1862,6 +1864,8 @@ EXTERN_CONSTINIT_ARRAY(a_const_char*, token_names, tok_last + 1)
    "__builtin_is_structural",
    "contract_assert",
    "contract_control",
+   "_Pre",
+   "_Post",
    "last" /* used to check that initialization is right. */
   }
 #endif /* VAR_INITIALIZERS */

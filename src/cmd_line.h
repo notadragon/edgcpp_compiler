@@ -399,6 +399,7 @@ enum an_option_kind {
   optk_contracts_p3400,
   optk_contracts_p4283,
   optk_contracts_p4298,
+  optk_contracts_p4299,
   optk_last		/* Must be last. */
 };
 
@@ -3042,6 +3043,13 @@ EXTERN_THREAD a_boolean
 			   is enabled: the noexcept_observe and
 			   noexcept_enforce evaluation semantics can be
 			   chosen. */
+
+EXTERN_THREAD a_boolean
+		contracts_p4299_enabled;
+			/* TRUE if P4299 (contracts for C) is enabled: in
+			   C++, with contracts, _Pre, _Post and
+			   _ContractAssert are alternative spellings of pre,
+			   post and contract_assert. */
 
 EXTERN_THREAD a_boolean
 		contracts_p3290_enabled;
