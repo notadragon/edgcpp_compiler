@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contract_configuration_file=open-bug-caller-side.json Test_name.c
+"Test_name.c", line 18: warning: ignoring return value from routine declared with "nodiscard" attribute
+  void use1 () { nd (1); }	// { dg-warning "ignoring return value of .int nd\\(int\\)." }
+                    ^
+
+"Test_name.c", line 20: warning: result of call is not used
+  void use2 () { wur (1); }	// { dg-bogus "contract_wrapper" }
+                 ^
+

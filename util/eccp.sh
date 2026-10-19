@@ -914,7 +914,10 @@ check_abbreviation()
 --constexpr_diag_suppress
 --constexpr_diag_warning
 --context_limit
+--contract_configuration
+--contract_configuration_file
 --contract_evaluation_semantic
+--contract_group_evaluation_semantic
 --contracts
 --cpfe_only
 --cppcli
@@ -2078,6 +2081,9 @@ process_option()
          --create_module_internal_partition | \
          --output_mode | \
          --contract_evaluation_semantic | \
+         --contract_configuration | \
+         --contract_configuration_file | \
+         --contract_group_evaluation_semantic | \
          --wdir)
       used_two_params=1
 #     See if an instantiation mode was specified
@@ -2207,6 +2213,9 @@ process_option()
           --target=* | \
           --output_mode=* | \
           --contract_evaluation_semantic=* | \
+          --contract_configuration=* | \
+          --contract_configuration_file=* | \
+          --contract_group_evaluation_semantic=* | \
           --wdir=* | \
           --create_header_unit=* | \
           --create_module_interface=* | \

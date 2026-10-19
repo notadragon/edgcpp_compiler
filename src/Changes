@@ -1,5 +1,41 @@
 Version 7.0, September 28, 2026
 
+10/3/26  []
+Contracts (P3595): configuration of contract evaluation semantics
+
+The evaluation semantic of each contract assertion can be chosen by an
+ordered list of configuration entries, the first that matches the assertion
+giving it, as in the GCC contracts implementation.  The entries come from
+three new options, in command-line order:
+
+  --contract_configuration=JSON       entries as JSON text
+  --contract_configuration_file=PATH  entries from a JSON file
+  --contract_group_evaluation_semantic=GROUP:SEMANTIC[,GROUP:SEMANTIC]
+
+followed by --contract_evaluation_semantic, which applies to the assertions
+no entry matches.  The JSON is an array of objects, each with an optional
+"match" object and an "output" object, for example:
+
+  [ { "match": { "kind": "pre", "namespace": "lib" },
+      "output": { "semantic": "observe" } },
+    { "match": { "constexpr": true }, "output": { "semantic": "enforce" } } ]
+
+A "match" can name the assertion's "kind" (pre, post, contract_assert), the
+"namespace" it is in (or one enclosing it), its "location" ("file",
+"file:N-M,P" or "file:lines:column", the file matched as a suffix of the
+name given by #line directives), and whether it is evaluated in a constant
+expression ("constexpr").  An "output" names a "semantic", and can name a
+"dynamic" selector (a function called at run time); the semantics assume,
+noexcept_enforce and noexcept_observe are accepted, and ignore, enforce and
+observe are used for them.  Matching on a "group" or a "caller", the
+"implicit" kind, and dynamic selection are accepted, and checked, for the
+back end to implement: the front end chooses semantics only for constant
+evaluation and for the checks it generates for the C-generating back end,
+where only ignore and quick_enforce are supported (and "dynamic" is an
+error).  Malformed configuration is a command-line error, and an unknown key
+a warning (tag contract_configuration) that skips its entry.
+
+
 10/1/26  []
 Contracts (P2900): what a contract predicate names
 

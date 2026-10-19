@@ -1,0 +1,7 @@
+eccp -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contract_configuration_file=p3595-unsupported-criterion.json Test_name.c
+Command-line warning: contract configuration (p3595-unsupported-criterion.json:2:26): unknown key "module" in "match" object; the entry is skipped
+
+p3595-unsupported-criterion.json: In JSON value '/0/match/module'
+p3595-unsupported-criterion.json:2:26: warning: unknown key 'module' in 'match' object; the entry is skipped [-Wcontract-configuration]
+    2 |   { "match": { "module": "other" },
+      |                          ^~~~~~~

@@ -1,0 +1,5 @@
+fe_only -DTEST_NUMBER=3 --c++26 --contract_group_evaluation_semantic=a:observe Test_name.c
+Command-line error: invalid contract configuration (--contract_group_evaluation_semantic=a:observe): this configuration supports only the ignore, quick_enforce, noexcept_enforce, noexcept_observe and assume contract evaluation semantics
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation terminated.

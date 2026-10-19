@@ -1,0 +1,4 @@
+Matches for "Command-line error: invalid contract configuration \([^)]*\): this configuration (supports only the ignore, quick_enforce, noexcept_enforce, noexcept_observe and assume contract evaluation semantics|does not support a "dynamic" output)":
+  <-----------------------------------------------------------------------------
+  Command-line error: invalid contract configuration (<command-line>:1:2): this configuration does not support a "dynamic" output
+  ----------------------------------------------------------------------------->

@@ -1,0 +1,5 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contract_evaluation_semantic=enforce --contract_configuration_file=p3595-dynamic-constexpr-observe.json Test_name.c
+"Test_name.c", line 29: warning: contract predicate is false in constant expression
+  constexpr int g (int x) pre (x > 0) { return x; } // { dg-warning "contract predicate is false in constant expression" }
+                          ^
+

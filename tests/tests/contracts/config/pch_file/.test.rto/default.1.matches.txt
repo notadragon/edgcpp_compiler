@@ -1,0 +1,12 @@
+Matches for "using precompiled header file":
+  <-----------------------------------------------------------------------------
+  using precompiled header file
+  ----------------------------------------------------------------------------->
+Matches for ""header.h", line 2: warning: contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  "header.h", line 2: warning: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+Matches for ""header.h", line 4: error: contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  "header.h", line 4: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->

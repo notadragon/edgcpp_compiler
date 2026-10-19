@@ -1,0 +1,4 @@
+Matches for "Command-line error: (invalid contract configuration|cannot read contract configuration file)":
+  <-----------------------------------------------------------------------------
+  Command-line error: invalid contract configuration
+  ----------------------------------------------------------------------------->
