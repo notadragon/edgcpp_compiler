@@ -25568,14 +25568,28 @@ closure object is placed at the location indicated by dst_addr.
                           pos, ips);
             break;
           }  /* if */
+          a_type_ptr   copy_type = src_fp->type;
           src_addr = (a_constexpr_address*)this_bytes;
           src_bytes = src_addr->address+field_offset;
-          if (!constexpr_copy_object(ips, src_fp->type, pos,
+          if (!cap->capture_by_reference && src_fp->is_captured_this &&
+              is_pointer_type(src_fp->type)) {
+            /* A capture of "*this" from an enclosing lambda's capture of
+               "this": copy the object it points to. */
+            src_addr = (a_constexpr_address*)src_bytes;
+            if (is_runtime_data_address(src_addr)) {
+              info_with_pos(ec_constexpr_access_to_runtime_storage, pos, ips);
+              do_constexpr_fail(result);
+              break;
+            }  /* if */
+            src_bytes = src_addr->address;
+            copy_type = ftp;
+          }  /* if */
+          if (!constexpr_copy_object(ips, copy_type, pos,
                                      src_bytes, src_addr->complete_object,
                                      sub_bytes, complete_object)) {
             result = FALSE;
           } else {
-            mark_complete_class_object_if_needed(src_fp->type, sub_bytes);
+            mark_complete_class_object_if_needed(copy_type, sub_bytes);
           }  /* if */
         } else {
           a_constexpr_address  sub_addr = dst_addr;
