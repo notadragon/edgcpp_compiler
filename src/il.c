@@ -23781,7 +23781,8 @@ copied again.
                                      expr->variant.const_eval_deferred.wrapped,
                                      options, cblock);
         } else if ((reattempt_state.default_arg &&
-                    (options & CE_COPYING_EVALUATED_DEFAULT_ARG_EXPR)) ||
+                    (options & (CE_COPYING_EVALUATED_DEFAULT_ARG_EXPR |
+                                CE_COPYING_DEAD_DEFAULT_ARG_EXPR))) ||
                    (reattempt_state.default_mem_init &&
                     (options & CE_COPYING_DEFAULT_MEMBER_INIT))) {
           /* A call to a builtin source location operation is being performed
@@ -24045,6 +24046,14 @@ evaluated is TRUE if the expression is evaluated.
     }  /* if */
     if (!evaluated) {
       options = CE_COPY_NOT_EVALUATED;
+      if (potentially_evaluated) {
+        /* The call is in dead code (e.g., the unselected operand of a
+           conditional operator with a constant condition).  It is still
+           potentially evaluated, so an immediate invocation in it is still
+           evaluated and needs the source location builtins in the default
+           argument folded for this call site. */
+        options |= CE_COPYING_DEAD_DEFAULT_ARG_EXPR;
+      }  /* if */
     }  /* if */
     expr = copy_expr_tree(expr, options);
     if (gpp_mode && gnu_version >= 30400 && gnu_version < 40000) {
