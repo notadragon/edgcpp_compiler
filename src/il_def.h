@@ -16709,6 +16709,13 @@ typedef struct a_statement {
                         /* TRUE if this statement has the [[unlikely]]
                            attribute applied to it.  No action is taken by the
                            front end based on this attribute. */
+  a_bit_field  is_contract_check:1;
+                        /* TRUE if this is the stmk_if statement that the
+                           front end generates to check a contract assertion
+                           (P2900) for the C-generating back end (see
+                           CONTRACT_CHECKS_IN_FRONT_END).  Constant evaluation
+                           skips it, evaluating the contract assertion
+                           itself instead. */
   an_expr_node_ptr
                 expr;
                         /* The primary expression, if applicable

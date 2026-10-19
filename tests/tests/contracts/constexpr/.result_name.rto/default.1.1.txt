@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contract_evaluation_semantic=enforce Test_name.c
+"Test_name.c", line 30: error: contract predicate is false in constant expression
+  constexpr P wrong(const int a) post(r: r.x != a) { return {a, a}; }
+                                 ^
+
+"Test_name.c", line 31: warning: variable "pw" was declared but never referenced
+  constexpr P pw = wrong(1);      // Error, at the "post"
+              ^
+
+1 error detected in the compilation of "Test_name.c".

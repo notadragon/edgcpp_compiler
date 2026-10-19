@@ -1,0 +1,8 @@
+./a.out
+-- local
+contract violation in function constexpr int f(int) at Test_name.c:11: (((int)((const int)x)) > 0)
+[assertion_kind: pre, semantic: observe, mode: predicate_false, terminating: no]
+-- member initializer
+contract violation in function N::<lambda(int)> at Test_name.c:13: (((int)((const int)x)) > 5)
+[assertion_kind: pre, semantic: observe, mode: predicate_false, terminating: no]
+-- end
