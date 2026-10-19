@@ -35724,6 +35724,80 @@ and is contextually converted to bool.
 }  /* scan_expr_for_attribute */
 
 
+an_expr_node_ptr scan_contract_predicate(a_const_char  **p_comment,
+                                         a_const_char  **p_message)
+/*
+Scan the predicate of a contract assertion (P2900): a potentially-evaluated
+conditional-expression, contextually converted to bool, that is a full
+expression.  For a precondition or postcondition the current scope is the
+reactivated function parameter scope, and a use of a parameter is represented
+by an enk_param_ref node.  Return in *p_comment the text of the predicate (a
+string formed from its tokens, on one line, as the comment of a violation),
+and in *p_message the text of the diagnostic message that follows it
+(P3099), or NULL if there is none (see scan_contract_diagnostic_message).
+*/
+{
+  an_expr_node_ptr        result;
+  an_operand              operand;
+  an_expr_stack_entry     *saved_expr_stack;
+  an_expr_stack_entry     expr_stack_entry;
+  an_object_lifetime_ptr  saved_object_lifetime;
+  a_memory_region_number  region_to_switch_back_to;
+  a_token_sequence_number first_tsn = curr_token_sequence_number;
+  a_source_position       start_pos = pos_curr_token;
+
+  save_expr_stack(&saved_expr_stack);
+  /* As for an attribute argument (see scan_expr_for_attribute): a predicate
+     of a function declared in a block scope may refer to entities of the
+     enclosing function. */
+  switch_to_scope_region_and_lifetime(
+                                scope_depth_to_allocate_unevaluated_operand(),
+                                &region_to_switch_back_to,
+                                &saved_object_lifetime);
+  if (curr_object_lifetime != NULL &&
+      curr_object_lifetime->kind == olk_expr_temporary) {
+    curr_object_lifetime = curr_object_lifetime->parent_lifetime;
+  }  /* if */
+  /* Keep the tokens of the predicate, to form its text afterwards. */
+  begin_caching_fetched_tokens(/*include_curr_token=*/TRUE);
+  push_expr_stack(ek_normal, &expr_stack_entry,
+                  /*force_object_lifetime=*/FALSE,
+                  /*suppress_object_lifetime=*/FALSE);
+  expr_stack->in_contract_predicate = TRUE;
+  expr_stack->contract_predicate_depth = depth_scope_stack;
+  scan_expr(&operand, PREC_QUEST_MARK, EOPT_DISALLOW_COMMA_OPERATOR);
+  eliminate_unusual_operand_kinds(&operand);
+  /* Convert to bool while the full expression is still being formed, so that
+     a temporary materialized by a user-defined conversion belongs to it. */
+  process_boolean_controlling_expression(&operand);
+  result = make_node_from_operand(&operand);
+  result = wrap_up_full_expression(result);
+  pop_expr_stack();
+  end_caching_fetched_tokens();
+  { a_scanning_token_cache  cache;
+    /* The current token (normally the closing parenthesis) is not part of
+       the predicate. */
+    copy_tokens_from_cache(curr_lexical_state_cache(), first_tsn,
+                           curr_token_sequence_number,
+                           /*include_last_token=*/
+                                           curr_token == tok_end_of_source,
+                           cache.ptr());
+    init_token_string(&start_pos, /*keep_spacing=*/FALSE,
+                      /*suppress_identifier_wrapping=*/TRUE);
+    add_token_cache_to_string(cache.ptr());
+    *p_comment = make_copy_of_token_string();
+  }
+  *p_message = scan_contract_diagnostic_message();
+  switch_back_region_and_lifetime(region_to_switch_back_to,
+                                  saved_object_lifetime);
+  restore_expr_stack(saved_expr_stack);
+#if EXTRA_SOURCE_POSITIONS_IN_IL
+  curr_construct_end_position = operand.end_position;
+#endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
+  return result;
+}  /* scan_contract_predicate */
+
+
 void scan_annotation_value(an_attribute_arg  *aap)
 /*
 Scan an annotation expression and evaluate it.  Store the result constant in
@@ -41429,6 +41503,8 @@ type_identifier_case:
           if (expr_is_inside_default_arg_expression() ||
               (curr_expr_is_potentially_evaluated() &&
                !expr_stack->is_vla_dimension_expression &&
+               !in_contract_predicate() &&
+               !is_param_in_contract_statement_expression(sym_ptr) &&
                !is_requires_expr_parameter(sym_ptr))) {
             /* Within a function declarator, a parameter can only be used
                outside default argument expressions and even then only in 

@@ -1,0 +1,5 @@
+./a.out
+((((int)((const int)x)) < 0) && (((int)((const int)x)) > 9))
+(((int)((const int)x)) < 0)
+(((int)((const int)x)) > 0)
+((-(int)((const int)x)) > 0)

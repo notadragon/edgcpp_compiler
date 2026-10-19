@@ -1,0 +1,5 @@
+fe_only -DTEST_NUMBER=2 --c++26 --contract_evaluation_semantic=bogus Test_name.c
+Command-line error: unrecognized contract evaluation semantic (must be one of ignore, observe, enforce, quick_enforce, assume, noexcept_enforce, noexcept_observe): bogus
+
+1 catastrophic error detected in this compilation.
+Compilation terminated.

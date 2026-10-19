@@ -24,6 +24,7 @@ statements.c -- Scanning of statements.
 /* Additional header files. */
 #include "decls.h"
 #include "decl_spec.h"
+#include "declarator.h"
 #include "disambig.h"
 #include "expr.h"
 #include "exprutil.h"
@@ -6777,6 +6778,44 @@ See also 3.6.6.3.
 }  /* break_statement */
 
 
+static void contract_assert_statement(void)
+/*
+Scan a contract_assert statement (P2900) and add it to the current statement
+sequence.  The syntax is:
+
+  assertion-statement:
+		contract_assert attribute-specifier-seq opt
+						( conditional-expression ) ;
+*/
+{
+  a_statement_ptr           sp;
+  a_contract_specifier_ptr  csp;
+
+  db_enter(3, "contract_assert_statement");
+  check_for_unreachable_code();
+  cannot_bind_to_curr_construct();
+  csp = alloc_contract_specifier(ctk_assert);
+  csp->position = pos_curr_token;
+  /* Advance over the "contract_assert". */
+  (void)get_token();
+  scan_contract_assertion_attributes();
+  if (required_token(tok_lparen, ec_exp_lparen)) {
+    csp->predicate = scan_contract_predicate(&csp->comment, &csp->message);
+    (void)required_token(tok_rparen, ec_exp_rparen);
+  }  /* if */
+  sp = add_statement(stmk_contract_assert, /*compiler_generated=*/FALSE);
+  sp->variant.contract_assert = csp;
+#if EXTRA_SOURCE_POSITIONS_IN_IL
+  curr_construct_end_position = end_pos_curr_token;
+  sp->end_position = curr_construct_end_position;
+#endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
+  stmt_update_source_sequence_list(sp);
+  /* Check for and ignore the final semicolon. */
+  (void)required_token(tok_semicolon, ec_exp_semicolon);
+  db_exit();
+}  /* contract_assert_statement */
+
+
 static void check_void_return_okay(a_boolean         is_implicit_return,
 				   an_expr_node_ptr  *return_expr)
 /*
@@ -7894,6 +7933,11 @@ rescan_statement:
     case tok_break:
       /* Break statement. */
       break_statement();
+      break;
+    case tok_contract_assert:
+      /* contract_assert statement (P2900). */
+      contract_assert_statement();
+      can_appear_in_constexpr_body = TRUE;
       break;
     case tok_return:
     case tok_coroutine_return:

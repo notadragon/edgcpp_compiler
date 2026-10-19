@@ -1,0 +1,8 @@
+fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
+"Test_name.c", line 8: error: expected a "{"
+  void e1(int x) pre(x > 0) const;     // Error, a cv-qualifier after it
+                            ^
+
+At end of source: error: expected a "}"
+
+2 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contract_evaluation_semantic=quick_enforce Test_name.c
+"Test_name.c", line 18: error: contract predicate is false in constant expression
+  constexpr auto g(const int x) post(r: r == x) { return x + 1; }
+                                ^
+
+"Test_name.c", line 20: error: contract predicate is false in constant expression
+  template <class T> constexpr auto t(T x) post(r: r > 0) { return x; }
+                                           ^
+
+"Test_name.c", line 23: error: contract predicate is false in constant expression
+  constexpr auto hidden() post(r: r == gl) { const int gl = 2; return gl; }
+                          ^
+
+"Test_name.c", line 33: error: a result name cannot be introduced in a postcondition of a function returning void
+  auto v() post(r: true) {}
+                ^
+
+"Test_name.c", line 35: error: contract predicate is false in constant expression
+  constexpr auto lam = [](int x) post(r: r == kk) { const int kk = 2; return kk + x; };
+                                 ^
+
+5 errors detected in the compilation of "Test_name.c".

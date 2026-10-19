@@ -19564,6 +19564,62 @@ value for the decl_state.
 }  /* instantiate_exception_spec_if_needed */
 
 
+void scan_member_template_contract_specifiers(a_symbol_ptr  templ_sym)
+/*
+templ_sym is a member function template whose class, not an instantiation of
+a class template (see def_arg_and_eh_spec_fixup_for_class), is complete.  Scan
+the cached operands of its function contract specifiers (P2900), if any, in
+the template, keeping their tokens for its instantiations (see
+scan_cached_contract_specifiers): what is parsed in the template (e.g., a
+requires-expression) is then substituted, not parsed again, in an
+instantiation.
+*/
+{
+  a_template_symbol_supplement_ptr  tssp = templ_sym->variant.template_info;
+  a_routine_ptr                     proto_rp = tssp->variant.function.routine;
+  a_template_instance_ptr           proto_tip;
+  a_symbol_ptr                      prototype_scope_symbols;
+  a_contract_specifier_ptr          csp;
+  a_template_cache_ptr              tcp;
+
+  if (proto_rp == NULL) return;
+  for (csp = proto_rp->contract_specifiers; csp != NULL; csp = csp->next) {
+    if (csp->operand_cached) break;
+  }  /* for */
+  if (csp == NULL) return;
+  tcp = decl_cache_for_function_template(tssp);
+  if (tcp == NULL || tcp->decl_info == NULL) {
+    expect_error();
+    return;
+  }  /* if */
+  /* The prototype scope symbols and parameter ID list of the template are
+     saved in the instance information of its prototype instantiation (see
+     decl_member_function_template).  Scan as for the prototype
+     instantiation of an exception specification (see
+     instantiate_exception_spec_if_needed_full). */
+  proto_tip = symbol_for(proto_rp)->variant.routine.instance_ptr;
+  check_assertion(proto_tip != NULL);
+  prototype_scope_symbols = proto_tip->prototype_scope_symbols;
+  (void)push_template_instantiation_scope(tcp->decl_info, (a_type_ptr)NULL,
+                                          proto_rp, symbol_for(proto_rp),
+                                          templ_sym,
+                                          proto_rp->template_arg_list,
+                                          /*push_lex_state=*/TRUE,
+                                          PS_PROTOTYPE_INSTANTIATION);
+  (void)push_scope((a_scope_kind)sck_func_prototype, NO_SCOPE_NUMBER,
+                   proto_rp->type, (a_routine_ptr)NULL);
+  if (prototype_scope_symbols != NULL) {
+    reactivate_prototype_scope_symbols(prototype_scope_symbols);
+  }  /* if */
+  scope_stack_top().param_id_list = proto_tip->param_id_list;
+  scan_cached_contract_specifiers(proto_rp, proto_rp->contract_specifiers,
+                                  prototype_scope_symbols,
+                                  /*keep_tokens=*/TRUE);
+  pop_scope();
+  pop_template_instantiation_scope();
+}  /* scan_member_template_contract_specifiers */
+
+
 void proto_instantiate_exception_spec_redecl(a_tmpl_decl_state_ptr  decl_state,
                                              a_symbol_ptr           sym)
 /*
