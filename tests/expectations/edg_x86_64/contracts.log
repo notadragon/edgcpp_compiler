@@ -1,1 +1,2 @@
+sema/constexpr_object_lifetime.sft.cpp:fn:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:constant evaluation rejects destroying an object twice and writing to an object after its destruction
 sema/param_cv_member_definition.sft.cpp:fn:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:a parameter variable takes its top-level cv-qualifiers from the definition, also for a member of a class template defined outside the class
