@@ -61,28 +61,43 @@ class TestRunConfig:
   def __init__(self, name: str, config_providing_fe_env: str,
                front_end_env_paths: Dict[str, List[str]],
                env_overrides: Dict[str, str], expectations_dir: Path,
-               flakey_tests_dir: Path) -> None:
+               flakey_tests_dir: Path,
+               suites: Optional[Set[str]] = None) -> None:
     self.name = name
     self.config_providing_fe_env = config_providing_fe_env
     self.front_end_env_paths = front_end_env_paths
     self.env_overrides = env_overrides
     self.expectations_dir = expectations_dir
     self.flakey_tests_dir = flakey_tests_dir
+    # The suites this configuration is restricted to, or None for no
+    # restriction.
+    self.suites = suites
 
 class EdgyConfig:
   def __init__(self, test_home: Path,
                configs: Dict[str, TestRunConfig],
                config_sets: Dict[str, Set[str]],
                primary_test_suites: List[str],
-               secondary_test_suites: List[str]) -> None:
+               secondary_test_suites: List[str],
+               suite_configs: Dict[str, Set[str]]) -> None:
     self.test_home = test_home
     self.configs = configs
     self.config_sets = config_sets
     self.primary_test_suites = primary_test_suites
     self.secondary_test_suites = secondary_test_suites
+    # The configurations each listed suite is restricted to.
+    self.suite_configs = suite_configs
 
   def all_suites(self) -> List[str]:
     return [*self.primary_test_suites, *self.secondary_test_suites]
+
+  def config_runs_suite(self, run_config: 'TestRunConfig',
+                        test_suite_name: str) -> bool:
+    if run_config.suites is not None and \
+       test_suite_name not in run_config.suites:
+      return False
+    allowed_configs = self.suite_configs.get(test_suite_name)
+    return allowed_configs is None or run_config.name in allowed_configs
 
 class TestSuiteExpectations:
   def __init__(self, file_path: Path, modified_time: Optional[float],
@@ -229,6 +244,41 @@ def _load_cpp_back_end_configs(loaded_configs: Dict[str, TestRunConfig],
       flakey_tests_dir
     )
 
+def _load_gxx_back_end_configs(loaded_configs: Dict[str, TestRunConfig],
+                               test_home: Path,
+                               config_dict: Any) -> None:
+  '''Load the configurations that compile through util/edg_gxx.sh: the
+  C++-generating front end followed by a GNU g++, so that programs use that
+  g++'s exception handling and libraries.  eccp-gxx adapts the harness's eccp
+  command lines to edg_gxx.sh.
+  '''
+  for variant in config_dict.get('variants', []):
+    run_config_name = variant['name']
+    expectations_dir = test_home / 'expectations' / run_config_name
+    if not os.path.isdir(expectations_dir):
+      edgutil.eprint(f"Expected expectation directory at {expectations_dir}")
+      sys.exit(1)
+
+    bin_env_paths = config_dict.get('bin_path_env', [])
+    eccp_gxx_path = str(edgutil.RequiredToolPath('eccp-gxx'))
+    suites = variant.get('suites')
+
+    flakey_tests_dir = test_home / 'flakey-tests' / run_config_name
+    loaded_configs[run_config_name] = TestRunConfig(
+      run_config_name,
+      'CPFE_CP',
+      {
+        'CPFE_CP': bin_env_paths
+      },
+      {
+        'ECCP': eccp_gxx_path,
+        'EDG_CONFIG': run_config_name
+      },
+      expectations_dir,
+      flakey_tests_dir,
+      set(suites) if suites is not None else None
+    )
+
 def load_edgy_config(args: argparse.Namespace, test_home: Path) -> EdgyConfig:
   config_file_path = Path(test_home / '.edgy' / 'config.json')
   with open(config_file_path, 'r') as file_handle:
@@ -246,15 +296,25 @@ def load_edgy_config(args: argparse.Namespace, test_home: Path) -> EdgyConfig:
       test_home,
       run_configs_dict.get('cpp', {})
     )
+    _load_gxx_back_end_configs(
+      loaded_configs,
+      test_home,
+      run_configs_dict.get('gxx', {})
+    )
 
     test_suites = config_file_dict.get('test_suites', {})
     config_sets = config_file_dict.get('config_sets', {})
+    suite_configs = {
+      suite: set(configs)
+      for suite, configs in config_file_dict.get('suite_configs', {}).items()
+    }
     return EdgyConfig(
       test_home,
       loaded_configs,
       config_sets,
       test_suites.get('primary', []),
-      test_suites.get('secondary', [])
+      test_suites.get('secondary', []),
+      suite_configs
     )
 
 def get_expectation_path(run_config: TestRunConfig,
@@ -435,6 +495,8 @@ def load_test_suites(
   test_suites = []
   for test_suite_name in test_suite_names:
     for run_config in run_configs:
+      if not edgy_config.config_runs_suite(run_config, test_suite_name):
+        continue
       test_suite = load_test_suite(
         args, run_config, edgy_config.test_home, test_suite_name
       )
