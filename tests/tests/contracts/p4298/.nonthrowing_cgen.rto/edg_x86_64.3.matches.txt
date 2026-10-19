@@ -1,0 +1,4 @@
+Matches for "Command-line error: (this configuration supports only the ignore, quick_enforce, noexcept_enforce, noexcept_observe and assume contract evaluation semantics: (enforce|observe)|invalid contract configuration \([^)]*\): this configuration supports only the ignore, quick_enforce, noexcept_enforce, noexcept_observe and assume contract evaluation semantics)":
+  <-----------------------------------------------------------------------------
+  Command-line error: invalid contract configuration (<command-line>:1:2): this configuration supports only the ignore, quick_enforce, noexcept_enforce, noexcept_observe and assume contract evaluation semantics
+  ----------------------------------------------------------------------------->

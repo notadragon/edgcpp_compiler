@@ -1,0 +1,46 @@
+fe_only -DTEST_NUMBER=2 --c++26 --contracts_p3400 --contract_evaluation_semantic=observe -DP4298=0 Test_name.c
+"Test_name.c", line 38: error: no valid evaluation semantic for contract assertion
+  constexpr int a(int x) pre<OnlyNoexceptObserve{}>(x > 0) { return x; }
+                         ^
+
+"Test_name.c", line 40: error: compute_semantic result is not in the allowed evaluation semantics
+  constexpr int c(int x) pre<ComputeNoexceptEnforce{}>(x > 0) { return x; }
+                         ^
+
+"Test_name.c", line 41: error: compute_semantic result is not in the allowed evaluation semantics
+  constexpr int d(int x) pre<ComputeNoexceptObserve{}>(x > 0) { return x; }
+                         ^
+
+"Test_name.c", line 38: warning: contract predicate is false in constant expression
+  constexpr int a(int x) pre<OnlyNoexceptObserve{}>(x > 0) { return x; }
+                         ^
+
+"Test_name.c", line 39: error: contract predicate is false in constant expression
+  constexpr int b(int x) pre<ObserveLevel{}>(x > 0) { return x; }
+                         ^
+
+"Test_name.c", line 40: warning: contract predicate is false in constant expression
+  constexpr int c(int x) pre<ComputeNoexceptEnforce{}>(x > 0) { return x; }
+                         ^
+
+"Test_name.c", line 41: warning: contract predicate is false in constant expression
+  constexpr int d(int x) pre<ComputeNoexceptObserve{}>(x > 0) { return x; }
+                         ^
+
+"Test_name.c", line 42: warning: variable "va" was declared but never referenced
+  constexpr int va = a(0);
+                ^
+
+"Test_name.c", line 43: warning: variable "vb" was declared but never referenced
+  constexpr int vb = b(0);
+                ^
+
+"Test_name.c", line 44: warning: variable "vc" was declared but never referenced
+  constexpr int vc = c(0);
+                ^
+
+"Test_name.c", line 45: warning: variable "vd" was declared but never referenced
+  constexpr int vd = d(0);
+                ^
+
+4 errors detected in the compilation of "Test_name.c".

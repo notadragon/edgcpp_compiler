@@ -1,0 +1,7 @@
+fe_only -DTEST_NUMBER=3 --c++26 --contract_configuration=[{"output":{"semantic":"noexcept_enforce"}}] Test_name.c
+Command-line warning: contract configuration (<command-line>:1:2): the configuration asks for "noexcept_enforce", which is not supported; "enforce" is used instead
+
+Command-line error: invalid contract configuration (<command-line>:1:2): this configuration supports only the ignore, quick_enforce, noexcept_enforce, noexcept_observe and assume contract evaluation semantics
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation terminated.

@@ -5082,6 +5082,8 @@ region, initialize its fields, and return a pointer to it.
   csp->label_allowed_semantics = 0;
   (void)memset(csp->label_computed_semantics, 0,
                sizeof(csp->label_computed_semantics));
+  (void)memset(csp->label_computed_noexcept_semantics, 0,
+               sizeof(csp->label_computed_noexcept_semantics));
   csp->label_message = NULL;
   csp->label_groups = NULL;
   csp->has_label_message = FALSE;
