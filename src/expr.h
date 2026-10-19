@@ -829,6 +829,13 @@ extern a_contract_evaluation_semantic apply_contract_label_facets_p4298(
 extern
 an_init_component_ptr get_braced_init_list(a_boolean          is_full_expr,
                                            a_decl_parse_state *dps);
+extern a_contract_evaluation_semantic apply_contract_label_facets_p3100(
+                              a_contract_specifier_ptr        csp,
+                              a_contract_evaluation_semantic  semantic,
+                              a_boolean                       in_ce);
+extern void resolve_contract_label_assume_facet(
+                              a_contract_specifier_ptr        csp,
+                              a_constant_ptr                  label_con);
 
 extern an_init_component_ptr scan_full_initializer_expr_as_component(
                                      a_decl_parse_state *dps,

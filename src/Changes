@@ -1,6 +1,19 @@
 Version 7.0, September 28, 2026
 
 10/5/26  []
+Contracts (P3100): the assume semantic and the options of implicit assertions
+
+The new --[no_]contracts_p3100 option (implied by --contracts_p3850, and
+enabling contracts unless --[no_]contracts is given) predefines the P3100
+macro of the compiler emulated; the front end makes no implicit contract
+assertions.  The new --[no_]contracts_allow_assume option lets the assume
+evaluation semantic (--contract_evaluation_semantic=assume, a contract
+configuration, an assertion-control label) be chosen, and predefines its
+macro; assume does not evaluate the predicate.  Without the option, assume
+is replaced by its best fit, ignore.
+
+
+10/5/26  []
 Contracts (P4301): context reports for the contract-violation handler
 
 The new --[no_]contracts_p4301 option (implied by --contracts_p3850, and
