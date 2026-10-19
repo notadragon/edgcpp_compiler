@@ -1,6 +1,24 @@
 Version 7.0, September 28, 2026
 
 10/4/26  []
+Contracts (P3400): groups
+
+The group names of an assertion-control specifier's label (its group_names
+member, as the library's identification_label concept finds it, a combined
+label's being the sorted union of its parts') now match the "group" of
+configuration entries, as given by --contract_group_evaluation_semantic or
+a JSON configuration, where the front end chooses a semantic: an entry's
+group matches a label group that is the same or that it is a prefix of
+ending before a ".":
+
+  --contract_group_evaluation_semantic=safety:ignore
+  contract_assert<"safety.bounds"group>(i < n);   // Ignored.
+
+Empty group names are skipped.  Through edg_gxx.sh g++ applies the groups
+at run time itself.
+
+
+10/4/26  []
 Contracts (P3400): facets in constant evaluation
 
 The facets of an assertion-control specifier's label that bear on the

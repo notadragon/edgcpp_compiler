@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contracts_p3400 --contract_evaluation_semantic=enforce --contract_group_evaluation_semantic=safety:ignore --contract_group_evaluation_semantic=a:observe Test_name.c
+"Test_name.c", line 13: warning: contract predicate is false in constant expression
+  constexpr bool g() { contract_assert<"a.b"group>(false); return true; }
+                       ^
+
+"Test_name.c", line 14: error: contract predicate is false in constant expression
+  constexpr bool h() { contract_assert<"ab"group>(false); return true; }
+                       ^
+
+1 error detected in the compilation of "Test_name.c".

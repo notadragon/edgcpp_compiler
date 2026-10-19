@@ -12361,6 +12361,12 @@ typedef struct a_contract_specifier {
 			   the message as written is put out for the compiler
 			   of the generated code, which applies the facet
 			   itself. */
+  a_const_char	*label_groups;
+			/* The label's group names (P3400, its group_names
+			   member), each followed by a newline, in the
+			   label's order; NULL if it has none.  The groups
+			   match configuration entries (see
+			   contract_semantic_for). */
   a_bit_field	has_label_message:1;
 			/* TRUE if label_message is meaningful. */
   a_bit_field	label_facet_diagnosed:1;
