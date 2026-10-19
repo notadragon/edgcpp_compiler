@@ -1,0 +1,88 @@
+Matches for "using precompiled header file":
+  <-----------------------------------------------------------------------------
+  using precompiled header file
+  ----------------------------------------------------------------------------->
+Matches for ""header.h", line 1: error: contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  "header.h", line 1: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  "header.h", line 1: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+Matches for ""header.h", line 2: error: contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  "header.h", line 2: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  "header.h", line 2: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+Matches for ""header.h", line 3: error: contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  "header.h", line 3: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  "header.h", line 3: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+Matches for ""header.h", line 4: error: contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  "header.h", line 4: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  "header.h", line 4: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+Matches for ""header.h", line 5: error: contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  "header.h", line 5: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  "header.h", line 5: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+Matches for ""header.h", line 6: error: contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  "header.h", line 6: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  "header.h", line 6: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+Matches for ""header.h", line 7: error: contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  "header.h", line 7: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  "header.h", line 7: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+Matches for ""header.h", line 8: error: contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  "header.h", line 8: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  "header.h", line 8: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+Matches for ""header.h", line 9: error: contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  "header.h", line 9: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  "header.h", line 9: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+Matches for ""header.h", line 10: error: contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  "header.h", line 10: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  "header.h", line 10: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+Matches for ""header.h", line 11: error: contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  "header.h", line 11: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  "header.h", line 11: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+Matches for ""header.h", line 12: error: contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  "header.h", line 12: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  "header.h", line 12: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
