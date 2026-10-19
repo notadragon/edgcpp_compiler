@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3290 Test_name.c
+"Test_name.c", line 22: error: no instance of function template "__assert_single_argument" matches the argument list
+            argument types are: (int, int)
+    assert(a, b); // expected-error {{no matching function for call to '__assert_single_argument'}}
+    ^
+"/root/repos/gnu_gcc-install/bin/../lib/gcc/x86_64-pc-linux-gnu/17.0.0/../../../../include/c++/17.0.0/bits/assert_contract.h", line 70: note: number of parameters of function template "__assert_single_argument" does not match the call
+  __assert_single_argument(const _Tp&) noexcept;
+  ^
+
+"Test_name.c", line 22: warning: expression has no effect
+    assert(a, b); // expected-error {{no matching function for call to '__assert_single_argument'}}
+    ^
+
+"Test_name.c", line 24: warning: expression has no effect
+    assert((a, b));
+    ^
+
+"Test_name.c", line 24: warning: expression has no effect
+    assert((a, b));
+    ^
+
+1 error detected in the compilation of "Test_name.c".

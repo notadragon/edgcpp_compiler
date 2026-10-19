@@ -1,0 +1,1 @@
+fe_only -DTEST_NUMBER=4 --c++26 --c++26 --contracts --contracts_p3290 -DHDR_BOTH_12 -D__STDC_WANT_ASSERT_USES_CONTRACTS__ Test_name.c

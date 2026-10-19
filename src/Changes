@@ -18,6 +18,20 @@ back end, in a wrapper of the statically chosen function (not if C-variadic).
 
 
 10/3/26  []
+Contracts (P3290): integrating existing assertions
+
+The new --[no_]contracts_p3290 option enables P3290 (and contracts with it,
+unless --[no_]contracts is given).  With contracts enabled it predefines the
+macro of the emulated compiler, __gcc_contracts_p3290 in GNU mode and
+__clang_contracts_p3290 in Clang mode (202609L), which the GCC and Clang
+contracts implementations' standard libraries test: with edg_gxx.sh (which
+passes -f[no-]contracts-p3290 to both the front end and g++), <cassert>'s
+assert then reports a violation to the contract violation handler when
+__STDC_WANT_ASSERT_USES_CONTRACTS__ is defined, and <contracts> declares
+P3290's handle_*_contract_violation functions.
+
+
+10/3/26  []
 Contracts (P3850): --contracts_p3850
 
 The new --[no_]contracts_p3850 option enables contracts (unless
