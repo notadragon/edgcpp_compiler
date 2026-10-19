@@ -21664,7 +21664,10 @@ mode in-class specialization.
     } else {
       return_type = error_type();
     }  /* if */
-    if (templ_sym->defined) {
+    if (templ_sym->defined && !templ_rout->source_corresp.is_class_member) {
+      /* (The type of a member template is that of its declaration in the
+         class, so its qualifiers are not the definition's.  The definition's
+         are added to the parameter variables by decl_parameter.) */
       copy_param_cv_qualifiers_from_proto(skip_typerefs(templ_rout->type),
                                           rout_type);
     }  /* if */
