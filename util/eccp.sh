@@ -928,6 +928,7 @@ check_abbreviation()
 --contracts_p4283
 --contracts_p4298
 --contracts_p4299
+--contracts_p4301
 --cpfe_only
 --cppcli
 --cppcx
@@ -1109,6 +1110,7 @@ check_abbreviation()
 --no_contracts_p4283
 --no_contracts_p4298
 --no_contracts_p4299
+--no_contracts_p4301
 --no_cppcli
 --no_cppcx
 --no_defer_parse_function_templates
@@ -1957,6 +1959,8 @@ process_option()
          --no_contracts_p4298 | \
          --contracts_p4299 | \
          --no_contracts_p4299 | \
+         --contracts_p4301 | \
+         --no_contracts_p4301 | \
          --bit_precise_integers | \
          --no_bit_precise_integers | \
          --force_vtbl | \

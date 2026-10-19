@@ -1,6 +1,16 @@
 Version 7.0, September 28, 2026
 
 10/5/26  []
+Contracts (P4301): context reports for the contract-violation handler
+
+The new --[no_]contracts_p4301 option (implied by --contracts_p3850, and
+enabling contracts unless --[no_]contracts is given) predefines
+__cpp_contracts_report as 202609L, by which the standard library declares
+contract_violation::report().  The front end produces no report: with the
+C-generating back end report() returns a null pointer for every violation.
+
+
+10/5/26  []
 Contracts (P4299): the C spellings of contract assertions in C++
 
 The new --[no_]contracts_p4299 option makes _Pre, _Post and _ContractAssert,
