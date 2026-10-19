@@ -1,0 +1,1 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3097 --contracts_p3098 --contract_configuration_file=contract-instantiate-on-use.json Test_name.c

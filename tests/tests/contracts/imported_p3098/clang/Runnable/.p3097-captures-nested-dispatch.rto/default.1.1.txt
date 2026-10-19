@@ -1,0 +1,1 @@
+eccp -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3097 --contracts_p3098 --contract_evaluation_semantic=observe Test_name.c

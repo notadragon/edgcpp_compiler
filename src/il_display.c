@@ -6082,6 +6082,9 @@ Display the indicated contract specifier entry.
   if (ptr->message != NULL) {
     disp_string_ptr("message", ptr->message, iek_other_text, (sizeof_t)0);
   }  /* if */
+  if (ptr->captures != NULL) {
+    disp_ptr("captures", (char*)ptr->captures, iek_variable);
+  }  /* if */
   if (ptr->operand_cached) disp_boolean("operand_cached", TRUE);
 }  /* disp_contract_specifier */
 

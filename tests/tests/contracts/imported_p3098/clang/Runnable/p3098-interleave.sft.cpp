@@ -1,0 +1,40 @@
+//remark: imported from clang:Runnable/p3098-interleave.cpp
+//type: rp
+//require: BACK_END_IS_CP_GEN_BE 1
+//options: --contract_evaluation_semantic=enforce --c++26 --contracts --contracts_p3098
+//use_system_includes: true
+//linker_options: -lcontracts
+// RUN: %clangxx -fcontract-evaluation-semantic=enforce -std=c++26 %s -fcontracts -fcontracts-p3098 %libcxx_flags -o %t
+// RUN: %t
+
+// Verify lexical ordering: preconditions and capture inits are
+// interleaved in declaration order.
+
+#include <cstdio>
+
+int order_idx = 0;
+int order[10] = {};
+
+void record(int id) { order[order_idx++] = id; }
+
+int f(int x)
+  pre ((record(1), true))
+  post [a = (record(2), x)] (a >= 0)
+  pre ((record(3), true))
+  post [b = (record(4), x)] (b >= 0)
+{
+  return x;
+}
+
+int main() {
+  order_idx = 0;
+  f(1);
+
+  // Lexical order: pre, capture-init, pre, capture-init
+  if (!(order[0] == 1)) __builtin_abort();
+  if (!(order[1] == 2)) __builtin_abort();
+  if (!(order[2] == 3)) __builtin_abort();
+  if (!(order[3] == 4)) __builtin_abort();
+
+  std::printf("PASS\n");
+}

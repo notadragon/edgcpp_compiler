@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3098 Test_name.c
+"Test_name.c", line 37: warning: "PrivateDtor::~PrivateDtor() noexcept" (declared at line 28) is inaccessible
+  void f (PrivateDtor p) post [p] (ok (p.v)) { }	// { dg-error "private" }
+                               ^
+
+"Test_name.c", line 37: error: "PrivateDtor::~PrivateDtor() noexcept" (declared at line 28) is inaccessible
+  void f (PrivateDtor p) post [p] (ok (p.v)) { }	// { dg-error "private" }
+                               ^
+
+"Test_name.c", line 41: error: function "DeletedCopy::DeletedCopy(const DeletedCopy &)" (declared at line 34) cannot be referenced -- it is a deleted function
+  void later (DeletedCopy p) post [p] (ok (p.v)) { }  // { dg-error "deleted" }
+                                   ^
+
+2 errors detected in the compilation of "Test_name.c".

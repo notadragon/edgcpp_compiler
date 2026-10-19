@@ -5068,6 +5068,8 @@ region, initialize its fields, and return a pointer to it.
   csp->position = null_source_position;
   csp->comment = NULL;
   csp->message = NULL;
+  csp->captures = NULL;
+  csp->capture_token_cache = NULL;
   csp->local_predicate = FALSE;
   csp->predicate_sexpr = NULL;
   csp->operand_cached = FALSE;

@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3098 Test_name.c
+"Test_name.c", line 83: error: contract predicate is false in constant expression
+  template <class T> constexpr T h(T x) post [x] (r: r == x) { return x + 1; } // { dg-error "contract predicate is false in constant expression" }
+                                        ^
+
+"Test_name.c", line 84: warning: variable "bad" was declared but never referenced
+  constexpr int bad = h (5);
+                ^
+
+1 error detected in the compilation of "Test_name.c".

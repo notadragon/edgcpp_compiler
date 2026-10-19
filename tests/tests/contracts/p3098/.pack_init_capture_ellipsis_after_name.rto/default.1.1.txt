@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contracts_p3098 Test_name.c
+"Test_name.c", line 13: error: a pack init-capture is written "...y =", not "y... ="
+  int bad3(T... xs) post [y... = xs] (((y > 0) && ...)) { return 0; }
+                           ^
+
+"Test_name.c", line 15: error: a pack init-capture is written "...y =", not "y... ="
+  int bad4(T... xs) post [...y... = xs] (((y > 0) && ...)) { return 0; }
+                              ^
+
+"Test_name.c", line 17: error: a pack init-capture is written "...y =", not "y... ="
+  int d7(T... xs) post [y... = xs, z = 0] (((y > z) && ...));
+                         ^
+
+3 errors detected in the compilation of "Test_name.c".

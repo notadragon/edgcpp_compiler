@@ -1,0 +1,62 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3098 --contract_evaluation_semantic=enforce Test_name.c
+"Test_name.c", line 41: error: expression must be a modifiable lvalue
+  void g () post [j = ++gi] (j > 0);	// { dg-error "read-only" }
+                        ^
+
+"Test_name.c", line 47: error: expression must be a modifiable lvalue
+    void f () pre ([this] { return ++m > 0; } ());	// { dg-error "read-only" }
+                                     ^
+
+"Test_name.c", line 55: error: expression must be a modifiable lvalue
+    void h () pre ([=, this] { return ++m > 0; } ());	// { dg-error "read-only" }
+                                        ^
+
+"Test_name.c", line 56: error: expression must be a modifiable lvalue
+    void i () pre ([p = this] { return ++p->m > 0; } ());	// { dg-error "read-only" }
+                                         ^
+
+"Test_name.c", line 57: error: expression must be a modifiable lvalue
+    void j () pre ([&] { return [&] { return ++m > 0; } (); } ());	// { dg-error "read-only" }
+                                               ^
+
+"Test_name.c", line 58: error: expression must be a modifiable lvalue
+    void k () pre ([this] { return [=, this] () mutable { return ++m > 0; } (); } ()); // { dg-error "read-only" }
+                                                                   ^
+
+"Test_name.c", line 59: error: argument of type "const S *" is incompatible with parameter of type "S *"
+    void n () pre ((sf (this), true));			// { dg-error "invalid conversion" }
+                        ^
+
+"Test_name.c", line 60: error: expression must be a modifiable lvalue
+    void o () pre ((++this->m, true));			// { dg-error "read-only" }
+                      ^
+
+"Test_name.c", line 68: error: expression must be a modifiable lvalue
+    void u () post [p = this] (++p->m > 0);		// { dg-error "read-only" }
+                                 ^
+
+"Test_name.c", line 69: error: expression must be a modifiable lvalue
+    void v () post [q = ++m] (q > 0);			// { dg-error "read-only" }
+                          ^
+
+"Test_name.c", line 50: error: expression must be a modifiable lvalue
+      contract_assert ([this] { return ++m > 0; } ());	// { dg-error "read-only" }
+                                         ^
+
+"Test_name.c", line 51: error: expression must be a modifiable lvalue
+      contract_assert ([&] { return ++m > 0; } ());	// { dg-error "read-only" }
+                                      ^
+
+"Test_name.c", line 62: error: expression must be a modifiable lvalue
+    void q () { [this] { contract_assert (++m > 0); } (); }	// { dg-error "read-only" }
+                                            ^
+
+"Test_name.c", line 63: error: argument of type "const S *" is incompatible with parameter of type "S *"
+    void r () { [this] { contract_assert ((sf (this), true)); } (); }	// { dg-error "invalid conversion" }
+                                               ^
+
+"Test_name.c", line 64: error: expression must be a modifiable lvalue
+    void s () { [this] { contract_assert ([&] { return ++m > 0; } ()); } (); }	// { dg-error "read-only" }
+                                                         ^
+
+15 errors detected in the compilation of "Test_name.c".

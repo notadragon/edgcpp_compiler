@@ -1,0 +1,5 @@
+./a.out
+start
+capture copied
+local destroyed
+check

@@ -12305,6 +12305,19 @@ typedef struct a_contract_specifier {
 			/* The text of the diagnostic message following the
 			   predicate (P3099), passed to the violation handler
 			   as its message; NULL if there is none. */
+  a_variable_ptr
+		captures;
+			/* For a postcondition with a capture list (P3098),
+			   the capture variables, in order (linked through
+			   their "next" fields), each with its initializer;
+			   NULL otherwise.  Like result_name, they are on no
+			   scope's variables list: the specifier owns them. */
+  struct a_token_cache
+		*capture_token_cache;
+			/* An opaque pointer to the token cache holding the
+			   capture list (between the brackets), from which the
+			   captures are scanned (for an instance, from the
+			   template's).  For front-end use only. */
   a_bit_field	local_predicate:1;
 			/* TRUE if the specifier is in file-scope memory but
 			   its predicate is in a function's memory region, as

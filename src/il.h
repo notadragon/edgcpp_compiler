@@ -3189,6 +3189,14 @@ extern an_expr_node_ptr add_rvalue_class_adjust_node(an_expr_node_ptr node,
 
 extern an_expr_node_ptr copy_node(an_expr_node_ptr expr);
 
+extern a_dynamic_init_ptr copy_contract_capture_init(
+                                          a_dynamic_init_ptr  dip,
+                                          a_variable_ptr      params,
+                                          a_variable_ptr      param_proxies);
+
+extern void set_contract_copy_captures(a_variable_ptr  captures,
+                                       a_variable_ptr  *replacements);
+
 extern an_expr_node_ptr copy_list_of_expr_trees(
                                             an_expr_node_ptr         expr_list,
                                             an_expr_copy_options_set options);
