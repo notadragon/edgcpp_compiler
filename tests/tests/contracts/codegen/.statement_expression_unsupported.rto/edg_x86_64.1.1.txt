@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 --g++ --contract_evaluation_semantic=quick_enforce Test_name.c
+"Test_name.c", line 10: error: a statement expression in a precondition or postcondition is not yet supported
+    auto l = [](int x) pre(({ x > 0; })) { return x; };                // Error
+                       ^
+
+1 error detected in the compilation of "Test_name.c".

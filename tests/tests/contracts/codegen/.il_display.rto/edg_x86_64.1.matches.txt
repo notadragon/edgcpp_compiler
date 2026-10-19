@@ -1,0 +1,39 @@
+Matches for "^is_contract_result:\s+TRUE\ninit_kind:\s+initk_none":
+  <-----------------------------------------------------------------------------
+  is_contract_result:      TRUE
+  init_kind:               initk_none
+  ----------------------------------------------------------------------------->
+Matches for "^contract_prologue:\s+func-scope statement@X+\ncontract_epilogue:\s+func-scope statement@X+\ncontract_result_variable:\s+func-scope variable@X+":
+  <-----------------------------------------------------------------------------
+  contract_prologue:       func-scope statement@XXXXXXXX
+  contract_epilogue:       func-scope statement@XXXXXXXX
+  contract_result_variable:
+                           func-scope variable@XXXXXXXX
+  ----------------------------------------------------------------------------->
+Matches for "^compiler_generated:\s+TRUE\nis_contract_check:\s+TRUE\nkind:\s+stmk_if\nexpr:\s+func-scope expr-node@X+\nthen_statement:":
+  <-----------------------------------------------------------------------------
+  compiler_generated:      TRUE
+  is_contract_check:       TRUE
+  kind:                    stmk_if
+  expr:                    func-scope expr-node@XXXXXXXX
+  then_statement:
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  compiler_generated:      TRUE
+  is_contract_check:       TRUE
+  kind:                    stmk_if
+  expr:                    func-scope expr-node@XXXXXXXX
+  then_statement:
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  compiler_generated:      TRUE
+  is_contract_check:       TRUE
+  kind:                    stmk_if
+  expr:                    func-scope expr-node@XXXXXXXX
+  then_statement:
+  ----------------------------------------------------------------------------->
+Matches for "^kind:\s+ctk_assert\npredicate:\s+NULL":
+  <-----------------------------------------------------------------------------
+  kind:                    ctk_assert
+  predicate:               NULL
+  ----------------------------------------------------------------------------->

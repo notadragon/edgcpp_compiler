@@ -35,6 +35,8 @@ statements.c -- Scanning of statements.
 #include "statements.h"
 #include "macro.h"
 #include "func_def.h"
+#include "sys_predef.h"
+#include "il_walk.h"
 
 /* Conditionally open the "edg" namespace. */
 BEGIN_EDG_NAMESPACE
@@ -6374,6 +6376,16 @@ diagnose the condition.
 }  /* check_goto_and_label */
 
 
+/* What a call made for a contract violation handles: the predicate of a
+   check is false, its evaluation exits with an exception, or the
+   initialization of a postcondition's captures does (P3098). */
+typedef enum a_contract_violation_call_kind {
+  cvck_predicate_false,
+  cvck_predicate_exception,
+  cvck_capture_exception
+} a_contract_violation_call_kind;
+
+
 static void check_for_jump_over_initialization(a_statement_ptr    sp,
                                                a_source_position  *pos)
 /*
@@ -6711,6 +6723,676 @@ the break applies.
 
 #endif /* UPC_EXTENSIONS_ALLOWED */
 
+static a_boolean contract_checks_wanted(void)
+/*
+Return TRUE if checks can be generated for contract assertions (P2900) in
+the current context: the front end generates checks for this back end (see
+CONTRACT_CHECKS_IN_FRONT_END), contracts are enabled, and the context is not
+template-dependent (a template's assertions are checked in its
+instantiations).  An assertion is then checked unless its evaluation
+semantic is ignore (see contract_check_wanted).
+*/
+{
+  return CONTRACT_CHECKS_IN_FRONT_END && contracts_enabled &&
+         !is_template_dependent_context();
+}  /* contract_checks_wanted */
+
+
+static a_routine_ptr trap_routine_for_contracts(void)
+/*
+Return the routine for __builtin_trap, which a contract violation with the
+quick_enforce semantic calls: the builtin function, or where there is none,
+the extern "C" function predeclared in its place (contract_trap_routine).
+Return NULL if neither is available.
+*/
+{
+  a_symbol_locator  loc;
+  a_symbol_ptr      sym;
+
+  if (contract_trap_routine != NULL) return contract_trap_routine;
+  /* Look it up at file scope (as gnu_builtin_func_by_name does), since a
+     class scope, e.g., can hide it from an ordinary lookup. */
+  clear_locator(&loc, &null_source_position);
+  (void)find_symbol("__builtin_trap", (sizeof_t)14, &loc);
+  if (builtin_needs_to_be_loaded(loc.symbol_header)) {
+    (void)load_matching_builtin_function(loc.symbol_header);
+  }  /* if */
+  sym = file_scope_id_lookup(il_header.primary_scope, &loc,
+                             IDL_DIRECT_NAMESPACE_MEMBERS_ONLY |
+                             IDL_SUPPRESS_DECL_SEQ_CHECK);
+  return (sym != NULL && sym->kind == (a_symbol_kind)sk_routine) ?
+                                         sym->variant.routine.ptr : NULL;
+}  /* trap_routine_for_contracts */
+
+
+static an_expr_node_ptr contract_violation_call(
+                                  a_contract_specifier_ptr        csp,
+                                  a_contract_violation_call_kind  call_kind)
+/*
+Return an expression (of type void) that calls the function that handles a
+violation of the contract assertion csp under its evaluation semantic, or
+NULL (after an error) if there is no such function.  The only semantic
+checked by the front end is quick_enforce (see the
+--contract_evaluation_semantic option and contract_config.c), whose
+violation calls __builtin_trap().  call_kind tells what the call handles:
+quick_enforce handles a violation by an exception (P2900, P3098) alike.
+*/
+{
+  a_routine_ptr     rp;
+  an_expr_node_ptr  call;
+
+  check_assertion(contract_semantic_for(csp, current_routine_entry(),
+                                        /*in_constant_evaluation=*/FALSE) ==
+                                                         ces_quick_enforce);
+  rp = trap_routine_for_contracts();
+  if (rp == NULL) {
+    pos_error(ec_contract_quick_enforce_needs_builtin_trap, &csp->position);
+    return NULL;
+  }  /* if */
+  call = function_rvalue_expr(rp);
+  call = make_operator_node((an_expr_operator_kind)eok_call, void_type(),
+                            call);
+  if (strict_cpp17_eval_order) {
+    /* As for an ordinary call (see make_function_call). */
+    call->variant.operation.eval_left_to_right = TRUE;
+  }  /* if */
+  rp->source_corresp.referenced = TRUE;
+  set_expr_result_not_used(call);
+  return call;
+}  /* contract_violation_call */
+
+
+static void check_for_enk_statement(an_expr_node_ptr                    expr,
+                                    an_expr_or_stmt_traversal_block_ptr tblock)
+/*
+Set tblock->result and tblock->terminate to TRUE if expr is an enk_statement
+node (a GNU statement expression).  Called via traverse_expr.
+*/
+{
+  if (expr->kind == (an_expr_node_kind)enk_statement) {
+    tblock->result = TRUE;
+    tblock->terminate = TRUE;
+  }  /* if */
+}  /* check_for_enk_statement */
+
+
+static an_expr_node_ptr negate_contract_predicate(an_expr_node_ptr  predicate)
+/*
+Return the negation of predicate (a full expression contextually converted to
+bool).  An object lifetime at the top of the predicate stays at the top.
+*/
+{
+  an_expr_node_ptr  *p_expr = &predicate;
+
+  if (predicate->kind == (an_expr_node_kind)enk_object_lifetime) {
+    p_expr = &predicate->variant.object_lifetime.expr;
+  }  /* if */
+  *p_expr = make_operator_node((an_expr_operator_kind)eok_not,
+                               boolean_result_type(), *p_expr);
+  return predicate;
+}  /* negate_contract_predicate */
+
+
+/* The variable for substitute_contract_result_reference. */
+STATIC_THREAD a_variable_ptr
+		contract_result_reference;
+
+
+static void substitute_contract_result_reference(
+                         an_expr_node_ptr                               expr,
+                         ARG_UNUSED an_expr_or_stmt_traversal_block_ptr tblock)
+/*
+Called via traverse_expr on the copy of a postcondition's predicate whose
+result name was replaced by the variable contract_result_reference, a
+reference to the result object (see prepare_contract_checks_for_lowering):
+turn each lvalue reference to the variable into the reference indirection
+that names the object, as for any reference variable.
+*/
+{
+  if (expr->kind == (an_expr_node_kind)enk_variable &&
+      node_variable(expr) == contract_result_reference &&
+      expr->is_lvalue && !is_any_reference_type(expr->type)) {
+    an_expr_node_ptr  ref = var_rvalue_expr(node_variable(expr));
+    ref = add_ref_indirection_to_node(ref);
+    ref->type = expr->type;
+    overwrite_node(expr, ref);
+  }  /* if */
+}  /* substitute_contract_result_reference */
+
+
+static void move_full_expression_lifetime(an_object_lifetime_ptr  olp)
+/*
+olp, if non-NULL, is the object lifetime of a full expression just made for a
+contract assertion's check (see make_contract_try_block): move it from the
+children of its parent lifetime to those of the current lifetime.
+*/
+{
+  if (olp != NULL) {
+    an_object_lifetime_ptr  parent = olp->parent_lifetime;
+    an_object_lifetime_ptr  *p_olp = &parent->child_lifetime;
+    while (*p_olp != NULL && *p_olp != olp) p_olp = &(*p_olp)->next;
+    check_assertion(*p_olp == olp);
+    *p_olp = olp->next;
+    olp->parent_lifetime = curr_object_lifetime;
+    olp->parent_destruction_sublist = curr_object_lifetime->destructions;
+    olp->next = curr_object_lifetime->child_lifetime;
+    curr_object_lifetime->child_lifetime = olp;
+  }  /* if */
+}  /* move_full_expression_lifetime */
+
+
+static a_statement_ptr make_contract_try_block(
+                                       a_statement_ptr    statements,
+                                       an_expr_node_ptr   exception_call,
+                                       a_source_position  *pos,
+                                       a_boolean          append)
+/*
+Make, at pos, the try block of a contract assertion's check (see
+make_contract_check_statement) or of the initialization of a postcondition's
+captures (see make_contract_capture_inits), whose full expressions might
+throw:
+
+  try { statements } catch (...) { exception_call; }
+
+and return it, added to the current statement sequence if append is TRUE.
+statements, a list of statements not in any sequence, is an "if" or stmk_init
+statements and an expression statement; the object lifetimes of their full
+expressions become children of the try block's, so that an exception from
+one destroys its temporaries and goes no further than the handler.  The try
+block is marked as a contract check, as a check's "if" is, so that constant
+evaluation, which evaluates contract assertions as such, finds the check
+(see interpret.c).
+*/
+{
+  a_statement_ptr  try_stmt, block, handler_block, call_stmt, stmt;
+  a_handler_ptr    handler;
+
+  if (append) {
+    try_stmt = add_statement_at_stmt_pos(stmk_try_block, pos,
+                                         /*compiler_generated=*/TRUE);
+  } else {
+    try_stmt = alloc_statement(stmk_try_block, /*compiler_generated=*/TRUE);
+    try_stmt->position = *pos;
+  }  /* if */
+  try_stmt->is_contract_check = TRUE;
+  block = alloc_statement(stmk_block, /*compiler_generated=*/TRUE);
+  block->position = *pos;
+  block->parent = try_stmt;
+  try_stmt->variant.try_block->statement = block;
+  push_object_lifetime(iek_try_supplement, (char *)try_stmt->variant.try_block,
+                       (an_object_lifetime_kind)olk_try_block);
+  push_object_lifetime(iek_block, (char *)block->variant.block.extra_info,
+                       (an_object_lifetime_kind)olk_block);
+  block->variant.block.statements = statements;
+  for (stmt = statements; stmt != NULL; stmt = stmt->next) {
+    an_expr_node_ptr  expr = stmt->expr;
+    stmt->parent = block;
+    if (stmt->kind == (a_statement_kind)stmk_init) {
+      a_dynamic_init_ptr  dip = stmt->variant.dynamic_init;
+      expr = NULL;
+      if (dip->kind == (a_dynamic_init_kind)dik_expression) {
+        expr = dip->variant.expression;
+      } else {
+        move_full_expression_lifetime(dip->init_expr_lifetime);
+      }  /* if */
+    }  /* if */
+    if (expr != NULL &&
+        expr->kind == (an_expr_node_kind)enk_object_lifetime) {
+      move_full_expression_lifetime(expr->variant.object_lifetime.ptr);
+    }  /* if */
+  }  /* for */
+  (void)pop_object_lifetime();
+  /* The handler, catch (...), in a block scope of its own. */
+  (void)push_scope((a_scope_kind)sck_block, NO_SCOPE_NUMBER,
+                   /*assoc_type=*/NULL, /*assoc_routine=*/NULL);
+  try_stmt->variant.try_block->handlers = handler = alloc_handler();
+  handler->catch_position = *pos;
+  set_block_scope_handler(handler);
+  handler_block = alloc_statement(stmk_block, /*compiler_generated=*/TRUE);
+  handler_block->position = *pos;
+  handler_block->variant.block.extra_info->assoc_scope =
+                                                  scope_stack_top().il_scope;
+  handler_block->parent = try_stmt;
+  handler->statement = handler_block;
+  call_stmt = alloc_statement(stmk_expr, /*compiler_generated=*/TRUE);
+  call_stmt->position = *pos;
+  call_stmt->expr = exception_call;
+  call_stmt->parent = handler_block;
+  handler_block->variant.block.statements = call_stmt;
+  pop_scope();
+  current_routine_entry()->contains_try_block = TRUE;
+  (void)pop_object_lifetime();
+  return try_stmt;
+}  /* make_contract_try_block */
+
+
+static a_statement_ptr make_contract_check_statement(
+                                     a_contract_specifier_ptr  csp,
+                                     a_variable_ptr            result_var,
+                                     a_boolean                 append)
+/*
+Return a check of the contract assertion csp:
+
+  if (!predicate) violation-call;
+
+(see contract_violation_call), or NULL (after any error) if there is none.
+If append is TRUE, the check is added to the current statement sequence;
+otherwise it is in none.  Where the predicate might throw, the check is a
+try block around that, whose handler handles the violation by an exception
+(see make_contract_try_block).  For a contract_assert the predicate
+is the assertion's own, which moves into the check (csp->predicate becomes
+NULL).  For a precondition or postcondition, which is checked in the
+function definition, it is a copy of the assertion's in which the parameters
+are those of the definition and the result name, if any, is result_var
+(which, for a reference result_var, names the object it refers to).
+*/
+{
+  an_expr_node_ptr     cond, call, exception_call = NULL;
+  a_statement_ptr      if_stmt, call_stmt;
+  a_boolean            append_if = append;
+  an_expr_node_ptr     pred = contract_specifier_predicate(csp);
+
+  if (pred == NULL || is_error_node(pred)) return NULL;
+  if (csp->kind != ctk_assert) {
+    /* A statement expression cannot be copied (see i_copy_expr_tree). */
+    an_expr_or_stmt_traversal_block  tblock;
+    clear_expr_or_stmt_traversal_block(&tblock);
+    tblock.process_expr = check_for_enk_statement;
+    traverse_expr(pred, &tblock);
+    if (tblock.result) {
+      pos_error(ec_contract_statement_expression_unsupported,
+                &csp->position);
+      /* Diagnose it only once (the specifier is in file-scope memory). */
+      csp->predicate = fs_error_node();
+      csp->local_predicate = FALSE;
+      csp->predicate_sexpr = NULL;
+      return NULL;
+    }  /* if */
+  }  /* if */
+  call = contract_violation_call(csp, cvck_predicate_false);
+  if (call == NULL) return NULL;
+  if (csp->kind == ctk_assert) {
+    cond = negate_contract_predicate(csp->predicate);
+    csp->predicate = NULL;
+  } else {
+    an_expr_stack_entry  *saved_expr_stack;
+    an_expr_stack_entry  expr_stack_entry;
+    save_expr_stack(&saved_expr_stack);
+    push_expr_stack(ek_normal, &expr_stack_entry,
+                    /*force_object_lifetime=*/FALSE,
+                    /*suppress_object_lifetime=*/FALSE);
+    cond = copy_contract_predicate(pred,
+                                   innermost_function_scope->
+                                                   variant.routine.parameters,
+                                   csp->param_proxies,
+                                   csp->result_name, result_var);
+    if (result_var != NULL && csp->result_name != NULL &&
+        is_any_reference_type(result_var->type)) {
+      an_expr_or_stmt_traversal_block  tblock;
+      clear_expr_or_stmt_traversal_block(&tblock);
+      tblock.process_expr = substitute_contract_result_reference;
+      contract_result_reference = result_var;
+      traverse_expr(cond, &tblock);
+      contract_result_reference = NULL;
+    }  /* if */
+    cond = make_operator_node((an_expr_operator_kind)eok_not,
+                              boolean_result_type(), cond);
+    cond = wrap_up_full_expression(cond);
+    pop_expr_stack();
+    restore_expr_stack(saved_expr_stack);
+  }  /* if */
+  if (exceptions_enabled && expr_might_throw(cond)) {
+    /* An exception from the evaluation of the predicate is a violation
+       (P2900): the check is in a try block. */
+    exception_call = contract_violation_call(csp, cvck_predicate_exception);
+    if (exception_call == NULL) return NULL;
+    append_if = FALSE;
+  }  /* if */
+  if (append_if) {
+    if_stmt = add_statement_at_stmt_pos(stmk_if, &csp->position,
+                                        /*compiler_generated=*/TRUE);
+  } else {
+    if_stmt = alloc_statement(stmk_if, /*compiler_generated=*/TRUE);
+    if_stmt->position = csp->position;
+  }  /* if */
+  if_stmt->is_contract_check = TRUE;
+  if_stmt->expr = cond;
+  call_stmt = alloc_statement(stmk_expr, /*compiler_generated=*/TRUE);
+  call_stmt->position = csp->position;
+  call_stmt->expr = call;
+  call_stmt->parent = if_stmt;
+  if_stmt->variant.if_stmt.then_statement = call_stmt;
+  if (exception_call != NULL) {
+    return make_contract_try_block(if_stmt, exception_call, &csp->position,
+                                   append);
+  }  /* if */
+  return if_stmt;
+}  /* make_contract_check_statement */
+
+
+static void add_contract_check(a_contract_specifier_ptr  csp)
+/*
+Add to the current statement sequence a check of the contract assertion csp,
+a contract_assert or a precondition of a coroutine (see
+make_contract_check_statement).
+*/
+{
+  (void)make_contract_check_statement(csp, (a_variable_ptr)NULL,
+                                      /*append=*/TRUE);
+}  /* add_contract_check */
+
+
+static a_variable_ptr alloc_contract_check_variable(a_type_ptr  type)
+/*
+Return a new variable of the given type, for the checks of the current
+function definition's contract assertions, in the function's scope, which
+the checks are in once IL lowering has put them into the function (not in a
+function-try-block's compound statement).
+*/
+{
+  a_variable_ptr  vp;
+  a_scope_depth   saved_decl_scope_level = decl_scope_level;
+
+  decl_scope_level = depth_innermost_function_scope;
+  vp = alloc_temporary_variable(type, /*force_static=*/FALSE);
+  decl_scope_level = saved_decl_scope_level;
+  return vp;
+}  /* alloc_contract_check_variable */
+
+
+static a_variable_ptr make_contract_result_variable(void)
+/*
+Make, and record on the function scope, the variable that the checks of the
+current function definition's postconditions name as its result (see
+prepare_contract_checks_for_lowering), and return it; return NULL if the
+function returns void or its type is in error.
+*/
+{
+  a_routine_ptr   rp = current_routine_entry();
+  a_variable_ptr  result_var = NULL;
+
+  if (!is_error_type(rp->type)) {
+    a_type_ptr  return_type =
+                       skip_typerefs(rp->type)->variant.routine.return_type;
+    a_type_ptr  rtype = skip_typerefs(return_type);
+    if (!is_error_type(rtype) && !is_void_type(rtype) &&
+        !is_auto_type(rtype)) {
+      if (is_any_reference_type(rtype)) {
+        rtype = make_reference_type(type_pointed_to(rtype));
+      } else if (is_class_struct_union_type(rtype)) {
+        rtype = make_reference_type(return_type);
+      } else {
+        rtype = return_type;
+      }  /* if */
+      result_var = alloc_contract_check_variable(rtype);
+      result_var->is_contract_result = TRUE;
+      innermost_function_scope->variant.routine.contract_result_variable =
+                                                                  result_var;
+    }  /* if */
+  }  /* if */
+  return result_var;
+}  /* make_contract_result_variable */
+
+
+static a_statement_ptr make_contract_placeholder(
+                                              a_contract_specifier_ptr  csp)
+/*
+Return an empty statement, in no statement sequence, that holds the place of
+the checks (or the initializations or destructions of the captures) of csp, a
+postcondition whose operand waits for the return type to be deduced (see
+add_deferred_postcondition_checks), at its position.
+*/
+{
+  a_statement_ptr  stmt = alloc_statement(stmk_empty,
+                                          /*compiler_generated=*/TRUE);
+
+  stmt->position = csp->position;
+  return stmt;
+}  /* make_contract_placeholder */
+
+
+static a_boolean has_contract_placeholder(a_statement_ptr           stmts,
+                                          a_contract_specifier_ptr  csp)
+/*
+Return TRUE if the list of statements stmts holds the placeholder of csp
+(see make_contract_placeholder).
+*/
+{
+  for (; stmts != NULL; stmts = stmts->next) {
+    if (stmts->kind == (a_statement_kind)stmk_empty &&
+        stmts->position.seq == csp->position.seq &&
+        stmts->position.column == csp->position.column) {
+      return TRUE;
+    }  /* if */
+  }  /* for */
+  return FALSE;
+}  /* has_contract_placeholder */
+
+
+static void replace_contract_placeholder(a_statement_ptr           *p_list,
+                                         a_contract_specifier_ptr  csp,
+                                         a_statement_ptr           stmts)
+/*
+Replace the placeholder of csp (see make_contract_placeholder) in the list
+of statements *p_list by the list stmts, which may be NULL.
+*/
+{
+  a_statement_ptr  *p_stmt, last;
+
+  for (p_stmt = p_list; *p_stmt != NULL; p_stmt = &(*p_stmt)->next) {
+    if ((*p_stmt)->kind == (a_statement_kind)stmk_empty &&
+        (*p_stmt)->position.seq == csp->position.seq &&
+        (*p_stmt)->position.column == csp->position.column) {
+      a_statement_ptr  next = (*p_stmt)->next;
+      if (stmts == NULL) {
+        *p_stmt = next;
+      } else {
+        *p_stmt = stmts;
+        for (last = stmts; last->next != NULL; last = last->next) {}
+        last->next = next;
+      }  /* if */
+      return;
+    }  /* if */
+  }  /* for */
+}  /* replace_contract_placeholder */
+
+
+static void prepare_contract_checks_for_lowering(void)
+/*
+The body of the current function definition is starting, in a configuration
+where the front end generates the checks of contract assertions.  Make the
+checks of its preconditions and postconditions (P2900), in declaration
+order, and record them on its function scope (contract_prologue and
+contract_epilogue) for IL lowering, which puts the preconditions' at the
+start of the lowered function and the postconditions' in an epilogue that
+each return branches to, after the function's local variables are
+destroyed.  The postconditions name as the result a variable
+(contract_result_variable) that lowering sets at each return: for a
+reference or class return type, a reference to the result object itself.
+The captures of a postcondition (P3098) are variables of the definition,
+initialized with the preconditions' checks in declaration order (see
+make_contract_capture_inits) and destroyed at the end of the epilogue.
+*/
+{
+  a_routine_ptr             rp = current_routine_entry();
+  a_scope_ptr               fsp = innermost_function_scope;
+  a_contract_specifier_ptr  csp;
+  a_statement_ptr           *p_pre = &fsp->variant.routine.contract_prologue,
+                            *p_post = &fsp->variant.routine.contract_epilogue;
+  a_statement_ptr           capture_dtors = NULL;
+  a_variable_ptr            result_var = NULL;
+  a_contract_specifier_ptr  specifiers = rp->contract_specifiers;
+
+  if (rp->contract_interface_target != NULL) {
+    /* An interface wrapper checks its virtual function's assertions (see
+       make_contract_interface_wrapper). */
+    specifiers = rp->contract_interface_target->contract_specifiers;
+  }  /* if */
+  for (csp = specifiers; csp != NULL; csp = csp->next) {
+    an_expr_node_ptr  pred = contract_specifier_predicate(csp);
+    /* (A result name of a function whose return type is not yet deduced has
+       no predicate here: EDG-9.) */
+    if (csp->kind == ctk_post && csp->result_name != NULL &&
+        pred != NULL && !is_error_node(pred) && contract_check_wanted(csp)) {
+      break;
+    }  /* if */
+  }  /* for */
+  if (csp != NULL) result_var = make_contract_result_variable();
+  for (csp = specifiers; csp != NULL; csp = csp->next) {
+    a_statement_ptr  stmt, dtors = NULL;
+    a_variable_ptr   *replacements = NULL, flag = NULL;
+    sizeof_t         n = 0;
+    if (csp->kind == ctk_post && csp->awaits_return_type_deduction) {
+      /* The operand, and so the semantic, comes with the return type at the
+         end of the body (EDG-9): places for its captures' initializations,
+         its check and its captures' destructions, filled in then (see
+         add_deferred_postcondition_checks). */
+      *p_pre = make_contract_placeholder(csp);
+      p_pre = &(*p_pre)->next;
+      *p_post = make_contract_placeholder(csp);
+      p_post = &(*p_post)->next;
+      stmt = make_contract_placeholder(csp);
+      stmt->next = capture_dtors;
+      capture_dtors = stmt;
+      continue;
+    }  /* if */
+    if (csp->kind == ctk_assert || !contract_check_wanted(csp)) continue;
+    if (csp->kind == ctk_post && csp->captures != NULL) {
+      /* The captures (P3098) are initialized in declaration order with the
+         preconditions' checks, and destroyed after all the postconditions'
+         checks, in reverse order. */
+      a_variable_ptr  cv;
+      for (cv = csp->captures; cv != NULL; cv = cv->next) n++;
+      replacements = (a_variable_ptr *)alloc_general(
+                                           n * sizeof(a_variable_ptr));
+      stmt = make_contract_capture_inits(csp, replacements, &flag, &dtors);
+      if (stmt != NULL) {
+        *p_pre = stmt;
+        while (stmt->next != NULL) stmt = stmt->next;
+        p_pre = &stmt->next;
+      }  /* if */
+      if (dtors != NULL) {
+        a_statement_ptr  last;
+        dtors = if_contract_flag(flag, dtors);
+        for (last = dtors; last->next != NULL; last = last->next) {}
+        last->next = capture_dtors;
+        capture_dtors = dtors;
+      }  /* if */
+      set_contract_copy_captures(csp->captures, replacements);
+    }  /* if */
+    stmt = make_contract_check_statement(csp, result_var, /*append=*/FALSE);
+    if (replacements != NULL) {
+      set_contract_copy_captures((a_variable_ptr)NULL,
+                                 (a_variable_ptr *)NULL);
+      free_general((a_void_ptr)replacements, n * sizeof(a_variable_ptr));
+    }  /* if */
+    if (stmt == NULL) continue;
+    stmt = if_contract_flag(flag, stmt);
+    if (csp->kind == ctk_pre) {
+      *p_pre = stmt;
+      p_pre = &stmt->next;
+    } else {
+      *p_post = stmt;
+      p_post = &stmt->next;
+    }  /* if */
+  }  /* for */
+  *p_post = capture_dtors;
+}  /* prepare_contract_checks_for_lowering */
+
+
+void prepare_contract_interface_checks(void)
+/*
+The definition of an interface wrapper (see make_contract_interface_wrapper)
+has begun.  Make the checks of its virtual function's preconditions and
+postconditions, which IL lowering puts around its virtual call (see
+add_contract_interface_call).
+*/
+{
+  if (contract_checks_wanted()) prepare_contract_checks_for_lowering();
+}  /* prepare_contract_interface_checks */
+
+
+void add_deferred_postcondition_checks(void)
+/*
+The body of the current function definition, which has a deduced return
+type, has been scanned, and so have the operands of its postconditions that
+waited for the return type (EDG-9; see
+scan_postconditions_awaiting_deduction).  In a configuration where the front
+end generates the checks of contract assertions, make their checks, and the
+initializations and destructions of their captures, in the places held for
+them (see prepare_contract_checks_for_lowering).
+*/
+{
+  a_routine_ptr             rp = current_routine_entry();
+  a_scope_ptr               fsp = innermost_function_scope;
+  a_contract_specifier_ptr  csp;
+  a_variable_ptr            result_var;
+
+  if (!contract_checks_wanted() || rp->is_coroutine) return;
+  result_var = fsp->variant.routine.contract_result_variable;
+  for (csp = rp->contract_specifiers; csp != NULL; csp = csp->next) {
+    a_statement_ptr  inits = NULL, check = NULL, dtors = NULL;
+    a_variable_ptr   *replacements = NULL, flag = NULL;
+    sizeof_t         n = 0;
+    if (csp->kind != ctk_post ||
+        !has_contract_placeholder(fsp->variant.routine.contract_epilogue,
+                                  csp)) {
+      continue;
+    }  /* if */
+    if (contract_check_wanted(csp)) {
+      if (result_var == NULL) result_var = make_contract_result_variable();
+      if (csp->captures != NULL) {
+        a_variable_ptr  cv;
+        for (cv = csp->captures; cv != NULL; cv = cv->next) n++;
+        replacements = (a_variable_ptr *)alloc_general(
+                                             n * sizeof(a_variable_ptr));
+        inits = make_contract_capture_inits(csp, replacements, &flag, &dtors);
+        dtors = if_contract_flag(flag, dtors);
+        set_contract_copy_captures(csp->captures, replacements);
+      }  /* if */
+      check = make_contract_check_statement(csp, result_var,
+                                            /*append=*/FALSE);
+      if (replacements != NULL) {
+        set_contract_copy_captures((a_variable_ptr)NULL,
+                                   (a_variable_ptr *)NULL);
+        free_general((a_void_ptr)replacements, n * sizeof(a_variable_ptr));
+      }  /* if */
+      check = if_contract_flag(flag, check);
+    }  /* if */
+    replace_contract_placeholder(&fsp->variant.routine.contract_prologue,
+                                 csp, inits);
+    replace_contract_placeholder(&fsp->variant.routine.contract_epilogue,
+                                 csp, check);
+    replace_contract_placeholder(&fsp->variant.routine.contract_epilogue,
+                                 csp, dtors);
+  }  /* for */
+}  /* add_deferred_postcondition_checks */
+
+
+static void add_precondition_checks(void)
+/*
+The body of the current function definition is starting.  Add checks of its
+preconditions (P2900), in declaration order.
+*/
+{
+  a_contract_specifier_ptr  csp;
+
+  if (!contract_checks_wanted()) return;
+  if (!current_routine_entry()->is_coroutine) {
+    /* Checked in the lowered function, with the postconditions (see
+       prepare_contract_checks_for_lowering). */
+    prepare_contract_checks_for_lowering();
+    return;
+  }  /* if */
+  csp = current_routine_entry()->contract_specifiers;
+  for (; csp != NULL; csp = csp->next) {
+    if (csp->kind == ctk_pre && contract_check_wanted(csp)) {
+      add_contract_check(csp);
+    }  /* if */
+  }  /* for */
+}  /* add_precondition_checks */
+
+
 static void break_statement(void)
 /*
 Scan a "break" statement and add it to the current statement sequence.
@@ -6810,6 +7492,10 @@ sequence.  The syntax is:
   sp->end_position = curr_construct_end_position;
 #endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
   stmt_update_source_sequence_list(sp);
+  if (contract_checks_wanted() && contract_check_wanted(csp)) {
+    /* The check follows the statement, which itself generates nothing. */
+    add_contract_check(csp);
+  }  /* if */
   /* Check for and ignore the final semicolon. */
   (void)required_token(tok_semicolon, ec_exp_semicolon);
   db_exit();
@@ -8425,6 +9111,11 @@ is being parsed within the context of the __extension__ keyword.
                 locator_for_curr_id.symbol_header->identifier) == 0) {
     local_label_declaration();
   }  /* while */
+  if (at_function_level &&
+      current_routine_entry()->contract_specifiers != NULL) {
+    /* Check the preconditions, if any, before the body. */
+    add_precondition_checks();
+  }  /* if */
   if (is_function_try_block &&
       current_routine_entry()->contract_specifiers != NULL) {
     /* The compound statement of a function-try-block is the body of the
@@ -8436,6 +9127,8 @@ is being parsed within the context of the __extension__ keyword.
     mark_contract_params_used(
                          current_routine_entry(),
                          innermost_function_scope->variant.routine.parameters);
+    add_precondition_checks();
+  }  /* if */
 
   /* Scan the sequence of statements.  (Note that we may end up here during
      preprocessing error recovery if a C++11 lambda or GNU statement

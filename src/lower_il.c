@@ -22032,6 +22032,130 @@ will be put out later.
 
 #endif /* ABI_CHANGES_FOR_COVARIANT_VIRTUAL_FUNC_RETURN */
 
+static void add_contract_prologue_and_epilogue(a_scope_ptr scope)
+/*
+The body of the function of scope has been lowered.  Put in the checks of its
+preconditions and postconditions that the front end made for it
+(contract_prologue and contract_epilogue of the scope), and lower them: the
+precondition checks at the start of the function, ahead of a constructor's
+initialization of its bases and members, and the postcondition checks in an
+epilogue at its end, after its local variables, and a destructor's members and
+bases, are destroyed.  Each return of the function (the return memo list)
+stores the returned value, if any, and branches to the epilogue, which sets
+the result variable of the postconditions (contract_result_variable) to name
+the result object, checks the postconditions and returns the value.  The
+epilogue's return is then the only one on the return memo list.
+*/
+{
+  a_statement_ptr    block = scope->assoc_block;
+  a_statement_ptr    stmt, next_stmt, last_stmt, final_return;
+  a_variable_ptr     result_var =
+                             scope->variant.routine.contract_result_variable;
+  a_variable_ptr     holder = NULL;
+  a_return_memo_ptr  rmp;
+  a_label_ptr        epilogue_label;
+  an_insert_location insert_location;
+  a_type_ptr         routine_type =
+                          skip_typerefs(scope->variant.routine.ptr->type);
+
+  check_assertion(block->kind == (a_statement_kind)stmk_block);
+  set_block_start_insert_location(block, &insert_location);
+  for (stmt = scope->variant.routine.contract_prologue;
+       stmt != NULL;
+       stmt = next_stmt) {
+    next_stmt = stmt->next;
+    stmt->next = NULL;
+    insert_statement(stmt, &insert_location);
+    lower_statement(stmt);
+  }  /* for */
+  scope->variant.routine.contract_prologue = NULL;
+  if (scope->variant.routine.contract_epilogue == NULL ||
+      (return_memo_list == NULL &&
+       !is_void_type(routine_type->variant.routine.return_type))) {
+    /* No postconditions, or no return (the end of the function is reached
+       only by flowing off it, with undefined behavior). */
+    scope->variant.routine.contract_epilogue = NULL;
+    return;
+  }  /* if */
+  /* The variable that holds the returned value, if any. */
+  for (rmp = return_memo_list; rmp != NULL; rmp = rmp->next) {
+    if (rmp->stmt->expr != NULL) break;
+  }  /* for */
+  if (rmp != NULL) {
+    a_type_ptr  value_type = rmp->stmt->expr->type;
+    if (result_var != NULL &&
+        !routine_type->variant.routine.extra_info->
+                                               value_returned_as_parameter &&
+        !is_class_struct_union_type(skip_typerefs(value_type))) {
+      /* A scalar, or a reference (a pointer now): the result variable
+         itself. */
+      holder = result_var;
+    } else {
+      holder = make_temporary_in_scope(value_type, scope,
+                                       /*force_static=*/FALSE,
+                                       /*promote_if_necessary=*/FALSE);
+    }  /* if */
+  }  /* if */
+  /* Each return stores the value and branches to the epilogue. */
+  for (last_stmt = NULL, stmt = block->variant.block.statements;
+       stmt != NULL;
+       last_stmt = stmt, stmt = stmt->next) {}
+  if (last_stmt == NULL) {
+    set_block_start_insert_location(block, &insert_location);
+  } else {
+    set_insert_location(last_stmt, &insert_location);
+  }  /* if */
+  epilogue_label = insert_temp_label(&insert_location);
+  for (rmp = return_memo_list; rmp != NULL; rmp = rmp->next) {
+    stmt = rmp->stmt;
+    if (stmt->expr != NULL) {
+      an_insert_location  return_insert_location;
+      a_statement_ptr     return_stmt;
+      turn_branch_into_block(stmt, &return_insert_location, &return_stmt);
+      (void)insert_var_assignment_statement(
+                         holder,
+                         add_cast_if_necessary(return_stmt->expr, holder->type),
+                         &return_insert_location);
+      return_stmt->expr = NULL;
+      stmt = return_stmt;
+    }  /* if */
+    set_statement_kind(stmt, (a_statement_kind)stmk_goto);
+    stmt->variant.label.ptr = epilogue_label;
+  }  /* for */
+  free_return_memo_list(return_memo_list);
+  return_memo_list = NULL;
+  /* The epilogue. */
+  if (result_var != NULL && holder != result_var) {
+    /* A class object: The result variable is a pointer to it. */
+    an_expr_node_ptr  address;
+    if (routine_type->variant.routine.extra_info->
+                                               value_returned_as_parameter) {
+      address = var_rvalue_expr(return_value_pointer_variable);
+    } else {
+      address = add_address_of_to_node(var_lvalue_expr(holder));
+    }  /* if */
+    (void)insert_var_assignment_statement(
+                                    result_var,
+                                    add_cast_if_necessary(address,
+                                                          result_var->type),
+                                    &insert_location);
+  }  /* if */
+  for (stmt = scope->variant.routine.contract_epilogue;
+       stmt != NULL;
+       stmt = next_stmt) {
+    next_stmt = stmt->next;
+    stmt->next = NULL;
+    insert_statement(stmt, &insert_location);
+    lower_statement(stmt);
+  }  /* for */
+  scope->variant.routine.contract_epilogue = NULL;
+  final_return = alloc_statement(stmk_return, /*compiler_generated=*/TRUE);
+  if (holder != NULL) final_return->expr = var_rvalue_expr(holder);
+  insert_statement(final_return, &insert_location);
+  add_to_return_memo_list(final_return);
+}  /* add_contract_prologue_and_epilogue */
+
+
 static void lower_function_body(a_statement_ptr statement)
 /*
 Lower the body of a function.  The function is not a constructor or destructor.
@@ -22319,6 +22443,16 @@ Do IL lowering of the indicated scope and everything under it.
          function level) lowers all the statements in the function, even those
          inside block scopes. */
       lower_function_body(scope->assoc_block);
+    }  /* if */
+    if (routine->is_coroutine) {
+      /* The checks of a coroutine's preconditions are in its body, and its
+         postconditions are not checked yet (EDG-84; see
+         generate_coroutine_body): their checks stay on the scope, unused,
+         where the IL of the function still reaches them. */
+    } else if (scope->variant.routine.contract_prologue != NULL ||
+               scope->variant.routine.contract_epilogue != NULL) {
+      /* The checks of the function's preconditions and postconditions. */
+      add_contract_prologue_and_epilogue(scope);
     }  /* if */
     /* Add prologue code for exceptions. */
     if (exceptions_enabled

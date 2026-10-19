@@ -1,0 +1,10 @@
+./a.out
+kind=1 semantic=2 mode=1 terminating=0 line=18
+  comment: (((int)((const int)x)) > 0)
+  function: int n::f(int)
+kind=2 semantic=2 mode=1 terminating=0 line=20
+  comment: (((int)((const int)r)) != 1)
+  function: int n::f(int)
+kind=3 semantic=2 mode=1 terminating=0 line=29
+  comment: (sizeof (int) == 0)
+  function: int main()

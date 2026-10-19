@@ -1,0 +1,4 @@
+./a.out
+start
+contract violation in function f(int)::<lambda(int)> at Test_name.c:14: (((int)((const int)r)) > 1)
+[assertion_kind: post, semantic: enforce, mode: predicate_false, terminating: yes]
