@@ -8251,6 +8251,28 @@ constant should not be treated as equivalent to the underlying expression.
 }  /* unwrap_if_tpck_expression */
 
 
+/* The result names of the two postconditions whose predicates are being
+   compared by equiv_contract_predicates, which correspond to each other;
+   NULL otherwise. */
+STATIC_THREAD a_variable_ptr  compared_result_name_1 = NULL;
+STATIC_THREAD a_variable_ptr  compared_result_name_2 = NULL;
+
+
+static an_expr_node_ptr backing_expr_of_constant(a_constant_ptr  cp)
+/*
+Return the backing expression of constant cp (see expr_node_from_constant),
+or NULL if it has none (e.g., it is a literal).
+*/
+{
+  an_expr_node_ptr  expr = NULL;
+
+  if (cp->expr != NULL || cp->local_expr_ref) {
+    expr = expr_node_from_constant(cp);
+  }  /* if */
+  return expr;
+}  /* backing_expr_of_constant */
+
+
 a_boolean compare_expressions(an_expr_node_ptr                node1,
                               an_expr_node_ptr                node2,
                               a_compare_constants_options_set options)
@@ -8362,6 +8384,20 @@ are done.
         }  /* if */
         break;
       case enk_constant:
+        if ((options & CC_AS_WRITTEN) != 0 &&
+            node_constant(node1) != node_constant(node2)) {
+          /* A folded expression is compared as written: by its backing
+             expression, if either constant has one. */
+          an_expr_node_ptr  backing1 =
+                         backing_expr_of_constant(node_constant(node1));
+          an_expr_node_ptr  backing2 =
+                         backing_expr_of_constant(node_constant(node2));
+          if (backing1 != NULL || backing2 != NULL) {
+            eq = backing1 != NULL && backing2 != NULL &&
+                 compare_expressions(backing1, backing2, options);
+            break;
+          }  /* if */
+        }  /* if */
         eq = compare_constants(node_constant(node1),
                                node_constant(node2),
                                options);
@@ -8371,6 +8407,16 @@ are done.
           a_variable_ptr	var1 = node_variable(node1);
           a_variable_ptr	var2 = node_variable(node2);
           if (same_entities(var1, var2)) {
+            eq = TRUE;
+          } else if (var1 == compared_result_name_1 && var1 != NULL &&
+                     var2 == compared_result_name_2) {
+            /* The result names of two postconditions being compared (see
+               equiv_contract_predicates). */
+            eq = TRUE;
+          } else if (compared_captures_1 != NULL &&
+                     corresponding_compared_captures(var1, var2)) {
+            /* Corresponding captures of two postconditions being compared
+               (P3098). */
             eq = TRUE;
           } else if (var1->is_template_variable &&
                      var2->is_template_variable) {
@@ -8721,6 +8767,35 @@ Otherwise, return FALSE.
   }  /* if */
   return result;
 }  /* equiv_requires_clauses */
+
+
+a_boolean equiv_contract_predicates(an_expr_node_ptr  pred1,
+                                    a_variable_ptr    result_name1,
+                                    an_expr_node_ptr  pred2,
+                                    a_variable_ptr    result_name2)
+/*
+Return TRUE if pred1 and pred2, the predicates of corresponding function
+contract specifiers (P2900) on two declarations of a function, are the same
+as written: equivalent expressions, in which a use of a parameter is
+identified by its position (enk_param_ref), the result names result_name1
+and result_name2 (possibly NULL) correspond, and a folded constant is
+compared by its backing expression (CC_AS_WRITTEN), so that "x > 1 - 1" is
+not the same as "x > 0".
+*/
+{
+  a_boolean       result;
+  a_variable_ptr  saved_result_name_1 = compared_result_name_1;
+  a_variable_ptr  saved_result_name_2 = compared_result_name_2;
+
+  compared_result_name_1 = result_name1;
+  compared_result_name_2 = result_name2;
+  result = compare_expressions(pred1, pred2,
+                               CC_EXACT_DECLTYPE_EXPR_MATCH_REQUIRED |
+                               CC_AS_WRITTEN);
+  compared_result_name_1 = saved_result_name_1;
+  compared_result_name_2 = saved_result_name_2;
+  return result;
+}  /* equiv_contract_predicates */
 
 
 static a_boolean equiv_template_constant_identity(

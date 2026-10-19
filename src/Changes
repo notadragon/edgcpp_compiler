@@ -1,6 +1,37 @@
 Version 7.0, September 28, 2026
 
 10/1/26  []
+Contracts (P2900): redeclarations and restrictions
+
+A redeclaration of a function either omits the function contract
+specifiers of its first declaration or repeats them: the same number, in
+the same order, each of the same kind, with a result name on both or
+neither, and with the same predicate as written (a parameter or a result
+name may be renamed).  Otherwise it is an error, as is a redeclaration that
+adds contract specifiers to a function first declared without them.  A
+friend declared in a class definition is checked when the class is
+complete.  An explicit specialization is not matched against its template.
+
+  int f(int x) pre(x > 0);
+  int f(int y) pre(y > 0) { return y; }   // OK
+  int f(int x) pre(x >= 1);               // error: mismatched contract
+                                          // condition in declaration
+
+Function contract specifiers are also diagnosed on a virtual function, on a
+deleted function, on a function defaulted on its first declaration, and
+anywhere other than the declarator of a function declaration (a typedef, a
+type-id, a declaration of non-function type).  A result name is diagnosed
+on a constructor or destructor, when it has the name of a parameter (other
+than "_"), and with a deduced return type on a declaration that is not a
+definition.
+
+A declaration of ::handle_contract_violation, which replaces the
+contract-violation handler, must not be inline or deleted, must have C++
+language linkage, must return void, and must have a single parameter of
+type "const std::contracts::contract_violation &".
+
+
+10/1/26  []
 Contracts (P2900): contract assertions of member functions
 
 Contract assertions on member functions, including static members,
