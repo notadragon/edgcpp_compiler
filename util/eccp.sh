@@ -3185,6 +3185,17 @@ then
 		       $EDG_STARTUP_FILE_2 \
                        $EDG_STD_LIBS \
 		       $EDG_C_TO_OBJ_LIBRARIES"
+#     Contract checks under a noexcept evaluation semantic (P4298) call
+#     libcontracts' __c_contract_check_noexcept: then link the contracts
+#     runtime as g++ does (the C++ default violation handler and the
+#     terminate-on-throw barrier from libstdc++exp, forced in with -u, then
+#     libcontracts, then libstdc++ again: libstdc++exp needs it, and a static
+#     -lstdc++ before it on the line does not count), unless
+#     EDG_CONTRACTS_LIBRARIES says otherwise.
+      if nm -u $object_files 2>/dev/null | \
+           grep -q '__c_contract_check_noexcept' ; then
+        link_command="$link_command ${EDG_CONTRACTS_LIBRARIES-"-u __contract_invoke_default_handler -u __contract_dispatch_core_noexcept -lstdc++exp -lcontracts -lstdc++"}"
+      fi
       link_command_suffix=
       if [ ! -z $EDG_RUNTIME_LIB ]; then
         link_command_suffix=" $lib_file_opt$EDG_RUNTIME_LIB$EDG_LIB_SUFFIX"

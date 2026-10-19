@@ -1,0 +1,2 @@
+./a.out
+kind 1 semantic 7 mode 2

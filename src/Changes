@@ -1,6 +1,22 @@
 Version 7.0, September 28, 2026
 
 10/4/26  []
+Contracts (P4298): the noexcept semantics with the C-generating back end
+
+With the C-generating back end, noexcept_observe and noexcept_enforce are
+now accepted besides ignore and quick_enforce (they let no exception escape
+a check either): a violation calls the contracts runtime's
+__c_contract_check_noexcept with the predicate's text, the file, function
+and line, the kind of assertion and the semantic, through a noexcept
+function the front end defines in the translation unit, so that a violation
+handler compiled by the front end that exits with an exception terminates
+the program.  After the handler returns, noexcept_observe continues and
+noexcept_enforce aborts.  A replacement ::handle_contract_violation is put
+out with the C-linkage alias __handle_contract_violation, by which the
+runtime calls it.
+
+
+10/4/26  []
 Contracts (P4298): nonthrowing evaluation semantics
 
 The new --[no_]contracts_p4298 option (implied by --contracts_p3850, and
