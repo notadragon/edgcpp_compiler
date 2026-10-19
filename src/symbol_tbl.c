@@ -3858,6 +3858,9 @@ and return a pointer to it.
       tssp->variant.function.invented_partial_ordering_param = NULL;
       tssp->variant.function.template_param_not_in_function_type = FALSE;
       tssp->variant.function.constructor_symbol_for_guide = NULL;
+      tssp->variant.function.contract_decl_info = NULL;
+      tssp->variant.function.contract_param_names = NULL;
+      tssp->variant.function.contract_redecl_params = NULL;
       tssp->variant.function.has_prototype_instantiation = FALSE;
       tssp->
           variant.function.exception_spec_prototype_instantiation_done = FALSE;
@@ -16679,6 +16682,26 @@ Free the list of parameter id blocks pointed to by *pidlist, and set
   }  /* while */
   db_exit();
 }  /* free_param_id_list */
+
+
+a_param_id_ptr copy_param_id_list(a_param_id_ptr  param_id_list)
+/*
+Return a copy of the parameter id list param_id_list, whose entries point to
+the same symbols as the original's.  The caller frees it (see
+free_param_id_list).
+*/
+{
+  a_param_id_ptr  pip, new_pip, result = NULL, *p_next = &result;
+
+  for (pip = param_id_list; pip != NULL; pip = pip->next) {
+    new_pip = alloc_param_id();
+    *new_pip = *pip;
+    new_pip->next = NULL;
+    *p_next = new_pip;
+    p_next = &new_pip->next;
+  }  /* for */
+  return result;
+}  /* copy_param_id_list */
 
 
 a_param_id_ptr param_id_on_list(a_symbol_locator *locator,

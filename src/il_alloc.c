@@ -3646,6 +3646,7 @@ fields to default values.
     case enk_param_ref:
       node->variant.param_ref.param_num = 0;
       node->variant.param_ref.levels_up = 0;
+      node->variant.param_ref.pack_element_num = 0;
       break;
     case enk_braced_init_list:
       node->variant.braced_init_list = NULL;
