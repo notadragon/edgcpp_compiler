@@ -1287,6 +1287,17 @@ typedef struct a_call_work {
 			   by an override with a covariant return type. */
   a_boolean	has_this_param;
 			/* TRUE if the callee has a "this" parameter. */
+  a_routine_ptr	interface_callee;
+			/* For a virtual call whose statically chosen function
+			   is not the final overrider and has contract
+			   assertions (P3097), the statically chosen function:
+			   its assertions, the interface contract, are checked
+			   around the overrider's.  Otherwise NULL. */
+  a_constexpr_address
+		interface_this;
+			/* With interface_callee, the "this" argument before
+			   the virtual dispatch adjusted it to the overrider's
+			   subobject. */
 } a_call_work;
 
 
@@ -23734,6 +23745,10 @@ was charged up front to the actual cost of the call.
       ((a_constexpr_address*)item->result_storage)->address +=
                                                             cw->retval_offset;
     }  /* if */
+    if (cw->interface_callee != NULL) {
+      evaluate_function_contracts(ips, cw->interface_callee, ctk_post,
+                                  &cw->interface_this);
+    }  /* if */
     note_routine_interpreted(cw->callee);
   }  /* if */
   if (cw->closure_ptr != NULL) {
@@ -23783,6 +23798,7 @@ callee; the iwp_1st_resume visit completes the call in the latter case.
     finish_call_work(ips, item, result);
     goto done;
   }  /* if */
+  cw->interface_callee = NULL;
   is_member_call = !node_operator_is(call_node, eok_call);
 
   /* First determine the actual callee. */
@@ -24070,14 +24086,27 @@ callee; the iwp_1st_resume visit completes the call in the latter case.
     }  /* if */
     /* If the function is virtual, we can now determine the actual callee. */
     if (callee->is_virtual &&
-        (call_node->variant.operation.is_virtual_call || pm_target != NULL) &&
-        !adjust_virtual_callee(&callee, (a_byte**)arg_ptrs, &retval_offset)) {
+        (call_node->variant.operation.is_virtual_call || pm_target != NULL)) {
+      a_routine_ptr        static_callee = callee;
       a_constexpr_address  *this_addr =
                                     (a_constexpr_address*)*(a_byte**)arg_ptrs;
-      info_with_pos(unknown_object_access_error(this_addr),
-                    expr_pos(call_node, ips), ips);
-      do_constexpr_fail(result);
-      goto done;
+      a_constexpr_address  static_this = *this_addr;
+      if (!adjust_virtual_callee(&callee, (a_byte**)arg_ptrs,
+                                 &retval_offset)) {
+        info_with_pos(unknown_object_access_error(this_addr),
+                      expr_pos(call_node, ips), ips);
+        do_constexpr_fail(result);
+        goto done;
+      }  /* if */
+      if (contracts_p3097_enabled && pm_target == NULL &&
+          callee != static_callee &&
+          static_callee->contract_specifiers != NULL) {
+        /* P3097: the statically chosen function's contract assertions are
+           checked too (not through a pointer to member, which names no
+           function statically). */
+        cw->interface_callee = static_callee;
+        cw->interface_this = static_this;
+      }  /* if */
     }  /* if */
     if (!callee->is_constexpr) {
       info_with_pos_sym(ec_constexpr_call_to_nonconstexpr_function,
@@ -24224,6 +24253,10 @@ callee; the iwp_1st_resume visit completes the call in the latter case.
                                    result_storage, complete_object);
       finish_call_work(ips, item, result);
     } else {
+      if (cw->interface_callee != NULL) {
+        evaluate_function_contracts(ips, cw->interface_callee, ctk_pre,
+                                    &cw->interface_this);
+      }  /* if */
       evaluate_function_contracts(ips, callee, ctk_pre,
                                   (a_constexpr_address*)NULL);
       item->needs_cleanup = TRUE;

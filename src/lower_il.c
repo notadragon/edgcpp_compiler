@@ -13363,6 +13363,19 @@ detached from the IL tree; otherwise it is set to FALSE.
   lower_os_type(expr->type);
   first_arg = expr->variant.operation.operands;
   check_assertion(!first_arg->is_lvalue);
+  if (expr->variant.operation.is_virtual_call && is_routine_node(first_arg) &&
+      node_routine(first_arg)->contract_interface_wrapper != NULL &&
+      innermost_function_scope->variant.routine.ptr !=
+                         node_routine(first_arg)->contract_interface_wrapper) {
+    /* A virtual call of a function with contract assertions calls its
+       interface wrapper, which checks them around the virtual call (P3097;
+       see make_contract_interface_wrapper). */
+    a_routine_ptr  wrapper = node_routine(first_arg)->contract_interface_wrapper;
+    first_arg->variant.routine.ptr = wrapper;
+    first_arg->type = make_pointer_type(wrapper->type);
+    expr->variant.operation.is_virtual_call = FALSE;
+    wrapper->source_corresp.referenced = TRUE;
+  }  /* if */
   if ((ctors_return_this || dtors_return_this) &&
       is_routine_node(first_arg) &&
       (node_routine(first_arg)->special_kind ==

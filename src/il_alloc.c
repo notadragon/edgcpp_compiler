@@ -3133,6 +3133,8 @@ to it.  The entry is allocated in the file scope memory region.
 #endif /* DECL_MODIFIERS_IN_USE */
   rp->trailing_requires_clause    = NULL;
   rp->contract_specifiers         = NULL;
+  rp->contract_interface_wrapper  = NULL;
+  rp->contract_interface_target   = NULL;
   rp->number.virtual_function     = VIRTUAL_FUNCTION_NUMBER_NONE;
 #if MICROSOFT_EXTENSIONS_ALLOWED
   rp->overridden_functions        = NULL;

@@ -13233,6 +13233,18 @@ typedef struct a_routine {
 			/* The function's precondition and postcondition
 			   specifiers (P2900), in declaration order, or NULL
 			   if it has none. */
+  a_routine_ptr	contract_interface_wrapper;
+			/* For a virtual function with contract assertions,
+			   in a configuration where the front end generates
+			   the checks of contract assertions: the wrapper that
+			   a virtual call of it calls instead, which checks
+			   them around the virtual call (P3097's interface
+			   contract; see make_contract_interface_wrapper), or
+			   NULL if there is none. */
+  a_routine_ptr	contract_interface_target;
+			/* For such a wrapper, the virtual function, whose
+			   contract assertions it checks and which it calls
+			   virtually; NULL otherwise. */
   union {
     /* When is_constexpr_intrinsic is FALSE: */
     a_virtual_function_number
