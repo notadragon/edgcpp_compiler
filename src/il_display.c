@@ -4224,6 +4224,10 @@ Display the indicated routine.
     disp_ptr("trailing_requires_clause", (char *)ptr->trailing_requires_clause,
              iek_requires_clause);
   }  /* if */
+  if (ptr->contract_specifiers != NULL) {
+    disp_ptr("contract_specifiers", (char *)ptr->contract_specifiers,
+             iek_contract_specifier);
+  }  /* if */
   if (ptr->is_virtual) {
     disp_unsigned_long("number.virtual_function",
                        (unsigned long)ptr->number.virtual_function);
@@ -5817,6 +5821,11 @@ do_label:
         disp_ptr("expr", (char *)ptr->expr, iek_expr_node);
       }  /* if */
       break;
+    case stmk_contract_assert:
+      (void)fprintf(f_display, "stmk_contract_assert\n");
+      disp_ptr("contract_assert", (char *)ptr->variant.contract_assert,
+               iek_contract_specifier);
+      break;
     default:
       (void)fprintf(f_display, "**BAD STATEMENT KIND**\n");
   }  /* switch */
@@ -6015,6 +6024,41 @@ Display the indicated requires clause entry.
   disp_ptr("constraint", (char*)ptr->constraint, iek_expr_node);
   disp_source_position("requires_pos", &ptr->requires_pos);
 }  /* disp_requires_clause */
+
+
+static void disp_contract_specifier(a_contract_specifier_ptr  ptr)
+/*
+Display the indicated contract specifier entry.
+*/
+{
+  a_const_char  *kind;
+
+  disp_ptr("next", (char*)ptr->next, iek_contract_specifier);
+  switch (ptr->kind) {
+    case ctk_pre:    kind = "ctk_pre";        break;
+    case ctk_post:   kind = "ctk_post";       break;
+    case ctk_assert: kind = "ctk_assert";     break;
+    default:         kind = "**BAD CONTRACT KIND**";
+  }  /* switch */
+  disp_name("kind");
+  (void)fprintf(f_display, "%s\n", kind);
+  disp_ptr("predicate", (char*)ptr->predicate, iek_expr_node);
+  if (ptr->local_predicate) {
+    disp_ptr("predicate_sexpr", (char*)ptr->predicate_sexpr,
+             iek_scoped_expression);
+  }  /* if */
+  if (ptr->result_name != NULL) {
+    disp_ptr("result_name", (char*)ptr->result_name, iek_variable);
+  }  /* if */
+  if (ptr->param_proxies != NULL) {
+    disp_ptr("param_proxies", (char*)ptr->param_proxies, iek_variable);
+  }  /* if */
+  disp_source_position("position", &ptr->position);
+  if (ptr->comment != NULL) {
+    disp_string_ptr("comment", ptr->comment, iek_other_text, (sizeof_t)0);
+  }  /* if */
+  if (ptr->operand_cached) disp_boolean("operand_cached", TRUE);
+}  /* disp_contract_specifier */
 
 
 static void disp_template(a_template_ptr  ptr)
@@ -8392,6 +8436,9 @@ This routine is called during IL walking.
           break;
         case iek_requires_clause:
           disp_requires_clause((a_requires_clause_ptr)entry_ptr);
+          break;
+        case iek_contract_specifier:
+          disp_contract_specifier((a_contract_specifier_ptr)entry_ptr);
           break;
         case iek_template:
           disp_template((a_template_ptr)entry_ptr);

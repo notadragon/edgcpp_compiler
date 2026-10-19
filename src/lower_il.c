@@ -20244,6 +20244,18 @@ Do IL lowering of the indicated statement and everything under it.
           }  /* if */
         }  /* for */
         break;
+      case stmk_contract_assert:
+        /* The check of a contract assertion, if any, is the statement that
+           follows it, into which the predicate moved; the statement itself
+           becomes an empty statement, so later passes need not know about
+           it.  An assertion that is not checked keeps its predicate, which
+           the IL must still reach (EDG-85): such a statement stays, and
+           generates nothing. */
+        if (statement->variant.contract_assert == NULL ||
+            statement->variant.contract_assert->predicate == NULL) {
+          set_statement_kind(statement, (a_statement_kind)stmk_empty);
+        }  /* if */
+        break;
 #if ASM_FUNCTION_ALLOWED
       case stmk_asm_func_body:
         /* No processing required. */

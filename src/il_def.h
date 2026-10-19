@@ -106,6 +106,8 @@ typedef struct a_scoped_expression
                               *a_scoped_expression_ptr;
 typedef struct a_data_member_spec
                               *a_data_member_spec_ptr;
+typedef struct a_contract_specifier
+                              *a_contract_specifier_ptr;
 
 /* Opaque type definition for an_arg_operand (used in the expression
    processing routines, but a pointer to it appears in a front-end only
@@ -813,6 +815,8 @@ enum an_il_entry_kind : a_byte {
 			/* a_token_sequence_entry */
   iek_scoped_expression,/* a_scoped_expression */
   iek_data_member_spec,	/* a_data_member_spec */
+  iek_contract_specifier,
+			/* a_contract_specifier */
   iek_last		/* Marks the end of the list. */
 };
 
@@ -990,6 +994,7 @@ EXTERN_CONSTINIT_ARRAY(a_const_char*, il_entry_kind_names, iek_last + 1)
 /* iek_token_sequence_entry */		"token-sequence-entry",
 /* iek_scoped_expression */		"scoped-expression",
 /* iek_data_member_spec */		"data-member-spec",
+/* iek_contract_specifier */		"contract-specifier",
 /* iek_last */				"last"
 }
 #endif /* VAR_INITIALIZERS */
@@ -12225,6 +12230,97 @@ typedef struct a_requires_clause {
 
 
 /*
+Contract assertions (P2900): a precondition or postcondition specifier of a
+function, or a contract_assert statement.
+*/
+enum a_contract_kind : a_byte {
+  ctk_pre,		/* A "pre" function contract specifier. */
+  ctk_post,		/* A "post" function contract specifier. */
+  ctk_assert		/* A contract_assert statement. */
+};
+
+typedef struct a_contract_specifier {
+  a_contract_specifier_ptr
+		next;
+			/* The next contract specifier of the same function,
+			   in declaration order (always NULL for ctk_assert). */
+  a_contract_kind
+		kind;	/* The kind of contract assertion. */
+  an_expr_node_ptr
+		predicate;
+			/* The predicate, contextually converted to bool.
+			   NULL for a contract_assert whose check was
+			   generated: The predicate moved into the check
+			   (the statement that follows the
+			   stmk_contract_assert). */
+  a_variable_ptr
+		result_name;
+			/* For a postcondition with a result name, the
+			   variable it introduces, which names the result of
+			   the function.  NULL otherwise. */
+  a_variable_ptr
+		param_proxies;
+			/* The parameters of the function named by lambdas in
+			   the predicate (or in a capture's initializer): for
+			   each, a variable (linked through their "next"
+			   fields) with the parameter's name and type, which
+			   the lambdas use and capture in place of the
+			   parameter (a parameter has no variable outside the
+			   function's body), and whose initializer is the
+			   parameter reference (enk_param_ref) that identifies
+			   the parameter; NULL if there are none.  A proxy
+			   designates that parameter's variable wherever the
+			   predicate is evaluated.  Like result_name, they are
+			   on no scope's list: the specifier owns them. */
+  a_source_position
+		position;
+			/* The position of the "pre", "post", or
+			   "contract_assert" keyword. */
+  a_const_char	*comment;
+			/* The text of the predicate (a string formed from
+			   its tokens, on one line), passed to the violation
+			   handler as the comment of a violation.  NULL if
+			   the predicate was not scanned. */
+  a_bit_field	local_predicate:1;
+			/* TRUE if the specifier is in file-scope memory but
+			   its predicate is in a function's memory region, as
+			   it names an entity local to that function (a
+			   lambda's predicate naming its captures): predicate
+			   is NULL, and predicate_sexpr is the referrer of a
+			   local expression node reference to it (see
+			   contract_specifier_predicate). */
+  a_scoped_expression_ptr
+		predicate_sexpr;
+			/* See local_predicate; NULL otherwise. */
+  a_bit_field	operand_cached:1;
+			/* TRUE while the tokens of the operand (between the
+			   parentheses) of a precondition or postcondition of
+			   a member function are cached, to be scanned when
+			   the class is complete. */
+  a_bit_field	awaits_return_type_deduction:1;
+			/* TRUE while the operand of a postcondition with a
+			   result name, of a function with a deduced return
+			   type, waits in token_cache for the return type to
+			   be deduced: it is scanned at the end of the
+			   function's body (EDG-9). */
+  struct a_token_cache
+		*token_cache;
+			/* An opaque pointer to the token cache holding the
+			   operand: while operand_cached is TRUE, and for a
+			   specifier of a template, whose instances' specifiers
+			   are scanned from it.  NULL otherwise.  This is for
+			   front-end use only. */
+#if BACK_END_IS_CP_GEN_BE
+  a_bit_field	put_out:1;
+			/* Used only in the C++-generating back end, on the
+			   first specifier of a function: TRUE once the
+			   function's specifiers have been put out (on its
+			   first declaration). */
+#endif /* BACK_END_IS_CP_GEN_BE */
+} a_contract_specifier;
+
+
+/*
 Data structures related to routines:
 */
 typedef struct a_routine {
@@ -13112,6 +13208,11 @@ typedef struct a_routine {
 			   associated trailing requires clause if any (it is
 			   always the original parameterized constraint, not
 			   the substituted one).  Otherwise, NULL. */
+  a_contract_specifier_ptr
+		contract_specifiers;
+			/* The function's precondition and postcondition
+			   specifiers (P2900), in declaration order, or NULL
+			   if it has none. */
   union {
     /* When is_constexpr_intrinsic is FALSE: */
     a_virtual_function_number
@@ -15857,6 +15958,7 @@ enum a_statement_kind : a_byte {
 			/* A statement in a GNU statement expression producing
 			   the result value of that expression.  Always the
 			   last statement of its block. */
+  stmk_contract_assert,	/* A contract_assert statement (P2900). */
   stmk_last
 };
 
@@ -16848,6 +16950,10 @@ typedef struct a_statement {
 			   dik_constructor).  NULL otherwise.  This is non-NULL
 			   (C++ only) when expr is NULL, and vice versa. */
     } stmt_expr_result;
+    /* When kind == stmk_contract_assert: */
+    a_contract_specifier_ptr
+		contract_assert;
+			/* The contract assertion (of kind ctk_assert). */
   } variant;
 } a_statement;
 
@@ -19481,7 +19587,8 @@ EXTERN_CONSTINIT_ARRAY(sizeof_t, sizeof_il_entry, iek_last)
   sizeof(a_token_sequence),
   sizeof(a_token_sequence_entry),
   sizeof(a_scoped_expression),
-  sizeof(a_data_member_spec)
+  sizeof(a_data_member_spec),
+  sizeof(a_contract_specifier)
 }
 #endif /* VAR_INITIALIZERS */
 EXTERN_CONSTINIT_ARRAY_END(sizeof_il_entry)

@@ -2973,6 +2973,7 @@ Dump a statement kind, for debug purposes.
     case stmk_upc_forall:       s = "upc_forall";        break;
 #endif /* UPC_EXTENSIONS_ALLOWED */
     case stmk_stmt_expr_result: s = "stmt-expr-result";  break;
+    case stmk_contract_assert:  s = "contract_assert";   break;
     default:                    s = "<bad stmt kind>";   break;
   }  /* switch */
   fputs(s, f_debug);
@@ -3091,6 +3092,11 @@ Dump a statement, for debug purposes.
           a_dynamic_init_ptr  dip = sp->variant.stmt_expr_result.dynamic_init;
           fputs(" ", f_debug);
           db_dip(dip);
+        }  /* if */
+        break;
+      case stmk_contract_assert:
+        if (sp->variant.contract_assert->predicate != NULL) {
+          db_expr_summary(sp->variant.contract_assert->predicate);
         }  /* if */
         break;
       default:;
@@ -15226,6 +15232,26 @@ memory region.
   }  /* if */
   return result;
 }  /* expr_node_from_attribute_arg */
+
+an_expr_node_ptr contract_specifier_predicate(a_contract_specifier_ptr  csp)
+/*
+Return the predicate of the contract assertion csp (P2900), wherever it is
+(see a_contract_specifier::local_predicate): NULL if there is none, or if it
+is in the memory region of a function whose scope is gone.
+*/
+{
+  an_expr_node_ptr  result = csp->predicate;
+
+  if (csp->local_predicate) {
+    a_scoped_expression_ptr  sexpr = csp->predicate_sexpr;
+    check_assertion(sexpr->source_corresp.enclosing_routine != NULL);
+    result = find_local_expr_node_in_scope(
+                   (char*)sexpr, lerk_scoped_expr,
+                   scope_for_routine_or_null(
+                                     sexpr->source_corresp.enclosing_routine));
+  }  /* if */
+  return result;
+}  /* contract_specifier_predicate */
 
 #if !STANDALONE_UTILITY_PROGRAM
 
