@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=2 --no_il_lower --il_display --c++20 Test_name.c
+file-scope variable#1
+  name:                  file-scope id-name#1: "a"
+  decl_position.seq:     4
+type:                    file-scope type#1: int
+  name:                  file-scope id-name#2: "b"
+  decl_position.seq:     7
+type:                    file-scope type#1: int
+  name:                  file-scope id-name#3: "v"
+  decl_position.seq:     9
+type:                    file-scope type#1: int
+  name:                  file-scope id-name#1: "a"
+  decl_position.seq:     4
+type:                    file-scope type#1: int
+  name:                  file-scope id-name#2: "b"
+  decl_position.seq:     7
+type:                    file-scope type#1: int
+  name:                  file-scope id-name#2: "b"
+  decl_position.seq:     7
+type:                    file-scope type#1: int
+  name:                  file-scope id-name#2: "b"
+  decl_position.seq:     7
+type:                    file-scope type#1: int
+  name:                  file-scope id-name#2: "b"
+  decl_position.seq:     7
+type:                    file-scope type#1: int

@@ -1,0 +1,36 @@
+fe_only -DTEST_NUMBER=5 --no_il_lower --il_display --c++20 Test_name.c
+file-scope class-type-supplement#1
+template_arg_list:       
+  type:                  file-scope type#1: V
+template_arg_list:       
+  type:                  file-scope type#2: T
+  type:                  file-scope type#3: U
+template_arg_list:       
+  type:                  file-scope type#4: T
+template_arg_list:       
+  type:                  file-scope type#5: V
+template_arg_list:       
+  type:                  file-scope type#6: int
+  explicitly_specified:  TRUE
+  type:                  file-scope type#6: int
+  name:                  file-scope id-name#1: "b"
+  decl_position.seq:     30
+type:                    file-scope type#7: A<int, int>::B
+  name:                  file-scope id-name#2: "b1"
+  decl_position.seq:     32
+type:                    file-scope type#7: A<int, int>::B
+  name:                  file-scope id-name#3: "b11"
+  decl_position.seq:     33
+type:                    file-scope type#7: A<int, int>::B
+  name:                  file-scope id-name#4: "b2"
+  decl_position.seq:     34
+type:                    file-scope type#7: A<int, int>::B
+  name:                  file-scope id-name#5: "b22"
+  decl_position.seq:     35
+type:                    file-scope type#7: A<int, int>::B
+  name:                  file-scope id-name#6: "bb1"
+  decl_position.seq:     37
+type:                    file-scope type#7: A<int, int>::B
+  name:                  file-scope id-name#7: "bb2"
+  decl_position.seq:     38
+type:                    file-scope type#7: A<int, int>::B

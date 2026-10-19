@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=5 --no_il_lower --il_display --c++20 Test_name.c
+file-scope constant#1
+  name:                  file-scope id-name#1: "J"
+  decl_position.seq:     10
+kind:                    ck_template_param
+kind:                    tpck_param
+  name:                  file-scope id-name#2: "I"
+  decl_position.seq:     10
+kind:                    ck_template_param
+kind:                    tpck_param
+  decl_position.seq:     16
+kind:                    ck_integer
+  decl_position.seq:     16
+kind:                    ck_integer
+  name:                  file-scope id-name#2: "I"
+  decl_position.seq:     10
+kind:                    ck_template_param
+kind:                    tpck_param

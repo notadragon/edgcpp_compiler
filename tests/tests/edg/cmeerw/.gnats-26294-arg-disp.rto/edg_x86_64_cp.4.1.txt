@@ -1,0 +1,16 @@
+fe_only -DTEST_NUMBER=4 --no_il_lower --il_display --c++20 Test_name.c
+file-scope variable#1
+  name:                  file-scope id-name#1: "i"
+  decl_position.seq:     7
+type:                    file-scope type#1: int
+template_arg_list:       
+  type:                  file-scope type#2: T
+  name:                  file-scope id-name#1: "i"
+  decl_position.seq:     7
+type:                    file-scope type#1: int
+template_arg_list:       
+  type:                  file-scope type#3: void
+  explicitly_specified:  TRUE
+  name:                  file-scope id-name#2: "v"
+  decl_position.seq:     10
+type:                    file-scope type#1: int

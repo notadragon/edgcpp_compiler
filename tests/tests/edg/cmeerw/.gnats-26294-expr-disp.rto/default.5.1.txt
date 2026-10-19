@@ -1,2 +1,44 @@
 fe_only -DTEST_NUMBER=5 --no_il_lower --il_display --c++20 Test_name.c
-/usr/bin/bash: line 1: enumerate_addrs: command not found
+file-scope class-type-supplement#1
+template_arg_list:       
+  type:                  file-scope type#1: T
+  type:                  file-scope type#2: U
+template_arg_list:       
+  type:                  file-scope type#3: int
+  explicitly_specified:  TRUE
+  type:                  file-scope type#3: int
+type:                    file-scope type#4: unsigned long
+kind:                    enk_sizeof
+type:                    file-scope type#5: A<int, int>
+position.seq:            63
+  name:                  file-scope id-name#1: "a"
+type:                    file-scope type#4: unsigned long
+constant:                file-scope constant#1: 1UL
+type:                    file-scope type#4: unsigned long
+kind:                    enk_sizeof
+type:                    file-scope type#5: A<int, int>
+position.seq:            64
+  name:                  file-scope id-name#2: "a1"
+type:                    file-scope type#4: unsigned long
+constant:                file-scope constant#2: 1UL
+type:                    file-scope type#4: unsigned long
+kind:                    enk_sizeof
+type:                    file-scope type#5: A<int, int>
+position.seq:            65
+  name:                  file-scope id-name#3: "a2"
+type:                    file-scope type#4: unsigned long
+constant:                file-scope constant#3: 1UL
+type:                    file-scope type#4: unsigned long
+kind:                    enk_sizeof
+type:                    file-scope type#5: A<int, int>
+position.seq:            67
+  name:                  file-scope id-name#4: "aa1"
+type:                    file-scope type#4: unsigned long
+constant:                file-scope constant#4: 1UL
+type:                    file-scope type#4: unsigned long
+kind:                    enk_sizeof
+type:                    file-scope type#5: A<int, int>
+position.seq:            68
+  name:                  file-scope id-name#5: "aa2"
+type:                    file-scope type#4: unsigned long
+constant:                file-scope constant#5: 1UL

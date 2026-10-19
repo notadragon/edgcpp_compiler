@@ -1,2 +1,44 @@
 fe_only -DTEST_NUMBER=1 --no_il_lower --il_display --c++20 Test_name.c
-/usr/bin/bash: line 1: enumerate_addrs: command not found
+file-scope class-type-supplement#1
+template_arg_list:       
+  type:                  file-scope type#1: V
+template_arg_list:       
+  type:                  file-scope type#2: T
+  type:                  file-scope type#3: U
+template_arg_list:       
+  type:                  file-scope type#4: T
+  explicitly_specified:  TRUE
+template_arg_list:       
+  type:                  file-scope type#4: T
+  explicitly_specified:  TRUE
+entity:                  file-scope constant#1: f
+is_class_member:         TRUE
+is_using_enum:           FALSE
+is_enumerator:           FALSE
+qualifier.class_type:    file-scope type#5: D<T>::base
+entity:                  file-scope constant#2: g
+is_class_member:         TRUE
+is_using_enum:           FALSE
+is_enumerator:           FALSE
+qualifier.class_type:    file-scope type#6: A<T, INT1>::B<T>
+entity:                  file-scope constant#3: E1
+is_class_member:         TRUE
+is_using_enum:           FALSE
+is_enumerator:           FALSE
+qualifier.class_type:    file-scope type#7: A<T, INT1>::E
+entity:                  file-scope constant#4: h
+is_class_member:         TRUE
+is_using_enum:           FALSE
+is_enumerator:           FALSE
+qualifier.class_type:    file-scope type#8: T
+template_arg_list:       
+  type:                  file-scope type#4: T
+template_arg_list:       
+  type:                  file-scope type#4: T
+  explicitly_specified:  TRUE
+  type:                  file-scope type#4: T
+template_arg_list:       
+  type:                  file-scope type#4: T
+  explicitly_specified:  TRUE
+  type:                  file-scope type#9: INT1
+  explicitly_specified:  TRUE

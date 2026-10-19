@@ -1,2 +1,141 @@
 fe_only -DTEST_NUMBER=1 --no_il_lower --il_display --c++20 --clang_version 220100 Test_name.c
-/usr/bin/bash: line 1: enumerate_addrs: command not found
+file-scope base-class-derivation#1
+direct:                  TRUE
+path:                    
+  base_class:            file-scope base-class#1: __builtin_dedup_pack<Ts...> (in D<Ts...>)
+access:                  as_public\n\nfile-scope base-class#1
+type:                    file-scope type#1: __builtin_dedup_pack<Ts...>
+derived_class:           file-scope type#2: D<Ts...>
+direct:                  TRUE
+direct_base_number:      1
+is_virtual:              FALSE
+derivation:              file-scope base-class-derivation#1\n\nfile-scope base-class-derivation#2
+direct:                  TRUE
+path:                    
+  base_class:            file-scope base-class#2: B<1> (in D<B<1>, B<1>, B<2>, B<2>>)
+access:                  as_public\n\nfile-scope base-class#2
+type:                    file-scope type#3: B<1>
+derived_class:           file-scope type#4: D<B<1>, B<1>, B<2>, B<2>>
+direct:                  TRUE
+direct_base_number:      1
+is_virtual:              FALSE
+derivation:              file-scope base-class-derivation#2
+direct:                  TRUE
+path:                    
+  base_class:            file-scope base-class#3: B<2> (in D<B<1>, B<1>, B<2>, B<2>>)
+access:                  as_public\n\nfile-scope base-class#3
+type:                    file-scope type#5: B<2>
+derived_class:           file-scope type#4: D<B<1>, B<1>, B<2>, B<2>>
+direct:                  TRUE
+direct_base_number:      2
+is_virtual:              FALSE
+derivation:              file-scope base-class-derivation#3
+template_arg_list:       
+  pack exp placeholder:  
+  type:                  file-scope type#6: Ts
+  is_pack_element:       TRUE
+  is_pack:               TRUE
+  name:                  file-scope id-name#1: "v_pack"
+type:                    file-scope type#7: int
+storage_class:           sc_extern
+template_info:           file-scope variable-template-info#1
+template_arg_list:       
+  type:                  file-scope type#8: T1
+  type:                  file-scope type#9: T2
+  pack exp placeholder:  
+  type:                  file-scope type#10: Ts
+  is_pack_element:       TRUE
+  is_pack:               TRUE
+  name:                  file-scope id-name#2: "v_nonpack"
+type:                    file-scope type#7: int
+storage_class:           sc_extern
+template_info:           file-scope variable-template-info#2
+template_arg_list:       
+  pack exp placeholder:  
+  type:                  file-scope type#11: Ts
+  is_pack_element:       TRUE
+  is_pack:               TRUE
+  name:                  file-scope id-name#3: "v1"
+type:                    file-scope type#7: int
+storage_class:           sc_unspecified
+template_info:           file-scope variable-template-info#3
+template_arg_list:       
+  pack exp placeholder:  
+  type:                  file-scope type#12: Ts
+  is_pack_element:       TRUE
+  is_pack:               TRUE
+  name:                  file-scope id-name#4: "v2"
+type:                    file-scope type#7: int
+storage_class:           sc_unspecified
+template_info:           file-scope variable-template-info#4
+template_arg_list:       
+  pack exp placeholder:  
+  explicitly_specified:  TRUE
+  type:                  file-scope type#13: __builtin_dedup_pack<Ts...>
+  explicitly_specified:  TRUE
+  is_pack_element:       TRUE
+  is_pack:               TRUE
+  name:                  file-scope id-name#1: "v_pack"
+type:                    file-scope type#14: <unnamed>
+storage_class:           sc_extern
+template_info:           file-scope variable-template-info#5
+template_arg_list:       
+  type:                  file-scope type#13: __builtin_dedup_pack<Ts...>
+  explicitly_specified:  TRUE
+  is_pack:               TRUE
+  pack exp placeholder:  
+  explicitly_specified:  TRUE
+  name:                  file-scope id-name#2: "v_nonpack"
+type:                    file-scope type#14: <unnamed>
+storage_class:           sc_extern
+template_info:           file-scope variable-template-info#6
+  name:                  file-scope id-name#5: "i"
+type:                    file-scope type#7: int
+storage_class:           sc_unspecified
+template_arg_list:       
+  pack exp placeholder:  
+  explicitly_specified:  TRUE
+  type:                  file-scope type#7: int
+  explicitly_specified:  TRUE
+  is_pack_element:       TRUE
+  type:                  file-scope type#15: INT
+  explicitly_specified:  TRUE
+  is_pack_element:       TRUE
+  type:                  file-scope type#16: const INT
+  explicitly_specified:  TRUE
+  is_pack_element:       TRUE
+  type:                  file-scope type#17: const int
+  explicitly_specified:  TRUE
+  is_pack_element:       TRUE
+  type:                  file-scope type#18: long
+  explicitly_specified:  TRUE
+  is_pack_element:       TRUE
+  name:                  file-scope id-name#3: "v1"
+type:                    file-scope type#7: int
+storage_class:           sc_extern
+template_info:           file-scope variable-template-info#7
+template_arg_list:       
+  pack exp placeholder:  
+  explicitly_specified:  TRUE
+  type:                  file-scope type#7: int
+  explicitly_specified:  TRUE
+  is_pack_element:       TRUE
+  type:                  file-scope type#15: INT
+  explicitly_specified:  TRUE
+  is_pack_element:       TRUE
+  type:                  file-scope type#16: const INT
+  explicitly_specified:  TRUE
+  is_pack_element:       TRUE
+  type:                  file-scope type#17: const int
+  explicitly_specified:  TRUE
+  is_pack_element:       TRUE
+  type:                  file-scope type#18: long
+  explicitly_specified:  TRUE
+  is_pack_element:       TRUE
+  name:                  file-scope id-name#4: "v2"
+type:                    file-scope type#7: int
+storage_class:           sc_extern
+template_info:           file-scope variable-template-info#8
+  name:                  file-scope id-name#6: "d"
+type:                    file-scope type#4: D<B<1>, B<1>, B<2>, B<2>>
+storage_class:           sc_unspecified

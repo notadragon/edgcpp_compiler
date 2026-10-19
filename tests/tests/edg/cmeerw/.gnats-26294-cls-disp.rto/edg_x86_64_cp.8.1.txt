@@ -1,0 +1,12 @@
+fe_only -DTEST_NUMBER=8 --no_il_lower --il_display --c++20 Test_name.c
+file-scope class-type-supplement#1
+template_arg_list:       
+  type:                  file-scope type#1: V
+template_arg_list:       
+  type:                  file-scope type#2: T
+  type:                  file-scope type#3: U
+template_arg_list:       
+  type:                  file-scope type#4: T
+  name:                  file-scope id-name#1: "p"
+  decl_position.seq:     43
+type:                    file-scope type#5: int B::*

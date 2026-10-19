@@ -1,2 +1,52 @@
 fe_only -DTEST_NUMBER=1 --no_il_lower --il_display --c++20 Test_name.c
-/usr/bin/bash: line 1: enumerate_addrs: command not found
+file-scope class-type-supplement#1
+template_arg_list:       
+  type:                  file-scope type#1: T
+template_arg_list:       
+  type:                  file-scope type#2: T *
+  explicitly_specified:  TRUE
+template_arg_list:       
+  type:                  file-scope type#3: int *
+  explicitly_specified:  TRUE
+  name:                  file-scope id-name#1: "p"
+  decl_position.seq:     19
+type:                    file-scope type#4: A<int *>
+  name:                  file-scope id-name#2: "a"
+  decl_position.seq:     20
+type:                    file-scope type#5: AA<int, int>
+  name:                  file-scope id-name#3: "a0"
+  decl_position.seq:     22
+type:                    file-scope type#5: AA<int, int>
+  name:                  file-scope id-name#4: "a1"
+  decl_position.seq:     24
+type:                    file-scope type#5: AA<int, int>
+  name:                  file-scope id-name#5: "a2"
+  decl_position.seq:     25
+type:                    file-scope type#5: AA<int, int>
+  name:                  file-scope id-name#6: "aa1"
+  decl_position.seq:     27
+type:                    file-scope type#5: AA<int, int>
+  name:                  file-scope id-name#7: "aa2"
+  decl_position.seq:     28
+type:                    file-scope type#5: AA<int, int>
+  name:                  file-scope id-name#8: "a11"
+  decl_position.seq:     30
+type:                    file-scope type#5: AA<int, int>
+  name:                  file-scope id-name#9: "a22"
+  decl_position.seq:     31
+type:                    file-scope type#5: AA<int, int>
+  name:                  file-scope id-name#10: "b"
+  decl_position.seq:     33
+type:                    file-scope type#6: A<int *>::B
+  name:                  file-scope id-name#11: "b1"
+  decl_position.seq:     34
+type:                    file-scope type#6: A<int *>::B
+  name:                  file-scope id-name#12: "b2"
+  decl_position.seq:     35
+type:                    file-scope type#6: A<int *>::B
+  name:                  file-scope id-name#13: "bb1"
+  decl_position.seq:     37
+type:                    file-scope type#6: A<int *>::B
+  name:                  file-scope id-name#14: "bb2"
+  decl_position.seq:     38
+type:                    file-scope type#6: A<int *>::B

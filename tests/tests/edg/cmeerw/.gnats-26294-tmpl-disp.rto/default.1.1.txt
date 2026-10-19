@@ -1,2 +1,25 @@
 fe_only -DTEST_NUMBER=1 --no_il_lower --il_display --c++20 Test_name.c
-/usr/bin/bash: line 1: enumerate_addrs: command not found
+file-scope field#1
+  name:                  file-scope id-name#1: "m1"
+  decl_position.seq:     11
+type:                    file-scope type#1: T::A
+  name:                  file-scope id-name#2: "m2"
+  decl_position.seq:     13
+type:                    file-scope type#2: TT<T>::B
+template_arg_list:       
+  type:                  file-scope type#3: T
+  explicitly_specified:  TRUE
+  name:                  file-scope id-name#3: "m3"
+  decl_position.seq:     15
+type:                    file-scope type#4: T::D<T>
+template_arg_list:       
+  type:                  file-scope type#3: T
+  explicitly_specified:  TRUE
+  name:                  file-scope id-name#4: "m4"
+  decl_position.seq:     17
+type:                    file-scope type#5: TT<T>::E<T>
+template_arg_list:       
+  type:                  file-scope type#3: T
+template_arg_list:       
+  type:                  file-scope type#3: T
+  explicitly_specified:  TRUE
