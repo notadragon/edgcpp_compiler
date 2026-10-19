@@ -1,0 +1,3 @@
+./a.out
+contract handler ran
+terminate called after throwing an instance of 'Bail'

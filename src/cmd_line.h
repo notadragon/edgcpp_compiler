@@ -391,6 +391,7 @@ enum an_option_kind {
   optk_contract_configuration,
   optk_contract_configuration_file,
   optk_contract_group_evaluation_semantic,
+  optk_contracts_p3850,
   optk_last		/* Must be last. */
 };
 
@@ -2983,6 +2984,13 @@ EXTERN_THREAD a_contract_evaluation_semantic
 		contract_evaluation_semantic;
 			/* The evaluation semantic of every contract
 			   assertion in the translation unit. */
+
+EXTERN_THREAD a_boolean
+		contracts_p3850_enabled;
+			/* TRUE if every P3850 contracts extension paper is
+			   enabled (--contracts_p3850): this enables contracts
+			   and each paper's own option, unless that option is
+			   given. */
 
 EXTERN_THREAD a_boolean
 		incognito;
