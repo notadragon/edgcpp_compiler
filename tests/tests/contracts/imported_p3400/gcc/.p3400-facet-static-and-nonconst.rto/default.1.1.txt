@@ -1,0 +1,13 @@
+eccp -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contract_evaluation_semantic=observe Test_name.c
+Test_name.c:123:30: warning: 'nonconst_query_t' does not provide the 'query' facet because that member is not 'const'; a facet member must be 'const' or 'static' [-Wcontract-invalid-label-facet]
+  123 | void f_nonconst_query  (int x) pre<nonconst_query>          (x > 0) { }
+      |                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:95:7: note: declared here
+   95 |   void* query (const void*, unsigned long) { return (void*) &key; }
+      |       ^~~~~
+Test_name.c:124:28: warning: 'nonconst_handler_t' does not provide the 'handle_contract_violation' facet because that member is not 'const'; a facet member must be 'const' or 'static' [-Wcontract-invalid-label-facet]
+  124 | void f_nonconst_hcv    (int x) pre<nonconst_handler>        (x > 0) { }
+      |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:101:35: note: declared here
+  101 |   violation_handled handle_contract_violation (const contract_violation&)
+      |                                   ^~~~~~~~~~~~~~~~~~~~~~~~~

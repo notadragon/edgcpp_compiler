@@ -1589,6 +1589,7 @@ enum a_token_kind : unsigned short {
   tok_builtin_ge_synthesizes_from_spaceship,
   tok_builtin_is_structural,
   tok_contract_assert,
+  tok_contract_control,
   /* Placeholder for last position in enumeration. */
   tok_last
 };
@@ -1860,6 +1861,7 @@ EXTERN_CONSTINIT_ARRAY(a_const_char*, token_names, tok_last + 1)
    "__builtin_ge_synthesizes_from_spaceship",
    "__builtin_is_structural",
    "contract_assert",
+   "contract_control",
    "last" /* used to check that initialization is right. */
   }
 #endif /* VAR_INITIALIZERS */
@@ -3877,6 +3879,12 @@ typedef struct a_using_decl {
   a_bit_field	strong:1;
 			/* TRUE if this was made an inline namespace through
 			   use of the g++ strong attribute. */
+  a_bit_field	is_contract_control:1;
+			/* TRUE for a using-directive of the form
+			   "using contract_control namespace N;" (P3400): the
+			   names it makes visible are found only by lookups
+			   within an assertion-control specifier or a
+			   contract_control(...) expression. */
   a_bit_field	is_pack_expansion:1;
 			/* TRUE if this using-declaration is of the form
 			     using Q::N...;
@@ -12318,6 +12326,20 @@ typedef struct a_contract_specifier {
 			   capture list (between the brackets), from which the
 			   captures are scanned (for an instance, from the
 			   template's).  For front-end use only. */
+  an_expr_node_ptr
+		label;
+			/* The assertion-control object of the assertion
+			   (P3400), the expression of its assertion-control
+			   specifier ("pre<label>(...)"), of a class type
+			   with a nested assertion_control_object type; NULL
+			   if there is none. */
+  struct a_token_cache
+		*label_token_cache;
+			/* An opaque pointer to the token cache holding the
+			   assertion-control specifier's expression (between
+			   the angle brackets), from which the label is
+			   scanned with the operand (for an instance, from
+			   the template's).  For front-end use only. */
   a_bit_field	local_predicate:1;
 			/* TRUE if the specifier is in file-scope memory but
 			   its predicate is in a function's memory region, as
@@ -15252,6 +15274,13 @@ typedef struct an_expr_node {
 			/* TRUE if this was an initializer expression for an
 			   lvalue enk_temp_init node and the latter was dropped
 			   again to implement glvalue-to-prvalue conversion. */
+  a_bit_field	is_contract_control_operand:1;
+			/* TRUE if this is the operand of a
+			   "contract_control(expression)" (P3400), whose value
+			   is the expression's: it was scanned with the name
+			   lookup of an assertion-control specifier, and a back
+			   end that reconstructs source puts it out as
+			   written. */
   a_source_position
 		position;
 			/* When kind == enk_operation, the position at which

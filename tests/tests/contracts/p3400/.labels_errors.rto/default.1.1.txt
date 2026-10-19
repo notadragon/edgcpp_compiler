@@ -1,0 +1,38 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contracts_p3400 --contract_evaluation_semantic=quick_enforce Test_name.c
+"Test_name.c", line 23: error: an assertion-control expression must be of a class type with a nested type assertion_control_object
+  void a() pre<5>(true);                      // Error
+               ^
+
+"Test_name.c", line 24: error: type "NotLabel" does not satisfy assertion_control_object (missing or inaccessible nested type assertion_control_object)
+  void b() pre<NotLabel{}>(true);             // Error
+               ^
+
+"Test_name.c", line 25: error: type "Private" does not satisfy assertion_control_object (missing or inaccessible nested type assertion_control_object)
+  void c() pre<Private{}>(true);              // Error
+               ^
+
+"Test_name.c", line 27: error: an assertion-control expression must be a constant expression
+  void e() pre<runtime_val>(true);            // Error
+               ^
+
+"Test_name.c", line 30: error: mismatched assertion-control label in declaration (previous contract specifier declared at line 28)
+  void f(int x) pre(x > 0);                   // Error
+                ^
+
+"Test_name.c", line 32: error: mismatched assertion-control label in declaration (previous contract specifier declared at line 31)
+  void g(int x) pre<lbl>(x > 0);              // Error
+                ^
+
+"Test_name.c", line 34: error: identifier "hidden_label" is undefined
+  auto i = hidden_label;                      // Error
+           ^
+
+"Test_name.c", line 39: error: identifier "y_label" is undefined
+  auto k = y_label;                           // Error
+           ^
+
+"Test_name.c", line 46: error: an assertion-control expression must be a constant expression
+  auto q = contract_control(runtime_val);     // Error
+           ^
+
+9 errors detected in the compilation of "Test_name.c".

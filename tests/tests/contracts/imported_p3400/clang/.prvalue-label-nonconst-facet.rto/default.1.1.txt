@@ -1,0 +1,13 @@
+eccp -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contract_evaluation_semantic=observe Test_name.c
+Test_name.c:41:15: warning: 'L' does not provide the 'compute_comment' facet because that member is not 'const'; a facet member must be 'const' or 'static' [-Wcontract-invalid-label-facet]
+   41 | void f(int x) pre<L{}>(x > 0) {}
+      |               ^~~~~~~~~~~~~~~~~
+Test_name.c:29:23: note: declared here
+   29 |   constexpr const char *compute_comment(const char *) { return "nonconst"; }
+      |                       ^~~~~~~~~~~~~~~
+Test_name.c:41:15: warning: 'L' does not provide the 'handle_contract_violation' facet because that member is not 'const'; a facet member must be 'const' or 'static' [-Wcontract-invalid-label-facet]
+   41 | void f(int x) pre<L{}>(x > 0) {}
+      |               ^~~~~~~~~~~~~~~~~
+Test_name.c:26:6: note: declared here
+   26 |   void handle_contract_violation(const std::contracts::contract_violation &) {
+      |      ^~~~~~~~~~~~~~~~~~~~~~~~~

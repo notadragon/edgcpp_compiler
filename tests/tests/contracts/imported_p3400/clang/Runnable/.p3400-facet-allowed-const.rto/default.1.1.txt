@@ -1,0 +1,7 @@
+eccp -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contract_evaluation_semantic=observe Test_name.c
+Test_name.c:95:23: warning: 'mutable_allowed_t' does not provide the 'allowed_semantics' facet because that member is not 'const' [-Wcontract-invalid-label-facet]
+   95 | void f_mutable(int x) pre<mutable_allowed>(x > 0) {}
+      |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:72:41: note: declared here
+   72 |   evaluation_semantic_set allowed_semantics =
+      |                                         ^~~~~            

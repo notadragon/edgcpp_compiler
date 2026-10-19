@@ -3754,6 +3754,7 @@ its kind to the indicated kind.
   node->compiler_generated = FALSE;
   node->is_type_constraint = FALSE;
   node->was_lvalue_temp_initializer = FALSE;
+  node->is_contract_control_operand = FALSE;
   node->position = null_source_position;
 #if EXTRA_SOURCE_POSITIONS_IN_IL
   node->expr_range = null_source_range; 
@@ -4619,6 +4620,7 @@ Allocate a using-decl entry, initialize its fields, and return a pointer to it.
   udp->hidden                = FALSE;
   udp->compiler_generated    = FALSE;
   udp->inline_namespace      = FALSE;
+  udp->is_contract_control   = FALSE;
   udp->strong                = FALSE;
   udp->is_pack_expansion     = FALSE;
   udp->is_representative     = FALSE;
@@ -5070,6 +5072,8 @@ region, initialize its fields, and return a pointer to it.
   csp->message = NULL;
   csp->captures = NULL;
   csp->capture_token_cache = NULL;
+  csp->label = NULL;
+  csp->label_token_cache = NULL;
   csp->local_predicate = FALSE;
   csp->predicate_sexpr = NULL;
   csp->operand_cached = FALSE;

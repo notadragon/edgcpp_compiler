@@ -4814,6 +4814,9 @@ Display the indicated expression node.
   if (ptr->was_lvalue_temp_initializer) {
     disp_boolean("was_lvalue_temp_initializer", TRUE);
   }  /* if */
+  if (ptr->is_contract_control_operand) {
+    disp_boolean("is_contract_control_operand", TRUE);
+  }  /* if */
   disp_name("kind");
   (void)fprintf(f_display, "enk_%s\n", expr_node_kind_names[ptr->kind]);
   switch (ptr->kind) {
@@ -6085,6 +6088,9 @@ Display the indicated contract specifier entry.
   if (ptr->captures != NULL) {
     disp_ptr("captures", (char*)ptr->captures, iek_variable);
   }  /* if */
+  if (ptr->label != NULL) {
+    disp_ptr("label", (char*)ptr->label, iek_expr_node);
+  }  /* if */
   if (ptr->operand_cached) disp_boolean("operand_cached", TRUE);
 }  /* disp_contract_specifier */
 
@@ -7333,6 +7339,9 @@ Display the indicated using-declaration or using-directive entry.
   }  /* if */
   if (ptr->strong) {
     disp_boolean("strong", ptr->strong);
+  }  /* if */
+  if (ptr->is_contract_control) {
+    disp_boolean("is_contract_control", TRUE);
   }  /* if */
   if (ptr->is_pack_expansion) {
     disp_boolean("is_pack_expansion", ptr->is_pack_expansion);

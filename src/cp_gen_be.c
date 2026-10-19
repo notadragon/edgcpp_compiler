@@ -13191,6 +13191,14 @@ to unusable variables and class members.
   a_source_correspondence_ptr op_scp = NULL;
   an_expr_node_ptr            mbr_opnd;
 
+  if (expr->is_contract_control_operand && is_operation_node(expr) &&
+      node_operator_is(expr, eok_comma)) {
+    /* A P3400 contract_control expression, (value, object): only the
+       value is put out (see gen_expr), not the object. */
+    traverse_expr(expr->variant.operation.operands, tblock);
+    tblock->suppress_subtree_walk = TRUE;
+    return;
+  }  /* if */
   switch (expr->kind) {
     case enk_variable:
       scp = &node_variable(expr)->source_corresp;
@@ -18013,6 +18021,21 @@ characters in the string indicate new source lines.
 }  /* write_code_string */
 
 
+static void gen_contract_label(a_contract_specifier_ptr  csp)
+/*
+Generate the assertion-control specifier (P3400) of the contract assertion
+csp, if it has one, parenthesized, so that a ">" in it is not the closing
+angle bracket.
+*/
+{
+  if (csp->label != NULL && !is_error_node(csp->label)) {
+    write_tok_str("<(");
+    gen_expression(csp->label);
+    write_tok_str(")>");
+  }  /* if */
+}  /* gen_contract_label */
+
+
 static void gen_lambda_captures(a_lambda_ptr  lambda)
 /*
 Render the list of lambda captures, including the delimiting brackets.
@@ -18777,6 +18800,11 @@ operands, which are taken in lexical order from the node's interpolation list.
 }  /* gen_token_sequence */
 
 
+/* The operand of a contract_control expression being generated (see
+   gen_expr), or NULL. */
+static an_expr_node_ptr  contract_control_operand_being_generated = NULL;
+
+
 static void gen_expr(an_expr_node_ptr expr,
                      a_boolean        need_parens,
                      a_boolean        obj_expr_of_mfunc_operator)
@@ -18824,6 +18852,25 @@ gen_expr that might end up generating this expr as a temporary.
   /* If expression is a constant that came from an expression, go to
      the expression.  This allows optimizations. */
   expr = assoc_expr_if_constant(expr);
+  if (expr->is_contract_control_operand &&
+      expr != contract_control_operand_being_generated) {
+    /* A contract_control expression (P3400), as written: its operand
+       names what only the name lookup of an assertion-control specifier
+       finds.  Outside templates it is (value, object) (see
+       scan_contract_control_expression), and the value is backed by the
+       operand as written. */
+    an_expr_node_ptr  saved_operand = contract_control_operand_being_generated;
+    an_expr_node_ptr  operand = expr;
+    if (is_operation_node(expr) && node_operator_is(expr, eok_comma)) {
+      operand = expr->variant.operation.operands;
+    }  /* if */
+    contract_control_operand_being_generated = operand;
+    write_tok_str("contract_control(");
+    gen_expr(operand, /*need_parens=*/FALSE, obj_expr_of_mfunc_operator);
+    write_tok_ch(')');
+    contract_control_operand_being_generated = saved_operand;
+    return;
+  }  /* if */
 #if CHECKING && !STANDALONE_UTILITY_PROGRAM
   if (is_operation_node(expr)) {
     check_operation_node_consistency(expr);
@@ -21332,7 +21379,9 @@ Generate code for a namespace "using" directive.
   check_for_and_take_source_seq_entry(udp->source_sequence_entry);
   /* Position the output file to the "using" position. */
   set_output_position(&udp->position);
-  write_tok_str("using namespace ");
+  /* A contract_control using-directive (P3400) as written. */
+  write_tok_str(udp->is_contract_control ? "using contract_control namespace "
+                                         : "using namespace ");
   gen_name(&nsp->source_corresp, iek_namespace, GN_USING_DIRECTIVE,
            (a_boolean *)NULL);
   gen_attributes(udp->attributes, al_postfix, /*primary_only=*/FALSE);

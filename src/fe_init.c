@@ -1609,6 +1609,9 @@ Install the keywords in the symbol table.
     if (contracts_enabled) {
       enter_keyword((a_token_kind)tok_contract_assert, "contract_assert");
     }  /* if */
+    if (contracts_enabled && contracts_p3400_enabled) {
+      enter_keyword((a_token_kind)tok_contract_control, "contract_control");
+    }  /* if */
     }  /* if */
   }  /* if */
   if (ms_extensions && microsoft_version >= 1300) {

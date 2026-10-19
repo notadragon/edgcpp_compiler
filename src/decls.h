@@ -1959,7 +1959,8 @@ extern void make_using_directive(a_namespace_ptr    nsp,
                                  a_source_position  *pos,
                                  a_boolean	    compiler_generated,
                                  a_boolean	    inline_namespace,
-                                 an_attribute_ptr   attributes);
+                                 an_attribute_ptr   attributes,
+                                 a_boolean	    is_contract_control = FALSE);
 
 #if DECL_MODIFIERS_IN_USE
 #if MICROSOFT_EXTENSIONS_ALLOWED

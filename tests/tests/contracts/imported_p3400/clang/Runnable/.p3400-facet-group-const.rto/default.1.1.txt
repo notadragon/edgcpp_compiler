@@ -1,0 +1,7 @@
+eccp -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contract_evaluation_semantic=ignore --contract_group_evaluation_semantic=safety:observe Test_name.c
+Test_name.c:89:23: warning: 'mutable_group_t' does not provide the 'group_names' facet because that member is not 'const' [-Wcontract-invalid-label-facet]
+   89 | void f_mutable(int x) pre<mutable_group>(x > 0) {}
+      |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:65:6: note: declared here
+   65 |   char group_names[1][7] = {"safety"};
+      |      ^~~~~~~~~~~

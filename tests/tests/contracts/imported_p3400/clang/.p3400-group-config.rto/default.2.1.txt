@@ -1,0 +1,1 @@
+fe_only -DTEST_NUMBER=2 --c++26 --c++26 --contracts --contracts_p3400 --contract_evaluation_semantic=enforce --contract_group_evaluation_semantic=safety:observe --contract_group_evaluation_semantic=safety.memory:ignore Test_name.c
