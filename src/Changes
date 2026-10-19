@@ -1,6 +1,31 @@
 Version 7.0, September 28, 2026
 
 10/1/26  []
+Contracts (P2900): what a contract predicate names
+
+In a contract predicate an id-expression naming a variable (including a
+parameter, a structured binding and a postcondition's result name) is a
+const lvalue, for a reference the object it refers to, and "this" points to
+const, so a predicate cannot modify them; overload resolution sees the const
+object.  decltype of such a name is still its declared type.  In the body of
+a lambda in a predicate, so is a variable captured by reference, and the
+object "this" points to.
+
+  void f(int x) pre(++x > 0);   // error: expression must be a modifiable
+                                // lvalue
+
+A parameter that a postcondition odr-uses, unless it is a reference, must be
+declared const ("value parameter used in a postcondition must be declared
+const"), on the declaration with the postcondition and on the definition;
+in a coroutine it cannot be odr-used at all.  In a precondition of a
+constructor or a postcondition of a destructor a member must be named
+through an explicit "this".
+
+A function's name is now in scope in its own contract assertions, as it is
+from the end of its declarator.
+
+
+10/1/26  []
 Contracts (P2900): redeclarations and restrictions
 
 A redeclaration of a function either omits the function contract

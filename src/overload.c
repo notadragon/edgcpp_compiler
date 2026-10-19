@@ -13074,6 +13074,44 @@ type was an error because the function turned out to be static.
 }  /* check_use_of_this_in_member_decl */
 
 
+/* TRUE while variable_this_exists_for_copy finds the type of the object a
+   lambda captures by copy. */
+STATIC_THREAD a_boolean  this_type_for_copy = FALSE;
+
+
+static a_boolean this_exists_around_contract_lambda(
+                                       a_type_ptr         closure_class,
+                                       a_variable_ptr     *this_var,
+                                       a_type_ptr         *this_type,
+                                       a_boolean          allow_lambda_this,
+                                       a_source_position  *used_pos)
+/*
+closure_class is the closure type of a lambda in the predicate of a
+precondition or postcondition of a function declaration (P2900), outside any
+function body, whose predicate is being scanned.  "this" in the lambda is the
+"this" of the declared function, if any, which has no variable there (see
+make_abstract_this_operand): Look for it in the context in which the scan of
+the predicate began (see contract_predicate_depth_of_lambda; an instance of a
+generic lambda's call operator is pushed on top of that context).  See
+variable_this_exists_full for the parameters and the result.
+*/
+{
+  a_boolean      this_exists = FALSE;
+  a_scope_depth  pred_depth =
+                          contract_predicate_depth_of_lambda(closure_class);
+
+  *this_var = NULL;
+  if (pred_depth != NO_SCOPE_DEPTH && pred_depth <= depth_scope_stack) {
+    a_scope_depth  saved_depth = depth_of_initial_lookup_scope;
+    depth_of_initial_lookup_scope = pred_depth;
+    this_exists = variable_this_exists_full(this_var, this_type,
+                                            allow_lambda_this, used_pos);
+    depth_of_initial_lookup_scope = saved_depth;
+  }  /* if */
+  return this_exists;
+}  /* this_exists_around_contract_lambda */
+
+
 a_boolean variable_this_exists_full(a_variable_ptr    *this_var,
                                     a_type_ptr        *this_type,
                                     a_boolean         allow_lambda_this,
@@ -13127,6 +13165,19 @@ implicit "this" is available, e.g., during overload resolution.
       break;
     }  /* if */
   }  /* if */
+  if ((scope_is(ssep, sck_class_struct_union) ||
+       scope_is(ssep, sck_class_reactivation)) &&
+      ssep->assoc_type != NULL && type_is_lambda_closure(ssep->assoc_type) &&
+      ssep->assoc_type->source_corresp.enclosing_routine == NULL &&
+      lambda_closure_in_contract_predicate(ssep->assoc_type)) {
+    /* The closure class of a lambda in the predicate of a precondition or
+       postcondition of a function declaration (P2900), whose body is not
+       entered (e.g., the fields of its captures are being declared). */
+    this_exists = this_exists_around_contract_lambda(
+                                ssep->assoc_type, &local_this_var,
+                                &local_this_type, allow_lambda_this, used_pos);
+    goto done;
+  }  /* if */
   /* We cannot use innermost_function_scope because it may be NULL due to
      intervening closure classes.  Compute an enclosing_rout_scope instead. */
   if (scope_is(ssep, sck_function)) {
@@ -13170,6 +13221,12 @@ implicit "this" is available, e.g., during overload resolution.
         local_this_type = parent_class_of(closure_class);
         local_this_type = add_right_pointer_type_to_this(local_this_type,
                                                          local_this_type);
+      } else if (lambda_closure_in_contract_predicate(closure_class)) {
+        /* The lambda is in the predicate of a precondition or postcondition
+           of a function declaration (P2900), outside any function body. */
+        this_exists = this_exists_around_contract_lambda(
+                                closure_class, &local_this_var,
+                                &local_this_type, allow_lambda_this, used_pos);
       }  /* if */
     } else if (!is_lambda_body) {
       /* Normal case, not inside a lambda (but inside a function body). */
@@ -13313,11 +13370,38 @@ implicit "this" is available, e.g., during overload resolution.
       }  /* if */
     }  /* if */
   }  /* if */
+done:
   if (local_this_var != NULL) local_this_type = local_this_var->type;
+  if (this_exists && in_contract_predicate_context() &&
+      !this_type_for_copy && !contract_this_is_lambda_copy()) {
+    /* In a contract predicate (P2900), and in the body of a lambda or a
+       statement expression in one, "this" points to const (but for a
+       mutable lambda's own copy of *this). */
+    local_this_type = contract_predicate_this_type(local_this_type);
+  }  /* if */
   if (this_var != NULL) *this_var = local_this_var;
   if (this_type != NULL) *this_type = local_this_type;
   return this_exists;
 }  /* variable_this_exists_full */
+
+
+a_boolean variable_this_exists_for_copy(a_variable_ptr  *this_var,
+                                        a_type_ptr      *this_type)
+/*
+Like variable_this_exists, for the capture of *this by a lambda: In a
+contract predicate (P2900) the type of "this" is a pointer to const (see
+contract_predicate_this_type), but not for the purpose of copying the object
+it points to.
+*/
+{
+  a_boolean  this_exists;
+  a_boolean  saved_this_type_for_copy = this_type_for_copy;
+
+  this_type_for_copy = TRUE;
+  this_exists = variable_this_exists(this_var, this_type);
+  this_type_for_copy = saved_this_type_for_copy;
+  return this_exists;
+}  /* variable_this_exists_for_copy */
 
 
 a_boolean variable_this_exists(a_variable_ptr *this_var,
@@ -13561,6 +13645,12 @@ that case, and this_type is used for the type.
     /* Make an operand for the node. */
     make_expression_operand(node, result);
   }  /* if */
+  if (in_contract_predicate_context() && !contract_this_is_lambda_copy()) {
+    /* In a contract predicate (P2900), and in the body of a lambda or a
+       statement expression in one, "this" points to const (but for a
+       mutable lambda's own copy of *this). */
+    constify_contract_this_operand(result);
+  }  /* if */
   result->position = *position;
 #if EXTRA_SOURCE_POSITIONS_IN_IL
   result->end_position = *end_position;
@@ -13661,6 +13751,14 @@ wondering if it's available.
       make_error_operand(result);
     } else {
       /* The "this" pointer can be used to access the member. */
+      if (in_lambda_body() && in_lambda_in_cdtor_contract()) {
+        /* P2900 [dcl.contract.func]: the implicit transformation into a
+           member access through "this" occurs in a lambda in the
+           precondition of a constructor, or the postcondition of a
+           destructor, too (as it does in the predicate itself, see
+           check_function_contract_predicate). */
+        expr_pos_error(ec_contract_implicit_this_in_cdtor, member_pos);
+      }  /* if */
       /* Make an operand for the value of the "this" pointer. */
       make_this_variable_operand(this_var, this_type,
                                  /*is_implicit=*/TRUE, member_pos,

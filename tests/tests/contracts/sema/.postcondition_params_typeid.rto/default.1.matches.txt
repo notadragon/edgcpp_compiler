@@ -1,0 +1,8 @@
+Matches for "line 11: error: value parameter "a" used in a postcondition must be declared const":
+  <-----------------------------------------------------------------------------
+  line 11: error: value parameter "a" used in a postcondition must be declared const
+  ----------------------------------------------------------------------------->
+Matches for "line 15: error: value parameter "a" used in a postcondition must be declared const":
+  <-----------------------------------------------------------------------------
+  line 15: error: value parameter "a" used in a postcondition must be declared const
+  ----------------------------------------------------------------------------->

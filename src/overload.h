@@ -1089,6 +1089,8 @@ extern a_boolean variable_this_exists_full(a_variable_ptr    *this_var,
                                            a_boolean         allow_lambda_this,
                                            a_source_position *used_pos);
 
+extern a_boolean variable_this_exists_for_copy(a_variable_ptr  *this_var,
+                                               a_type_ptr      *this_type);
 extern a_boolean variable_this_exists(a_variable_ptr *this_var,
                                       a_type_ptr     *this_type);
 

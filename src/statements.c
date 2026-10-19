@@ -8406,12 +8406,36 @@ is being parsed within the context of the __extension__ keyword.
 #if UPC_EXTENSIONS_ALLOWED
   if (upc_mode) check_for_upc_pragmas(block);
 #endif /* UPC_EXTENSIONS_ALLOWED */
+  if (at_function_level &&
+      current_routine_entry()->contract_specifiers != NULL) {
+    /* The parameters of a definition that its postconditions use must be
+       const (P2900). */
+    check_postcondition_params_of_definition(
+                         current_routine_entry(),
+                         innermost_function_scope->variant.routine.parameters,
+                         /*is_coroutine=*/FALSE);
+    /* The parameters they use are used. */
+    mark_contract_params_used(
+                         current_routine_entry(),
+                         innermost_function_scope->variant.routine.parameters);
+  }  /* if */
   /* It is also the only place where a GNU local label can be declared. */
   while (gnu_mode && curr_token == tok_identifier &&
          strcmp("__label__",
                 locator_for_curr_id.symbol_header->identifier) == 0) {
     local_label_declaration();
   }  /* while */
+  if (is_function_try_block &&
+      current_routine_entry()->contract_specifiers != NULL) {
+    /* The compound statement of a function-try-block is the body of the
+       definition too (EDG-83): the same processing. */
+    check_postcondition_params_of_definition(
+                         current_routine_entry(),
+                         innermost_function_scope->variant.routine.parameters,
+                         /*is_coroutine=*/FALSE);
+    mark_contract_params_used(
+                         current_routine_entry(),
+                         innermost_function_scope->variant.routine.parameters);
 
   /* Scan the sequence of statements.  (Note that we may end up here during
      preprocessing error recovery if a C++11 lambda or GNU statement

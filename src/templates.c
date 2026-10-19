@@ -39931,6 +39931,8 @@ unless the SIR_CLEAR_VALUE flag is set in "options".
   a_boolean                        use_master_instance;
   a_boolean                        rout_is_constexpr = FALSE;
   a_boolean                        constexpr_in_constant_context = FALSE;
+  a_boolean                        lambda_in_scanned_predicate =
+                                                                        FALSE;
 
   db_enter(5, "update_instantiation_required_flag");
   defer_inline = (options & SIR_DEFER_INLINE) != 0;
@@ -39969,6 +39971,17 @@ unless the SIR_CLEAR_VALUE flag is set in "options".
         defer_inline = TRUE;
       }  /* if */
     }  /* if */
+  }  /* if */
+  if (value && !in_instantiation_wrapup && is_simple_function_symbol(sym) &&
+      sym->variant.routine.ptr->is_lambda_body &&
+      in_contract_predicate_of_lambda(parent_class_of(
+                                                 sym->variant.routine.ptr))) {
+    /* The call operator of a generic lambda in a contract predicate (P2900)
+       that is being scanned: Instantiate it now, while the context of the
+       predicate (e.g., a declaration's function parameter scope, with the
+       parameters and the result name it captures) exists. */
+    lambda_in_scanned_predicate = TRUE;
+    defer_inline = FALSE;
   }  /* if */
   if ((options & SIR_CONSTANT_CONTEXT) != 0 && is_function_symbol(sym)) {
     /* constexpr functions in constant contexts should always be instantiated
@@ -40067,6 +40080,7 @@ unless the SIR_CLEAR_VALUE flag is set in "options".
       tip->instantiation_required = FALSE;
     }  /* if */
   } else if (!constexpr_in_constant_context &&
+             !lambda_in_scanned_predicate &&
              (curr_class_fixup_header(/*for_instantiation=*/TRUE)->
                                               pending_class_definitions != 0 ||
               defer_instantiations != 0)) {
