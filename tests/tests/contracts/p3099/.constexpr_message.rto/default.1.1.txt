@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contracts_p3099 --contract_evaluation_semantic=quick_enforce Test_name.c
+"Test_name.c", line 9: error: contract predicate is false in constant expression (x must be positive)
+  constexpr int f(int x) pre(x > 0, "x must be positive") { return x; }
+                         ^
+
+"Test_name.c", line 11: error: contract predicate is false in constant expression (r: "quoted" \back)
+    post(r: r > 0, "r: \"quoted\" \\back") { return x; }
+    ^
+
+"Test_name.c", line 13: error: contract predicate is false in constant expression ()
+    contract_assert(x > 0, "");
+    ^
+
+"Test_name.c", line 14: error: contract predicate is false in constant expression
+    contract_assert(x > -1);
+    ^
+
+4 errors detected in the compilation of "Test_name.c".

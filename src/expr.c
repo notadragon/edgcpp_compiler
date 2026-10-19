@@ -35726,6 +35726,56 @@ processed expression.
 }  /* process_boolean_attribute_expression */
 
 
+static a_const_char *scan_contract_diagnostic_message(void)
+/*
+The current token follows the predicate of a contract assertion.  If P3099 is
+enabled and it is a comma, scan the diagnostic-message that follows and
+return its text, in IL memory; otherwise, or after an error, return NULL.  A
+string literal (an unevaluated string: no encoding prefix) is supported; the
+form that is a constant expression providing size() and data() is diagnosed
+as not yet supported, as the front end has no machinery for it (not even for
+static_assert).
+*/
+{
+  a_const_char  *result = NULL;
+
+  if (!contracts_p3099_enabled || curr_token != tok_comma) return NULL;
+  (void)get_token();
+  if (curr_token == tok_string_literal) {
+    a_source_position  pos = pos_curr_token;
+    a_constant_ptr     con;
+    (void)do_expression_level_string_literal_concatenation();
+    con = &const_for_curr_token;
+    if (con->kind != (a_constant_repr_kind)ck_string ||
+        con->character_kind != (a_character_kind)chk_char) {
+      pos_error(ec_contract_message_encoding_prefix, &pos);
+    } else {
+      /* The text, up to the terminating null character. */
+      a_const_char   *value = con->variant.string.value;
+      a_targ_size_t  len = 0;
+      char           *text;
+      while (len < con->variant.string.length && value[len] != '\0') len++;
+      text = (char*)alloc_il((sizeof_t)(len + 1));
+      (void)memcpy(text, value, (size_t)len);
+      text[len] = '\0';
+      result = text;
+    }  /* if */
+    (void)get_token();
+  } else {
+    an_operand           operand;
+    an_expr_stack_entry  expr_stack_entry;
+    pos_error(ec_contract_message_not_string_literal, &pos_curr_token);
+    /* Scan the expression, and discard it. */
+    push_expr_stack(ek_normal, &expr_stack_entry,
+                    /*force_object_lifetime=*/FALSE,
+                    /*suppress_object_lifetime=*/FALSE);
+    scan_expr(&operand, PREC_ASSIGNMENT, EOPT_DISALLOW_COMMA_OPERATOR);
+    pop_expr_stack();
+  }  /* if */
+  return result;
+}  /* scan_contract_diagnostic_message */
+
+
 an_expr_node_ptr scan_expr_for_attribute(int        precedence,
                                          a_boolean  evaluated,
                                          a_boolean  convert_to_bool)

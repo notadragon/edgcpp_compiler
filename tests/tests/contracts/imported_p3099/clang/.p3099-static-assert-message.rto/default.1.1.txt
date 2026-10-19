@@ -1,0 +1,13 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3099 Test_name.c
+"Test_name.c", line 22: error: expected a string literal
+  static_assert(sizeof(int) > 100, Msg{}); // expected-error {{custom sa msg}} expected-note {{expression evaluates to '4 > 100'}}
+                                   ^
+
+"Test_name.c", line 23: error: static assertion failed with "plain literal sa msg"
+  static_assert(sizeof(int) > 100, "plain literal sa msg"); // expected-error {{plain literal sa msg}} expected-note {{expression evaluates to '4 > 100'}}
+  ^
+"Test_name.c", line 23: note: the final comparison was 4 > 100
+  static_assert(sizeof(int) > 100, "plain literal sa msg"); // expected-error {{plain literal sa msg}} expected-note {{expression evaluates to '4 > 100'}}
+                            ^
+
+2 errors detected in the compilation of "Test_name.c".

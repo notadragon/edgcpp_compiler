@@ -1,6 +1,26 @@
 Version 7.0, September 28, 2026
 
 10/3/26  []
+Contracts (P3099): user-defined diagnostic messages
+
+The new --[no_]contracts_p3099 option (implied by --contracts_p3850, and
+enabling contracts unless --[no_]contracts is given) lets a contract
+assertion have a diagnostic message after its predicate, and predefines
+__cpp_contracts_message as 202609L:
+
+  int f(int x) pre(x > 0, "x must be positive");
+
+The message is part of the diagnostic for a contract violation in constant
+evaluation ("contract predicate is false in constant expression (x must be
+positive)"), and two declarations of a function must give the same message
+(as text) or none.  Through edg_gxx.sh (which passes -f[no-]contracts-p3099
+to both the front end and g++) it reaches the violation handler as
+contract_violation::message().  Only a string literal is supported as a
+message for now; a constant expression with size() and data() is diagnosed
+as not yet supported.
+
+
+10/3/26  []
 Contracts (P3097): contracts for virtual functions
 
 The new --[no_]contracts_p3097 option (implied by --contracts_p3850, and

@@ -8910,6 +8910,10 @@ contract_specifier_predicate).
     csp->comment = copy_string_to_region(file_scope_region_number,
                                          csp->comment);
   }  /* if */
+  if (csp->message != NULL && !in_file_scope(csp->message)) {
+    csp->message = copy_string_to_region(file_scope_region_number,
+                                         csp->message);
+  }  /* if */
   if (!expr_has_reference_to_local_entity(pred) &&
       !expr_has_local_capturing_lambda(pred)) {
     csp->predicate = copy_expr_tree(pred, CE_ALWAYS_COPY_BACKING_EXPRESSIONS);
@@ -10122,6 +10126,14 @@ first difference.
                                                curr->result_name,
                                                curr->captures)) {
       pos2_diagnostic(es_error, ec_contract_redecl_condition_mismatch,
+                      &curr->position, &prev->position);
+      return;
+    }  /* if */
+    if ((prev->message == NULL) != (curr->message == NULL) ||
+        (prev->message != NULL &&
+         strcmp(prev->message, curr->message) != 0)) {
+      /* P3099: the same diagnostic message (as text), or none on both. */
+      pos2_diagnostic(es_error, ec_contract_redecl_message_mismatch,
                       &curr->position, &prev->position);
       return;
     }  /* if */
