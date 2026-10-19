@@ -1,0 +1,8 @@
+Matches for "Test_name.c:12:.*error: invalid conversion from .void \(\*\)\(\). to .void \(\*\)\(\) noexcept.":
+  <-----------------------------------------------------------------------------
+  Test_name.c:12:29: error: invalid conversion from 'void (*)()' to 'void (*)() noexcept'
+  ----------------------------------------------------------------------------->
+Matches for "Test_name.c:13:.*error: static assertion failed":
+  <-----------------------------------------------------------------------------
+  Test_name.c:13:16: error: static assertion failed
+  ----------------------------------------------------------------------------->

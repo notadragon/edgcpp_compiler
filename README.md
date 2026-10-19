@@ -1,3 +1,39 @@
+# C++ Contracts Implementation (P3850) in the EDG front end
+
+This fork of the EDG C/C++ front end is for implementing C++ Contracts
+(P2900) and the extensions proposed in P3850, to match the implementations
+in the GCC and Clang forks:
+
+- https://github.com/notadragon/gnu_gcc (contracts-p3850 branch)
+- https://github.com/notadragon/llvm-project (contracts-p3850 branch)
+
+Everything added here is prototype-quality, for implementation experience
+rather than for production.
+
+What is known to be broken or still owed on this branch is in
+[`open-issues/README.md`](open-issues/README.md); bugs found here that
+reproduce on stock upstream EDG are in
+[`bug-reports/README.md`](bug-reports/README.md).
+
+## Using it with g++
+
+EDG is a front end only.  `util/edg_gxx.sh` (installed as `edg-gxx`) pairs
+the C++-generating front end with a GNU g++, which compiles the regenerated
+C++: programs use that g++'s libstdc++, exception handling and RTTI, and the
+contract-violation runtime (libcontracts) that implements the shared contracts
+ABI.  It takes g++'s options:
+
+    edg-gxx -std=c++26 main.cpp -o main
+
+Point it at the g++ to pair with through `EDG_GXX`.
+
+## Branches
+
+- `contracts-p3850` -- the generated, reviewable history; `branch-history/`
+  maps each commit to its content
+
+---
+
 # EDG Compiler Project
 
 Welcome to the open source EDG C/C++ compiler project!
