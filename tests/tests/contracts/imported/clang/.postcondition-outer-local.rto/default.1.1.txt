@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 17: error: reference to local variable of enclosing function is not allowed
+    struct L { static int g() post(r : r == local) { return 0; } }; // expected-error {{reference to local variable 'local' declared in enclosing function 'f'}}
+                                            ^
+
+"Test_name.c", line 24: error: reference to local variable of enclosing function is not allowed
+      struct M { static int g() post(r : r == x) { return 0; } }; // expected-error {{reference to local variable 'x' declared in enclosing function 'h'}}
+                                              ^
+
+2 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 18: error: "x" (declared at line 16) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto l = [&] (auto a) { contract_assert (x > a); return a; };	// { dg-error "not implicitly captured by a contract assertion" }
+                                             ^
+
+1 error detected in the compilation of "Test_name.c".

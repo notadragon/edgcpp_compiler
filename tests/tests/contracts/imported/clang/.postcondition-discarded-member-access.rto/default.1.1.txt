@@ -1,0 +1,39 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contract_evaluation_semantic=enforce Test_name.c
+"Test_name.c", line 29: warning: expression has no effect
+  void mem(S s) post((s.m, true)) {}                    // OK
+                      ^
+
+"Test_name.c", line 31: warning: expression has no effect
+  void mem_nested(T t) post((t.in.m, true)) {}          // OK
+                             ^
+
+"Test_name.c", line 32: warning: expression has no effect
+  void whole(S s) post((s, true)) {}                    // OK, as Sema/pr126897.cpp
+                        ^
+
+"Test_name.c", line 33: error: value parameter "s" used in a postcondition must be declared const
+  void call(S s) post((s.ok(), true)) {}  // expected-error {{parameter 's' referenced in contract postcondition must be declared const}} expected-note {{declared here}}
+              ^
+
+"Test_name.c", line 36: error: value parameter "v" used in a postcondition must be declared const
+  void vol(V v) post((v.m, true)) {}      // expected-error {{parameter 'v' referenced in contract postcondition must be declared const}} expected-note {{declared here}}
+             ^
+
+"Test_name.c", line 39: warning: expression has no effect
+  void re_whole(S s) post((s, true));
+                           ^
+
+"Test_name.c", line 41: warning: expression has no effect
+  void re_mem(S s) post((s.m, true));
+                         ^
+
+"Test_name.c", line 47: error: value parameter "s" used in a postcondition must be declared const
+  void re_call(S s);                      // expected-error {{parameter 's' referenced in contract postcondition must be declared const}}
+                 ^
+
+"Test_name.c", line 43: warning: expression has no effect
+  template <class U> void re_tmpl(const U s) post((s.m, true));
+                                                   ^
+          detected during instantiation of "void re_tmpl(U) [with U=S]" at line 45
+
+3 errors detected in the compilation of "Test_name.c".

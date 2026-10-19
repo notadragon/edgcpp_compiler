@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 33: error: expression must be a modifiable lvalue
+  void f_namespace() pre(++g_n);
+                           ^
+
+"Test_name.c", line 39: error: expression must be a modifiable lvalue
+  void f_pointer_itself() pre(++g_p);
+                                ^
+
+"Test_name.c", line 46: error: expression must be a modifiable lvalue
+    contract_assert(++s);
+                      ^
+
+"Test_name.c", line 52: error: expression must be a modifiable lvalue
+  void f_thread_local() pre(++t_n);
+                              ^
+
+"Test_name.c", line 60: error: expression must be a modifiable lvalue
+  void f_static_member() pre(++HasStatic::s);
+                               ^
+
+"Test_name.c", line 67: error: expression must be a modifiable lvalue
+    contract_assert(++a);
+                      ^
+
+6 errors detected in the compilation of "Test_name.c".

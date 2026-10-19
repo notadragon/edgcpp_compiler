@@ -1,0 +1,15 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 108: error: value parameter "p" used in a postcondition must be declared const
+  void odr_use (int p) post (p > 0) {} // { dg-error "value parameter used in a postcondition must be const" }
+                    ^
+
+"Test_name.c", line 121: error: value parameter "p" used in a postcondition must be declared const
+  void mixed (int p) post (g<decltype (p)> () && p > 0) {} // { dg-error "value parameter used in a postcondition must be const" }
+                  ^
+
+"Test_name.c", line 116: error: value parameter "p" used in a postcondition must be declared const
+  void odr_use_dep (T p) post (p > 0) {} // { dg-error "value parameter 'p' used in a postcondition must be const" }
+                      ^
+          detected during instantiation of "void odr_use_dep(T) [with T=int]" at line 118
+
+3 errors detected in the compilation of "Test_name.c".

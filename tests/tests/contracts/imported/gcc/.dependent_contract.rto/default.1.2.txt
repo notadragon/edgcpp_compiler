@@ -1,0 +1,7 @@
+./a.out
+contract violation in function void S<ST>::f() [with ST = int] at Test_name.c:26: ((const S<ST>)(*(S<ST>*)this)).S<ST>::tcheck(1)
+[assertion_kind: pre, semantic: observe, mode: predicate_false, terminating: no]
+contract violation in function void S<ST>::f(T) [with T = int; ST = int] at Test_name.c:30: ((const S<ST>)(*(S<ST>*)this)).S<ST>::tcheck(1)
+[assertion_kind: pre, semantic: observe, mode: predicate_false, terminating: no]
+contract violation in function void S<ST>::f(T) [with T = int; ST = int] at Test_name.c:30: ((const S<ST>)(*(S<ST>*)this)).tcheck<T>(((const T)t))
+[assertion_kind: pre, semantic: observe, mode: predicate_false, terminating: no]

@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contract_evaluation_semantic=enforce Test_name.c
+"Test_name.c", line 22: error: "ts" (declared at line 20) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto l = [=] { contract_assert (((ts > 0) && ...)); };	// { dg-error "not implicitly captured by a contract assertion" }
+                                      ^
+
+"Test_name.c", line 23: error: "ts" (declared at line 20) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto m = [&] { contract_assert (((ts > 0) && ...)); };	// { dg-error "not implicitly captured by a contract assertion" }
+                                      ^
+
+"Test_name.c", line 32: error: "t" (declared at line 30) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto l = [=] { contract_assert (t > 0); };	// { dg-error "not implicitly captured by a contract assertion" }
+                                    ^
+
+"Test_name.c", line 40: error: "t" (declared at line 38) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto l = [=] { contract_assert (t > 0); };	// { dg-error "not implicitly captured by a contract assertion" }
+                                    ^
+
+4 errors detected in the compilation of "Test_name.c".

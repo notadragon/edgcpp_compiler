@@ -1,0 +1,82 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 47: warning: expression has no effect
+  Plain member_access (int b) post (r : (r.id, true)) { return Plain{b}; }
+                                         ^
+
+"Test_name.c", line 49: warning: expression has no effect
+  Plain nested_member (int b) post (r : (r.in.x, true)) { return Plain{b}; }
+                                         ^
+
+"Test_name.c", line 53: warning: expression has no effect
+  Plain subscript (int b) post (r : (r.arr[0], true)) { return Plain{b}; }
+                                     ^
+
+"Test_name.c", line 61: warning: expression has no effect
+  Plain *via_arrow (int b) post (r : (r->id, true)) { return nullptr; }
+                                      ^
+
+"Test_name.c", line 63: warning: expression has no effect
+  auto deduced_return (int b) post (r : (r.id, true)) { return Plain{b}; }
+                                         ^
+
+"Test_name.c", line 66: warning: expression has no effect
+  Plain declared_only (int b) post (r : (r.id, true));
+                                         ^
+
+"Test_name.c", line 71: warning: expression has no effect
+  Plain cond_const_param (int const b) post (r : (b ? r.id : r.in.x, true))
+                                                  ^
+
+"Test_name.c", line 74: warning: expression has no effect
+  Plain cond_plain_param (int b) post (r : (b ? r.id : r.in.x, true)) // { dg-error "must be const" }
+                                            ^
+
+"Test_name.c", line 74: error: value parameter "b" used in a postcondition must be declared const
+  Plain cond_plain_param (int b) post (r : (b ? r.id : r.in.x, true)) // { dg-error "must be const" }
+                              ^
+
+"Test_name.c", line 91: warning: expression has no effect
+  Plain Redeclared::f (int b) post (r : (r.id, true)) // { dg-error "declaration adds contracts" }
+                                         ^
+
+"Test_name.c", line 91: error: declaration adds contracts to "Plain Redeclared::f(int)"
+  Plain Redeclared::f (int b) post (r : (r.id, true)) // { dg-error "declaration adds contracts" }
+                              ^
+
+"Test_name.c", line 98: warning: expression has no effect
+  int bare_scalar_result (int b) post (r : (r, true)) { return b; }
+                                            ^
+
+"Test_name.c", line 99: warning: expression has no effect
+  Plain bare_class_result (int b) post (r : (r, true)) { return Plain{b}; }
+                                             ^
+
+"Test_name.c", line 102: warning: expression has no effect
+  int scalar_arith (int b) post (r : (r + 0, true)) { return b; }
+                                      ^
+
+"Test_name.c", line 103: warning: expression has no effect
+  int scalar_negate (int b) post (r : (-r, true)) { return b; }
+                                       ^
+
+"Test_name.c", line 104: warning: expression has no effect
+  Plain member_arith (int b) post (r : (r.id + 0, true)) { return Plain{b}; }
+                                        ^
+
+"Test_name.c", line 111: warning: expression has no effect
+    Plain f (int b) post (r : (r.id, true));
+                               ^
+
+"Test_name.c", line 112: warning: expression has no effect
+    static Plain g (int b) post (r : (r.id, true));
+                                      ^
+
+"Test_name.c", line 121: warning: expression has no effect
+  Plain exempt_param (int b) post (r : (b, r.id != 0)) { return Plain{b}; }
+                                        ^
+
+"Test_name.c", line 123: error: value parameter "b" used in a postcondition must be declared const
+  Plain odr_used_param (int b) post (r : (use_scalar (b), true)) // { dg-error "must be const" }
+                            ^
+
+3 errors detected in the compilation of "Test_name.c".

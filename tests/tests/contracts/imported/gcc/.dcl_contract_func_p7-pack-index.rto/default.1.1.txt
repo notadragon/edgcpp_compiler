@@ -1,0 +1,17 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 23: error: value parameter "a" used in a postcondition must be declared const
+  void pi_nonconst (Ts... a) post (a...[0] == 0) {} // { dg-error "used in a postcondition must be const" }
+                          ^
+          detected during instantiation of "void pi_nonconst(Ts...) [with Ts=<int>]" at line 24
+
+"Test_name.c", line 35: error: value parameter "a" used in a postcondition must be declared const
+  void pi_nonconst_sel (Ts... a) post (a...[0] == 0) {} // { dg-error "used in a postcondition must be const" }
+                              ^
+          detected during instantiation of "void pi_nonconst_sel(Ts...) [with Ts=<int, const int>]" at line 36
+
+"Test_name.c", line 45: error: value parameter "a" used in a postcondition must be declared const
+  void fold_nonconst (Ts... a) post ((... && (a == 0))) {} // { dg-error "used in a postcondition must be const" }
+                            ^
+          detected during instantiation of "void fold_nonconst(Ts...) [with Ts=<int>]" at line 46
+
+3 errors detected in the compilation of "Test_name.c".

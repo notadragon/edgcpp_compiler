@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 14: error: function "DefCopy::DefCopy(const DefCopy &)" defaulted on its first declaration cannot have a function contract specifier
+  struct DefCopy { DefCopy () = default; DefCopy (const DefCopy&) pre (true) = default; };
+                                                                  ^
+
+1 error detected in the compilation of "Test_name.c".

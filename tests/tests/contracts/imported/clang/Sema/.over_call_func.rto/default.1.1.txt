@@ -1,0 +1,11 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 19: error: in a precondition of a constructor or a postcondition of a destructor, a member must be accessed through an explicit "this"
+    S() pre(k); // expected-error {{cannot access non-static member 'k' in the precondition of a constructor because no object is within its lifetime there}}
+            ^
+
+"Test_name.c", line 22: error: the object has type qualifiers that are not compatible with the member function "S::f"
+            object type is: const S
+    ~S() post(f());          // expected-error {{cannot access non-static member 'f' in the postcondition of a destructor because no object is within its lifetime there}}
+              ^
+
+2 errors detected in the compilation of "Test_name.c".

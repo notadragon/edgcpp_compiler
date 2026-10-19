@@ -1,0 +1,17 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contract_evaluation_semantic=observe Test_name.c
+"Test_name.c", line 16: warning: contract condition is not constant
+  constexpr int f (int x) pre (g (x) > 0) { return x; } // { dg-warning "contract condition is not constant" }
+                          ^
+
+"Test_name.c", line 19: warning: contract condition is not constant
+  constexpr int h (int x) { contract_assert (g (x) > 0); return x; } // { dg-warning "contract condition is not constant" }
+                            ^
+
+"Test_name.c", line 16: warning: contract condition is not constant
+  constexpr int f (int x) pre (g (x) > 0) { return x; } // { dg-warning "contract condition is not constant" }
+                          ^
+
+"Test_name.c", line 20: warning: variable "z" was declared but never referenced
+  constexpr int z = h (1);
+                ^
+

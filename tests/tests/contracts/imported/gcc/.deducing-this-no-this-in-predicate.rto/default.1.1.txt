@@ -1,0 +1,34 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 46: error: "this" may only be used inside a nonstatic member function
+    void f (this ExplicitThis &self) pre (this->x == 0); // { dg-error "'this' is unavailable for explicit object member functions" }
+                                          ^
+
+"Test_name.c", line 56: error: "this" may only be used inside a nonstatic member function
+    void f (this ExplicitThisPost &self) post (this->x == 0); // { dg-error "'this' is unavailable for explicit object member functions" }
+                                               ^
+
+"Test_name.c", line 61: error: "this" may only be used inside a nonstatic member function
+    int f (this ExplicitThisPostResult &self) post (r : this->x == r); // { dg-error "'this' is unavailable for explicit object member functions" }
+                                                        ^
+
+"Test_name.c", line 71: error: "this" may only be used inside a nonstatic member function
+      contract_assert (this->x == 0); // { dg-error "'this' is unavailable for explicit object member functions" }
+                       ^
+
+"Test_name.c", line 78: error: a nonstatic member reference must be relative to a specific object
+    void f (this ImplicitThisPre &self) pre (x == 0); // { dg-error "invalid use of non-static data member 'S::x'" }
+                                             ^
+
+"Test_name.c", line 84: error: a nonstatic member reference must be relative to a specific object
+    int f (this ImplicitThisPost &self) post (r : x == r); // { dg-error "invalid use of non-static data member 'S::x'" }
+                                                  ^
+
+"Test_name.c", line 93: error: a nonstatic member reference must be relative to a specific object
+      contract_assert (x == 0); // { dg-error "invalid use of non-static data member 'S::x'" }
+                       ^
+
+"Test_name.c", line 102: error: a nonstatic member reference must be relative to a specific object
+    void f (this ImplicitThisCall &self) pre (ok ()); // { dg-error "cannot call member function 'bool ImplicitThisCall::ok\\(\\) const' without object" }
+                                              ^
+
+8 errors detected in the compilation of "Test_name.c".

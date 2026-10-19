@@ -1,0 +1,46 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 29: error: assertion-control specifiers require --contracts_p3400
+  void j(int x) pre<1 x;            // expected-error {{assertion-control labels require '-fcontracts-p3400'}} expected-error {{expected '>'}}
+                   ^
+
+"Test_name.c", line 29: error: expected a ">"
+  void j(int x) pre<1 x;            // expected-error {{assertion-control labels require '-fcontracts-p3400'}} expected-error {{expected '>'}}
+                       ^
+
+"Test_name.c", line 29: error: expected a "("
+  void j(int x) pre<1 x;            // expected-error {{assertion-control labels require '-fcontracts-p3400'}} expected-error {{expected '>'}}
+                       ^
+
+"Test_name.c", line 30: error: expected a "("
+  void f(int x) pre x > 0;          // expected-error {{expected '(' after 'pre'}} expected-error {{expected function body after function declarator}}
+                    ^
+
+"Test_name.c", line 31: error: expected a "("
+  void g(int x) post x;             // expected-error {{expected '(' after 'post'}} expected-error {{expected function body after function declarator}}
+                     ^
+
+"Test_name.c", line 32: error: expected a "("
+  void h(int x) pre(x > 0) post x;  // expected-error {{expected '(' after 'post'}} expected-error {{expected function body after function declarator}}
+                                ^
+
+"Test_name.c", line 33: error: expected a "{"
+  void i(int x) pre(x > 0) garbage; // expected-error {{expected function body after function declarator}}
+                           ^
+
+"Test_name.c", line 35: error: expected a ";"
+    void lf(int x) pre(x > 0) {}    // expected-error {{function definition is not allowed here}}
+                              ^
+
+"Test_name.c", line 39: error: expected a "("
+    void m(int x) pre x > 0;        // expected-error {{expected '(' after 'pre'}} expected-error {{expected ';' at end of declaration list}}
+                      ^
+
+"Test_name.c", line 40: error: expected a "("
+    void n(int x) pre(x > 0) post x; // expected-error {{expected '(' after 'post'}} expected-error {{expected ';' at end of declaration list}}
+                                  ^
+
+"Test_name.c", line 43: error: identifier "undeclared" is undefined
+  int after = undeclared;           // expected-error {{use of undeclared identifier 'undeclared'}}
+              ^
+
+11 errors detected in the compilation of "Test_name.c".

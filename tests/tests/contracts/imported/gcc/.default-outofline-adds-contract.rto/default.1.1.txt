@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 14: error: declaration adds contracts to "S::S()"
+  S::S () pre (true) = default;		// { dg-error "adds contracts" }
+          ^
+
+"Test_name.c", line 17: error: declaration adds contracts to "D::~D() noexcept"
+  D::~D () pre (true) = default;		// { dg-error "adds contracts" }
+           ^
+
+2 errors detected in the compilation of "Test_name.c".
