@@ -1,6 +1,31 @@
 Version 7.0, September 28, 2026
 
 10/4/26  []
+Contracts (P3400): facets in constant evaluation
+
+The facets of an assertion-control specifier's label that bear on the
+evaluation semantic now apply wherever the front end chooses one: in
+constant evaluation, and in the checks it generates for the C-generating
+back end.  The semantic the configuration gives is adjusted into the set the
+label's allowed_semantics facet allows (as GCC does: itself, or the nearest
+that checks more, or the nearest that checks less), then mapped by its
+compute_semantic facet:
+
+  constexpr int f(int x) pre<std::contracts::labels::review>(x > 0)
+  { return x; }
+  static_assert(f(0) == 0);   // A warning: review makes enforce observe.
+
+A facet is found as the library's concepts find it (a public member of the
+label, called on a const object); one that is not a constant expression, an
+allowed set that is empty and a computed semantic outside it are errors,
+diagnosed with the function definition or contract_assert statement.  A
+compute_message facet gives the message of a constant-evaluation diagnostic
+(the message as written is put out for g++).  For the C-generating back
+end, a semantic other than ignore and quick_enforce is an error.  The facets
+are probed through <contracts>' labels; without it a label has none.
+
+
+10/4/26  []
 Contracts (P3400): assertion-control specifiers and contract_control
 
 The new --[no_]contracts_p3400 option (implied by --contracts_p3850, and

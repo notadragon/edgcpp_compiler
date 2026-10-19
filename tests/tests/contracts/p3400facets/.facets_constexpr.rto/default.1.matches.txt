@@ -1,0 +1,32 @@
+Matches for "line 53: warning: contract predicate is false in constant expression$":
+  <-----------------------------------------------------------------------------
+  line 53: warning: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+Matches for "line 54: error: contract predicate is false in constant expression \(computed\)$":
+  <-----------------------------------------------------------------------------
+  line 54: error: contract predicate is false in constant expression (computed)
+  ----------------------------------------------------------------------------->
+Matches for "line 56: error: compute_semantic result is not in the allowed evaluation semantics":
+  <-----------------------------------------------------------------------------
+  line 56: error: compute_semantic result is not in the allowed evaluation semantics
+  ----------------------------------------------------------------------------->
+Matches for "line 56: error: contract predicate is false in constant expression$":
+  <-----------------------------------------------------------------------------
+  line 56: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+Matches for "line 57: error: assertion-control label allows no evaluation semantics":
+  <-----------------------------------------------------------------------------
+  line 57: error: assertion-control label allows no evaluation semantics
+  ----------------------------------------------------------------------------->
+Matches for "line 58: error: the compute_semantic facet of assertion-control object "NonConst" must be usable in a constant expression":
+  <-----------------------------------------------------------------------------
+  line 58: error: the compute_semantic facet of assertion-control object "NonConst" must be usable in a constant expression
+  ----------------------------------------------------------------------------->
+Matches for "line 59: error: contract predicate is false in constant expression$":
+  <-----------------------------------------------------------------------------
+  line 59: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+Matches for "^6 errors detected":
+  <-----------------------------------------------------------------------------
+  6 errors detected
+  ----------------------------------------------------------------------------->

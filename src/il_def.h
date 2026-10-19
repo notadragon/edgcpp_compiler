@@ -12340,6 +12340,33 @@ typedef struct a_contract_specifier {
 			   the angle brackets), from which the label is
 			   scanned with the operand (for an instance, from
 			   the template's).  For front-end use only. */
+  a_byte	label_allowed_semantics;
+			/* The label's allowed_semantics facet (P3400): bit
+			   1 << v for each value v of
+			   std::contracts::evaluation_semantic it allows (1
+			   for ignore, 2 observe, 3 enforce, 4 quick_enforce,
+			   ...); 0 if the label restricts nothing. */
+  a_byte	label_computed_semantics[5];
+			/* The label's compute_semantic facet (P3400): element
+			   v, for the values v of
+			   std::contracts::evaluation_semantic from 1 (ignore)
+			   to 4 (quick_enforce), is the value the facet gives
+			   for v (0xFE if outside 1-254, 0xFF if not a
+			   constant expression); all are 0 if the label has
+			   no such facet.  Element 0 is unused. */
+  a_const_char	*label_message;
+			/* When has_label_message is TRUE, the message the
+			   label's compute_message facet (P3400) computes, for
+			   the front end's own diagnostics (NULL for none);
+			   the message as written is put out for the compiler
+			   of the generated code, which applies the facet
+			   itself. */
+  a_bit_field	has_label_message:1;
+			/* TRUE if label_message is meaningful. */
+  a_bit_field	label_facet_diagnosed:1;
+			/* TRUE once an error about the semantic the label's
+			   facets give has been issued (see
+			   contract_semantic_for), so that it is issued once. */
   a_bit_field	local_predicate:1;
 			/* TRUE if the specifier is in file-scope memory but
 			   its predicate is in a function's memory region, as
