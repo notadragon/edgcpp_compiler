@@ -1,0 +1,1 @@
+sema/typeid_evaluated_operand_run.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:typeid of a glvalue of polymorphic class type evaluates its operand, even where its dynamic type is known
