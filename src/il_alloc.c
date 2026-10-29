@@ -2594,6 +2594,7 @@ Clear the fields of the given variable to default values.
   vp->is_template_param_object    = FALSE;
   vp->compiler_generated          = FALSE;
   vp->is_in_class_specialization  = FALSE;
+  vp->is_contract_result          = FALSE;
   vp->is_contract_specifier_var   = FALSE;
   vp->init_kind                   = (an_init_kind)initk_none;
   /* Clear field of all variants for union-as-struct testing. */
@@ -4665,6 +4666,9 @@ Initialize the variable fields of the scope entry pointed to by sp.
       sp->variant.routine.lifetime_of_local_static_vars = NULL;
       sp->variant.routine.this_param_variable           = NULL;
       sp->variant.routine.return_value_variable         = NULL;
+      sp->variant.routine.contract_prologue             = NULL;
+      sp->variant.routine.contract_epilogue             = NULL;
+      sp->variant.routine.contract_result_variable      = NULL;
       break;
     case sck_condition:
       sp->variant.assoc_statement = NULL;

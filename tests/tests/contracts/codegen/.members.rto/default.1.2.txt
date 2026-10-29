@@ -1,0 +1,35 @@
+./a.out
+-- 1
+contract violation in function S::S(int) at Test_name.c:25: (((int)((const int)a)) >= 0)
+[assertion_kind: pre, semantic: observe, mode: predicate_false, terminating: no]
+-- 2
+-- 3
+contract violation in function int S::f(int) at Test_name.c:20: (((int)((const int)x)) > 0)
+[assertion_kind: pre, semantic: observe, mode: predicate_false, terminating: no]
+contract violation in function int S::f(int) at Test_name.c:20: (((int)((const int)r)) > ((int)((const S)(*(S*)this)).S::v))
+[assertion_kind: post, semantic: observe, mode: predicate_false, terminating: no]
+-- 4
+contract violation in function int S::g(int) at Test_name.c:23: (((int)((const int)x)) > ((int)((const S)(*(S*)this)).S::v))
+[assertion_kind: pre, semantic: observe, mode: predicate_false, terminating: no]
+-- 5
+contract violation in function static int S::h(int) at Test_name.c:24: (((int)((const int)x)) != 0)
+[assertion_kind: pre, semantic: observe, mode: predicate_false, terminating: no]
+-- 6
+contract violation in function void S::N::n(int) at Test_name.c:28: (((int)((const int)q)) > 5)
+[assertion_kind: pre, semantic: observe, mode: predicate_false, terminating: no]
+-- 7
+contract violation in function int S::i(int) const at Test_name.c:29: (((int)((const int)x)) < ((int)S::limit))
+[assertion_kind: pre, semantic: observe, mode: predicate_false, terminating: no]
+-- 8
+contract violation in function S::~S() at Test_name.c:26: (((int)((const S)(*(S*)this)).S::v) != 7)
+[assertion_kind: pre, semantic: observe, mode: predicate_false, terminating: no]
+-- 9
+contract violation in function int main()::L::m(int) at Test_name.c:38: (((int)((const int)k)) != 2)
+[assertion_kind: pre, semantic: observe, mode: predicate_false, terminating: no]
+-- 10
+contract violation in function int fr(S&, int) at Test_name.c:30: (((const S*)s)->S::later() != 99)
+[assertion_kind: pre, semantic: observe, mode: predicate_false, terminating: no]
+-- 11
+contract violation in function int fo(int) at Test_name.c:31: (((int)((const int)x)) != ((int)S::limit))
+[assertion_kind: pre, semantic: observe, mode: predicate_false, terminating: no]
+-- 12

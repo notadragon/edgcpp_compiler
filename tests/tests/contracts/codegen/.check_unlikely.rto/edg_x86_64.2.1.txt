@@ -1,0 +1,2 @@
+cpfe -DTEST_NUMBER=2 --c++26 --contracts_p4298 --contract_evaluation_semantic=noexcept_observe --keep_gen_c Test_name.c
+3
