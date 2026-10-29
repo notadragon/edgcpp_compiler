@@ -1,0 +1,5 @@
+./a.out
+PASS test 1
+PASS test 2
+PASS FTM: __cpp_lib_contracts_api defined
+All 2 tests passed
