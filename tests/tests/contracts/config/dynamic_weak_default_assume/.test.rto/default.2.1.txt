@@ -1,0 +1,1 @@
+eccp -DTEST_NUMBER=2 --c++26 --contract_configuration_file=config.json -DALLOW=0 Test_name.c

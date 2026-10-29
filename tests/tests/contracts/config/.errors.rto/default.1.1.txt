@@ -1,0 +1,5 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contract_configuration=[{"output":{"semantic":"bogus"}}] Test_name.c
+Command-line error: invalid contract configuration (<command-line>:1:24): invalid contract evaluation semantic "bogus"
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation terminated.

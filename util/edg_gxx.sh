@@ -30,6 +30,14 @@
 # contracts runtime, and makes a user-defined handle_contract_violation the
 # violation handler.  The comment of a violation is g++'s printing of the
 # predicate (-fcontract-comment-from-expression, when g++ has it).
+# The configuration options of P3595, -fcontract-configuration=,
+# -fcontract-configuration-file= and -fcontract-group-evaluation-semantic=,
+# go to both: g++ chooses the semantics of the checks with them, and the front
+# end the semantics of constant evaluation.  -Wno-contract-configuration
+# also silences the front end's warnings about the configuration.  A
+# declaration with the name of a "C++" dynamic selector but not its type is
+# warned about by g++ alone, on the generated C++, so -fsyntax-only (which
+# stops after cpfe-cp) does not give that warning.
 #
 # Environment:
 #   EDG_GXX           the g++ to pair with
@@ -141,6 +149,18 @@ while [ $# -gt 0 ] ; do
       edg_args+=("--no_contracts"); gxx_args+=("$arg") ;;
     -fcontract-evaluation-semantic=*)
       edg_args+=("--contract_evaluation_semantic=${arg#*=}")
+      gxx_args+=("$arg") ;;
+    -fcontract-configuration=*)
+      edg_args+=("--contract_configuration=${arg#*=}")
+      gxx_args+=("$arg") ;;
+    -fcontract-configuration-file=*)
+      edg_args+=("--contract_configuration_file=${arg#*=}")
+      gxx_args+=("$arg") ;;
+    -fcontract-group-evaluation-semantic=*)
+      edg_args+=("--contract_group_evaluation_semantic=${arg#*=}")
+      gxx_args+=("$arg") ;;
+    -Wno-contract-configuration)
+      edg_args+=("--diag_suppress=contract_configuration")
       gxx_args+=("$arg") ;;
     -E)
       edg_only_mode=preprocess; stop_after_edg=1 ;;

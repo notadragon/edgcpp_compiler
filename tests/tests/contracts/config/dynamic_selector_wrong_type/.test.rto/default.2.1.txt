@@ -1,0 +1,1 @@
+cpfe -DTEST_NUMBER=2 --c++26 --contract_configuration_file=selectors.json -DQUIET=1 -Wno-contract-configuration Test_name.c

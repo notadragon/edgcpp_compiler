@@ -1,0 +1,8 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contract_evaluation_semantic=quick_enforce --contract_configuration=[{"output":{"semantic":"ignore","extra":1}}] Test_name.c
+Command-line warning: contract configuration (<command-line>:1:41): unknown key "extra" in "output" object; the entry is skipped
+
+"Test_name.c", line 7: error: contract predicate is false in constant expression
+  constexpr int f(int x) pre(x > 0) { return x; }
+                         ^
+
+1 error detected in the compilation of "Test_name.c".

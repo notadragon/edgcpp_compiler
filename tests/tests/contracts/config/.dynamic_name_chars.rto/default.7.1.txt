@@ -1,0 +1,5 @@
+fe_only -DTEST_NUMBER=7 --c++26 --contract_configuration=[{"output":{"semantic":"enforce","dynamic":{"linkage":"C","name":"ns::sel"}}}] Test_name.c
+Command-line error: invalid contract configuration (<command-line>:1:66): "name" in "dynamic" is not a valid identifier
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation terminated.

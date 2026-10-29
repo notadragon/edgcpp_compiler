@@ -1,0 +1,11 @@
+fe_only -DTEST_NUMBER=1 --c++26 --pch --pch_test_mode --contract_evaluation_semantic=quick_enforce --contract_configuration_file=config.json Test_name.c
+"Test_name.c": using precompiled header file "Test_name.pch"
+"header.h", line 2: warning: contract predicate is false in constant expression
+    constexpr int f(int x) pre(x > 0) { return x; }
+                           ^
+
+"header.h", line 4: error: contract predicate is false in constant expression
+  constexpr int g(int x) pre(x > 0) { return x; }
+                         ^
+
+1 error detected in the compilation of "Test_name.c".
