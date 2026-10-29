@@ -1,0 +1,4 @@
+# Most of the contracts suite's tests run programs through g++, so recordings
+# made under the edg_x86_64_gxx configuration are the default ones.
+# edgy reads this file as plain NAME=VALUE assignments; it is never run.
+export RUN_TEST_DEFAULT_CONFIG=edg_x86_64_gxx

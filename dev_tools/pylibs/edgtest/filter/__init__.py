@@ -134,10 +134,53 @@ _STACK_ADDR_REPLACEMENTS = (
   (r'(?<![0-9a-fx])(?:7fffffff[0-9a-f]+|ffff[0-9a-f]+)', 'STACK'),
 )
 
+# Configurations whose programs go through edg_gxx.sh and the paired g++, so
+# that the library headers are the paired GCC install's libstdc++.
+_GXX_CONFIGS = frozenset({'edg_x86_64_gxx'})
+
+# A quoted path into the paired GCC install's libstdc++ headers, as its g++
+# reports them (relative to its bin/ directory), e.g.
+#   "/root/repos/gnu_gcc-install/bin/../lib/gcc/x86_64-pc-linux-gnu/17.0.0/
+#    ../../../../include/c++/17.0.0/contracts"
+# with the line number the front end pairs with it, either before it
+# ('declared at line N of "PATH"') or after it ('"PATH", line N:').  The
+# install's location (/root or /home spelling), the GCC version and the line
+# number all vary with the paired install, so a recording keeps only the
+# header's name below include/c++/<version>/.
+_GXX_HEADER_POSITION_REGEX = re.compile(
+  r'(\bline [0-9]+ of )?'
+  r'"/[^"\s]*?/bin/\.\./lib/gcc/[^/"\s]+/[^/"\s]+/\.\./\.\./\.\./\.\./'
+  r'include/c\+\+/[^/"\s]+/([^"\s]*)"'
+  r'(, line [0-9]+\b)?'
+)
+_GXX_HEADER_PREFIX_TOKEN = 'GXX_INCLUDE_CXX/'
+
+def _normalize_gxx_header_position(re_match: 're.Match[str]') -> str:
+  return ''.join((
+    'line N of ' if re_match.group(1) else '',
+    f'"{_GXX_HEADER_PREFIX_TOKEN}{re_match.group(2)}"',
+    ', line N' if re_match.group(3) else ''
+  ))
+
+# The same path unquoted, as g++ reports a position in those headers
+# ('PATH:LINE:COLUMN: error: ...', 'PATH:LINE:COLUMN:   required from ...',
+# 'PATH: In instantiation of ...'), with the line and column that follow it.
+_GXX_HEADER_GXX_POSITION_REGEX = re.compile(
+  r'(?<!")/[^"\s:]*?/bin/\.\./lib/gcc/[^/"\s]+/[^/"\s]+/\.\./\.\./\.\./\.\./'
+  r'include/c\+\+/[^/"\s]+/([^"\s:,]*)((?::[0-9]+){0,2})'
+)
+
+def _normalize_gxx_header_gxx_position(re_match: 're.Match[str]') -> str:
+  return (f'{_GXX_HEADER_PREFIX_TOKEN}{re_match.group(1)}'
+          + ':N' * re_match.group(2).count(':'))
+
 class Normalizer:
   def __init__(self, *, normalize_il: bool, stack_addr_cleanup: bool = False,
                env: Dict[str, str],
                build_constants: BuildConstants) -> None:
+    # Applied after the replacements below, and only under the gxx
+    # configurations.
+    self.normalize_gxx_headers = env.get('EDG_CONFIG') in _GXX_CONFIGS
     self.replacements = list(GLOBAL_REGEX_REPLACEMENTS.items())
     self.replacements.extend([
       (
@@ -195,7 +238,17 @@ class Normalizer:
     self.normalization_regex = re.compile(f"{'|'.join(replacement_groups)}")
 
   def process_line(self, line: str) -> str:
-    return self.normalization_regex.sub(
+    line = self.normalization_regex.sub(
       lambda re_match: self.replacements[re_match.lastindex - 1][1],
       line
     )
+    if self.normalize_gxx_headers:
+      line = _GXX_HEADER_POSITION_REGEX.sub(
+        _normalize_gxx_header_position,
+        line
+      )
+      line = _GXX_HEADER_GXX_POSITION_REGEX.sub(
+        _normalize_gxx_header_gxx_position,
+        line
+      )
+    return line
