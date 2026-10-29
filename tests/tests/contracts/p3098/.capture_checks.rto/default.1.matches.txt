@@ -1,0 +1,12 @@
+Matches for "line 9: error: in a postcondition capture of a constructor, a member must be accessed through an explicit "this"":
+  <-----------------------------------------------------------------------------
+  line 9: error: in a postcondition capture of a constructor, a member must be accessed through an explicit "this"
+  ----------------------------------------------------------------------------->
+Matches for "line 12: error: .*is inaccessible":
+  <-----------------------------------------------------------------------------
+  line 12: error: "P::~P() noexcept" (declared at line 11) is inaccessible
+  ----------------------------------------------------------------------------->
+Matches for "line 14: error: .*deleted function":
+  <-----------------------------------------------------------------------------
+  line 14: error: function "Del::Del(const Del &)" (declared at line 13) cannot be referenced -- it is a deleted function
+  ----------------------------------------------------------------------------->

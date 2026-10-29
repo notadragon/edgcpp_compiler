@@ -1,0 +1,10 @@
+./a.out
+start
+copied
+copied
+check
+destroyed
+destroyed
+end
+destroyed
+destroyed

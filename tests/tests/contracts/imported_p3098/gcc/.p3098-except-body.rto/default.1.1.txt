@@ -1,0 +1,5 @@
+eccp -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3098 --contract_evaluation_semantic=enforce Test_name.c
+"Test_name.c", line 26: warning: statement is unreachable
+    return i;
+    ^
+

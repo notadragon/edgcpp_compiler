@@ -534,6 +534,8 @@ extern a_statement_ptr compound_statement_full(
                            /*marked_as_gnu_extension=*/FALSE,                \
                            /*p_result_type=*/(a_type_ptr*)NULL))
 
+extern void protect_contract_captures(void);
+
 extern void start_of_function_try_block(void);
 
 extern a_statement_ptr function_try_block(a_boolean  explicit_return_type);

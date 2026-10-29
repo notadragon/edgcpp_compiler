@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3098 Test_name.c
+"Test_name.c", line 27: error: contract predicate is false in constant expression
+    post [old = x] (r: r > old)  // { dg-error "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 29: warning: variable "b" was declared but never referenced
+  constexpr int b = bad (5);
+                ^
+
+1 error detected in the compilation of "Test_name.c".

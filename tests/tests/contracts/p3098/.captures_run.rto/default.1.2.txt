@@ -1,0 +1,12 @@
+./a.out
+start
+capture copied
+local destroyed
+check
+capture destroyed
+pre 1
+capture
+pre 2
+post
+end
+capture destroyed
