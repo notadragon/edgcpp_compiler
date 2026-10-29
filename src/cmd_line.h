@@ -400,6 +400,7 @@ enum an_option_kind {
   optk_contracts_p4283,
   optk_contracts_p4298,
   optk_contracts_p4299,
+  optk_contracts_p4301,
   optk_contracts_p4405,
   optk_contract_analysis_semantic,
   optk_contracts_prove_fold,
@@ -3059,6 +3060,14 @@ EXTERN_THREAD a_boolean
 			   C++, with contracts, _Pre, _Post and
 			   _ContractAssert are alternative spellings of pre,
 			   post and contract_assert. */
+
+EXTERN_THREAD a_boolean
+		contracts_p4301_enabled;
+			/* TRUE if P4301 (context reports for the
+			   contract-violation handler) is enabled: with
+			   contracts, it predefines __cpp_contracts_report,
+			   by which the standard library declares
+			   contract_violation::report(). */
 
 EXTERN_THREAD a_boolean
 		contracts_p4405_enabled;

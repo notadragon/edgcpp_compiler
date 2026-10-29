@@ -12123,6 +12123,13 @@ command line -D options.
                                  /*cannot_be_redefined=*/TRUE,
                                  /*ref_suppresses_pch_file=*/FALSE);
       }  /* if */
+      if (contracts_enabled && contracts_p4301_enabled) {
+        /* P4301 (context reports), as GCC; the standard library declares
+           contract_violation::report() when it is defined. */
+        (void)enter_predef_macro("202610L", "__cpp_contracts_report",
+                                 /*cannot_be_redefined=*/TRUE,
+                                 /*ref_suppresses_pch_file=*/FALSE);
+      }  /* if */
       if (contracts_enabled && contracts_p4405_enabled) {
         /* P4405 (the prove and diagnose evaluation semantics), as GCC. */
         (void)enter_predef_macro("202610L", "__cpp_contracts_prove",

@@ -49,6 +49,7 @@
 # -f[no-]contracts-p4283 goes to both.
 # -f[no-]contracts-p4298 goes to both.
 # -f[no-]contracts-p4299 goes to both.
+# -f[no-]contracts-p4301 goes to both.
 # -f[no-]contracts-p4405 goes to both.  The prove and diagnose evaluation
 # semantics are diagnosed by g++ alone, where it would emit the check (the
 # front end diagnoses them only where it generates the checks, for the
@@ -219,6 +220,10 @@ while [ $# -gt 0 ] ; do
       edg_args+=("--contracts_p4299"); gxx_args+=("$arg") ;;
     -fno-contracts-p4299)
       edg_args+=("--no_contracts_p4299"); gxx_args+=("$arg") ;;
+    -fcontracts-p4301)
+      edg_args+=("--contracts_p4301"); gxx_args+=("$arg") ;;
+    -fno-contracts-p4301)
+      edg_args+=("--no_contracts_p4301"); gxx_args+=("$arg") ;;
     -fcontracts-p4405)
       edg_args+=("--contracts_p4405"); gxx_args+=("$arg") ;;
     -fno-contracts-p4405)
