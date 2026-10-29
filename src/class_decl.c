@@ -34834,11 +34834,32 @@ caller has already moved past the '[', and this routine leaves the trailing
         a_boolean                  is_this = FALSE;
         a_boolean                  is_star_this = FALSE;
         a_boolean                  no_impl_capture = FALSE;
+        a_boolean                  leading_ellipsis_simple_capture = FALSE;
+        a_symbol_header_ptr        id_hdr = NULL;
+        a_source_position          ellipsis_pos = null_source_position;
         /* If the current token is an ellipsis then this is an init-capture
            pack expansion.  If the ellipsis occurs after the capture it is
            a capture of a pack. */
         is_init_pack = curr_token == tok_ellipsis;
         if (is_init_pack) {
+          a_token_kind  tok_2 = tok_error;
+          if (next_token_full((a_token_sequence_number *)NULL, &id_hdr) ==
+                                                           tok_identifier &&
+              next_two_tokens(tok_identifier, &tok_2) == tok_identifier &&
+              (!init_capture_enabled ||
+               (tok_2 != tok_assign && tok_2 != tok_lparen &&
+                tok_2 != tok_lbrace))) {
+            /* "...name" with no initializer: only an init-capture puts the
+               ellipsis first ([expr.prim.lambda.capture]).  Recover as
+               "name...". */
+            leading_ellipsis_simple_capture = TRUE;
+          }  /* if */
+        }  /* if */
+        if (leading_ellipsis_simple_capture) {
+          /* Diagnosed after the name (below). */
+          ellipsis_pos = pos_curr_token;
+          record_pack_expansion_ellipsis();
+        } else if (is_init_pack) {
           if (!pack_init_capture_enabled) {
             /* This C++20 feature is not enabled in the current mode. */
             pos_error(ec_pack_init_capture_not_enabled, &pos_curr_token);
@@ -34944,6 +34965,25 @@ caller has already moved past the '[', and this routine leaves the trailing
               }  /* if */
             }  /* if */
             (void)get_token();
+            if (leading_ellipsis_simple_capture) {
+              a_token_kind  tok_after = next_token();
+              if (curr_token == tok_ellipsis &&
+                  (tok_after == tok_assign || tok_after == tok_lparen ||
+                   tok_after == tok_lbrace)) {
+                /* "...name... = init": an init-capture with an ellipsis too
+                   many, which the end of the capture reports. */
+              } else {
+                if (check_duplicate) {
+                  pos_st2_error(ec_lambda_pack_capture_ellipsis_before_name,
+                                &ellipsis_pos, id_hdr->identifier,
+                                id_hdr->identifier);
+                }  /* if */
+                if (curr_token == tok_ellipsis) {
+                  /* "...name...": diagnosed once. */
+                  (void)get_token();
+                }  /* if */
+              }  /* if */
+            }  /* if */
           }  /* if */
         } else {
           syntax_error(ec_exp_identifier);
