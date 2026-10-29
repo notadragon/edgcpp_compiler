@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p4283 Test_name.c
+"Test_name.c", line 15: error: requires clause on contract assertion only allowed on templated functions
+    pre requires(std::integral<int>) (x > 0);  // { dg-error "only allowed on templated functions" }
+        ^
+
+"Test_name.c", line 18: error: requires clause on contract assertion only allowed on templated functions
+    contract_assert requires(std::integral<int>) (x > 0);  // { dg-error "only allowed on templated functions" }
+                    ^
+
+2 errors detected in the compilation of "Test_name.c".
