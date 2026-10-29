@@ -460,6 +460,22 @@ extern void declarator_one_time_init(void);
 
 extern void declarator_init(void);
 
+extern void match_contract_specifiers(a_routine_ptr             rp,
+                                      a_contract_specifier_ptr  csps);
+extern void attach_contract_specifiers(a_routine_ptr       rp,
+                                       a_decl_parse_state  *dps,
+                                       a_boolean           is_redeclaration);
+extern a_boolean is_handle_contract_violation(a_routine_ptr  rp);
+extern void check_handle_contract_violation(a_routine_ptr      rp,
+                                            a_source_position  *pos);
+extern a_boolean contract_result_name_hides_parameter(a_symbol_locator  *loc);
+extern an_error_code contract_result_name_void_error(
+                                                  a_decl_parse_state  *dps);
+extern void diagnose_deduced_contract_result_name(
+                                             a_source_position  *pos,
+                                             a_boolean          is_definition);
+extern void skip_function_contract_specifiers(void);
+
 /* Conditionally close the "edg" namespace. */
 END_EDG_NAMESPACE
 

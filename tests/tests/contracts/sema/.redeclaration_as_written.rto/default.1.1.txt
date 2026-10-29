@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
+"Test_name.c", line 14: error: mismatched contract condition in declaration (previous contract specifier declared at line 13)
+  void f(int x) pre(x > 1 - 1) {}               // Error, folds to the same
+                ^
+
+"Test_name.c", line 16: error: mismatched contract condition in declaration (previous contract specifier declared at line 15)
+  void g(int x) pre(x > z) {}                   // Error, a named constant
+                ^
+
+"Test_name.c", line 18: error: mismatched contract condition in declaration (previous contract specifier declared at line 17)
+  void h(int x) pre(x > 2 - 2) {}               // Error
+                ^
+
+"Test_name.c", line 27: error: mismatched contract condition in declaration (previous contract specifier declared at line 26)
+  void m(int x) pre(x != 0) {}                  // Error, an enumerator
+                ^
+
+"Test_name.c", line 35: error: mismatched contract condition in declaration (previous contract specifier declared at line 34)
+  template <class T> void t2(T x) pre(x > 0) {}       // Error
+                                  ^
+
+5 errors detected in the compilation of "Test_name.c".

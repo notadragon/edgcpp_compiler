@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
+"Test_name.c", line 7: error: a function contract specifier can appear only on the declarator of a function declaration
+  void takes_fn(int bar() pre(true));
+                          ^
+
+"Test_name.c", line 8: error: a function contract specifier can appear only on the declarator of a function declaration
+  void defines_fn(int bar() pre(false)) { (void)bar; }
+                            ^
+
+2 errors detected in the compilation of "Test_name.c".
