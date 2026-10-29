@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
+"Test_name.c", line 7: error: expression must be a modifiable lvalue
+  template <int &R> void t1() pre(++R > 0) {}                     // Error
+                                    ^
+
+"Test_name.c", line 8: error: expression must be a modifiable lvalue
+  template <int &R> void t2() { contract_assert(++R > 0); }       // Error
+                                                  ^
+
+2 errors detected in the compilation of "Test_name.c".
