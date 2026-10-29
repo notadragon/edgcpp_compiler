@@ -1,0 +1,3 @@
+./a.out
+semantic 6
+end

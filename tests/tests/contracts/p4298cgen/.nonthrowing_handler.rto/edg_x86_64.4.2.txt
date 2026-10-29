@@ -1,0 +1,3 @@
+./a.out
+semantic 7
+C++ runtime abort: terminate() called by the exception handling mechanism

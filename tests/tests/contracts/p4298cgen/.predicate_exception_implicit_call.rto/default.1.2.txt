@@ -1,0 +1,4 @@
+./a.out
+kind 1 semantic 6 mode 2
+kind 1 semantic 6 mode 2
+end

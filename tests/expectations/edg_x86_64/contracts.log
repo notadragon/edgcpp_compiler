@@ -1290,6 +1290,7 @@ p4298/nonthrowing_run.sft.cpp:rp:-DTEST_NUMBER=1 --contract_evaluation_semantic=
 p4298/nonthrowing_run.sft.cpp:rp:-DTEST_NUMBER=2 --contract_evaluation_semantic=noexcept_observe -DTHROWS=1:REQUIREMENTS NOT MET:contracts: P4298 through g++: the noexcept semantics report noexcept_observe (6) and noexcept_enforce (7) to the violation handler and terminate when it throws; observe and enforce let the exception out
 p4298/nonthrowing_run.sft.cpp:rp:-DTEST_NUMBER=3 --contract_evaluation_semantic=noexcept_enforce -DTHROWS=1:REQUIREMENTS NOT MET:contracts: P4298 through g++: the noexcept semantics report noexcept_observe (6) and noexcept_enforce (7) to the violation handler and terminate when it throws; observe and enforce let the exception out
 p4298/nonthrowing_run.sft.cpp:rp:-DTEST_NUMBER=4 --contract_evaluation_semantic=observe -DTHROWS=1:REQUIREMENTS NOT MET:contracts: P4298 through g++: the noexcept semantics report noexcept_observe (6) and noexcept_enforce (7) to the violation handler and terminate when it throws; observe and enforce let the exception out
+p4298cgen/static_link_order.sft.cpp:rp:-DTEST_NUMBER=1:PASS:
 parse/attributes.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: attributes on contract assertions and result names
 parse/comment_blank_line.sft.cpp:fp:-DTEST_NUMBER=1:PASS:
 parse/comment_gxx.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: through edg-gxx the comment of a contract is g++'s printed expression, also for a predicate with macros or blank lines
