@@ -7024,6 +7024,28 @@ See also 3.6.6.2.
 }  /* continue_statement */
 
 
+static void resolve_contract_semantics(a_contract_specifier_ptr  csp)
+/*
+Choose the evaluation semantics, at run time and in constant evaluation, of
+the contract assertion csp and those that follow it on its list (those of a
+function definition, or a contract_assert statement's), so that an error in
+the facets of their labels (P3400) is diagnosed with the definition, as GCC
+does, whether or not they are ever evaluated (see contract_semantic_for).
+Nothing is chosen in a template-dependent context.
+*/
+{
+  if (is_template_dependent_context()) return;
+  for (; csp != NULL; csp = csp->next) {
+    if (csp->label != NULL) {
+      (void)contract_semantic_for(csp, current_routine_entry(),
+                                  /*in_constant_evaluation=*/FALSE);
+      (void)contract_semantic_for(csp, current_routine_entry(),
+                                  /*in_constant_evaluation=*/TRUE);
+    }  /* if */
+  }  /* for */
+}  /* resolve_contract_semantics */
+
+
 static void add_goto_for_break(a_struct_stmt_stack_entry_ptr sssep,
                                a_source_position             *pos,
                                ARG_UNUSED a_source_position  *end_pos)
@@ -7895,6 +7917,10 @@ sequence.  The syntax is:
       scan_cached_contract_label(csp);
     }  /* if */
     csp->predicate = scan_contract_predicate(&csp->comment, &csp->message);
+    if (csp->label != NULL) {
+      apply_contract_label_message_facet(csp);
+      resolve_contract_semantics(csp);
+    }  /* if */
     (void)required_token(tok_rparen, ec_exp_rparen);
   }  /* if */
   sp = add_statement(stmk_contract_assert, /*compiler_generated=*/FALSE);
@@ -9516,6 +9542,7 @@ is being parsed within the context of the __extension__ keyword.
     mark_contract_params_used(
                          current_routine_entry(),
                          innermost_function_scope->variant.routine.parameters);
+    resolve_contract_semantics(current_routine_entry()->contract_specifiers);
   }  /* if */
   /* It is also the only place where a GNU local label can be declared. */
   while (gnu_mode && curr_token == tok_identifier &&
@@ -9539,6 +9566,7 @@ is being parsed within the context of the __extension__ keyword.
     mark_contract_params_used(
                          current_routine_entry(),
                          innermost_function_scope->variant.routine.parameters);
+    resolve_contract_semantics(current_routine_entry()->contract_specifiers);
     add_precondition_checks();
   }  /* if */
 
