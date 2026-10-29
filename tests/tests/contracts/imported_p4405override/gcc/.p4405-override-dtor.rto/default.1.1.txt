@@ -1,0 +1,22 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3097 --contracts_p4405 --contract_analysis_semantic=prove --contract_evaluation_semantic=observe -O2 Test_name.c
+Test_name.c: In destructor 'virtual B::~B()':
+Test_name.c:28:14: error: contract assertion cannot be proven
+   28 |   virtual ~B () post (g == 1);  // { dg-error "contract assertion cannot be proven" }
+      |              ^~~~~~~~~~~~
+Test_name.c:28:21: note: the predicate of the contract assertion
+   28 |   virtual ~B () post (g == 1);  // { dg-error "contract assertion cannot be proven" }
+      |                   ~~^~~~
+Test_name.c: In destructor 'virtual E::~E()':
+Test_name.c:41:9: error: contract assertion cannot be proven for a call through 'virtual B::~B()'
+   41 |   ~E () override {}             // { dg-error "cannot be proven for a call through 'virtual B::~B\\(\\)'" }
+      |         ^
+Test_name.c:28:21: note: the predicate of the contract assertion
+   28 |   virtual ~B () post (g == 1);  // { dg-error "contract assertion cannot be proven" }
+      |                   ~~^~~~
+Test_name.c: In destructor 'virtual F::~F()':
+Test_name.c:45:8: error: contract assertion cannot be proven for a call through 'virtual B::~B()'
+   45 | struct F : B {                  // { dg-error "cannot be proven for a call through 'virtual B::~B\\(\\)'" }
+      |        ^
+Test_name.c:28:21: note: the predicate of the contract assertion
+   28 |   virtual ~B () post (g == 1);  // { dg-error "contract assertion cannot be proven" }
+      |                   ~~^~~~

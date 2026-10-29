@@ -38,6 +38,8 @@
 #   --[no_]contracts_p4298       -> the g++ spelling (front end and g++)
 #   --[no_]contracts_p4405       -> the g++ spelling (front end and g++)
 #   --[no_]contracts_prove_fold  -> the g++ spelling (front end and g++)
+#   --[no_]contracts_prove_override
+#                                -> the g++ spelling (front end and g++)
 #   -D, -U, -I, -l, -L, -Wl,...  -> unchanged (edg_gxx.sh routes them)
 #   -O..., -W... (not -Wl,)      -> unchanged: g++'s optimization and warning
 #                                   options (edg_gxx.sh gives them to g++)
@@ -151,6 +153,10 @@ while [ $# -gt 0 ] ; do
       args+=(-fcontracts-prove-fold) ;;
     --no_contracts_prove_fold)
       args+=(-fno-contracts-prove-fold) ;;
+    --contracts_prove_override)
+      args+=(-fcontracts-prove-override) ;;
+    --no_contracts_prove_override)
+      args+=(-fno-contracts-prove-override) ;;
     -D*|-U*|-I*|-l*|-L*|-Wl,*)
       args+=("$arg") ;;
     -O*|-W*)

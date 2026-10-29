@@ -3776,5 +3776,8 @@ ec_contract_address_static_variable;INTERNAL;"%n, of static storage duration, is
 ec_contract_address_thread_variable;INTERNAL;"%n, of thread storage duration, is destroyed by a call through the address of its destructor"
 ec_contract_address_temporary;INTERNAL;"a temporary lifetime-extended to static or thread storage duration is destroyed by a call through the address of its destructor"
 ec_contract_address_precondition;INTERNAL;"the precondition %p"
+ec_contract_override_unproven;;"contract assertion cannot be proven for a call through %no"
+ec_contract_override_unproven_warning;contract_override_unproven;"contract assertion cannot be proven for a call through %no"
+ec_contract_override_predicate;INTERNAL;"the predicate of the contract assertion %p"
  ###############################################################################
 

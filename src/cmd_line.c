@@ -1894,6 +1894,14 @@ Initialize the option information table.
                          "no_contracts_prove_fold", '\0',
                          /*value=*/FALSE, /*arg_required=*/FALSE,
                          pchek_command_line);
+  add_option_description(optk_contracts_prove_override,
+                         "contracts_prove_override", '\0',
+                         /*value=*/TRUE, /*arg_required=*/FALSE,
+                         pchek_command_line);
+  add_option_description(optk_contracts_prove_override,
+                         "no_contracts_prove_override", '\0',
+                         /*value=*/FALSE, /*arg_required=*/FALSE,
+                         pchek_command_line);
 }  /* initialize_option_descriptions */
 
 
@@ -4091,6 +4099,10 @@ setting is used, and to set various unmentioned settings as needed.
   }  /* if */
   if (option_kind_used[(int)optk_contracts_prove_fold] &&
       contracts_prove_fold_enabled) {
+    command_line_error(ec_cl_contracts_option_only_in_cplusplus);
+  }  /* if */
+  if (option_kind_used[(int)optk_contracts_prove_override] &&
+      contracts_prove_override_enabled) {
     command_line_error(ec_cl_contracts_option_only_in_cplusplus);
   }  /* if */
   if (option_kind_used[(int)optk_array_new_and_delete]) {
@@ -12496,6 +12508,9 @@ enable_microsoft_mode:
       case optk_contracts_prove_fold:
         contracts_prove_fold_enabled = opt_value;
         break;
+      case optk_contracts_prove_override:
+        contracts_prove_override_enabled = opt_value;
+        break;
      default:
         /* It should not be possible to get here. */
         unexpected_condition();
@@ -12628,6 +12643,12 @@ enable_microsoft_mode:
     /* --contracts_p4405 enables the folding proving strategy, unless
        --[no_]contracts_prove_fold is given, as in GCC. */
     contracts_prove_fold_enabled = TRUE;
+  }  /* if */
+  if (contracts_p4405_enabled &&
+      !option_kind_used[(int)optk_contracts_prove_override]) {
+    /* --contracts_p4405 enables the override proving strategy, unless
+       --[no_]contracts_prove_override is given, as in GCC. */
+    contracts_prove_override_enabled = TRUE;
   }  /* if */
   if (!contracts_p4405_enabled &&
       (contract_evaluation_semantic == ces_prove ||
@@ -14245,6 +14266,7 @@ variables declared in cmd_line.h.
   contracts_p4405_enabled = FALSE;
   contract_analysis_semantic = ces_ignore;
   contracts_prove_fold_enabled = FALSE;
+  contracts_prove_override_enabled = FALSE;
   incognito = DEFAULT_INCOGNITO;
   keep_restrict_in_signatures = FALSE;
   attributes_on_using_declarations = FALSE;

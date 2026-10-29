@@ -935,6 +935,7 @@ check_abbreviation()
 --contracts_p4298
 --contracts_p4405
 --contracts_prove_fold
+--contracts_prove_override
 --cpfe_only
 --cppcli
 --cppcx
@@ -1117,6 +1118,7 @@ check_abbreviation()
 --no_contracts_p4298
 --no_contracts_p4405
 --no_contracts_prove_fold
+--no_contracts_prove_override
 --no_cppcli
 --no_cppcx
 --no_defer_parse_function_templates
@@ -1967,6 +1969,8 @@ process_option()
          --no_contracts_p4405 | \
          --contracts_prove_fold | \
          --no_contracts_prove_fold | \
+         --contracts_prove_override | \
+         --no_contracts_prove_override | \
          --bit_precise_integers | \
          --no_bit_precise_integers | \
          --force_vtbl | \

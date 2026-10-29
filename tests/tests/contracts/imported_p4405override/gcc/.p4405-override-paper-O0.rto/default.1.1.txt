@@ -1,0 +1,59 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3097 --contracts_p4405 --contract_analysis_semantic=prove -O0 Test_name.c
+Test_name.c: In member function 'virtual int D::f(int)':
+Test_name.c:42:2: error: contract assertion cannot be proven
+   42 |     post(r: r == x)             // { dg-error "contract assertion cannot be proven" }
+      |  ^  ~~~~~~~~~~~~
+Test_name.c:42:12: note: the predicate of the contract assertion
+   42 |     post(r: r == x)             // { dg-error "contract assertion cannot be proven" }
+      |          ~~^~~~
+Test_name.c: In function 'void g(B1&, int)':
+Test_name.c:60:4: error: contract assertion cannot be proven
+   60 |   b.f(y);                       // { dg-error "contract assertion cannot be proven" }
+      |   ~^~~
+Test_name.c:28:13: note: the predicate of the contract assertion
+   28 |     pre(x >= 0 && x <= 10)      // { dg-message "the predicate of the contract assertion" }
+      |      ~~~~~~~^~~~~~~~~~
+Test_name.c:62:4: error: contract assertion cannot be proven
+   62 |     b.f(y);                     // { dg-error "contract assertion cannot be proven" }
+      |    ^~~
+Test_name.c:28:13: note: the predicate of the contract assertion
+   28 |     pre(x >= 0 && x <= 10)      // { dg-message "the predicate of the contract assertion" }
+      |      ~~~~~~~^~~~~~~~~~
+Test_name.c: In member function 'virtual int D::f(int)':
+Test_name.c:39:13: error: contract assertion cannot be proven for a call through 'virtual int B1::f(int)'
+   39 |   int f(const int x) override   // { dg-error "cannot be proven for a call through 'virtual int B1::f\\(int\\)'" }
+      |             ^
+Test_name.c:41:13: note: the predicate of the contract assertion
+   41 |     pre(x >= 0 && x <= 30)      // { dg-message "the predicate of the contract assertion" }
+      |      ~~~~~~~^~~~~~~~~~
+Test_name.c:39:13: error: contract assertion cannot be proven for a call through 'virtual int B1::f(int)'
+   39 |   int f(const int x) override   // { dg-error "cannot be proven for a call through 'virtual int B1::f\\(int\\)'" }
+      |             ^
+Test_name.c:29:17: note: the predicate of the contract assertion
+   29 |     post(r: r >= 0 && r <= 10); // { dg-message "the predicate of the contract assertion" }
+      |          ~~~~~~~^~~~~~~~~~
+Test_name.c:39:13: error: contract assertion cannot be proven for a call through 'virtual int B2::f(int)'
+   39 |   int f(const int x) override   // { dg-error "cannot be proven for a call through 'virtual int B1::f\\(int\\)'" }
+      |             ^
+Test_name.c:41:13: note: the predicate of the contract assertion
+   41 |     pre(x >= 0 && x <= 30)      // { dg-message "the predicate of the contract assertion" }
+      |      ~~~~~~~^~~~~~~~~~
+Test_name.c:39:13: error: contract assertion cannot be proven for a call through 'virtual int B2::f(int)'
+   39 |   int f(const int x) override   // { dg-error "cannot be proven for a call through 'virtual int B1::f\\(int\\)'" }
+      |             ^
+Test_name.c:35:18: note: the predicate of the contract assertion
+   35 |     post(r: r >= 20 && r <= 30); // { dg-message "the predicate of the contract assertion" }
+      |          ~~~~~~~~^~~~~~~~~~
+Test_name.c: In member function 'virtual int E::f(int)':
+Test_name.c:50:13: error: contract assertion cannot be proven for a call through 'virtual int B1::f(int)'
+   50 |   int f(int x) override         // { dg-error "cannot be proven for a call through 'virtual int B1::f\\(int\\)'" }
+      |             ^
+Test_name.c:51:13: note: the predicate of the contract assertion
+   51 |     pre(x >= 5 && x <= 10)      // { dg-message "the predicate of the contract assertion" }
+      |      ~~~~~~~^~~~~~~~~~
+Test_name.c:50:13: error: contract assertion cannot be proven for a call through 'virtual int B1::f(int)'
+   50 |   int f(int x) override         // { dg-error "cannot be proven for a call through 'virtual int B1::f\\(int\\)'" }
+      |             ^
+Test_name.c:29:17: note: the predicate of the contract assertion
+   29 |     post(r: r >= 0 && r <= 10); // { dg-message "the predicate of the contract assertion" }
+      |          ~~~~~~~^~~~~~~~~~

@@ -7,6 +7,24 @@ it is off, a predicate the front end makes a constant does not prove a
 precondition where its function's address is taken, nor settle an override
 obligation.
 
+With the C-generating back end, override obligations are diagnosed after
+another error as well, for the definitions that would have been put out.
+
+
+10/28/26 []
+Contracts (P4405): override obligations of virtual functions
+
+The new --[no_]contracts_prove_override option (implied by --contracts_p4405)
+is accepted for our GCC's override proving strategy, to which the drivers
+pass it on; the front end proves nothing, so it changes nothing there.
+With the C-generating back end, a virtual function whose definition is put
+out has, for each function it overrides, directly or indirectly, an
+obligation for each of its own preconditions and each of the overridden
+function's postconditions analyzed with prove (an error) or diagnose (a
+warning, contract_override_unproven): "contract assertion cannot be proven
+for a call through" the overridden function, at the definition.
+
+
 10/19/26 []
 Contracts (P4405): the prove and diagnose evaluation semantics
 

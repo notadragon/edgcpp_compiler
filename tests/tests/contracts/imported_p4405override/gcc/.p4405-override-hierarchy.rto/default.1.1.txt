@@ -1,0 +1,67 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3097 --contracts_p4405 --contract_analysis_semantic=prove -O2 Test_name.c
+"Test_name.c", line 37: warning: variable "c" was declared but never referenced
+    void use () { C c; D d; }
+                    ^
+
+"Test_name.c", line 37: warning: variable "d" was declared but never referenced
+    void use () { C c; D d; }
+                         ^
+
+"Test_name.c", line 79: warning: variable "d" was declared but never referenced
+    void use () { D d; E e; }
+                    ^
+
+"Test_name.c", line 79: warning: variable "e" was declared but never referenced
+    void use () { D d; E e; }
+                         ^
+
+"Test_name.c", line 95: warning: variable "d" was declared but never referenced
+    void use () { D d; E e; }
+                    ^
+
+"Test_name.c", line 95: warning: variable "e" was declared but never referenced
+    void use () { D d; E e; }
+                         ^
+
+Test_name.c: In member function 'virtual void multilevel::C::f(int)':
+Test_name.c:30:14: error: contract assertion cannot be proven for a call through 'virtual void multilevel::B::f(int)'
+   30 |     void f (int x) override     // { dg-error "cannot be proven for a call through 'virtual void multilevel::B::f\\(int\\)'" }
+      |              ^
+Test_name.c:31:8: note: the predicate of the contract assertion
+   31 |       pre (x > 5) {}            // { dg-message "the predicate of the contract assertion" }
+      |       ~^~~
+Test_name.c: In member function 'virtual void multilevel::D::f(int)':
+Test_name.c:34:14: error: contract assertion cannot be proven for a call through 'virtual void multilevel::B::f(int)'
+   34 |     void f (int x) override     // { dg-error "cannot be proven for a call through 'virtual void multilevel::B::f\\(int\\)'" }
+      |              ^
+Test_name.c:35:8: note: the predicate of the contract assertion
+   35 |       pre (x > 2) {}            // { dg-message "the predicate of the contract assertion" }
+      |       ~^~~
+Test_name.c: In member function 'virtual void multiple::D::f(int)':
+Test_name.c:47:14: error: contract assertion cannot be proven for a call through 'virtual void multiple::A::f(int)'
+   47 |     void f (int x) override     // { dg-error "cannot be proven for a call through 'virtual void multiple::A::f\\(int\\)'" }
+      |              ^
+Test_name.c:48:12: note: the predicate of the contract assertion
+   48 |       pre (x > 5 && m > 0) {}   // { dg-message "the predicate of the contract assertion" }
+      |       ~~~~~^~~~~~~~
+Test_name.c: In member function 'virtual int vbase::E::f()':
+Test_name.c:63:13: error: contract assertion cannot be proven for a call through 'virtual int vbase::V::f()'
+   63 |     int f () override           // { dg-error "cannot be proven for a call through 'virtual int vbase::V::f\\(\\)'" }
+      |             ^
+Test_name.c:64:8: note: the predicate of the contract assertion
+   64 |       pre (m > 1) { return m; } // { dg-message "the predicate of the contract assertion" }
+      |       ~^~~
+Test_name.c: In member function 'virtual int pure::E::f(int)':
+Test_name.c:76:13: error: contract assertion cannot be proven for a call through 'virtual int pure::B::f(int)'
+   76 |     int f (int x) override      // { dg-error "cannot be proven for a call through 'virtual int pure::B::f\\(int\\)'" }
+      |             ^
+Test_name.c:77:8: note: the predicate of the contract assertion
+   77 |       pre (x > 1) { return x; } // { dg-message "the predicate of the contract assertion" }
+      |       ~^~~
+Test_name.c: In member function 'virtual int nocontracts::D::f(int)':
+Test_name.c:89:13: error: contract assertion cannot be proven for a call through 'virtual int nocontracts::B::f(int)'
+   89 |     int f (int x) override      // { dg-error "cannot be proven for a call through 'virtual int nocontracts::B::f\\(int\\)'" }
+      |             ^
+Test_name.c:90:8: note: the predicate of the contract assertion
+   90 |       pre (x > 100) { return x; }       // { dg-message "the predicate of the contract assertion" }
+      |       ~^~~~~

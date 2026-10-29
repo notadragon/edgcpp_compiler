@@ -56,6 +56,8 @@
 # -fcontract-analysis-semantic= goes to both; the analysis evaluations, and
 # the address-of rule (-W[no-]contract-unproven), are g++'s too.
 # -f[no-]contracts-prove-fold goes to both; g++ folds what it diagnoses.
+# -f[no-]contracts-prove-override goes to both; the override obligations of
+# virtual functions are g++'s, which proves them with that strategy.
 #
 # Environment:
 #   EDG_GXX           the g++ to pair with
@@ -223,6 +225,10 @@ while [ $# -gt 0 ] ; do
       edg_args+=("--contracts_prove_fold"); gxx_args+=("$arg") ;;
     -fno-contracts-prove-fold)
       edg_args+=("--no_contracts_prove_fold"); gxx_args+=("$arg") ;;
+    -fcontracts-prove-override)
+      edg_args+=("--contracts_prove_override"); gxx_args+=("$arg") ;;
+    -fno-contracts-prove-override)
+      edg_args+=("--no_contracts_prove_override"); gxx_args+=("$arg") ;;
     -E)
       edg_only_mode=preprocess; stop_after_edg=1 ;;
     -fsyntax-only)

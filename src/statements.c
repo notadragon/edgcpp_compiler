@@ -29,6 +29,7 @@ statements.c -- Scanning of statements.
 #include "expr.h"
 #include "exprutil.h"
 #include "folding.h"
+#include "templates.h"
 #include "interpret.h"
 #include "pch.h"
 #include "pragma.h"
@@ -10158,6 +10159,274 @@ Display and return the amount of space used for various statements tables.
 }  /* show_statements_space_used */
 
 #endif /* DEBUG */
+
+/*
+The override obligations (P4405; D4405R0, "Virtual Functions") of the
+virtual functions defined in this translation unit, to be diagnosed at its
+end (see diagnose_contract_override_obligations): one entry per obligation
+that nothing proves.
+*/
+typedef struct a_contract_override_obligation
+		*a_contract_override_obligation_ptr;
+typedef struct a_contract_override_obligation {
+  a_contract_override_obligation_ptr
+		next;
+  a_routine_ptr	overrider;
+			/* The virtual function defined (D::f). */
+  a_routine_ptr	overridden;
+			/* The function it overrides (B::f). */
+  a_source_position
+		position;
+			/* The position of D::f's definition, where the
+			   obligation is diagnosed. */
+  a_source_position
+		predicate_position;
+			/* The position of the contract assertion. */
+  a_boolean	is_prove;
+			/* TRUE for prove (an error), FALSE for diagnose (a
+			   warning). */
+} a_contract_override_obligation;
+
+STATIC_THREAD a_contract_override_obligation_ptr
+		contract_override_obligations;
+			/* The pending override obligations, newest first. */
+
+
+static void contract_override_this_walk(
+                                an_expr_node_ptr                     expr,
+                                an_expr_or_stmt_traversal_block_ptr  tblock)
+/*
+Find "this" in the walk of contracts_name_this: the "this" parameter, or,
+in a predicate scanned on a declaration, where there is no "this" variable,
+a reference to parameter zero (see make_abstract_this_operand).
+*/
+{
+  if ((is_variable_node(expr) && node_variable(expr)->is_this_parameter) ||
+      (node_is(expr, enk_param_ref) &&
+       expr->variant.param_ref.param_num == 0)) {
+    tblock->result = TRUE;
+    tblock->terminate = TRUE;
+  }  /* if */
+}  /* contract_override_this_walk */
+
+
+static a_boolean contracts_name_this(a_routine_ptr  rp)
+/*
+Return TRUE if a contract assertion of the routine rp names "this", so that
+it reads the subobject a call through rp's class is made on.
+*/
+{
+  a_contract_specifier_ptr         csp;
+  an_expr_or_stmt_traversal_block  tblock;
+
+  for (csp = rp->contract_specifiers; csp != NULL; csp = csp->next) {
+    an_expr_node_ptr  pred = contract_specifier_predicate(csp);
+    if (csp->discarded || pred == NULL) continue;
+    clear_expr_or_stmt_traversal_block(&tblock);
+    tblock.process_expr = contract_override_this_walk;
+    traverse_expr(pred, &tblock);
+    if (tblock.result) return TRUE;
+  }  /* for */
+  return FALSE;
+}  /* contracts_name_this */
+
+
+static void add_contract_override_obligations(
+                                    a_routine_ptr             rp,
+                                    a_routine_ptr             overridden,
+                                    a_routine_ptr             owner,
+                                    a_contract_kind           kind)
+/*
+Record the override obligations of the virtual function rp for calls through
+overridden, the function it overrides: those of the contract assertions of
+owner (rp or overridden) of the given kind whose analysis evaluation, as
+resolved for owner, is prove or diagnose, but one whose predicate is folded
+to true.
+*/
+{
+  a_contract_specifier_ptr  csp;
+
+  for (csp = owner->contract_specifiers; csp != NULL; csp = csp->next) {
+    a_contract_evaluation_semantic      analysis;
+    a_contract_override_obligation_ptr  cop;
+    an_expr_node_ptr                    pred;
+    if (csp->kind != kind || csp->discarded ||
+        contract_assertion_is_erroneous(csp)) {
+      continue;
+    }  /* if */
+    analysis = contract_analysis_semantic_for(csp, owner);
+    if (analysis != ces_prove && analysis != ces_diagnose) continue;
+    pred = contract_specifier_predicate(csp);
+    if (contracts_prove_fold_enabled && pred != NULL &&
+        is_true_constant_expr(pred)) {
+      /* Settled by folding (unless --no_contracts_prove_fold). */
+      continue;
+    }  /* if */
+    cop = alloc_fe<a_contract_override_obligation>();
+    cop->overrider = rp;
+    cop->overridden = overridden;
+    cop->position = rp->source_corresp.decl_position;
+    cop->predicate_position = csp->position;
+    cop->is_prove = analysis == ces_prove;
+    cop->next = contract_override_obligations;
+    contract_override_obligations = cop;
+  }  /* for */
+}  /* add_contract_override_obligations */
+
+
+void note_contract_override_obligations(a_routine_ptr  rp)
+/*
+The definition of the routine rp, a member function (a compiler-generated
+destructor included), is complete.  With P4405, where the front end
+generates the checks of contract assertions, a virtual function has, for
+each function B::f it overrides, directly or indirectly (D4405R0, "Virtual
+Functions"), an override obligation for each of its own preconditions and
+each postcondition of B::f whose analysis evaluation is prove or diagnose
+(our GCC's, with no proving strategy that defers, or with
+--no_contracts_prove_override; DECISIONS.md E156 and E157 in notadragon_wg21:
+a B::f without contract assertions gives no premise).  Nothing proves them
+here but folding, so each is diagnosed, at the end of the translation unit,
+if rp's definition is put out (see diagnose_contract_override_obligations).
+A base class that occurs as more than one subobject gives an obligation
+per subobject only when B::f's contract assertions name "this" (E154).
+*/
+{
+  a_type_ptr                          class_type;
+  a_base_class_ptr                    bcp;
+  an_overriding_virtual_function_ptr  ovfp;
+  a_routine_ptr                       seen[16];
+  int                                 n_seen = 0;
+
+  if (!CONTRACT_CHECKS_IN_FRONT_END || !contracts_enabled ||
+      !contracts_p4405_enabled || !contracts_p3097_enabled ||
+      is_template_dependent_context() || rp == NULL || !rp->is_virtual ||
+      rp->pure_virtual || rp->is_consteval || rp->is_deleted ||
+      rp->is_prototype_instantiation ||
+      rp->contract_interface_target != NULL ||
+      !rp->source_corresp.is_class_member) {
+    return;
+  }  /* if */
+  class_type = skip_typerefs(parent_class_of(rp));
+#if IA64_ABI
+  bcp = class_type->variant.class_struct_union.extra_info
+                                                      ->preorder_base_classes;
+#else /* !IA64_ABI */
+  bcp = class_type->variant.class_struct_union.extra_info->base_classes;
+#endif /* IA64_ABI */
+  for (; bcp != NULL;
+#if IA64_ABI
+       bcp = bcp->next_preorder
+#else /* !IA64_ABI */
+       bcp = bcp->next
+#endif /* IA64_ABI */
+       ) {
+    if (bcp->is_pack_expansion) continue;
+    for (ovfp = bcp->variant.overriding_virtual_functions; ovfp != NULL;
+         ovfp = ovfp->next) {
+      a_routine_ptr  overridden = ovfp->primary_function;
+      a_boolean      found = FALSE;
+      int            i;
+      if (!same_entities(ovfp->overriding_function, rp)) continue;
+      instantiate_contract_specifiers_if_needed(symbol_for(overridden));
+      for (i = 0; i < n_seen; i++) {
+        if (same_entities(seen[i], overridden)) found = TRUE;
+      }  /* for */
+      if (found && !contracts_name_this(overridden)) continue;
+      if (!found && n_seen < (int)(sizeof(seen) / sizeof(seen[0]))) {
+        seen[n_seen++] = overridden;
+      }  /* if */
+      add_contract_override_obligations(rp, overridden, rp, ctk_pre);
+      add_contract_override_obligations(rp, overridden, overridden, ctk_post);
+    }  /* for */
+  }  /* for */
+}  /* note_contract_override_obligations */
+
+
+static a_boolean contract_overrider_is_put_out(a_routine_ptr  rp,
+                                               a_boolean      any_error)
+/*
+Return TRUE if this translation unit puts out the definition of the virtual
+function rp, which has override obligations (see
+diagnose_contract_override_obligations).  Without an error that is its
+needed flag.  After an error the needed flags are not set, nothing is put
+out, and the answer is what would have been: as our GCC reads it then from
+the functions it would emit (GCC-947), a definition that is not inline is
+put out; an inline one (a compiler-generated one included), or a member of
+a class template instance, goes out with its class's virtual function
+table, which is defined here if the class's decider function is defined
+here, or, with no decider function, if a constructor or destructor of the
+class defined here required the class's virtual functions (see
+require_definitions_of_virtual_functions_in_class).
+*/
+{
+  a_boolean   put_out = TRUE;
+  a_type_ptr  class_type = skip_typerefs(parent_class_of(rp));
+  a_boolean   is_instance =
+                 class_type->variant.class_struct_union.is_template_class &&
+                 !class_type->variant.class_struct_union.is_specialized;
+
+  if (!any_error) {
+#if MAINTAIN_NEEDED_FLAGS
+    put_out = rp->definition_needed;
+#endif /* MAINTAIN_NEEDED_FLAGS */
+  } else if (rp->is_inline || rp->compiler_generated || rp->is_defaulted ||
+             is_instance) {
+    a_routine_ptr  decider =
+                     is_instance ? NULL
+                                 : vtbl_decider_function_for_class(
+                                                class_type, (a_boolean *)NULL);
+    put_out = decider != NULL
+                ? routine_has_been_defined(decider)
+                : class_type->variant.class_struct_union.
+                                         virtual_functions_marked_as_required;
+  }  /* if */
+  return put_out;
+}  /* contract_overrider_is_put_out */
+
+
+void diagnose_contract_override_obligations(void)
+/*
+The translation unit is complete, and the needed flags of its entities are
+set.  Diagnose each pending override obligation (P4405; see
+note_contract_override_obligations) whose virtual function's definition is
+put out, at that definition, naming the overridden function: an error for
+prove, a warning (contract_override_unproven) for diagnose.  An overrider
+that this translation unit does not put out (an inline function whose
+class's virtual function table is defined elsewhere) is analyzed where it is
+(DECISIONS.md E150 in notadragon_wg21).  After another error they are
+diagnosed all the same, for the definitions that would have been put out
+(see contract_overrider_is_put_out), as in our GCC (GCC-947).
+*/
+{
+  a_contract_override_obligation_ptr  cop, *p_cop, reversed = NULL;
+  a_boolean                           any_error = is_at_least_one_error();
+
+  /* Diagnose them in the order they were found. */
+  while (contract_override_obligations != NULL) {
+    cop = contract_override_obligations;
+    contract_override_obligations = cop->next;
+    cop->next = reversed;
+    reversed = cop;
+  }  /* while */
+  for (p_cop = &reversed; *p_cop != NULL; ) {
+    cop = *p_cop;
+    *p_cop = cop->next;
+    if (contract_overrider_is_put_out(cop->overrider, any_error)) {
+      an_error_code     ec = cop->is_prove
+                               ? ec_contract_override_unproven
+                               : ec_contract_override_unproven_warning;
+      a_diagnostic_ptr  dp =
+              pos_sy_start_diagnostic(cop->is_prove ? es_error : es_warning,
+                                      ec, &cop->position,
+                                      symbol_for(cop->overridden));
+      add_diag_info_with_pos_insert(dp, ec_contract_override_predicate,
+                                    &cop->predicate_position);
+      end_diagnostic(dp);
+    }  /* if */
+    free_fe(cop, sizeof(*cop));
+  }  /* for */
+}  /* diagnose_contract_override_obligations */
+
 
 void statements_one_time_init(void)
 /*

@@ -1,0 +1,27 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3097 --contracts_p4405 --contract_analysis_semantic=prove -O2 Test_name.c
+"Test_name.c", line 33: warning: variable "c" was declared but never referenced
+    void use () { C c; D d; E e; }
+                    ^
+
+"Test_name.c", line 33: warning: variable "d" was declared but never referenced
+    void use () { C c; D d; E e; }
+                         ^
+
+"Test_name.c", line 33: warning: variable "e" was declared but never referenced
+    void use () { C c; D d; E e; }
+                              ^
+
+Test_name.c: In member function 'virtual int multilevel::E::f(int)':
+Test_name.c:29:13: error: contract predicate is always false for a call through 'virtual int multilevel::C::f(int)'
+   29 |     int f (int x) override      // { dg-error "for a call through 'virtual int multilevel::C::f\\(int\\)'" }
+      |             ^
+Test_name.c:23:41: note: the predicate of the contract assertion
+   23 |     int f (int x) override post (r: r > 1) { return 5; }        // { dg-bogus "cannot be proven" }
+      |                                       ~~^~~
+Test_name.c: In member function 'virtual int multiple::E::f(int)':
+Test_name.c:45:13: error: contract predicate is always false for a call through 'virtual int multiple::A::f(int)'
+   45 |     int f (int x) override      // { dg-error "for a call through 'virtual int multiple::A::f\\(int\\)'" }
+      |             ^
+Test_name.c:39:43: note: the predicate of the contract assertion
+   39 |   struct A { virtual int f (int x) post (r: r > 0); };  // { dg-message "the predicate of the contract assertion" }
+      |                                         ~~^~~
