@@ -2185,14 +2185,38 @@ capture described by lcp.  Return the field entry.
       a_field_ptr  parent_field = lcp->capture_info.source_closure_field;
       if (parent_field != NULL) {
         /* A capture of an init-capture or param-ref capture. */
-        if (parent_field->is_captured_this) {
-          is_this = TRUE;
-        } else {
-          make_locator_for_symbol(symbol_for(parent_field), &locator);
-        }  /* if */
         decl_info.is_captured_pack_element =
                                        parent_field->is_captured_pack_element;
         field_type = parent_field->type;
+        if (parent_field->is_captured_this) {
+          is_this = TRUE;
+          if (by_reference) {
+            if (!is_pointer_type(field_type)) {
+              /* *this was captured by the enclosing lambda, but this lambda
+                 only captures the address thereof, which is a pointer to
+                 const if the enclosing lambda is not mutable. */
+              a_routine_ptr  enclosing_body =
+                     lambda_body_for_closure(parent_class_of(parent_field));
+              if (enclosing_body != NULL &&
+                  enclosing_body->type->kind == (a_type_kind)tk_routine &&
+                  enclosing_body->type->variant.routine.extra_info
+                                                  ->qualifiers == TQ_CONST) {
+                field_type = make_qualified_type(field_type, TQ_CONST);
+              }  /* if */
+              field_type = make_pointer_type(field_type);
+            }  /* if */
+          } else {
+            /* Capture of "*this". */
+            if (is_pointer_type(field_type)) {
+              field_type = type_pointed_to(field_type);
+            }  /* if */
+            field_type = lambda->is_mutable
+                           ? skip_typerefs(field_type)
+                           : make_qualified_type(field_type, TQ_CONST);
+          }  /* if */
+        } else {
+          make_locator_for_symbol(symbol_for(parent_field), &locator);
+        }  /* if */
       } else if (lcp->is_param_ref_capture) {
         /* A capture of "this" or "*this" in a context with no "this"
            variable. */
@@ -2522,9 +2546,11 @@ being done.
     /* For implicit captures, create the capture field now.  For explicit
        captures this was done when the capture was specified. */
     if ((vp != NULL && vp->is_this_parameter) ||
-        lcp->is_param_ref_capture) {
+        lcp->is_param_ref_capture ||
+        (vp == NULL && fp == NULL && enclosing_lcp != NULL)) {
       /* Implicit captures of "this" are always by reference, i.e., they
-         capture "this" and not "*this". */
+         capture "this" and not "*this" (also one made through an enclosing
+         lambda's capture where "this" has no variable). */
       lcp->capture_by_reference = TRUE;
     }  /* if */
     if (vp != NULL && vp->constant_valued) {
