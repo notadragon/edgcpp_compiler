@@ -56,6 +56,7 @@ il.c -- Construction of intermediate language trees.
 #include "lower_name.h"
 #endif /* MODULE_ID_NEEDED */
 #include "trans_copy.h"
+#include "contract_config.h"
 #if GNU_FUNCTION_MULTIVERSIONING
 #include "sys_predef.h"
 #endif /* GNU_FUNCTION_MULTIVERSIONING */
@@ -29236,6 +29237,12 @@ node instead.
                     !is_template_dependent_context());
     /* This is a destructible entity. */
     if (static_lifetime) {
+#if CONTRACT_CHECKS_IN_FRONT_END && DO_IL_LOWERING
+      if (contracts_p4405_enabled && !il_lowering_underway) {
+        /* Destroyed through its destructor's address (P4405). */
+        note_contract_static_destruction(dip);
+      }  /* if */
+#endif /* CONTRACT_CHECKS_IN_FRONT_END && DO_IL_LOWERING */
       /* Note that we do NOT use depth_innermost_function_scope, as it would
          not be set correctly during IL lowering. */
       if (innermost_function_scope != NULL) {

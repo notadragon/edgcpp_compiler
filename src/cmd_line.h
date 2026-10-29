@@ -399,6 +399,9 @@ enum an_option_kind {
   optk_contracts_p3400,
   optk_contracts_p4283,
   optk_contracts_p4298,
+  optk_contracts_p4405,
+  optk_contract_analysis_semantic,
+  optk_contracts_prove_fold,
   optk_last		/* Must be last. */
 };
 
@@ -2989,6 +2992,11 @@ enum a_contract_evaluation_semantic {
 			   terminated if the violation handler exits with an
 			   exception. */
   ces_noexcept_enforce,	/* P4298: as ces_enforce, likewise. */
+  ces_prove,		/* P4405: the predicate is not evaluated, and the
+			   program is ill-formed unless it can be proven
+			   to hold; nothing is proven, so every evaluation
+			   is an error (only with --contracts_p4405). */
+  ces_diagnose		/* P4405: as ces_prove, but a warning. */
 };
 
 EXTERN_THREAD a_contract_evaluation_semantic
@@ -3042,6 +3050,32 @@ EXTERN_THREAD a_boolean
 			   is enabled: the noexcept_observe and
 			   noexcept_enforce evaluation semantics can be
 			   chosen. */
+
+EXTERN_THREAD a_boolean
+		contracts_p4405_enabled;
+			/* TRUE if P4405 (the prove and diagnose evaluation
+			   semantics) is enabled: with contracts, they may be
+			   chosen, and it predefines __cpp_contracts_prove;
+			   otherwise ignore is used instead, with a
+			   warning. */
+
+EXTERN_THREAD a_contract_evaluation_semantic
+		contract_analysis_semantic;
+			/* The semantic of the analysis evaluation of every
+			   contract assertion that the configuration does not
+			   give one (P4405, --contract_analysis_semantic):
+			   ces_ignore (also without the option), ces_diagnose
+			   or ces_prove. */
+
+EXTERN_THREAD a_boolean
+		contracts_prove_fold_enabled;
+			/* TRUE if the folding proving strategy of P4405
+			   (--contracts_prove_fold, as GCC's
+			   -fcontracts-prove-fold) is enabled; implied by
+			   --contracts_p4405.  When FALSE, a predicate the
+			   front end makes a constant settles neither an
+			   override obligation nor the address-of rule; the
+			   drivers pass it on to g++. */
 
 EXTERN_THREAD a_boolean
 		contracts_p3290_enabled;

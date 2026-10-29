@@ -102,6 +102,10 @@ typedef struct a_config_entry {
   int		constexpr_eval;
 			/* 1 if the entry matches only in constant
 			   evaluation, 0 only outside it. */
+  a_boolean	analysis;
+			/* TRUE if the entry matches only the analysis
+			   evaluation of a contract assertion (P4405,
+			   "analysis": true), which no other lookup sees. */
   a_const_char	*group;	/* A group name, matched as a dot-separated
 			   prefix. */
   a_const_char	*ns;	/* A namespace, matched as a "::"-separated
@@ -714,6 +718,11 @@ not enabled (contract_semantic_best_fit): ignore for assume (without
     if (semantic == cs_noexcept_observe) return ces_noexcept_observe;
     if (semantic == cs_noexcept_enforce) return ces_noexcept_enforce;
   }  /* if */
+  if (semantic == cs_prove || semantic == cs_diagnose) {
+    /* P4405: itself with --contracts_p4405, otherwise ignore. */
+    if (!contracts_p4405_enabled) return ces_ignore;
+    return semantic == cs_prove ? ces_prove : ces_diagnose;
+  }  /* if */
   switch (semantic) {
     case cs_ignore:
     case cs_assume:
@@ -761,6 +770,26 @@ evaluation, on the callee side (no caller-side checks are generated).
       /* Supported (P4298). */
       p_warned = NULL;
     }  /* if */
+    if ((entry->semantic == cs_prove || entry->semantic == cs_diagnose) &&
+        !contracts_p4405_enabled) {
+      /* P4405's semantics without its option, as GCC warns (once per
+         semantic). */
+      STATIC_THREAD a_boolean  warned_prove = FALSE, warned_diagnose = FALSE;
+      a_boolean                *p_warned_p4405 = entry->semantic == cs_prove
+                                                   ? &warned_prove
+                                                   : &warned_diagnose;
+      if (!*p_warned_p4405) {
+        *p_warned_p4405 = TRUE;
+        config_warning(where,
+                       entry->semantic == cs_prove
+                         ? "the configuration asks for \"prove\", which "
+                           "requires --contracts_p4405; \"ignore\" is used "
+                           "instead"
+                         : "the configuration asks for \"diagnose\", which "
+                           "requires --contracts_p4405; \"ignore\" is used "
+                           "instead");
+      }  /* if */
+    }  /* if */
     if (p_warned != NULL && !*p_warned) {
       *p_warned = TRUE;
       config_warning(where,
@@ -782,6 +811,9 @@ evaluation, on the callee side (no caller-side checks are generated).
     if (entry->has_semantic) {
       a_contract_evaluation_semantic  semantic =
                                         supported_semantic(entry->semantic);
+      if (semantic == ces_prove || semantic == ces_diagnose) {
+        /* Allowed (P4405), as on the command line. */
+      } else
       if (semantic == ces_noexcept_observe ||
           semantic == ces_noexcept_enforce) {
         /* Allowed (P4298), as on the command line. */
@@ -807,6 +839,7 @@ Allocate a configuration entry that matches everything.
   entry->kind = -1;
   entry->caller_side = -1;
   entry->constexpr_eval = -1;
+  entry->analysis = FALSE;
   entry->group = NULL;
   entry->ns = NULL;
   entry->location_file = NULL;
@@ -1130,6 +1163,18 @@ if the entry is to be skipped (an unknown key).
     entry->constexpr_eval = required_boolean(jp, value,
                                          "\"constexpr\" must be a boolean");
   }  /* if */
+  value = json_member(match, "analysis");
+  if (value != NULL) {
+    /* P4405: the entry is for the analysis evaluation ("false" is the same
+       as leaving the key out), whose position the kind of the assertion
+       fixes, so "caller" could only restate or contradict it. */
+    entry->analysis = required_boolean(jp, value,
+                                       "\"analysis\" must be a boolean");
+    if (entry->analysis && json_member(match, "caller") != NULL) {
+      value_error(jp, value, "\"analysis\" and \"caller\" cannot both "
+                             "appear in \"match\"");
+    }  /* if */
+  }  /* if */
   value = json_member(match, "namespace");
   if (value != NULL) {
     entry->ns = required_string(jp, value, "\"namespace\" must be a string");
@@ -1184,6 +1229,33 @@ append its entries to the list.
     if (!parse_config_output(&jp, output, entry)) continue;
     match = json_member(elem, "match");
     if (match != NULL && !parse_config_match(&jp, match, entry)) continue;
+    if (entry->analysis) {
+      /* P4405: an analysis evaluation happens entirely at compile time, so
+         its entry selects ignore, diagnose or prove, and has nothing for a
+         dynamic selection to select. */
+      if (entry->is_dynamic) {
+        value_error(&jp, json_member(output, "dynamic"),
+                    "an entry matching \"analysis\" cannot have a "
+                    "\"dynamic\" output");
+      }  /* if */
+      if (entry->semantic != cs_ignore && entry->semantic != cs_prove &&
+          entry->semantic != cs_diagnose) {
+        value_error(&jp, json_member(output, "semantic"),
+                    "the \"semantic\" of an entry matching \"analysis\" "
+                    "must be \"ignore\", \"diagnose\" or \"prove\"");
+      }  /* if */
+    } else if (entry->constexpr_eval == 1 && entry->has_semantic &&
+               (entry->semantic == cs_prove ||
+                entry->semantic == cs_diagnose)) {
+      /* P4405: constant evaluation is never analyzed, so an entry for it
+         alone cannot select prove or diagnose, which apply only to the
+         analysis evaluation.  (One that constant evaluation reaches
+         otherwise is enforce or observe there, see
+         contract_semantic_for.) */
+      value_error(&jp, json_member(output, "semantic"),
+                  "the \"semantic\" of an entry matching \"constexpr\" "
+                  "cannot be \"prove\" or \"diagnose\"");
+    }  /* if */
     check_entry_semantic(entry, config_where(source, elem->line,
                                              elem->column));
     append_config_entry(entry);
@@ -1305,6 +1377,17 @@ processed.
         unexpected_condition();
     }  /* switch */
   }  /* for */
+  if (contract_analysis_semantic != ces_ignore) {
+    /* --contract_analysis_semantic (P4405): {"match": {"analysis": true},
+       "output": {"semantic": S}}.  Only the analysis evaluation's lookup
+       sees it, so where it goes among the others makes no difference. */
+    entry = alloc_config_entry();
+    entry->has_semantic = TRUE;
+    entry->analysis = TRUE;
+    entry->semantic = contract_analysis_semantic == ces_prove ? cs_prove
+                                                               : cs_diagnose;
+    append_config_entry(entry);
+  }  /* if */
   entry = alloc_config_entry();
   entry->has_semantic = TRUE;
   /* The first four semantics are in the same order in both types. */
@@ -1314,6 +1397,12 @@ processed.
     entry->semantic = cs_noexcept_observe;
   } else if (contract_evaluation_semantic == ces_noexcept_enforce) {
     entry->semantic = cs_noexcept_enforce;
+  }  /* if */
+  if (contract_evaluation_semantic == ces_prove) {
+    /* Nor are prove and diagnose (P4405). */
+    entry->semantic = cs_prove;
+  } else if (contract_evaluation_semantic == ces_diagnose) {
+    entry->semantic = cs_diagnose;
   }  /* if */
   append_config_entry(entry);
 }  /* init_contract_config */
@@ -1501,7 +1590,21 @@ of a label (P3400) adjust it (see apply_contract_label_facets).
   a_config_entry_ptr  entry;
   a_contract_evaluation_semantic
                       semantic = contract_evaluation_semantic;
+  /* P4405: the semantic of the analysis evaluation, its own lookup's, and
+     whether the entry giving semantic selects it at run time. */
+  a_contract_evaluation_semantic
+                      analysis = ces_ignore;
+  a_boolean           is_dynamic = FALSE;
+  a_boolean           has_facets = csp->label != NULL &&
+                                   (csp->label_allowed_semantics != 0 ||
+                                    csp->label_allowed_proving_semantics !=
+                                                                         0 ||
+                                    csp->label_computed_semantics[1] != 0 ||
+                                    csp->label_analysis_semantic != 0);
+
   for (entry = config_entries; entry != NULL; entry = entry->next) {
+    /* An entry for the analysis evaluation (P4405) has its own lookup. */
+    if (entry->analysis) continue;
     if (!config_entry_matches(entry, csp, routine, in_ce)) {
       continue;
     }  /* if */
@@ -1513,12 +1616,47 @@ of a label (P3400) adjust it (see apply_contract_label_facets).
       continue;
     }  /* if */
     semantic = supported_semantic(entry->semantic);
+    is_dynamic = entry->is_dynamic;
     break;
   }  /* for */
   /* Otherwise the default: before the configuration is built, or without
      one. */
+  if (!in_ce && contracts_p4405_enabled) {
+    /* P4405 (D4405R0, "Adjusting to the Allowed Semantics", as our GCC's
+       contract_config_resolve): the analysis evaluation's own lookup, which
+       an entry with "constexpr": true never matches (nor can an entry for it
+       have a "caller"); then a configured prove or diagnose (but a dynamic
+       entry's default, the run-time evaluation's own) moves to the analysis
+       evaluation, which takes the stronger, and the run-time evaluation
+       becomes ignore.  Constant evaluation is never analyzed, and a prove
+       or diagnose it reaches is enforce or observe (below). */
+    for (entry = config_entries; entry != NULL; entry = entry->next) {
+      if (entry->analysis &&
+          config_entry_matches(entry, csp, routine, /*in_ce=*/FALSE)) {
+        analysis = supported_semantic(entry->semantic);
+        break;
+      }  /* if */
+    }  /* for */
+    if ((semantic == ces_prove || semantic == ces_diagnose) && !is_dynamic) {
+      analysis = contract_analysis_stronger(analysis, semantic);
+      semantic = ces_ignore;
+    }  /* if */
+    if (!has_facets &&
+        (semantic == ces_prove || semantic == ces_diagnose)) {
+      /* A dynamic entry's default: its best fit among the run-time
+         semantics is ignore. */
+      semantic = ces_ignore;
+    }  /* if */
+  }  /* if */
+  if (contracts_p4405_enabled && has_facets) {
+    /* The allowed set splits into its run-time and analysis parts, and the
+       label's analysis_semantic facet applies too (P4405). */
+    semantic = apply_contract_label_facets_analysis(csp, semantic, &analysis,
+                                                    in_ce);
+  } else
   if (csp->label != NULL &&
       (csp->label_allowed_semantics != 0 ||
+       csp->label_allowed_proving_semantics != 0 ||
        csp->label_computed_semantics[1] != 0)) {
     semantic = apply_contract_label_facets(csp, semantic, in_ce);
   }  /* if */
@@ -1531,6 +1669,18 @@ of a label (P3400) adjust it (see apply_contract_label_facets).
     } else if (semantic == ces_noexcept_observe) {
       semantic = ces_observe;
     }  /* if */
+  }  /* if */
+  if (in_ce && (semantic == ces_prove || semantic == ces_diagnose)) {
+    /* Constant evaluation is never analyzed (P4405), and a prove or
+       diagnose that it reaches is enforce or observe there, as in GCC
+       (contract_constant_evaluation_semantic): the one evaluation made must
+       satisfy a prove, and a diagnose warns. */
+    semantic = semantic == ces_prove ? ces_enforce : ces_observe;
+  }  /* if */
+  if (!in_ce) {
+    /* The semantic of the analysis evaluation, which is never prove or
+       diagnose at run time (see contract_analysis_semantic_for). */
+    csp->resolved_analysis_semantic = (a_byte)analysis;
   }  /* if */
   return semantic;
 }  /* contract_semantic_for */
@@ -1546,6 +1696,8 @@ outside constant evaluation (as far as the configuration tells).
 
   if (config_entries == NULL) return contract_evaluation_semantic == semantic;
   for (entry = config_entries; entry != NULL; entry = entry->next) {
+    /* An entry for the analysis evaluation (P4405) gives none. */
+    if (entry->analysis) continue;
     if (entry->has_semantic && entry->constexpr_eval != 1 &&
         entry->caller_side != 1 &&
         supported_semantic(entry->semantic) == semantic) {

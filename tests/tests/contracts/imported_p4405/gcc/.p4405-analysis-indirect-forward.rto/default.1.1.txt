@@ -1,0 +1,74 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 --contract_analysis_semantic=ignore -O2 Test_name.c
+Test_name.c: In function 'void use(S&)':
+Test_name.c:66:13: error: contract assertion cannot be proven for a call through the address of 'void fp(int)'
+   66 |   std::invoke (fp, 1);                          // { dg-error "contract assertion cannot be proven for a call through the address of 'void fp\\(int\\)'" }
+      |             ^~
+Test_name.c:49:16: note: precondition here
+   49 | void fp (int x) pre<always_prove> (x > 0);      // { dg-message "precondition here" }
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:67:13: warning: contract assertion cannot be proven for a call through the address of 'void fd(int)' [-Wcontract-unproven]
+   67 |   std::invoke (fd, 1);                          // { dg-warning "contract assertion cannot be proven for a call through the address of 'void fd\\(int\\)'" }
+      |             ^~
+Test_name.c:50:16: note: precondition here
+   50 | void fd (int x) pre<always_diagnose> (x > 0);   // { dg-message "precondition here" }
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:69:34: error: contract assertion cannot be proven for a call through the address of 'void fp(int)'
+   69 |   std::function<void (int)> g1 = fp;            // { dg-error "cannot be proven for a call through the address" }
+      |                                  ^~
+Test_name.c:49:16: note: precondition here
+   49 | void fp (int x) pre<always_prove> (x > 0);      // { dg-message "precondition here" }
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:70:34: warning: contract assertion cannot be proven for a call through the address of 'void fd(int)' [-Wcontract-unproven]
+   70 |   std::function<void (int)> g2 = fd;            // { dg-warning "cannot be proven for a call through the address" }
+      |                                  ^~
+Test_name.c:50:16: note: precondition here
+   50 | void fd (int x) pre<always_diagnose> (x > 0);   // { dg-message "precondition here" }
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:72:16: warning: contract assertion cannot be proven for a call through the address of 'void fd(int)' [-Wcontract-unproven]
+   72 |   std::thread t1 (fd, 1);                       // { dg-warning "cannot be proven for a call through the address" }
+      |                ^~
+Test_name.c:50:16: note: precondition here
+   50 | void fd (int x) pre<always_diagnose> (x > 0);   // { dg-message "precondition here" }
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:74:16: error: contract assertion cannot be proven for a call through the address of 'void fp(int)'
+   74 |   std::thread t2 (fp, 1);                       // { dg-error "cannot be proven for a call through the address" }
+      |                ^~
+Test_name.c:49:16: note: precondition here
+   49 | void fp (int x) pre<always_prove> (x > 0);      // { dg-message "precondition here" }
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:76:11: error: contract assertion cannot be proven for a call through the address of 'void fp(int)'
+   76 |   my_invoke (fp, 1);                            // { dg-error "cannot be proven for a call through the address" }
+      |           ^~
+Test_name.c:49:16: note: precondition here
+   49 | void fp (int x) pre<always_prove> (x > 0);      // { dg-message "precondition here" }
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:77:11: warning: contract assertion cannot be proven for a call through the address of 'void fd(int)' [-Wcontract-unproven]
+   77 |   my_invoke (fd, 1);                            // { dg-warning "cannot be proven for a call through the address" }
+      |           ^~
+Test_name.c:50:16: note: precondition here
+   50 | void fd (int x) pre<always_diagnose> (x > 0);   // { dg-message "precondition here" }
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:78:10: warning: contract assertion cannot be proven for a call through the address of 'void fd(int)' [-Wcontract-unproven]
+   78 |   by_value (fd);                                // { dg-warning "cannot be proven for a call through the address" }
+      |          ^~
+Test_name.c:50:16: note: precondition here
+   50 | void fd (int x) pre<always_diagnose> (x > 0);   // { dg-message "precondition here" }
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:80:17: error: contract assertion cannot be proven for a call through the address of 'void S::mp(int)'
+   80 |   std::invoke (&S::mp, s, 1);                   // { dg-error "cannot be proven for a call through the address" }
+      |              ~~~^~
+Test_name.c:54:16: note: precondition here
+   54 |   void mp (int x) pre<always_prove> (x > 0);    // { dg-message "precondition here" }
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:81:17: warning: contract assertion cannot be proven for a call through the address of 'void S::md(int)' [-Wcontract-unproven]
+   81 |   std::invoke (&S::md, s, 1);                   // { dg-warning "cannot be proven for a call through the address" }
+      |              ~~~^~
+Test_name.c:55:16: note: precondition here
+   55 |   void md (int x) pre<always_diagnose> (x > 0); // { dg-message "precondition here" }
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:82:20: warning: contract assertion cannot be proven for a call through the address of 'void fd(int)' [-Wcontract-unproven]
+   82 |   auto b = std::bind (fd, 1);                   // { dg-warning "cannot be proven for a call through the address" }
+      |                    ^~
+Test_name.c:50:16: note: precondition here
+   50 | void fd (int x) pre<always_diagnose> (x > 0);   // { dg-message "precondition here" }
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~

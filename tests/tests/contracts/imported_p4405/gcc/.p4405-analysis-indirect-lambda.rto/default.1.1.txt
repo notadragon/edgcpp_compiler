@@ -1,0 +1,34 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 -O2 Test_name.c
+Test_name.c: In instantiation of 'void my_invoke(F&&, A&& ...) [with F = use()::<lambda(int)>&; A = {int}]':
+Test_name.c:57:10:   required from here
+   57 |   my_invoke (ld, 3);
+      |   ~~~~~~~^~~~~~~
+Test_name.c:45:5: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   45 |   f (static_cast<A &&> (a)...);                 // { dg-warning "contract assertion cannot be proven" }
+      |   ~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:54:47: note: the predicate of the contract assertion
+   54 |   auto ld = [] (int x) pre<always_diagnose> (x > 0) {}; // { dg-message "the predicate of the contract assertion" }
+      |                                             ~~^~~
+GXX_INCLUDE_CXX/bits/invoke.h: In instantiation of 'constexpr _Res std::__invoke_impl(__invoke_other, _Fn&&, _Args&& ...) [with _Res = void; _Fn = use()::<lambda(int)>&; _Args = {int}]':
+GXX_INCLUDE_CXX/bits/invoke.h:N:N:   required from 'constexpr std::enable_if_t<((bool)is_invocable_r_v<_Res, _Callable, _Args ...>), _Res> std::__invoke_r(_Callable&&, _Args&& ...) [with _Res = void; _Callable = use()::<lambda(int)>&; _Args = {int}]'
+  113 |         std::__invoke_impl<__type>(__tag{}, std::forward<_Callable>(__fn),
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  114 |                                         std::forward<_Args>(__args)...);
+      |                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~         
+GXX_INCLUDE_CXX/bits/std_function.h:N:N:   required from 'static _Res std::_Function_handler<_Res(_ArgTypes ...), _Functor>::_M_invoke(const std::_Any_data&, _ArgTypes&& ...) [with _Res = void; _Functor = use()::<lambda(int)>; _ArgTypes = {int}]'
+  295 |         return std::__invoke_r<_Res>(*_Base::_M_get_pointer(__functor),
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  296 |                                      std::forward<_ArgTypes>(__args)...);
+      |                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~         
+GXX_INCLUDE_CXX/bits/std_function.h:N:N:   required from 'std::function<_Res(_ArgTypes ...)>::function(_Functor&&) [with _Functor = use()::<lambda(int)>&; _Constraints = void; _Res = void; _ArgTypes = {int}]'
+  441 |               _M_invoker = &_My_handler::_M_invoke;
+      |                            ^~~~~~~~~~~~~~~~~~~~~~~~  
+Test_name.c:52:34:   required from here
+   52 |   std::function<void (int)> g1 = lp;            // { dg-bogus "address" }
+      |                                  ^~
+GXX_INCLUDE_CXX/bits/invoke.h:N:N: error: contract assertion cannot be proven
+   63 |     { return std::forward<_Fn>(__f)(std::forward<_Args>(__args)...); }
+      |              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~                 
+Test_name.c:51:44: note: the predicate of the contract assertion
+   51 |   auto lp = [] (int x) pre<always_prove> (x > 0) {};    // { dg-message "the predicate of the contract assertion" }
+      |                                          ~~^~~

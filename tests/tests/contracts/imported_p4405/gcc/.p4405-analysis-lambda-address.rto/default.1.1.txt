@@ -1,0 +1,48 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 -O2 Test_name.c
+Test_name.c: In function 'int use(int)':
+Test_name.c:55:18: error: contract assertion cannot be proven for a call through the address of 'use(int)::<lambda(int)>'
+   55 |   int (*p1) (int) = l1;                                 // { dg-error "contract assertion cannot be proven for a call through the address of 'use\\(int\\)::<lambda\\(int\\)>'" }
+      |                  ^~
+Test_name.c:54:22: note: precondition here
+   54 |   auto l1 = [] (int x) pre<always_prove> (x > 0) { return x; }; // { dg-message "precondition here" }
+      |                      ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:57:18: error: contract assertion cannot be proven for a call through the address of 'use(int)::<lambda(int)> static'
+   57 |   int (*p2) (int) = l2;                                 // { dg-error "cannot be proven for a call through the address" }
+      |                  ^~
+Test_name.c:56:29: note: precondition here
+   56 |   auto l2 = [] (int x) static pre<always_prove> (x > 0) { return x; };  // { dg-message "precondition here" }
+      |                             ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:59:18: error: contract assertion cannot be proven for a call through the address of 'use(int)::<lambda(auto:1)> [with auto:1 = int]'
+   59 |   int (*p3) (int) = l3;                                 // { dg-error "cannot be proven for a call through the address" }
+      |                  ^~
+Test_name.c:58:24: note: precondition here
+   58 |   auto l3 = [] (auto x) pre<always_prove> (x > 0) { return x; };        // { dg-message "precondition here" }
+      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:61:20: warning: contract assertion cannot be proven for a call through the address of 'use(int)::<lambda(int)>' [-Wcontract-unproven]
+   61 |   int (*p4) (int) = +l4;                                // { dg-warning "contract assertion cannot be proven for a call through the address of 'use\\(int\\)::<lambda\\(int\\)>' \\\[-Wcontract-unproven\\\]" }
+      |                    ^~
+Test_name.c:60:22: note: precondition here
+   60 |   auto l4 = [] (int x) pre<always_diagnose> (x > 0) { return x; };      // { dg-message "precondition here" }
+      |                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:62:66: warning: contract assertion cannot be proven for a call through the address of 'use(int)::<lambda(int)>' [-Wcontract-unproven]
+   62 |   auto p5 = static_cast<int (*) (int)> (l4);            // { dg-warning "cannot be proven for a call through the address" }
+      |                                                                  ^~
+Test_name.c:60:22: note: precondition here
+   60 |   auto l4 = [] (int x) pre<always_diagnose> (x > 0) { return x; };      // { dg-message "precondition here" }
+      |                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:64:20: warning: contract assertion cannot be proven for a call through the address of 'use(int)::<lambda(auto:2)> static [with auto:2 = long int]' [-Wcontract-unproven]
+   64 |   long (*p6) (long) = l6;                               // { dg-warning "cannot be proven for a call through the address" }
+      |                    ^~
+Test_name.c:63:31: note: precondition here
+   63 |   auto l6 = [] (auto x) static pre<always_diagnose> (x > 0) { return x; };      // { dg-message "precondition here" }
+      |                               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c: In instantiation of 'T in_template(T) [with T = int]':
+Test_name.c:85:36:   required from here
+   85 | template int in_template<int> (int);
+      |                                    ^
+Test_name.c:81:48: error: contract assertion cannot be proven for a call through the address of 'in_template<int>(int)::<lambda(int)>'
+   81 |   T (*p) (T) = l;                                       // { dg-error "cannot be proven for a call through the address" }
+      |                                         ^~~~~~~~
+Test_name.c:80:24: note: precondition here
+   80 |   auto l = [] (T x) pre<always_prove> (x > 0) { return x; };    // { dg-message "precondition here" }
+      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

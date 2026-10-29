@@ -1,0 +1,30 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p4405 --contract_evaluation_semantic=diagnose Test_name.c
+"Test_name.c", line 23: warning: contract predicate is false in constant expression
+    pre (x > 0)		// { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 26: warning: contract predicate is false in constant expression
+    contract_assert (x > 0);	// { dg-warning "contract assertion cannot be proven" }
+    ^
+
+Test_name.c: In function 'constexpr int f(int)':
+Test_name.c:26:1: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   26 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:26:19: note: the predicate of the contract assertion
+   26 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      |                 ~~^~~
+Test_name.c: At global scope:
+Test_name.c:23:2: warning: contract predicate is false in constant expression
+   23 |   pre (x > 0)           // { dg-warning "contract predicate is false in constant expression" }
+      |  ^~~~~~~~~~
+Test_name.c:26:1: warning: contract predicate is false in constant expression
+   26 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c: In function 'int use(int)':
+Test_name.c:33:26: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   33 | int use (int x) { return f (x); }       // { dg-warning "contract assertion cannot be proven" }
+      |                         ~^~~
+Test_name.c:23:8: note: the predicate of the contract assertion
+   23 |   pre (x > 0)           // { dg-warning "contract predicate is false in constant expression" }
+      |      ~~^~~

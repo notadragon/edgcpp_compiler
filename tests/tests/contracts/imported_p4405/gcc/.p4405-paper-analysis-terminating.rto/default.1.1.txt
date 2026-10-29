@@ -1,0 +1,8 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 --contract_evaluation_semantic=ignore --contract_analysis_semantic=prove -O2 Test_name.c
+Test_name.c: In function 'int lookup_raw(int)':
+Test_name.c:51:14: error: contract assertion cannot be proven
+   51 |   return lookup(v);  // Error if proven, otherwise enforced     { dg-error "contract assertion cannot be proven" }
+      |        ~~~~~~^~~
+Test_name.c:35:28: note: the predicate of the contract assertion
+   35 |   pre<terminating>(p >= 0 && p <= 100)  // { dg-message "the predicate of the contract assertion" }
+      |                     ~~~~~~~^~~~~~~~~~~

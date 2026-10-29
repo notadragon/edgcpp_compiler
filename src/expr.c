@@ -42701,11 +42701,19 @@ diagnosed when that semantic is chosen, as GCC does).
                sizeof(csp->label_computed_semantics));
   (void)memset(csp->label_computed_noexcept_semantics, 0,
                sizeof(csp->label_computed_noexcept_semantics));
+  csp->label_allowed_proving_semantics = 0;
+  csp->label_analysis_semantic = 0;
   if (contract_label_constant(csp, label_con)) {
     an_operand  label_opnd, sem_opnd;
     a_boolean   not_constant;
     int         v;
     unsigned    allowed = 0;
+    if (contracts_p4405_enabled) {
+      /* allowed_semantics for prove and diagnose too (P4405), first, so
+         that a label allowing only those allows some semantic. */
+      resolve_contract_label_proving_facets(csp, label_con,
+                                            /*analysis=*/FALSE);
+    }  /* if */
     /* allowed_semantics, probed for each value of evaluation_semantic. */
     for (v = 1; v <= 7; v++) {
       make_constant_operand(label_con, &label_opnd);
@@ -42772,6 +42780,11 @@ diagnosed when that semantic is chosen, as GCC does).
                                  ? 0xFF : contract_label_facet_value(value));
         if (*p_computed == 0) *p_computed = 0xFE;
       }  /* for */
+    }  /* if */
+    if (contracts_p4405_enabled) {
+      /* The analysis_semantic facet (P4405). */
+      resolve_contract_label_proving_facets(csp, label_con,
+                                            /*analysis=*/TRUE);
     }  /* if */
     /* The group names (P3400). */
     resolve_contract_label_groups(csp, label_con);
@@ -56483,6 +56496,334 @@ is TRUE if the expression is the immediate operand of an "&" operator.
     }  /* if */
   }  /* if */
 }  /* make_operand_for_rescanned_identifier */
+
+
+/* The token cache from which the analysis_semantic facet of a P3400 label is
+   probed (P4405; see probe_contract_label_facet). */
+STATIC_THREAD a_token_cache_ptr
+		contract_label_analysis_cache;
+
+
+void resolve_contract_label_proving_facets(a_contract_specifier_ptr  csp,
+                                           a_constant_ptr            label_con,
+                                           a_boolean                 analysis)
+/*
+The facets of the label (P3400) of the contract assertion csp, whose value is
+label_con, are being resolved (see resolve_contract_label_facets), with
+--contracts_p4405.  If analysis is FALSE, record which of prove (8) and
+diagnose (9) its allowed_semantics facet allows, if it has one, as
+csp->label_allowed_proving_semantics (a facet that is not a constant
+expression is diagnosed by the caller); if analysis is TRUE, and it has an
+analysis_semantic facet (the label models analysis_semantic_label), record
+the value that gives as csp->label_analysis_semantic, which must be a
+constant expression whose value is ignore, diagnose or prove.
+*/
+{
+  a_constant_ptr  value = local_constant();
+  an_operand      label_opnd, sem_opnd;
+  a_boolean       not_constant;
+  int             v;
+
+  if (analysis) {
+    make_constant_operand(label_con, &label_opnd);
+    make_error_operand(&sem_opnd);
+    if (probe_contract_label_facet(
+            &contract_label_analysis_cache,
+            "::std::contracts::evaluation_semantic("
+            CONTRACT_LABEL_COMBINED ".analysis_semantic());",
+            &label_opnd, &sem_opnd, (an_operand *)NULL, &csp->position,
+            value, &not_constant)) {
+      unsigned long  sem = not_constant ? 0xFF
+                                        : contract_label_facet_value(value);
+      if (not_constant) {
+        pos_ty_error(ec_contract_label_analysis_not_constant, &csp->position,
+                     make_unqualified_type(skip_typerefs(label_con->type)));
+      } else if (sem != 1 && sem != 8 && sem != 9) {
+        pos_error(ec_contract_label_analysis_invalid, &csp->position);
+        sem = 0xFE;
+      }  /* if */
+      csp->label_analysis_semantic = (a_byte)sem;
+    }  /* if */
+    release_local_constant(&value);
+    return;
+  }  /* if */
+  for (v = 8; v <= 9; v++) {
+    make_constant_operand(label_con, &label_opnd);
+    make_integer_constant_operand(&sem_opnd, (a_host_large_integer)v);
+    if (!probe_contract_label_facet(
+             &contract_label_allowed_cache,
+             "::std::contracts::evaluation_semantic_set("
+             CONTRACT_LABEL_COMBINED ".allowed_semantics).contains("
+             "::std::contracts::evaluation_semantic(__edg_opnd__(1)));",
+             &label_opnd, &sem_opnd, (an_operand *)NULL, &csp->position,
+             value, &not_constant) ||
+        not_constant) {
+      csp->label_allowed_proving_semantics = 0;
+      break;
+    }  /* if */
+    if (contract_label_facet_value(value) == 1) {
+      csp->label_allowed_proving_semantics |= (a_byte)(1u << (v - 8));
+    }  /* if */
+  }  /* for */
+  release_local_constant(&value);
+}  /* resolve_contract_label_proving_facets */
+
+
+static int proving_semantic_level(int  v)
+/*
+Return the level of the semantic of std::contracts::evaluation_semantic
+value v as contract_semantic_level does, with assume (5, P3100) at level 0
+and prove (8) and diagnose (9) at ignore's level, 1, as our GCC orders them
+(P4405).
+*/
+{
+  if (v == 5) return 0;
+  return v == 8 || v == 9 ? 1 : contract_semantic_level(v);
+}  /* proving_semantic_level */
+
+
+static int proving_semantic_at_level(int        level,
+                                     unsigned   allowed,
+                                     int        v,
+                                     a_boolean  prefer_throwing)
+/*
+Return the value of the semantic of the given level in the set allowed (of
+bits 1 << value) that best fits the one of value v, or 0 if there is none,
+as label_semantic_at_level does, with assume (5) at level 0 and prove (8)
+and diagnose (9) at level 1, as our GCC chooses (P4405, D3595R1): from
+prove, prove, then diagnose, then ignore; from diagnose, diagnose, ignore,
+then prove; from anything else, ignore, then diagnose, then prove.
+*/
+{
+  if (level == 0) return (allowed & (1u << 5)) != 0 ? 5 : 0;
+  if (level == 1) {
+    int  order[3], i;
+    order[0] = v == 8 ? 8 : v == 9 ? 9 : 1;
+    order[1] = v == 8 ? 9 : v == 9 ? 1 : 9;
+    order[2] = v == 8 ? 1 : 8;
+    for (i = 0; i < 3; i++) {
+      if ((allowed & (1u << order[i])) != 0) return order[i];
+    }  /* for */
+    return 0;
+  }  /* if */
+  return label_semantic_at_level(level, allowed, prefer_throwing);
+}  /* proving_semantic_at_level */
+
+
+static int best_fit_proving_semantic(int       v,
+                                     unsigned  allowed)
+/*
+Return the value of the semantic in the set allowed (of bits 1 << value)
+that best fits the one of value v, as our GCC chooses it
+(contract_semantic_best_fit): at v's level (see proving_semantic_level), then
+each higher level, then each lower one (see proving_semantic_at_level); 0 if
+there is none.
+*/
+{
+  int        level = proving_semantic_level(v), l, result = 0;
+  a_boolean  prefer_throwing = v == 2 || v == 3;
+
+  for (l = level; l <= 4 && result == 0; l++) {
+    result = proving_semantic_at_level(l, allowed, v, prefer_throwing);
+  }  /* for */
+  for (l = level - 1; l >= 0 && result == 0; l--) {
+    result = proving_semantic_at_level(l, allowed, v, prefer_throwing);
+  }  /* for */
+  return result;
+}  /* best_fit_proving_semantic */
+
+
+static int proving_semantic_value(a_contract_evaluation_semantic  semantic)
+/*
+Return the std::contracts::evaluation_semantic value of semantic, with
+--contracts_p4405.
+*/
+{
+  switch (semantic) {
+    case ces_assume:   return 5;
+    case ces_prove:    return 8;
+    case ces_diagnose: return 9;
+    default:           return contract_semantic_value(semantic);
+  }  /* switch */
+}  /* proving_semantic_value */
+
+
+static a_contract_evaluation_semantic proving_semantic_of_value(int  v)
+/*
+Return the semantic of std::contracts::evaluation_semantic value v (one the
+front end supports), with --contracts_p4405.
+*/
+{
+  switch (v) {
+    case 5:  return ces_assume;
+    case 8:  return ces_prove;
+    case 9:  return ces_diagnose;
+    default: return contract_semantic_of_value(v);
+  }  /* switch */
+}  /* proving_semantic_of_value */
+
+
+static int computed_proving_semantic(a_contract_specifier_ptr  csp,
+                                     int                       v)
+/*
+Return what the compute_semantic facet of the label of the contract
+assertion csp gives for the semantic of value v (never prove or diagnose:
+D4405 passes it only the semantic of a run-time evaluation), as recorded by
+resolve_contract_label_facets: 0 if there is no such facet, 0xFF if it is
+not a constant expression, 0xFE for a value outside 1-254.
+*/
+{
+  return v <= 4 ? csp->label_computed_semantics[v]
+         : v == 5 ? csp->label_computed_assume_semantic
+         : v <= 7 ? csp->label_computed_noexcept_semantics[v - 6]
+                  : 0;
+}  /* computed_proving_semantic */
+
+
+a_contract_evaluation_semantic apply_contract_label_facets_analysis(
+                              a_contract_specifier_ptr        csp,
+                              a_contract_evaluation_semantic  semantic,
+                              a_contract_evaluation_semantic  *p_analysis,
+                              a_boolean                       in_ce)
+/*
+With --contracts_p4405, return the evaluation semantic of the contract
+assertion csp, in constant evaluation if in_ce is TRUE, at run time (on the
+callee side) otherwise, given the one the configuration gives it, semantic,
+and the facets of its label (P3400; see resolve_contract_label_facets), as
+our GCC does (D4405R0, "Adjusting to the Allowed Semantics"), and adjust
+*p_analysis, the semantic of its analysis evaluation, likewise.  prove (8)
+and diagnose (9) rank with ignore (proving_semantic_at_level gives the
+order there), and so do assume with --contracts_allow_assume and the
+noexcept semantics with P4298.
+
+The set A the label allows (every semantic, if it restricts nothing) splits
+into its run-time part R, the semantics other than prove and diagnose, and
+its analysis part N, those two.  If both are empty, there is no valid
+semantic.  The analysis evaluation may have N, and ignore if R is not
+empty; the run-time evaluation R, or only ignore if R is empty (decided by
+the label alone, never by the configuration).  The analysis evaluation
+takes the stronger of its semantic and the label's analysis_semantic, and is
+adjusted to its set; the run-time semantic is adjusted to its own, and is
+then passed to the label's compute_semantic: a result of prove or diagnose
+goes to the analysis evaluation, which takes the stronger and must allow it,
+and the run-time evaluation becomes ignore, which, like any other result,
+must be allowed.  For a check the front end generates for the C-generating
+back end only the run-time semantics that let no exception escape it are
+allowed.
+
+Constant evaluation has no analysis evaluation: its semantic is adjusted to
+A itself, and a prove or diagnose there is enforce or observe (see
+contract_semantic_for), both before compute_semantic is applied and after.
+An error is issued once for each assertion.
+*/
+{
+  unsigned   supported = (1u << 1) | (1u << 2) | (1u << 3) | (1u << 4) |
+                         (1u << 8) | (1u << 9),
+             proving = (1u << 8) | (1u << 9);
+  unsigned   r_set, n_set, runtime_set, analysis_set, allowed;
+  int        v, a, computed;
+
+  if (contracts_allow_assume_enabled) supported |= 1u << 5;
+  if (contracts_p4298_enabled) supported |= (1u << 6) | (1u << 7);
+  if (csp->label_allowed_semantics != 0 ||
+      csp->label_allowed_proving_semantics != 0) {
+    supported &= (unsigned)csp->label_allowed_semantics |
+                 ((unsigned)csp->label_allowed_proving_semantics << 8);
+  }  /* if */
+  r_set = supported & ~proving;
+  n_set = supported & proving;
+  analysis_set = n_set | (r_set != 0 ? 1u << 1 : 0);
+  runtime_set = r_set != 0 ? r_set : (n_set != 0 ? 1u << 1 : 0);
+  a = proving_semantic_value(in_ce ? ces_ignore : *p_analysis);
+  if (in_ce) {
+    /* The whole allowed set, prove and diagnose then being enforce and
+       observe. */
+    allowed = supported;
+  } else {
+    allowed = runtime_set;
+#if BACK_END_IS_C_GEN_BE
+    /* For a check the front end generates, only the semantics that let no
+       exception escape it (see the --contract_evaluation_semantic
+       option). */
+    allowed &= (1u << 1) | (1u << 4) | (1u << 5) | (1u << 6) | (1u << 7);
+#endif /* BACK_END_IS_C_GEN_BE */
+    if (csp->label_analysis_semantic == 1 ||
+        csp->label_analysis_semantic == 8 ||
+        csp->label_analysis_semantic == 9) {
+      /* The label's analysis_semantic facet. */
+      a = proving_semantic_value(contract_analysis_stronger(
+                  proving_semantic_of_value(a),
+                  proving_semantic_of_value(csp->label_analysis_semantic)));
+    }  /* if */
+    if (analysis_set != 0) {
+      a = proving_semantic_at_level(1, analysis_set, a,
+                                    /*prefer_throwing=*/FALSE);
+    }  /* if */
+  }  /* if */
+  v = best_fit_proving_semantic(proving_semantic_value(semantic), allowed);
+  if (v == 0 || (r_set == 0 && n_set == 0)) {
+    if (!csp->label_facet_diagnosed) {
+      csp->label_facet_diagnosed = TRUE;
+      pos_error(ec_contract_no_valid_semantic, &csp->position);
+    }  /* if */
+    *p_analysis = ces_ignore;
+    /* GCC's fallback. */
+#if BACK_END_IS_C_GEN_BE
+    if (!in_ce) return ces_quick_enforce;
+#endif /* BACK_END_IS_C_GEN_BE */
+    return in_ce ? ces_observe : ces_enforce;
+  }  /* if */
+  if (in_ce) {
+    /* compute_semantic sees what constant evaluation uses, and its result
+       may be anything A or the run-time evaluation allows. */
+    if (v == 8) v = 3;
+    if (v == 9) v = 2;
+    allowed = supported | runtime_set;
+  }  /* if */
+  computed = computed_proving_semantic(csp, v);
+  if (computed == 0) {
+    /* No compute_semantic facet. */
+  } else if (computed == 0xFF) {
+    if (!csp->label_facet_diagnosed) {
+      csp->label_facet_diagnosed = TRUE;
+      pos_ty_error(ec_contract_label_compute_not_constant, &csp->position,
+                   make_unqualified_type(skip_typerefs(csp->label->type)));
+    }  /* if */
+  } else if (!in_ce && (computed == 8 || computed == 9)) {
+    /* Given to the analysis evaluation, the run-time one becoming
+       ignore. */
+    int  b = proving_semantic_value(contract_analysis_stronger(
+                                         proving_semantic_of_value(a),
+                                         proving_semantic_of_value(computed)));
+    if ((analysis_set & (1u << b)) != 0 && (allowed & (1u << 1)) != 0) {
+      a = b;
+      v = 1;
+    } else if (!csp->label_facet_diagnosed) {
+      csp->label_facet_diagnosed = TRUE;
+      pos_error(ec_contract_computed_semantic_not_allowed, &csp->position);
+    }  /* if */
+  } else if (proving_semantic_level(computed) < 0 ||
+             (allowed & (1u << computed)) == 0) {
+    if (!csp->label_facet_diagnosed) {
+      csp->label_facet_diagnosed = TRUE;
+      pos_error(proving_semantic_level(computed) >= 0 &&
+                (runtime_set & (1u << computed)) != 0
+                  /* Allowed, but not by this configuration (see the
+                     --contract_evaluation_semantic option). */
+                  ? ec_contract_computed_semantic_unsupported
+                  : ec_contract_computed_semantic_not_allowed,
+                &csp->position);
+    }  /* if */
+  } else {
+    v = computed;
+  }  /* if */
+  if (in_ce) {
+    if (v == 8) v = 3;
+    if (v == 9) v = 2;
+  }  /* if */
+  *p_analysis = in_ce ? ces_ignore : proving_semantic_of_value(a);
+  return proving_semantic_of_value(v);
+}  /* apply_contract_label_facets_analysis */
 
 
 static a_token_kind operator_token_for_builtin_operator(

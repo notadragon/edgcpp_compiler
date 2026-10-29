@@ -1,0 +1,125 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 --contract_configuration_file=p4405-labels-reach-configured.json Test_name.c
+Test_name.c: In function 'void c_ignore::ae2_calls(int)':
+Test_name.c:92:2: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   92 |   a (y);        // { dg-warning "contract assertion cannot be proven" }
+      |  ^~~
+Test_name.c:81:36: note: the predicate of the contract assertion
+   81 | int a (int x) pre<proving_only> (x > 0) { return x; }   // { dg-message "the predicate of the contract assertion" }
+      |                                  ~~^~~
+Test_name.c:93:2: error: contract assertion cannot be proven
+   93 |   b (y);        // { dg-error "contract assertion cannot be proven" }
+      |  ^~~
+Test_name.c:82:34: note: the predicate of the contract assertion
+   82 | int b (int x) pre<prove_only> (x > 0) { return x; }     // { dg-message "the predicate of the contract assertion" }
+      |                                ~~^~~
+Test_name.c:94:2: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   94 |   c (y);        // { dg-warning "contract assertion cannot be proven" }
+      |  ^~~
+Test_name.c:83:37: note: the predicate of the contract assertion
+   83 | int c (int x) pre<diagnose_only> (x > 0) { return x; }  // { dg-message "the predicate of the contract assertion" }
+      |                                   ~~^~~
+Test_name.c:98:2: error: contract assertion cannot be proven
+   98 |   g (y);        // { dg-error "contract assertion cannot be proven" }
+      |  ^~~
+Test_name.c:87:36: note: the predicate of the contract assertion
+   87 | int g (int x) pre<always_prove> (x > 0) { return x; }   // { dg-message "the predicate of the contract assertion" }
+      |                                  ~~^~~
+Test_name.c: In function 'void c_quick_enforce::ae2_calls(int)':
+Test_name.c:114:2: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  114 |   a (y);        // { dg-warning "contract assertion cannot be proven" }
+      |  ^~~
+Test_name.c:103:36: note: the predicate of the contract assertion
+  103 | int a (int x) pre<proving_only> (x > 0) { return x; }   // { dg-message "the predicate of the contract assertion" }
+      |                                  ~~^~~
+Test_name.c:115:2: error: contract assertion cannot be proven
+  115 |   b (y);        // { dg-error "contract assertion cannot be proven" }
+      |  ^~~
+Test_name.c:104:34: note: the predicate of the contract assertion
+  104 | int b (int x) pre<prove_only> (x > 0) { return x; }     // { dg-message "the predicate of the contract assertion" }
+      |                                ~~^~~
+Test_name.c:116:2: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  116 |   c (y);        // { dg-warning "contract assertion cannot be proven" }
+      |  ^~~
+Test_name.c:105:37: note: the predicate of the contract assertion
+  105 | int c (int x) pre<diagnose_only> (x > 0) { return x; }  // { dg-message "the predicate of the contract assertion" }
+      |                                   ~~^~~
+Test_name.c:120:2: error: contract assertion cannot be proven
+  120 |   g (y);        // { dg-error "contract assertion cannot be proven" }
+      |  ^~~
+Test_name.c:109:36: note: the predicate of the contract assertion
+  109 | int g (int x) pre<always_prove> (x > 0) { return x; }   // { dg-message "the predicate of the contract assertion" }
+      |                                  ~~^~~
+Test_name.c: In function 'void c_prove::ae2_calls(int)':
+Test_name.c:136:2: error: contract assertion cannot be proven
+  136 |   a (y);        // { dg-error "contract assertion cannot be proven" }
+      |  ^~~
+Test_name.c:125:36: note: the predicate of the contract assertion
+  125 | int a (int x) pre<proving_only> (x > 0) { return x; }   // { dg-message "the predicate of the contract assertion" }
+      |                                  ~~^~~
+Test_name.c:137:2: error: contract assertion cannot be proven
+  137 |   b (y);        // { dg-error "contract assertion cannot be proven" }
+      |  ^~~
+Test_name.c:126:34: note: the predicate of the contract assertion
+  126 | int b (int x) pre<prove_only> (x > 0) { return x; }     // { dg-message "the predicate of the contract assertion" }
+      |                                ~~^~~
+Test_name.c:138:2: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  138 |   c (y);        // { dg-warning "contract assertion cannot be proven" }
+      |  ^~~
+Test_name.c:127:37: note: the predicate of the contract assertion
+  127 | int c (int x) pre<diagnose_only> (x > 0) { return x; }  // { dg-message "the predicate of the contract assertion" }
+      |                                   ~~^~~
+Test_name.c:139:2: error: contract assertion cannot be proven
+  139 |   d (y);        // { dg-error "contract assertion cannot be proven" }
+      |  ^~~
+Test_name.c:128:39: note: the predicate of the contract assertion
+  128 | int d (int x) pre<ignore_or_prove> (x > 0) { return x; }        // { dg-message "the predicate of the contract assertion" }
+      |                                     ~~^~~
+Test_name.c:140:2: error: contract assertion cannot be proven
+  140 |   e (y);        // { dg-error "contract assertion cannot be proven" }
+      |  ^~~
+Test_name.c:129:35: note: the predicate of the contract assertion
+  129 | int e (int x) pre<qe_or_prove> (x > 0) { return x; }    // { dg-message "the predicate of the contract assertion" }
+      |                                 ~~^~~
+Test_name.c:141:2: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  141 |   f (y);        // { dg-warning "contract assertion cannot be proven" }
+      |  ^~~
+Test_name.c:130:38: note: the predicate of the contract assertion
+  130 | int f (int x) pre<ignore_or_diag> (x > 0) { return x; } // { dg-message "the predicate of the contract assertion" }
+      |                                    ~~^~~
+Test_name.c:142:2: error: contract assertion cannot be proven
+  142 |   g (y);        // { dg-error "contract assertion cannot be proven" }
+      |  ^~~
+Test_name.c:131:36: note: the predicate of the contract assertion
+  131 | int g (int x) pre<always_prove> (x > 0) { return x; }   // { dg-message "the predicate of the contract assertion" }
+      |                                  ~~^~~
+Test_name.c: In function 'void c_diagnose::ae2_calls(int)':
+Test_name.c:158:2: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  158 |   a (y);        // { dg-warning "contract assertion cannot be proven" }
+      |  ^~~
+Test_name.c:147:36: note: the predicate of the contract assertion
+  147 | int a (int x) pre<proving_only> (x > 0) { return x; }   // { dg-message "the predicate of the contract assertion" }
+      |                                  ~~^~~
+Test_name.c:159:2: error: contract assertion cannot be proven
+  159 |   b (y);        // { dg-error "contract assertion cannot be proven" }
+      |  ^~~
+Test_name.c:148:34: note: the predicate of the contract assertion
+  148 | int b (int x) pre<prove_only> (x > 0) { return x; }     // { dg-message "the predicate of the contract assertion" }
+      |                                ~~^~~
+Test_name.c:160:2: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  160 |   c (y);        // { dg-warning "contract assertion cannot be proven" }
+      |  ^~~
+Test_name.c:149:37: note: the predicate of the contract assertion
+  149 | int c (int x) pre<diagnose_only> (x > 0) { return x; }  // { dg-message "the predicate of the contract assertion" }
+      |                                   ~~^~~
+Test_name.c:163:2: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  163 |   f (y);        // { dg-warning "contract assertion cannot be proven" }
+      |  ^~~
+Test_name.c:152:38: note: the predicate of the contract assertion
+  152 | int f (int x) pre<ignore_or_diag> (x > 0) { return x; } // { dg-message "the predicate of the contract assertion" }
+      |                                    ~~^~~
+Test_name.c:164:2: error: contract assertion cannot be proven
+  164 |   g (y);        // { dg-error "contract assertion cannot be proven" }
+      |  ^~~
+Test_name.c:153:36: note: the predicate of the contract assertion
+  153 | int g (int x) pre<always_prove> (x > 0) { return x; }   // { dg-message "the predicate of the contract assertion" }
+      |                                  ~~^~~

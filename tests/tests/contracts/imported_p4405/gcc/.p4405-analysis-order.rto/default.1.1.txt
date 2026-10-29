@@ -1,0 +1,22 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3850 --contract_evaluation_semantic=enforce --contract_analysis_semantic=diagnose --contract_configuration=[{"match":{"caller":true},"output":{"semantic":"enforce"}}] -O2 Test_name.c
+Test_name.c: In function 'void a(int)':
+Test_name.c:25:1: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   25 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:25:19: note: the predicate of the contract assertion
+   25 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      |                 ~~^~~
+Test_name.c: In function 'int b(int)':
+Test_name.c:30:2: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   30 |   post (r: r > 0)               // { dg-warning "contract assertion cannot be proven" }
+      |  ^~~~~~~~~~~~~~
+Test_name.c:30:12: note: the predicate of the contract assertion
+   30 |   post (r: r > 0)               // { dg-warning "contract assertion cannot be proven" }
+      |          ~~^~~
+Test_name.c: In function 'int d(int)':
+Test_name.c:39:10: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   39 |   int r = c (y);                // { dg-warning "contract assertion cannot be proven" }
+      |         ~^~~
+Test_name.c:35:20: note: the predicate of the contract assertion
+   35 | int c (int x) pre (x > 0);      // { dg-message "the predicate of the contract assertion" }
+      |                  ~~^~~

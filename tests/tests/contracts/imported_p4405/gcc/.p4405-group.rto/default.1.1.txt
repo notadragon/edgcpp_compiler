@@ -1,0 +1,14 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 --contract_group_evaluation_semantic=g:prove,h:diagnose --contract_evaluation_semantic=ignore Test_name.c
+Test_name.c: In function 'int use(int)':
+Test_name.c:27:10: error: contract assertion cannot be proven
+   27 |   return f (y)          // { dg-error "contract assertion cannot be proven" }
+      |         ~^~~
+Test_name.c:21:34: note: the predicate of the contract assertion
+   21 | int f (int x) pre<"g"group> (x > 0) { return x; }       // { dg-message "the predicate of the contract assertion" }
+      |                                ~~^~~
+Test_name.c:27:25: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   27 |   return f (y)          // { dg-error "contract assertion cannot be proven" }
+      |                 ~~~~~~~~^~~
+Test_name.c:22:34: note: the predicate of the contract assertion
+   22 | int g (int x) pre<"h"group> (x > 0) { return x; }       // { dg-message "the predicate of the contract assertion" }
+      |                                ~~^~~

@@ -1,0 +1,15 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 -O2 Test_name.c
+Test_name.c: In function 'int unguarded(int)':
+Test_name.c:71:14: error: contract assertion cannot be proven
+   71 |   return T (y).v;                               // { dg-error "contract assertion cannot be proven" }
+      |              ^
+Test_name.c:40:48: note: the predicate of the contract assertion
+   40 |   T (int y) pre<always_prove> (this != nullptr && y > 0);       // { dg-message "the predicate of the contract assertion" }
+      |                              ~~~~~~~~~~~~~~~~~~^~~~~~~~
+Test_name.c: In function 'void destroyed_unguarded(int)':
+Test_name.c:86:6: error: contract assertion cannot be proven
+   86 |   U u{y};                                       // { dg-error "contract assertion cannot be proven" }
+      |      ^
+Test_name.c:46:28: note: the predicate of the contract assertion
+   46 |   ~U () pre<always_prove> (v > 0);      // { dg-message "the predicate of the contract assertion" }
+      |                          ~~^~~

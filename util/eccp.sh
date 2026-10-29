@@ -919,6 +919,7 @@ check_abbreviation()
 --constexpr_diag_suppress
 --constexpr_diag_warning
 --context_limit
+--contract_analysis_semantic
 --contract_configuration
 --contract_configuration_file
 --contract_evaluation_semantic
@@ -932,6 +933,8 @@ check_abbreviation()
 --contracts_p3850
 --contracts_p4283
 --contracts_p4298
+--contracts_p4405
+--contracts_prove_fold
 --cpfe_only
 --cppcli
 --cppcx
@@ -1112,6 +1115,8 @@ check_abbreviation()
 --no_contracts_p3850
 --no_contracts_p4283
 --no_contracts_p4298
+--no_contracts_p4405
+--no_contracts_prove_fold
 --no_cppcli
 --no_cppcx
 --no_defer_parse_function_templates
@@ -1958,6 +1963,10 @@ process_option()
          --no_contracts_p4283 | \
          --contracts_p4298 | \
          --no_contracts_p4298 | \
+         --contracts_p4405 | \
+         --no_contracts_p4405 | \
+         --contracts_prove_fold | \
+         --no_contracts_prove_fold | \
          --bit_precise_integers | \
          --no_bit_precise_integers | \
          --force_vtbl | \
@@ -2121,6 +2130,7 @@ process_option()
          --create_module_internal_partition | \
          --output_mode | \
          --contract_evaluation_semantic | \
+         --contract_analysis_semantic | \
          --contract_configuration | \
          --contract_configuration_file | \
          --contract_group_evaluation_semantic | \
@@ -2253,6 +2263,7 @@ process_option()
           --target=* | \
           --output_mode=* | \
           --contract_evaluation_semantic=* | \
+          --contract_analysis_semantic=* | \
           --contract_configuration=* | \
           --contract_configuration_file=* | \
           --contract_group_evaluation_semantic=* | \

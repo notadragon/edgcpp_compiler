@@ -1876,6 +1876,24 @@ Initialize the option information table.
   add_option_description(optk_contracts_p4298, "no_contracts_p4298", '\0',
                          /*value=*/FALSE, /*arg_required=*/FALSE,
                          pchek_command_line);
+  add_option_description(optk_contracts_p4405, "contracts_p4405", '\0',
+                         /*value=*/TRUE, /*arg_required=*/FALSE,
+                         pchek_command_line);
+  add_option_description(optk_contracts_p4405, "no_contracts_p4405", '\0',
+                         /*value=*/FALSE, /*arg_required=*/FALSE,
+                         pchek_command_line);
+  add_option_description(optk_contract_analysis_semantic,
+                         "contract_analysis_semantic", '\0',
+                         /*value=*/TRUE, /*arg_required=*/TRUE,
+                         pchek_command_line);
+  add_option_description(optk_contracts_prove_fold,
+                         "contracts_prove_fold", '\0',
+                         /*value=*/TRUE, /*arg_required=*/FALSE,
+                         pchek_command_line);
+  add_option_description(optk_contracts_prove_fold,
+                         "no_contracts_prove_fold", '\0',
+                         /*value=*/FALSE, /*arg_required=*/FALSE,
+                         pchek_command_line);
 }  /* initialize_option_descriptions */
 
 
@@ -4066,6 +4084,13 @@ setting is used, and to set various unmentioned settings as needed.
     command_line_error(ec_cl_contracts_option_only_in_cplusplus);
   }  /* if */
   if (option_kind_used[(int)optk_contracts_p4298] && contracts_p4298_enabled) {
+    command_line_error(ec_cl_contracts_option_only_in_cplusplus);
+  }  /* if */
+  if (option_kind_used[(int)optk_contracts_p4405] && contracts_p4405_enabled) {
+    command_line_error(ec_cl_contracts_option_only_in_cplusplus);
+  }  /* if */
+  if (option_kind_used[(int)optk_contracts_prove_fold] &&
+      contracts_prove_fold_enabled) {
     command_line_error(ec_cl_contracts_option_only_in_cplusplus);
   }  /* if */
   if (option_kind_used[(int)optk_array_new_and_delete]) {
@@ -12371,12 +12396,22 @@ enable_microsoft_mode:
             contract_evaluation_semantic = ces_noexcept_observe;
           } else if (strcmp(semantic_string, "noexcept_enforce") == 0) {
             contract_evaluation_semantic = ces_noexcept_enforce;
+          } else if (strcmp(semantic_string, "prove") == 0) {
+            /* P4405; without --contracts_p4405, ignore (see
+               proc_command_line's wrap-up). */
+            contract_evaluation_semantic = ces_prove;
+          } else if (strcmp(semantic_string, "diagnose") == 0) {
+            contract_evaluation_semantic = ces_diagnose;
           } else {
             str_command_line_error(
                                ec_cl_invalid_contract_evaluation_semantic,
                                semantic_string);
           }  /* if */
 #if BACK_END_IS_C_GEN_BE
+          if (contract_evaluation_semantic == ces_prove ||
+              contract_evaluation_semantic == ces_diagnose) {
+            /* Nor do prove and diagnose (P4405). */
+          } else
           if (contract_evaluation_semantic == ces_noexcept_observe ||
               contract_evaluation_semantic == ces_noexcept_enforce) {
             /* The noexcept semantics (P4298) let no exception escape a
@@ -12439,6 +12474,27 @@ enable_microsoft_mode:
         break;
       case optk_contracts_p4298:
         contracts_p4298_enabled = opt_value;
+        break;
+      case optk_contracts_p4405:
+        contracts_p4405_enabled = opt_value;
+        break;
+      case optk_contract_analysis_semantic:
+        /* P4405: the semantic of the analysis evaluation, as a
+           configuration entry {"match": {"analysis": true}, "output":
+           {"semantic": S}} after the others (see init_contract_config). */
+        if (strcmp(opt_arg, "ignore") == 0) {
+          contract_analysis_semantic = ces_ignore;
+        } else if (strcmp(opt_arg, "diagnose") == 0) {
+          contract_analysis_semantic = ces_diagnose;
+        } else if (strcmp(opt_arg, "prove") == 0) {
+          contract_analysis_semantic = ces_prove;
+        } else {
+          str_command_line_error(ec_cl_invalid_contract_analysis_semantic,
+                                 opt_arg);
+        }  /* if */
+        break;
+      case optk_contracts_prove_fold:
+        contracts_prove_fold_enabled = opt_value;
         break;
      default:
         /* It should not be possible to get here. */
@@ -12556,6 +12612,41 @@ enable_microsoft_mode:
                            contract_evaluation_semantic == ces_observe
                              ? "observe" : "enforce");
 #endif /* BACK_END_IS_C_GEN_BE */
+  }  /* if */
+  if (contracts_p3850_enabled &&
+      !option_kind_used[(int)optk_contracts_p4405]) {
+    /* --contracts_p3850 enables P4405, unless --[no_]contracts_p4405 is
+       given. */
+    contracts_p4405_enabled = TRUE;
+  }  /* if */
+  if (contracts_p4405_enabled && !option_kind_used[(int)optk_contracts]) {
+    /* So does --contracts_p4405 contracts. */
+    contracts_enabled = TRUE;
+  }  /* if */
+  if (!option_kind_used[(int)optk_contracts_prove_fold] &&
+      contracts_p4405_enabled) {
+    /* --contracts_p4405 enables the folding proving strategy, unless
+       --[no_]contracts_prove_fold is given, as in GCC. */
+    contracts_prove_fold_enabled = TRUE;
+  }  /* if */
+  if (!contracts_p4405_enabled &&
+      (contract_evaluation_semantic == ces_prove ||
+       contract_evaluation_semantic == ces_diagnose)) {
+    /* prove or diagnose (P4405) without --contracts_p4405: ignore, with a
+       warning, as GCC does. */
+    str_command_line_warning(contract_evaluation_semantic == ces_prove
+                               ? ec_cl_prove_needs_p4405
+                               : ec_cl_diagnose_needs_p4405,
+                             (a_const_char *)NULL);
+    contract_evaluation_semantic = ces_ignore;
+  }  /* if */
+  if (!contracts_p4405_enabled && contract_analysis_semantic != ces_ignore) {
+    /* Likewise --contract_analysis_semantic, as GCC does. */
+    str_command_line_warning(contract_analysis_semantic == ces_prove
+                               ? ec_cl_analysis_prove_needs_p4405
+                               : ec_cl_analysis_diagnose_needs_p4405,
+                             (a_const_char *)NULL);
+    contract_analysis_semantic = ces_ignore;
   }  /* if */
   /* Check for consistent specification of dialects and language modes. */
   check_dialect_and_language_modes();
@@ -14151,6 +14242,9 @@ variables declared in cmd_line.h.
   contracts_p3400_enabled = FALSE;
   contracts_p4283_enabled = FALSE;
   contracts_p4298_enabled = FALSE;
+  contracts_p4405_enabled = FALSE;
+  contract_analysis_semantic = ces_ignore;
+  contracts_prove_fold_enabled = FALSE;
   incognito = DEFAULT_INCOGNITO;
   keep_restrict_in_signatures = FALSE;
   attributes_on_using_declarations = FALSE;

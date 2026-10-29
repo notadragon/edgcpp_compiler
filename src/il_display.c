@@ -6133,6 +6133,14 @@ Display the indicated contract specifier entry.
     disp_unsigned_long("label_computed_noexcept_semantics[1]",
              (unsigned long)ptr->label_computed_noexcept_semantics[1]);
   }  /* if */
+  if (ptr->label_allowed_proving_semantics != 0) {
+    disp_unsigned_long("label_allowed_proving_semantics",
+                       (unsigned long)ptr->label_allowed_proving_semantics);
+  }  /* if */
+  if (ptr->label_analysis_semantic != 0) {
+    disp_unsigned_long("label_analysis_semantic",
+                       (unsigned long)ptr->label_analysis_semantic);
+  }  /* if */
   if (ptr->operand_cached) disp_boolean("operand_cached", TRUE);
 }  /* disp_contract_specifier */
 

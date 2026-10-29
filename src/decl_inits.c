@@ -436,6 +436,12 @@ recorded in the stmk_init statement.
   }  /* if */
   /* The dynamic init entry should point at the variable. */
   dip->variable = vp;
+#if CONTRACT_CHECKS_IN_FRONT_END
+  if (at_file_scope && contracts_p4405_enabled) {
+    /* The analysis evaluations of the routines it calls (P4405). */
+    diagnose_contract_analyses_in_static_init(vp, dip);
+  }  /* if */
+#endif /* CONTRACT_CHECKS_IN_FRONT_END */
   /* If needed, record the dynamic init entry on the destructions list of the
      appropriate object-lifetime entry.  If we're initializing a coroutine
      descriptor block, this will be done elsewhere. */
@@ -6302,6 +6308,14 @@ returned set to TRUE.
     }  /* if */
 #endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
   }  /* if */
+#if CONTRACT_CHECKS_IN_FRONT_END
+  if (contracts_p4405_enabled && !var_err &&
+      vp->init_kind == (an_init_kind)initk_static &&
+      var_has_static_or_thread_storage_duration(vp)) {
+    /* The addresses of routines a constant initializer takes (P4405). */
+    diagnose_contract_analyses_in_static_init(vp, (a_dynamic_init_ptr)NULL);
+  }  /* if */
+#endif /* CONTRACT_CHECKS_IN_FRONT_END */
   scope_stack_top().decl_parse_state = saved_decl_parse_state;
   scope_stack_top().in_consteval_context = saved_in_consteval_context;
   if (symbol_ptr->is_class_member) {

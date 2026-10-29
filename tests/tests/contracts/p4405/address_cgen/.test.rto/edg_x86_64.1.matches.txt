@@ -1,0 +1,64 @@
+Matches for "line ([0-9]+): (error|warning): (contract .*)":
+  <-----------------------------------------------------------------------------
+  line 67: error: contract assertion cannot be proven
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  line 70: error: contract predicate is always false for a call through the address of "DZ::~DZ() noexcept"
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  line 71: error: contract assertion cannot be proven for a call through the address of "DN::~DN() noexcept"
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  line 72: error: contract assertion cannot be proven for a call through the address of "DN::~DN() noexcept"
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  line 73: error: contract assertion cannot be proven for a call through the address of "DN::~DN() noexcept"
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  line 74: warning: contract assertion cannot be proven for a call through the address of "DW::~DW() noexcept"
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  line 87: error: contract predicate is always false for a call through the address of "void z1(int)"
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  line 88: warning: contract predicate is always false for a call through the address of "void z2(int)"
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  line 89: error: contract assertion cannot be proven for a call through the address of "void m1(int)"
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  line 90: warning: contract assertion cannot be proven for a call through the address of "void m2(int)"
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  line 92: error: contract assertion cannot be proven for a call through the address of "void f2(int)"
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  line 93: warning: contract assertion cannot be proven for a call through the address of "void f3(int)"
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  line 95: error: contract assertion cannot be proven for a call through the address of "void S::mu(int)"
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  line 96: error: contract assertion cannot be proven for a call through the address of "void tu(T) [with T=int]"
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  line 108: error: contract assertion cannot be proven for a call through the address of function "lambda [](int)->int"
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  line 110: error: contract assertion cannot be proven for a call through the address of function "lambda [](int) static->int"
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  line 112: error: contract assertion cannot be proven for a call through the address of function "lambda [](auto)->auto [with <auto-1>=int]"
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  line 114: warning: contract assertion cannot be proven for a call through the address of function "lambda [](int)->int"
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  line 115: warning: contract assertion cannot be proven for a call through the address of function "lambda [](int)->int"
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  line 117: warning: contract assertion cannot be proven for a call through the address of function "lambda [](auto) static->auto [with <auto-1>=long]"
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  line 128: error: contract assertion cannot be proven for a call through the address of function "lambda [](int)->int"
+  ----------------------------------------------------------------------------->

@@ -1,0 +1,15 @@
+eccp -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3098 --contracts_p4405 --contract_evaluation_semantic=diagnose Test_name.c
+Test_name.c: In function 'int f(int)':
+Test_name.c:32:14: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   32 | int f (int x) post [c = cap (x)] (chk (c)) { return x; }        // { dg-warning "contract assertion cannot be proven" }
+      |              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:32:38: note: the predicate of the contract assertion
+   32 | int f (int x) post [c = cap (x)] (chk (c)) { return x; }        // { dg-warning "contract assertion cannot be proven" }
+      |                                   ~~~^~~
+Test_name.c: In function 'S g(int)':
+Test_name.c:33:12: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   33 | S g (int x) post [s = S (cap (x))] (r: chk (r.v + s.v)) { return S (x); } // { dg-warning "contract assertion cannot be proven" }
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:33:46: note: the predicate of the contract assertion
+   33 | S g (int x) post [s = S (cap (x))] (r: chk (r.v + s.v)) { return S (x); } // { dg-warning "contract assertion cannot be proven" }
+      |                                           ~~~^~~~~~~~~~~

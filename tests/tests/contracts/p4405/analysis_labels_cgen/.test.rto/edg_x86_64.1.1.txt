@@ -1,0 +1,32 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contracts_p3400 --contracts_p4405 --contract_evaluation_semantic=ignore Test_name.c
+"Test_name.c", line 65: error: contract assertion cannot be proven
+    int r = a(y);
+             ^
+
+"Test_name.c", line 66: warning: contract assertion cannot be proven
+    r += b(y);
+          ^
+
+"Test_name.c", line 69: warning: contract assertion cannot be proven
+    r += e(y);
+          ^
+
+"Test_name.c", line 70: error: contract assertion cannot be proven
+    r += f(y);
+          ^
+
+"Test_name.c", line 71: error: contract assertion cannot be proven
+    r += g(y);
+          ^
+
+"Test_name.c", line 75: error: contract assertion cannot be proven for a call through the address of "int a(int)"
+            the precondition at line 55
+  int (*pa)(int) = a;
+        ^
+
+"Test_name.c", line 76: warning: contract assertion cannot be proven for a call through the address of "int b(int)"
+            the precondition at line 56
+  int (*pb)(int) = b;
+        ^
+
+4 errors detected in the compilation of "Test_name.c".

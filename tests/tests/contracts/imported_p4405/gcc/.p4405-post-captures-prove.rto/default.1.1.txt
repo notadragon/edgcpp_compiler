@@ -1,0 +1,22 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3098 --contracts_p4405 --contract_evaluation_semantic=prove Test_name.c
+Test_name.c: In function 'int f(int)':
+Test_name.c:21:14: error: contract assertion cannot be proven
+   21 | int f (int x) post [c = cap (x)] (c > 0) { return x; }  // { dg-error "contract assertion cannot be proven" }
+      |              ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:21:37: note: the predicate of the contract assertion
+   21 | int f (int x) post [c = cap (x)] (c > 0) { return x; }  // { dg-error "contract assertion cannot be proven" }
+      |                                   ~~^~~
+Test_name.c: In function 'int g(int)':
+Test_name.c:22:25: error: contract assertion cannot be proven
+   22 | int g (int x) pre (x > 0) post [c = cap (x)] (r: r > c) { return x; }
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:22:51: note: the predicate of the contract assertion
+   22 | int g (int x) pre (x > 0) post [c = cap (x)] (r: r > c) { return x; }
+      |                                                 ~~^~~
+Test_name.c: In function 'int use(int)':
+Test_name.c:26:26: error: contract assertion cannot be proven
+   26 | int use (int y) { return g (y); }       // { dg-error "contract assertion cannot be proven" }
+      |                         ~^~~
+Test_name.c:22:20: note: the predicate of the contract assertion
+   22 | int g (int x) pre (x > 0) post [c = cap (x)] (r: r > c) { return x; }
+      |                  ~~^~~

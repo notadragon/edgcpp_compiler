@@ -1,0 +1,5 @@
+fe_only -DTEST_NUMBER=7 --c++26 --contracts --contract_configuration=[{"match":{"kind":"pre"},"output":{"semantic":"prove"}},{"output":{"semantic":"diagnose"}}] -DWANT=0 Test_name.c
+Command-line warning: contract configuration (<command-line>:1:2): the configuration asks for "prove", which requires --contracts_p4405; "ignore" is used instead
+
+Command-line warning: contract configuration (<command-line>:1:57): the configuration asks for "diagnose", which requires --contracts_p4405; "ignore" is used instead
+

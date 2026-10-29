@@ -1,0 +1,4 @@
+Matches for "error: contract assertion cannot be proven":
+  <-----------------------------------------------------------------------------
+  error: contract assertion cannot be proven
+  ----------------------------------------------------------------------------->

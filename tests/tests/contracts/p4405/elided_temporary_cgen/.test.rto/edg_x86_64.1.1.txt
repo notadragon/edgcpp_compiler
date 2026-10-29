@@ -1,0 +1,133 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contracts_p3400 --contracts_p4405 --contract_evaluation_semantic=ignore --contract_analysis_semantic=ignore Test_name.c
+"Test_name.c", line 33: error: contract assertion cannot be proven for a call through the address of "DP::~DP() noexcept"
+            variable "x", of static storage duration, is destroyed by a call through the address of its destructor
+            the precondition at line 25
+  DP x = DP();                     // Only the address-of errors.
+     ^
+
+"Test_name.c", line 34: error: contract assertion cannot be proven for a call through the address of "DP::~DP() noexcept"
+            variable "y", of static storage duration, is destroyed by a call through the address of its destructor
+            the precondition at line 25
+  DP y = make();
+     ^
+
+"Test_name.c", line 35: error: contract assertion cannot be proven for a call through the address of "DP::~DP() noexcept"
+            variable "w", of static storage duration, is destroyed by a call through the address of its destructor
+            the precondition at line 25
+  DP w = g ? DP() : make();
+     ^
+
+"Test_name.c", line 38: error: contract assertion cannot be proven
+  int z = (DP(), 1);               // An error.
+           ^
+
+"Test_name.c", line 39: error: contract assertion cannot be proven
+  int t = (take(DP()), 1);         // An error.
+                ^
+
+"Test_name.c", line 40: error: contract assertion cannot be proven
+  A na{DP(), thr()};               // EDG-150: an error, na.p's cleanup.
+    ^
+
+"Test_name.c", line 41: error: contract assertion cannot be proven
+  A nb{make(), thr()};             // Likewise.
+    ^
+
+"Test_name.c", line 43: error: contract assertion cannot be proven
+  A SA::sa{DP(), thr()};           // Likewise.
+        ^
+
+"Test_name.c", line 59: error: contract assertion cannot be proven
+    int a = (DP(), 1);             // An error.
+             ^
+
+"Test_name.c", line 60: error: contract assertion cannot be proven
+    take(DP());                    // An error, the parameter's destruction.
+         ^
+
+"Test_name.c", line 61: error: contract assertion cannot be proven
+    take(make());                  // Likewise.
+             ^
+
+"Test_name.c", line 62: error: contract assertion cannot be proven
+    DP();                          // An error.
+    ^
+
+"Test_name.c", line 63: error: contract assertion cannot be proven
+    (void)make();                  // An error.
+              ^
+
+"Test_name.c", line 64: error: contract assertion cannot be proven
+    A b{DP(), thr()};              // An error, b.p's cleanup.
+       ^
+
+"Test_name.c", line 65: error: contract assertion cannot be proven
+    static A c{DP(), thr()};       // Likewise.
+              ^
+
+"Test_name.c", line 74: error: contract assertion cannot be proven
+    return (DP(), 1);              // An error.
+            ^
+
+"Test_name.c", line 82: error: contract assertion cannot be proven
+    return (T(), 1);               // An error.
+            ^
+          detected during instantiation of "int tkept<T>() [with T=DP]" at line 86
+
+"Test_name.c", line 104: error: contract assertion cannot be proven
+  A e1{DP(), 1};                   // An error.
+    ^
+
+"Test_name.c", line 105: error: contract assertion cannot be proven
+  A e2{DP(), nothr()};             // An error.
+    ^
+
+"Test_name.c", line 106: error: contract assertion cannot be proven
+  A e3(DP(), 1);                   // An error.
+    ^
+
+"Test_name.c", line 107: error: contract assertion cannot be proven
+  D e4{{}, 1};                     // An error, the base's cleanup.
+    ^
+
+"Test_name.c", line 108: error: contract assertion cannot be proven
+  AI e5{DP()};                     // An error.
+     ^
+
+"Test_name.c", line 112: error: contract assertion cannot be proven
+  A SE::se{DP(), 1};               // An error.
+        ^
+
+"Test_name.c", line 113: error: contract assertion cannot be proven
+  O e9{{DP()}, 1};                 // An error: j follows a.p.
+    ^
+
+"Test_name.c", line 117: error: contract assertion cannot be proven
+    A b1{DP(), 1};                 // An error.
+        ^
+
+"Test_name.c", line 118: error: contract assertion cannot be proven
+    static A b2{DP(), nothr()};    // An error.
+               ^
+
+"Test_name.c", line 119: error: contract assertion cannot be proven
+    A b3(DP(), 1);                 // An error.
+        ^
+
+"Test_name.c", line 120: error: contract assertion cannot be proven
+    D b4{{}, 1};                   // An error.
+        ^
+
+"Test_name.c", line 121: error: contract assertion cannot be proven
+    static AI b5{DP()};            // An error.
+                ^
+
+"Test_name.c", line 124: error: contract assertion cannot be proven
+    auto b8 = [p = DP(), i = 1] {};  // An error, the capture's cleanup.
+            ^
+
+"Test_name.c", line 126: error: contract assertion cannot be proven
+    AR b10{{DN(), DN()}};          // An error, a[0]'s cleanup only.
+          ^
+
+31 errors detected in the compilation of "Test_name.c".

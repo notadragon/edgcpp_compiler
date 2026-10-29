@@ -1,0 +1,10 @@
+Matches for "line ([0-9]+): (error|warning): (no valid evaluation semantic for contract assertion|compute_semantic result is not in the allowed evaluation semantics|contract predicate is false in constant expression|static assertion failed|expression must have a constant value)":
+  <-----------------------------------------------------------------------------
+  line 51: warning: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  line 53: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  line 54: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->

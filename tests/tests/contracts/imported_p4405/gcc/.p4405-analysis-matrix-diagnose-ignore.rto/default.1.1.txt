@@ -1,0 +1,232 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 --contract_analysis_semantic=diagnose --contract_evaluation_semantic=ignore -O2 Test_name.c
+Test_name.c: In function 'int post_none(int)':
+Test_name.c:79:22: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   79 | int post_none (int x) post (r: r > 0) { return x; }     // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      |                      ^~~~~~~~~~~~~~
+Test_name.c:79:32: note: the predicate of the contract assertion
+   79 | int post_none (int x) post (r: r > 0) { return x; }     // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      |                              ~~^~~
+Test_name.c: In function 'int assert_none(int)':
+Test_name.c:83:1: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   83 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:83:19: note: the predicate of the contract assertion
+   83 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      |                 ~~^~~
+Test_name.c: In function 'void calls_none(int)':
+Test_name.c:90:9: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   90 |   pre_none (y); // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      |   ~~~~~~^~~
+Test_name.c:78:27: note: the predicate of the contract assertion
+   78 | int pre_none (int x) pre (x > 0) { return x; }  // { dg-message "the predicate of the contract assertion" }
+      |                         ~~^~~
+Test_name.c: In function 'int post_ap(int)':
+Test_name.c:98:20: error: contract assertion cannot be proven
+   98 | int post_ap (int x) post<always_prove> (r: r > 0) { return x; } // { dg-error "contract assertion cannot be proven" }
+      |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:98:46: note: the predicate of the contract assertion
+   98 | int post_ap (int x) post<always_prove> (r: r > 0) { return x; } // { dg-error "contract assertion cannot be proven" }
+      |                                            ~~^~~
+Test_name.c: In function 'int assert_ap(int)':
+Test_name.c:102:1: error: contract assertion cannot be proven
+  102 |   contract_assert<always_prove> (x > 0);        // { dg-error "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:102:35: note: the predicate of the contract assertion
+  102 |   contract_assert<always_prove> (x > 0);        // { dg-error "contract assertion cannot be proven" }
+      |                                 ~~^~~
+Test_name.c: In function 'void calls_ap(int)':
+Test_name.c:109:7: error: contract assertion cannot be proven
+  109 |   pre_ap (y);   // { dg-error "contract assertion cannot be proven" }
+      |   ~~~~^~~
+Test_name.c:97:41: note: the predicate of the contract assertion
+   97 | int pre_ap (int x) pre<always_prove> (x > 0) { return x; }      // { dg-message "the predicate of the contract assertion" }
+      |                                       ~~^~~
+Test_name.c: In function 'int post_ad(int)':
+Test_name.c:117:20: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  117 | int post_ad (int x) post<always_diagnose> (r: r > 0) { return x; }      // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:117:49: note: the predicate of the contract assertion
+  117 | int post_ad (int x) post<always_diagnose> (r: r > 0) { return x; }      // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      |                                               ~~^~~
+Test_name.c: In function 'int assert_ad(int)':
+Test_name.c:121:1: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  121 |   contract_assert<always_diagnose> (x > 0);     // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:121:38: note: the predicate of the contract assertion
+  121 |   contract_assert<always_diagnose> (x > 0);     // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      |                                    ~~^~~
+Test_name.c: In function 'void calls_ad(int)':
+Test_name.c:128:7: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  128 |   pre_ad (y);   // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      |   ~~~~^~~
+Test_name.c:116:44: note: the predicate of the contract assertion
+  116 | int pre_ad (int x) pre<always_diagnose> (x > 0) { return x; }   // { dg-message "the predicate of the contract assertion" }
+      |                                          ~~^~~
+Test_name.c: In function 'int post_sym(int)':
+Test_name.c:155:21: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  155 | int post_sym (int x) post<L::symbolic> (r: r > 0) { return x; } // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      |                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:155:46: note: the predicate of the contract assertion
+  155 | int post_sym (int x) post<L::symbolic> (r: r > 0) { return x; } // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      |                                            ~~^~~
+Test_name.c: In function 'int assert_sym(int)':
+Test_name.c:159:1: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  159 |   contract_assert<L::symbolic> (x > 0); // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:159:34: note: the predicate of the contract assertion
+  159 |   contract_assert<L::symbolic> (x > 0); // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      |                                ~~^~~
+Test_name.c: In function 'void calls_sym(int)':
+Test_name.c:166:8: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  166 |   pre_sym (y);  // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      |   ~~~~~^~~
+Test_name.c:154:41: note: the predicate of the contract assertion
+  154 | int pre_sym (int x) pre<L::symbolic> (x > 0) { return x; }      // { dg-message "the predicate of the contract assertion" }
+      |                                       ~~^~~
+Test_name.c: In function 'int post_fd(int)':
+Test_name.c:193:20: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  193 | int post_fd (int x) post<diagnosed> (r: r > 0) { return x; }    // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:193:43: note: the predicate of the contract assertion
+  193 | int post_fd (int x) post<diagnosed> (r: r > 0) { return x; }    // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      |                                         ~~^~~
+Test_name.c: In function 'int assert_fd(int)':
+Test_name.c:197:1: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  197 |   contract_assert<diagnosed> (x > 0);   // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:197:32: note: the predicate of the contract assertion
+  197 |   contract_assert<diagnosed> (x > 0);   // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      |                              ~~^~~
+Test_name.c: In function 'void calls_fd(int)':
+Test_name.c:204:7: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  204 |   pre_fd (y);   // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      |   ~~~~^~~
+Test_name.c:192:38: note: the predicate of the contract assertion
+  192 | int pre_fd (int x) pre<diagnosed> (x > 0) { return x; } // { dg-message "the predicate of the contract assertion" }
+      |                                    ~~^~~
+Test_name.c: In function 'int post_fp(int)':
+Test_name.c:212:20: error: contract assertion cannot be proven
+  212 | int post_fp (int x) post<proven> (r: r > 0) { return x; }       // { dg-error "contract assertion cannot be proven" }
+      |                    ^~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:212:40: note: the predicate of the contract assertion
+  212 | int post_fp (int x) post<proven> (r: r > 0) { return x; }       // { dg-error "contract assertion cannot be proven" }
+      |                                      ~~^~~
+Test_name.c: In function 'int assert_fp(int)':
+Test_name.c:216:1: error: contract assertion cannot be proven
+  216 |   contract_assert<proven> (x > 0);      // { dg-error "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:216:29: note: the predicate of the contract assertion
+  216 |   contract_assert<proven> (x > 0);      // { dg-error "contract assertion cannot be proven" }
+      |                           ~~^~~
+Test_name.c: In function 'void calls_fp(int)':
+Test_name.c:223:7: error: contract assertion cannot be proven
+  223 |   pre_fp (y);   // { dg-error "contract assertion cannot be proven" }
+      |   ~~~~^~~
+Test_name.c:211:35: note: the predicate of the contract assertion
+  211 | int pre_fp (int x) pre<proven> (x > 0) { return x; }    // { dg-message "the predicate of the contract assertion" }
+      |                                 ~~^~~
+Test_name.c: In function 'int post_fdfp(int)':
+Test_name.c:231:22: error: contract assertion cannot be proven
+  231 | int post_fdfp (int x) post<diagnosed | proven> (r: r > 0) { return x; } // { dg-error "contract assertion cannot be proven" }
+      |                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:231:56: note: the predicate of the contract assertion
+  231 | int post_fdfp (int x) post<diagnosed | proven> (r: r > 0) { return x; } // { dg-error "contract assertion cannot be proven" }
+      |                                                      ~~^~~
+Test_name.c: In function 'int assert_fdfp(int)':
+Test_name.c:235:1: error: contract assertion cannot be proven
+  235 |   contract_assert<diagnosed | proven> (x > 0);  // { dg-error "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:235:43: note: the predicate of the contract assertion
+  235 |   contract_assert<diagnosed | proven> (x > 0);  // { dg-error "contract assertion cannot be proven" }
+      |                                         ~~^~~
+Test_name.c: In function 'void calls_fdfp(int)':
+Test_name.c:242:9: error: contract assertion cannot be proven
+  242 |   pre_fdfp (y); // { dg-error "contract assertion cannot be proven" }
+      |   ~~~~~~^~~
+Test_name.c:230:51: note: the predicate of the contract assertion
+  230 | int pre_fdfp (int x) pre<diagnosed | proven> (x > 0) { return x; }      // { dg-message "the predicate of the contract assertion" }
+      |                                                 ~~^~~
+Test_name.c: In function 'int post_fudi(int)':
+Test_name.c:250:22: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  250 | int post_fudi (int x) post<unanalyzed | diagnosed> (r: r > 0) { return x; }     // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      |                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:250:60: note: the predicate of the contract assertion
+  250 | int post_fudi (int x) post<unanalyzed | diagnosed> (r: r > 0) { return x; }     // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      |                                                          ~~^~~
+Test_name.c: In function 'int assert_fudi(int)':
+Test_name.c:254:1: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  254 |   contract_assert<unanalyzed | diagnosed> (x > 0);      // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:254:47: note: the predicate of the contract assertion
+  254 |   contract_assert<unanalyzed | diagnosed> (x > 0);      // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      |                                             ~~^~~
+Test_name.c: In function 'void calls_fudi(int)':
+Test_name.c:261:9: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  261 |   pre_fudi (y); // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      |   ~~~~~~^~~
+Test_name.c:249:55: note: the predicate of the contract assertion
+  249 | int pre_fudi (int x) pre<unanalyzed | diagnosed> (x > 0) { return x; }  // { dg-message "the predicate of the contract assertion" }
+      |                                                     ~~^~~
+Test_name.c: In function 'int post_fdsym(int)':
+Test_name.c:269:23: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  269 | int post_fdsym (int x) post<diagnosed | L::symbolic> (r: r > 0) { return x; }   // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:269:62: note: the predicate of the contract assertion
+  269 | int post_fdsym (int x) post<diagnosed | L::symbolic> (r: r > 0) { return x; }   // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      |                                                            ~~^~~
+Test_name.c: In function 'int assert_fdsym(int)':
+Test_name.c:273:1: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  273 |   contract_assert<diagnosed | L::symbolic> (x > 0);     // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:273:48: note: the predicate of the contract assertion
+  273 |   contract_assert<diagnosed | L::symbolic> (x > 0);     // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      |                                              ~~^~~
+Test_name.c: In function 'void calls_fdsym(int)':
+Test_name.c:280:10: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  280 |   pre_fdsym (y);        // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      |   ~~~~~~~^~~
+Test_name.c:268:57: note: the predicate of the contract assertion
+  268 | int pre_fdsym (int x) pre<diagnosed | L::symbolic> (x > 0) { return x; }        // { dg-message "the predicate of the contract assertion" }
+      |                                                       ~~^~~
+Test_name.c: In function 'int post_cp(int)':
+Test_name.c:326:20: error: contract assertion cannot be proven
+  326 | int post_cp (int x) post<computes_prove> (r: r > 0) { return x; }       // { dg-error "contract assertion cannot be proven" }
+      |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:326:48: note: the predicate of the contract assertion
+  326 | int post_cp (int x) post<computes_prove> (r: r > 0) { return x; }       // { dg-error "contract assertion cannot be proven" }
+      |                                              ~~^~~
+Test_name.c: In function 'int assert_cp(int)':
+Test_name.c:330:1: error: contract assertion cannot be proven
+  330 |   contract_assert<computes_prove> (x > 0);      // { dg-error "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:330:37: note: the predicate of the contract assertion
+  330 |   contract_assert<computes_prove> (x > 0);      // { dg-error "contract assertion cannot be proven" }
+      |                                   ~~^~~
+Test_name.c: In function 'void calls_cp(int)':
+Test_name.c:337:7: error: contract assertion cannot be proven
+  337 |   pre_cp (y);   // { dg-error "contract assertion cannot be proven" }
+      |   ~~~~^~~
+Test_name.c:325:43: note: the predicate of the contract assertion
+  325 | int pre_cp (int x) pre<computes_prove> (x > 0) { return x; }    // { dg-message "the predicate of the contract assertion" }
+      |                                         ~~^~~
+Test_name.c: In function 'int post_cd(int)':
+Test_name.c:345:20: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  345 | int post_cd (int x) post<computes_diagnose> (r: r > 0) { return x; }    // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:345:51: note: the predicate of the contract assertion
+  345 | int post_cd (int x) post<computes_diagnose> (r: r > 0) { return x; }    // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      |                                                 ~~^~~
+Test_name.c: In function 'int assert_cd(int)':
+Test_name.c:349:1: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  349 |   contract_assert<computes_diagnose> (x > 0);   // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:349:40: note: the predicate of the contract assertion
+  349 |   contract_assert<computes_diagnose> (x > 0);   // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      |                                      ~~^~~
+Test_name.c: In function 'void calls_cd(int)':
+Test_name.c:356:7: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  356 |   pre_cd (y);   // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      |   ~~~~^~~
+Test_name.c:344:46: note: the predicate of the contract assertion
+  344 | int pre_cd (int x) pre<computes_diagnose> (x > 0) { return x; } // { dg-message "the predicate of the contract assertion" }
+      |                                            ~~^~~

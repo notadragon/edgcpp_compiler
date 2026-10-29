@@ -1,0 +1,20 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 --no_contracts_prove_fold Test_name.c
+Test_name.c:39:4: error: contract assertion cannot be proven for a call through the address of 'DT::~DT()'
+   39 | DT dt1;                                         // { dg-error "contract assertion cannot be proven for a call through the address of 'DT::~DT\\(\\)'" }
+      |    ^~~
+Test_name.c:39:4: note: 'dt1', of static storage duration, is destroyed by a call through the address of its destructor
+Test_name.c:36:7: note: precondition here
+   36 |   ~DT () pre<always_prove> (true);      // { dg-message "precondition here" }
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:42:19: error: contract assertion cannot be proven for a call through the address of 'void t1(int)'
+   42 | void (*p1) (int) = t1;                          // { dg-error "contract assertion cannot be proven for a call through the address of 'void t1\\(int\\)'" }
+      |                   ^~
+Test_name.c:32:16: note: precondition here
+   32 | void t1 (int x) pre<always_prove> (true);       // { dg-message "precondition here" }
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:43:21: error: contract assertion cannot be proven for a call through the address of 'void t2(int)'
+   43 | void (*p2) (int) = &t2;                         // { dg-error "contract assertion cannot be proven for a call through the address of 'void t2\\(int\\)'" }
+      |                     ^~
+Test_name.c:33:16: note: precondition here
+   33 | void t2 (int x) pre<always_prove> (sizeof (x) == sizeof (int)); // { dg-message "precondition here" }
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

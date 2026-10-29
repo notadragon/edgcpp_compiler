@@ -1,0 +1,10 @@
+Matches for "^(Command-line warning: --contract_evaluation_semantic=(prove|diagnose) requires --contracts_p4405; ignore is used instead|.*the configuration asks for "(prove|diagnose)", which requires --contracts_p4405; "ignore" is used instead|)$":
+  <-----------------------------------------------------------------------------
+  Command-line warning: --contract_evaluation_semantic=diagnose requires --contracts_p4405; ignore is used instead
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  
+  ----------------------------------------------------------------------------->

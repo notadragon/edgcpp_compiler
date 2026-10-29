@@ -1,0 +1,4 @@
+Matches for "^(Command-line (error|warning): .*)$":
+  <-----------------------------------------------------------------------------
+  Command-line error: invalid contract configuration (<command-line>:1:50): the "semantic" of an entry matching "analysis" must be "ignore", "diagnose" or "prove"
+  ----------------------------------------------------------------------------->

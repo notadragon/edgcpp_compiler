@@ -1,0 +1,4 @@
+Matches for "^(Command-line error: .*)$":
+  <-----------------------------------------------------------------------------
+  Command-line error: unrecognized contract analysis semantic (must be one of ignore, diagnose, prove): enforce
+  ----------------------------------------------------------------------------->

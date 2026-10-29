@@ -1,0 +1,21 @@
+eccp -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p4405 --contract_evaluation_semantic=observe --contract_analysis_semantic=diagnose -O2 Test_name.c
+Test_name.c: In function 'int g(int)':
+Test_name.c:34:1: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   34 |   contract_assert (chk (x));    // { dg-warning "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:34:20: note: the predicate of the contract assertion
+   34 |   contract_assert (chk (x));    // { dg-warning "contract assertion cannot be proven" }
+      |                 ~~~^~~
+Test_name.c:32:2: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   32 |   post (r: chk (r))             // { dg-warning "contract assertion cannot be proven" }
+      |  ^~~~~~~~~~~~~~~
+Test_name.c:32:13: note: the predicate of the contract assertion
+   32 |   post (r: chk (r))             // { dg-warning "contract assertion cannot be proven" }
+      |          ~~~^~~
+Test_name.c: In function 'int main()':
+Test_name.c:42:2: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   42 |   f (-1);                       // { dg-warning "contract assertion cannot be proven" }
+      |  ^~~~
+Test_name.c:29:39: note: the predicate of the contract assertion
+   29 | [[gnu::noinline]] int f (int x) pre (chk (x)) { return x; }     // { dg-message "the predicate of the contract assertion" }
+      |                                    ~~~^~~

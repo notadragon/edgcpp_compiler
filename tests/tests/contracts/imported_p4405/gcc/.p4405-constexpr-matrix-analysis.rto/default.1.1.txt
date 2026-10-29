@@ -1,0 +1,230 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 --contract_analysis_semantic=prove --contract_evaluation_semantic=ignore Test_name.c
+"Test_name.c", line 91: error: contract predicate is false in constant expression
+  constexpr int pre_ap (int x) pre<always_prove> (x > 0) { return x; }	// { dg-error "contract predicate is false in constant expression" }
+                               ^
+
+"Test_name.c", line 92: error: contract predicate is false in constant expression
+  constexpr int post_ap (int x) post<always_prove> (r: r > 0) { return x; }	// { dg-error "contract assertion cannot be proven" }
+                                ^
+
+"Test_name.c", line 94: error: contract predicate is false in constant expression
+  constexpr int assert_ap (int x) { contract_assert<always_prove> (x > 0); return x; }	// { dg-error "contract assertion cannot be proven" }
+                                    ^
+
+"Test_name.c", line 104: warning: contract predicate is false in constant expression
+  constexpr int pre_ad (int x) pre<always_diagnose> (x > 0) { return x; }	// { dg-warning "contract predicate is false in constant expression" }
+                               ^
+
+"Test_name.c", line 105: warning: contract predicate is false in constant expression
+  constexpr int post_ad (int x) post<always_diagnose> (r: r > 0) { return x; }	// { dg-warning "contract assertion cannot be proven" }
+                                ^
+
+"Test_name.c", line 107: warning: contract predicate is false in constant expression
+  constexpr int assert_ad (int x) { contract_assert<always_diagnose> (x > 0); return x; }	// { dg-warning "contract assertion cannot be proven" }
+                                    ^
+
+"Test_name.c", line 120: error: contract predicate is false in constant expression
+  constexpr int pre_term (int x) pre<L::terminating> (x > 0) { return x; }	// { dg-error "contract predicate is false in constant expression" }
+                                 ^
+
+"Test_name.c", line 121: error: contract predicate is false in constant expression
+  constexpr int post_term (int x) post<L::terminating> (r: r > 0) { return x; }	// { dg-error "contract assertion cannot be proven" }
+                                  ^
+
+"Test_name.c", line 123: error: contract predicate is false in constant expression
+  constexpr int assert_term (int x) { contract_assert<L::terminating> (x > 0); return x; }	// { dg-error "contract assertion cannot be proven" }
+                                      ^
+
+"Test_name.c", line 147: error: contract predicate is false in constant expression
+  constexpr int pre_ae (int x) pre<L::always_enforce> (x > 0) { return x; }	// { dg-error "contract predicate is false in constant expression" }
+                               ^
+
+"Test_name.c", line 148: error: contract predicate is false in constant expression
+  constexpr int post_ae (int x) post<L::always_enforce> (r: r > 0) { return x; }	// { dg-error "contract predicate is false in constant expression" }
+                                ^
+
+"Test_name.c", line 149: error: contract predicate is false in constant expression
+  constexpr int assert_ae (int x) { contract_assert<L::always_enforce> (x > 0); return x; }	// { dg-error "contract predicate is false in constant expression" }
+                                    ^
+
+"Test_name.c", line 172: error: contract predicate is false in constant expression
+  constexpr int pre_cp (int x) pre<computes_prove> (x > 0) { return x; }	// { dg-error "contract predicate is false in constant expression" }
+                               ^
+
+"Test_name.c", line 173: error: contract predicate is false in constant expression
+  constexpr int post_cp (int x) post<computes_prove> (r: r > 0) { return x; }	// { dg-error "contract assertion cannot be proven" }
+                                ^
+
+"Test_name.c", line 175: error: contract predicate is false in constant expression
+  constexpr int assert_cp (int x) { contract_assert<computes_prove> (x > 0); return x; }	// { dg-error "contract assertion cannot be proven" }
+                                    ^
+
+"Test_name.c", line 185: warning: contract predicate is false in constant expression
+  constexpr int pre_cd (int x) pre<computes_diagnose> (x > 0) { return x; }	// { dg-warning "contract predicate is false in constant expression" }
+                               ^
+
+"Test_name.c", line 186: warning: contract predicate is false in constant expression
+  constexpr int post_cd (int x) post<computes_diagnose> (r: r > 0) { return x; }	// { dg-error "contract assertion cannot be proven" }
+                                ^
+
+"Test_name.c", line 188: warning: contract predicate is false in constant expression
+  constexpr int assert_cd (int x) { contract_assert<computes_diagnose> (x > 0); return x; }	// { dg-error "contract assertion cannot be proven" }
+                                    ^
+
+"Test_name.c", line 80: warning: variable "pre_none_ok" was declared but never referenced
+  constexpr int pre_none_ok = pre_none (1);	// { dg-bogus "false in constant expression|always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 83: warning: variable "post_none_ok" was declared but never referenced
+  constexpr int post_none_ok = post_none (1);	// { dg-bogus "false in constant expression|always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 86: warning: variable "assert_none_ok" was declared but never referenced
+  constexpr int assert_none_ok = assert_none (1);	// { dg-bogus "false in constant expression|always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 96: warning: variable "pre_ap_ok" was declared but never referenced
+  constexpr int pre_ap_ok = pre_ap (1);	// { dg-bogus "false in constant expression|always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 97: warning: variable "pre_ap_bad" was declared but never referenced
+  constexpr int pre_ap_bad = pre_ap (-1);	// { dg-bogus "always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 98: warning: variable "post_ap_ok" was declared but never referenced
+  constexpr int post_ap_ok = post_ap (1);	// { dg-bogus "false in constant expression|always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 99: warning: variable "post_ap_bad" was declared but never referenced
+  constexpr int post_ap_bad = post_ap (-1);	// { dg-bogus "always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 100: warning: variable "assert_ap_ok" was declared but never referenced
+  constexpr int assert_ap_ok = assert_ap (1);	// { dg-bogus "false in constant expression|always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 101: warning: variable "assert_ap_bad" was declared but never referenced
+  constexpr int assert_ap_bad = assert_ap (-1);	// { dg-bogus "always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 109: warning: variable "pre_ad_ok" was declared but never referenced
+  constexpr int pre_ad_ok = pre_ad (1);	// { dg-bogus "false in constant expression|always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 112: warning: variable "post_ad_ok" was declared but never referenced
+  constexpr int post_ad_ok = post_ad (1);	// { dg-bogus "false in constant expression|always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 115: warning: variable "assert_ad_ok" was declared but never referenced
+  constexpr int assert_ad_ok = assert_ad (1);	// { dg-bogus "false in constant expression|always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 125: warning: variable "pre_term_ok" was declared but never referenced
+  constexpr int pre_term_ok = pre_term (1);	// { dg-bogus "false in constant expression|always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 126: warning: variable "pre_term_bad" was declared but never referenced
+  constexpr int pre_term_bad = pre_term (-1);	// { dg-bogus "always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 127: warning: variable "post_term_ok" was declared but never referenced
+  constexpr int post_term_ok = post_term (1);	// { dg-bogus "false in constant expression|always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 128: warning: variable "post_term_bad" was declared but never referenced
+  constexpr int post_term_bad = post_term (-1);	// { dg-bogus "always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 129: warning: variable "assert_term_ok" was declared but never referenced
+  constexpr int assert_term_ok = assert_term (1);	// { dg-bogus "false in constant expression|always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 130: warning: variable "assert_term_bad" was declared but never referenced
+  constexpr int assert_term_bad = assert_term (-1);	// { dg-bogus "always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 136: warning: variable "pre_sym_ok" was declared but never referenced
+  constexpr int pre_sym_ok = pre_sym (1);	// { dg-bogus "false in constant expression|always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 139: warning: variable "post_sym_ok" was declared but never referenced
+  constexpr int post_sym_ok = post_sym (1);	// { dg-bogus "false in constant expression|always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 142: warning: variable "assert_sym_ok" was declared but never referenced
+  constexpr int assert_sym_ok = assert_sym (1);	// { dg-bogus "false in constant expression|always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 150: warning: variable "pre_ae_ok" was declared but never referenced
+  constexpr int pre_ae_ok = pre_ae (1);	// { dg-bogus "false in constant expression|always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 151: warning: variable "pre_ae_bad" was declared but never referenced
+  constexpr int pre_ae_bad = pre_ae (-1);	// { dg-bogus "always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 152: warning: variable "post_ae_ok" was declared but never referenced
+  constexpr int post_ae_ok = post_ae (1);	// { dg-bogus "false in constant expression|always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 153: warning: variable "post_ae_bad" was declared but never referenced
+  constexpr int post_ae_bad = post_ae (-1);	// { dg-bogus "always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 154: warning: variable "assert_ae_ok" was declared but never referenced
+  constexpr int assert_ae_ok = assert_ae (1);	// { dg-bogus "false in constant expression|always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 155: warning: variable "assert_ae_bad" was declared but never referenced
+  constexpr int assert_ae_bad = assert_ae (-1);	// { dg-bogus "always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 161: warning: variable "pre_fp_ok" was declared but never referenced
+  constexpr int pre_fp_ok = pre_fp (1);	// { dg-bogus "false in constant expression|always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 164: warning: variable "post_fp_ok" was declared but never referenced
+  constexpr int post_fp_ok = post_fp (1);	// { dg-bogus "false in constant expression|always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 167: warning: variable "assert_fp_ok" was declared but never referenced
+  constexpr int assert_fp_ok = assert_fp (1);	// { dg-bogus "false in constant expression|always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 177: warning: variable "pre_cp_ok" was declared but never referenced
+  constexpr int pre_cp_ok = pre_cp (1);	// { dg-bogus "false in constant expression|always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 178: warning: variable "pre_cp_bad" was declared but never referenced
+  constexpr int pre_cp_bad = pre_cp (-1);	// { dg-bogus "always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 179: warning: variable "post_cp_ok" was declared but never referenced
+  constexpr int post_cp_ok = post_cp (1);	// { dg-bogus "false in constant expression|always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 180: warning: variable "post_cp_bad" was declared but never referenced
+  constexpr int post_cp_bad = post_cp (-1);	// { dg-bogus "always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 181: warning: variable "assert_cp_ok" was declared but never referenced
+  constexpr int assert_cp_ok = assert_cp (1);	// { dg-bogus "false in constant expression|always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 182: warning: variable "assert_cp_bad" was declared but never referenced
+  constexpr int assert_cp_bad = assert_cp (-1);	// { dg-bogus "always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 190: warning: variable "pre_cd_ok" was declared but never referenced
+  constexpr int pre_cd_ok = pre_cd (1);	// { dg-bogus "false in constant expression|always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 193: warning: variable "post_cd_ok" was declared but never referenced
+  constexpr int post_cd_ok = post_cd (1);	// { dg-bogus "false in constant expression|always false|cannot be proven" }
+                ^
+
+"Test_name.c", line 196: warning: variable "assert_cd_ok" was declared but never referenced
+  constexpr int assert_cd_ok = assert_cd (1);	// { dg-bogus "false in constant expression|always false|cannot be proven" }
+                ^
+
+12 errors detected in the compilation of "Test_name.c".
