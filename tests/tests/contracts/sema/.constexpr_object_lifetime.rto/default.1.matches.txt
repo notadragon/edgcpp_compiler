@@ -1,0 +1,28 @@
+Matches for "line 19: error: expression must have a constant value":
+  <-----------------------------------------------------------------------------
+  line 19: error: expression must have a constant value
+  ----------------------------------------------------------------------------->
+Matches for "line 24: error: expression must have a constant value":
+  <-----------------------------------------------------------------------------
+  line 24: error: expression must have a constant value
+  ----------------------------------------------------------------------------->
+Matches for "line 26: error: expression must have a constant value":
+  <-----------------------------------------------------------------------------
+  line 26: error: expression must have a constant value
+  ----------------------------------------------------------------------------->
+Matches for "line 29: error: expression must have a constant value":
+  <-----------------------------------------------------------------------------
+  line 29: error: expression must have a constant value
+  ----------------------------------------------------------------------------->
+Matches for "line 34: error: expression must have a constant value":
+  <-----------------------------------------------------------------------------
+  line 34: error: expression must have a constant value
+  ----------------------------------------------------------------------------->
+Matches for "line 38: error: expression must have a constant value":
+  <-----------------------------------------------------------------------------
+  line 38: error: expression must have a constant value
+  ----------------------------------------------------------------------------->
+Matches for "line 42: error: expression must have a constant value":
+  <-----------------------------------------------------------------------------
+  line 42: error: expression must have a constant value
+  ----------------------------------------------------------------------------->
