@@ -1,0 +1,12 @@
+Matches for "line 13: error: a diagnostic message that is not a string literal is not yet supported":
+  <-----------------------------------------------------------------------------
+  line 13: error: a diagnostic message that is not a string literal is not yet supported
+  ----------------------------------------------------------------------------->
+Matches for "line 14: error: a diagnostic message cannot have an encoding prefix":
+  <-----------------------------------------------------------------------------
+  line 14: error: a diagnostic message cannot have an encoding prefix
+  ----------------------------------------------------------------------------->
+Matches for "line 15: error: a diagnostic message cannot have an encoding prefix":
+  <-----------------------------------------------------------------------------
+  line 15: error: a diagnostic message cannot have an encoding prefix
+  ----------------------------------------------------------------------------->
