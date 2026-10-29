@@ -828,6 +828,10 @@ evaluation, on the callee side (no caller-side checks are generated).
       } else
       if (semantic != ces_ignore && semantic != ces_quick_enforce) {
         /* See the --contract_evaluation_semantic option. */
+        config_error(where, "this configuration supports only the ignore, "
+                            "quick_enforce, noexcept_enforce, noexcept_observe, "
+                            "assume, prove and diagnose contract evaluation "
+                            "semantics");
       }  /* if */
     }  /* if */
   }  /* if */
