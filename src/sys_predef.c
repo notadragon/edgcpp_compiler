@@ -1577,6 +1577,12 @@ current emulation mode.
   /* Load user builtin functions first (they override any non-user builtin
      functions with the same name). */
   for (budp = builtin_user_table, i = 0; budp->name != NULL; budp++, i++) {
+    if (budp->kind == (a_builtin_function_kind)bufk_c23_va_start &&
+        !c23_mode && !cpp26_mode) {
+      /* The C23/C++26 form of va_start is a keyword only in those
+         language modes. */
+      continue;
+    }  /* if */
     if (builtin_enabled(0, budp->cond, /*is_secondary=*/FALSE)) {
       preload_builtin_symbol(budp->name, 0, budp->cond, i, bfc_user,
                              budp->kind, 0, budp->type_string);
