@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contract_evaluation_semantic=quick_enforce Test_name.c
+"Test_name.c", line 17: error: contract predicate is false in constant expression
+    template <> constexpr int f<int>(int a) const pre(a > lim()) { return 1; }
+                                                  ^
+
+"Test_name.c", line 19: error: contract predicate is false in constant expression
+    template <> constexpr int g<int>(int a) const post(r: r > lim());
+                                                  ^
+
+"Test_name.c", line 31: error: contract predicate is false in constant expression
+    template <> constexpr int f<int>(int a) const pre(a > lim()) { return 1; }
+                                                  ^
+
+3 errors detected in the compilation of "Test_name.c".
