@@ -1,0 +1,5 @@
+./a.out
+handler: comment "x > 0", message "(none)", owner "(none)"
+handler: comment "x > 0", message "(none)", owner "(none)"
+handler: comment "x > 0", message "(none)", owner "(none)"
+handler: comment "x > 0", message "(none)", owner "(none)"

@@ -1,0 +1,7 @@
+Matches for "line ([0-9]+): error: (.*)":
+  <-----------------------------------------------------------------------------
+  line 16: error: function "T::T(const T &)" (declared at line 13) cannot be referenced -- it is a deleted function
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  line 17: error: function "T::T(const T &)" (declared at line 13) cannot be referenced -- it is a deleted function
+  ----------------------------------------------------------------------------->
