@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --c++26 --no_il_lowering --il_display --contract_evaluation_semantic=ignore Test_name.c
+ctk_pre "x > 0"
+ctk_pre "x > 0"
+ctk_pre "x > 0"
+ctk_pre "x > 0"
+ctk_pre "x > 0"
+ctk_pre "x > 0"
+ctk_post "r > 0"
+ctk_assert "x < 0 && x > 0"
