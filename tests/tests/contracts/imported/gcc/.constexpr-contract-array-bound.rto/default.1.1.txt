@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 25: error: contract predicate is false in constant expression
+    pre (false) // { dg-error "contract predicate is false" }
+    ^
+
+1 error detected in the compilation of "Test_name.c".

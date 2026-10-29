@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 47: error: mismatched contract condition in declaration (previous contract specifier declared at line 46)
+  int differ(int x) pre(x > 1); // expected-error {{function redeclaration differs in contract specifier sequence}} expected-note {{in contract specified here}}
+                    ^
+
+"Test_name.c", line 50: error: declaration adds contracts to "int later(int)"
+  int later(int x) pre(x > 0); // expected-error {{function redeclaration differs in contract specifier sequence}}
+                   ^
+
+"Test_name.c", line 52: error: deleted function "void del(int)" cannot have a function contract specifier
+  void del(int x) pre(x > 0) = delete; // expected-error {{deleted function 'del' cannot have a function-contract-specifier}}
+                  ^
+
+"Test_name.c", line 55: error: a function contract specifier can appear only on the declarator of a function declaration
+  typedef int F(int) pre(true); // expected-error {{'pre' can only appear on a function declaration}}
+                     ^
+
+4 errors detected in the compilation of "Test_name.c".

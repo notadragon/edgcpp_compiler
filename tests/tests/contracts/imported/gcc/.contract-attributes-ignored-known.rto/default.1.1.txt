@@ -1,0 +1,13 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 13: warning: attribute "unlikely" does not apply here
+    pre [[unlikely]] (x > 41)  // { dg-warning "attributes are ignored on function contract specifiers" }
+          ^
+
+"Test_name.c", line 14: warning: attribute "likely" does not apply here
+    post [[likely]] (r: r > 0)  // { dg-warning "attributes are ignored on function contract specifiers" }
+           ^
+
+"Test_name.c", line 16: warning: attribute "unlikely" does not apply here
+    contract_assert [[unlikely]] (x > 0);  // { dg-warning "attributes are ignored on 'contract_assert'" }
+                      ^
+

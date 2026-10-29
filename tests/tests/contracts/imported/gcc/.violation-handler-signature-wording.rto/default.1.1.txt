@@ -1,0 +1,42 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 26: error: ::handle_contract_violation cannot be declared inline
+  inline void handle_contract_violation (const contract_violation &) {} // { dg-error "'::handle_contract_violation' must not be declared 'inline'" }
+              ^
+
+"Test_name.c", line 27: error: ::handle_contract_violation must have a single parameter of type const std::contracts::contract_violation &
+  void handle_contract_violation (); // { dg-error "'::handle_contract_violation' must have a single parameter of type 'const std::contracts::contract_violation&'" }
+       ^
+
+"Test_name.c", line 28: error: ::handle_contract_violation must have a single parameter of type const std::contracts::contract_violation &
+  void handle_contract_violation (const contract_violation &, int); // { dg-error "'::handle_contract_violation' must have a single parameter" }
+       ^
+
+"Test_name.c", line 29: error: ::handle_contract_violation must have a single parameter of type const std::contracts::contract_violation &
+  void handle_contract_violation (contract_violation &&); // { dg-error "parameter of '::handle_contract_violation' must be an lvalue reference to 'const std::contracts::contract_violation'" }
+       ^
+
+"Test_name.c", line 30: error: ::handle_contract_violation must have a single parameter of type const std::contracts::contract_violation &
+  void handle_contract_violation (contract_violation &); // { dg-error "parameter of '::handle_contract_violation' must be a reference to 'const std::contracts::contract_violation'" }
+       ^
+
+"Test_name.c", line 31: error: ::handle_contract_violation must have a single parameter of type const std::contracts::contract_violation &
+  void handle_contract_violation (const int &); // { dg-error "parameter of '::handle_contract_violation' must be of type 'const std::contracts::contract_violation&'" }
+       ^
+
+"Test_name.c", line 32: error: ::handle_contract_violation must return void
+  int handle_contract_violation (const contract_violation *); // { dg-error "'::handle_contract_violation' must return 'void'" }
+      ^
+
+"Test_name.c", line 32: error: ::handle_contract_violation must have a single parameter of type const std::contracts::contract_violation &
+  int handle_contract_violation (const contract_violation *); // { dg-error "'::handle_contract_violation' must return 'void'" }
+      ^
+
+"Test_name.c", line 34: error: ::handle_contract_violation must have C++ language linkage
+  extern "C" void handle_contract_violation (const volatile contract_violation &); // { dg-error "'::handle_contract_violation' must have C\\+\\+ language linkage" }
+                  ^
+
+"Test_name.c", line 34: error: ::handle_contract_violation must have a single parameter of type const std::contracts::contract_violation &
+  extern "C" void handle_contract_violation (const volatile contract_violation &); // { dg-error "'::handle_contract_violation' must have C\\+\\+ language linkage" }
+                  ^
+
+10 errors detected in the compilation of "Test_name.c".

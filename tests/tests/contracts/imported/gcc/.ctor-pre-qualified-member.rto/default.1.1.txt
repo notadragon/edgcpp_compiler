@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 19: error: in a precondition of a constructor or a postcondition of a destructor, a member must be accessed through an explicit "this"
+    C(char) pre(C::b);  // { dg-error "'this' required" }
+                   ^
+
+"Test_name.c", line 25: error: in a precondition of a constructor or a postcondition of a destructor, a member must be accessed through an explicit "this"
+    ~E() post(E::b);    // { dg-error "'this' required" }
+                 ^
+
+2 errors detected in the compilation of "Test_name.c".

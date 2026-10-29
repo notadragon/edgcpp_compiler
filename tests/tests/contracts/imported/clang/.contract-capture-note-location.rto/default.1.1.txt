@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 31: error: "x" (declared at line 30) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto l = [&]() { contract_assert(x > 0); };
+                                     ^
+
+"Test_name.c", line 42: error: "x" (declared at line 40) cannot be implicitly captured only for contract assertions; capture it explicitly
+      auto inner = [&]() { contract_assert(x > 0); };
+                                           ^
+
+"Test_name.c", line 56: error: "x" (declared at line 53) cannot be implicitly captured only for contract assertions; capture it explicitly
+        auto c = [&]() { contract_assert(x > 0); };
+                                         ^
+
+"Test_name.c", line 71: error: "x" (declared at line 69) cannot be implicitly captured only for contract assertions; capture it explicitly
+      auto inner = [&](auto g) { contract_assert(x + f + g > 0); };
+                                                 ^
+
+"Test_name.c", line 71: error: "f" (declared at line 70) cannot be implicitly captured only for contract assertions; capture it explicitly
+      auto inner = [&](auto g) { contract_assert(x + f + g > 0); };
+                                                     ^
+
+5 errors detected in the compilation of "Test_name.c".

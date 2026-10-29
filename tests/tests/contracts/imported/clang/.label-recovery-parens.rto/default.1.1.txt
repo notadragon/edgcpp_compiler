@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 18: error: assertion-control specifiers require --contracts_p3400
+  int f(int x) pre<pick(1 > 0)>(x > 0); // expected-error {{assertion-control labels require '-fcontracts-p3400'}}
+                  ^
+
+"Test_name.c", line 19: error: assertion-control specifiers require --contracts_p3400
+  int g(int x) pre<l>(x > 0); // expected-error {{assertion-control labels require '-fcontracts-p3400'}}
+                  ^
+
+2 errors detected in the compilation of "Test_name.c".

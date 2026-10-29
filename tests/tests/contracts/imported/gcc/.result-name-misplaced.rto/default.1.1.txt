@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 14: error: expected a ")"
+  int f(int r) pre(r: r > 0) { return r; } // { dg-error "result name .r. not allowed outside of post condition specifier" }
+                    ^
+
+"Test_name.c", line 17: error: expected a ")"
+    contract_assert(r: r > 0); // { dg-error "result name .r. not allowed outside of post condition specifier" }
+                     ^
+
+2 errors detected in the compilation of "Test_name.c".

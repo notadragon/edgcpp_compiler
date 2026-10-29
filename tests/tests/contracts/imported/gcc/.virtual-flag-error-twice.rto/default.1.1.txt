@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 20: error: a virtual function cannot have a function contract specifier
+    void f (int x) override pre (x > m) {}	// { dg-error "contracts cannot be added to virtual functions" }
+                            ^
+
+1 error detected in the compilation of "Test_name.c".

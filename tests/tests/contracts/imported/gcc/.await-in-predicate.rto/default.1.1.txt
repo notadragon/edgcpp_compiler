@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contract_evaluation_semantic=enforce Test_name.c
+"Test_name.c", line 41: error: "co_await" cannot appear in a contract predicate other than in a lambda-expression
+  task c1 () { contract_assert (co_await A{}); co_return; }  // { dg-error "contract" }
+                                ^
+
+"Test_name.c", line 42: error: "co_yield" cannot appear in a contract predicate other than in a lambda-expression
+  task c2 () { contract_assert ((co_yield 1)); co_return; }  // { dg-error "contract" }
+                                 ^
+
+"Test_name.c", line 43: error: "co_await" cannot appear in a contract predicate other than in a lambda-expression
+  task c3 () { contract_assert (__extension__ ({ co_await A{}; true; })); co_return; }  // { dg-error "contract" }
+                                                 ^
+
+"Test_name.c", line 44: error: "co_await" cannot appear in a contract predicate other than in a lambda-expression
+  task c4 () { contract_assert ((co_await A{}, true)); co_return; }  // { dg-error "contract" }
+                                 ^
+
+"Test_name.c", line 45: error: "co_await" cannot appear in a contract predicate other than in a lambda-expression
+  task c5 (int) pre ((co_await A{}, true)) { co_return; }  // { dg-error "contract" }
+                      ^
+
+"Test_name.c", line 45: error: a co_await expression must appear in a function scope
+  task c5 (int) pre ((co_await A{}, true)) { co_return; }  // { dg-error "contract" }
+                      ^
+
+"Test_name.c", line 46: error: co_yield expression is not permitted outside a function scope
+  task c6 (int) post (((co_yield 1), true)) { co_return; }  // { dg-error "contract" }
+                        ^
+
+7 errors detected in the compilation of "Test_name.c".

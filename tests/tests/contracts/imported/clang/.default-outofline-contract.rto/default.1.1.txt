@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 23: error: declaration adds contracts to "T::T()"
+  T::T() pre(true) = default; // expected-error {{method out-of-line definition differs in contract specifier sequence}}
+         ^
+
+1 error detected in the compilation of "Test_name.c".

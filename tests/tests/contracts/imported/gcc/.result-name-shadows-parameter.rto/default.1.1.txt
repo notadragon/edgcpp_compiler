@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contract_evaluation_semantic=ignore Test_name.c
+"Test_name.c", line 20: error: the result name of a postcondition cannot have the same name as a function parameter
+  int f (int r) post (r: r > 0) { return r; }  // { dg-error "result name shadows a function parameter" }
+                      ^
+
+"Test_name.c", line 21: error: the result name of a postcondition cannot have the same name as a function parameter
+  int g (int r) post (r: r > 0);  // { dg-error "result name shadows a function parameter" }
+                      ^
+
+"Test_name.c", line 22: error: the result name of a postcondition cannot have the same name as an init-capture of the lambda
+  auto l = [x = 1] (int y) post (x: x > 0) { return y; };  // { dg-error "result name shadows a lambda capture" }
+                                 ^
+
+"Test_name.c", line 29: error: the result name of a postcondition cannot have the same name as a function parameter
+    auto n = [=] (int r) post (r: r > 0) { return r; };  // { dg-error "result name shadows a function parameter" }
+                               ^
+
+"Test_name.c", line 28: warning: variable "m" was declared but never referenced
+    auto m = [x] (int y) post (x: x > 0) { return y + x; };  // OK
+         ^
+
+"Test_name.c", line 29: warning: variable "n" was declared but never referenced
+    auto n = [=] (int r) post (r: r > 0) { return r; };  // { dg-error "result name shadows a function parameter" }
+         ^
+
+4 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 14: error: function "DefDtor::~DefDtor()" defaulted on its first declaration cannot have a function contract specifier
+  struct DefDtor { ~DefDtor () pre (true) = default; };
+                               ^
+
+1 error detected in the compilation of "Test_name.c".

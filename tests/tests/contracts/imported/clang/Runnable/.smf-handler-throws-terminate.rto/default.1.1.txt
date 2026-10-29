@@ -1,0 +1,5 @@
+eccp -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contract_evaluation_semantic=observe Test_name.c
+Test_name.c: In constructor 'X::X(int)':
+Test_name.c:26:17: warning: 'throw' will always call 'terminate' [-Wterminate]
+   26 |   } catch (...) {
+      |                 ^    

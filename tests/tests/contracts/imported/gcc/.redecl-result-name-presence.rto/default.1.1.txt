@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 18: error: mismatched postcondition result name in declaration (previous postcondition declared at line 17)
+  int g () post (b1);		// { dg-error "mismatch" }
+           ^
+
+"Test_name.c", line 20: error: mismatched postcondition result name in declaration (previous postcondition declared at line 19)
+  int h () post (r: b1);		// { dg-error "mismatch" }
+           ^
+
+2 errors detected in the compilation of "Test_name.c".

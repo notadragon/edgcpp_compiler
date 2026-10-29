@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 30: warning: variable "a" is used before its value is set
+    auto l = [&] { contract_assert (a[0] == 0); };	// { dg-error "'a' is not implicitly captured by a contract assertion" }
+                                    ^
+
+"Test_name.c", line 30: error: "a" (declared at line 29) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto l = [&] { contract_assert (a[0] == 0); };	// { dg-error "'a' is not implicitly captured by a contract assertion" }
+                                    ^
+
+"Test_name.c", line 38: warning: variable "a" is used before its value is set
+      contract_assert (a[0] == 0);
+                       ^
+
+"Test_name.c", line 48: warning: variable "a" is used before its value is set
+    auto l = [&a] { contract_assert (a[0] == 0); };
+                                     ^
+
+"Test_name.c", line 56: warning: variable "a" is used before its value is set
+      contract_assert (a[0] == 0);
+                       ^
+
+"Test_name.c", line 66: warning: variable "a" is used before its value is set
+      contract_assert (a[0] == 0);
+                       ^
+
+1 error detected in the compilation of "Test_name.c".

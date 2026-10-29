@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contract_evaluation_semantic=observe Test_name.c
+"Test_name.c", line 22: error: identifier "r" is undefined
+  { r += 1; return r;} // { dg-error {'r' was not declared in this scope} }
+    ^
+
+"Test_name.c", line 27: error: identifier "res" is undefined
+      { res = 15; return res; } // { dg-error {'res' was not declared in this scope} }
+        ^
+
+"Test_name.c", line 36: error: identifier "ans" is undefined
+      { ans = 15; return 1; } // { dg-error {'ans' was not declared in this scope} }
+        ^
+
+"Test_name.c", line 45: error: identifier "out" is undefined
+  { out = 5;  return x; } // { dg-error {'out' was not declared in this scope} }
+    ^
+
+4 errors detected in the compilation of "Test_name.c".

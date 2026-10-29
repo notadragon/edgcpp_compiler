@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 17: error: mismatched postcondition result name in declaration (previous postcondition declared at line 16)
+  int g() post(b1);     // expected-error {{function redeclaration differs in contract specifier sequence}} expected-note {{in contract specified here}}
+          ^
+
+"Test_name.c", line 19: error: mismatched postcondition result name in declaration (previous postcondition declared at line 18)
+  int h() post(r : b1); // expected-error {{function redeclaration differs in contract specifier sequence}} expected-note {{in contract specified here}}
+          ^
+
+2 errors detected in the compilation of "Test_name.c".

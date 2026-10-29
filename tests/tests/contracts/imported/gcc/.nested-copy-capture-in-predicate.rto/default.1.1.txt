@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contract_evaluation_semantic=enforce Test_name.c
+"Test_name.c", line 33: error: expression must be a modifiable lvalue
+    contract_assert ([&] { return [&] { return ++q; } (); } () > 0);	// { dg-error "read-only" }
+                                                 ^
+
+"Test_name.c", line 40: error: expression must be a modifiable lvalue
+    contract_assert ([&] { return [=] () mutable { return ++g; } (); } () > 0); // { dg-error "read-only" }
+                                                            ^
+
+"Test_name.c", line 47: error: expression must be a modifiable lvalue
+    contract_assert ([&] { return [=] () mutable { return ++lc; } (); } () > 0); // { dg-error "read-only" }
+                                                            ^
+
+3 errors detected in the compilation of "Test_name.c".

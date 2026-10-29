@@ -1,0 +1,343 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contract_evaluation_semantic=observe Test_name.c
+"Test_name.c", line 48: error: expression must have a constant value
+  constexpr int k = f (g);
+                    ^
+"Test_name.c", line 44: note: attempt to access run-time storage
+    return v;
+           ^
+
+"Test_name.c", line 65: error: expression must have a constant value
+  constexpr int k = f (g);
+                    ^
+"Test_name.c", line 61: note: attempt to access run-time storage
+    return v;
+           ^
+
+"Test_name.c", line 82: error: expression must have a constant value
+  constexpr int k = f (g);
+                    ^
+"Test_name.c", line 78: note: attempt to access run-time storage
+    return v;
+           ^
+
+"Test_name.c", line 99: error: expression must have a constant value
+  constexpr int k = f (g);
+                    ^
+"Test_name.c", line 95: note: attempt to access run-time storage
+    return v;
+           ^
+
+"Test_name.c", line 116: error: expression must have a constant value
+  constexpr int k = f (1);
+                    ^
+"Test_name.c", line 112: note: cannot call non-constexpr function "rt" (declared at line 32)
+    return rt () ? 1 : 1;
+           ^
+
+"Test_name.c", line 133: error: expression must have a constant value
+  constexpr int k = f (1);
+                    ^
+"Test_name.c", line 129: note: cannot call non-constexpr function "rt" (declared at line 32)
+    return rt () ? 1 : 1;
+           ^
+
+"Test_name.c", line 150: error: expression must have a constant value
+  constexpr int k = f (1);
+                    ^
+"Test_name.c", line 146: note: cannot call non-constexpr function "rt" (declared at line 32)
+    return rt () ? 1 : 1;
+           ^
+
+"Test_name.c", line 168: error: expression must have a constant value
+  constexpr int k = f (g);
+                    ^
+"Test_name.c", line 162: note: attempt to access run-time storage
+    int x = v;
+            ^
+
+"Test_name.c", line 186: error: expression must have a constant value
+  constexpr int k = f (g);
+                    ^
+"Test_name.c", line 180: note: attempt to access run-time storage
+    int x = v;
+            ^
+
+"Test_name.c", line 204: error: expression must have a constant value
+  constexpr int k = f (g);
+                    ^
+"Test_name.c", line 198: note: attempt to access run-time storage
+    int x = v;
+            ^
+
+"Test_name.c", line 222: error: expression must have a constant value
+  constexpr int k = f (1);
+                    ^
+"Test_name.c", line 216: note: cannot call non-constexpr function "rt" (declared at line 32)
+    int x = rt () ? 1 : 1;
+            ^
+
+"Test_name.c", line 240: error: expression must have a constant value
+  constexpr int k = f (1);
+                    ^
+"Test_name.c", line 234: note: cannot call non-constexpr function "rt" (declared at line 32)
+    int x = rt () ? 1 : 1;
+            ^
+
+"Test_name.c", line 257: error: expression must have a constant value
+  constexpr int k = f (g);
+                    ^
+"Test_name.c", line 253: note: attempt to access run-time storage
+    return v;
+           ^
+
+"Test_name.c", line 274: error: expression must have a constant value
+  constexpr int k = f (g);
+                    ^
+"Test_name.c", line 270: note: attempt to access run-time storage
+    return v;
+           ^
+
+"Test_name.c", line 291: error: expression must have a constant value
+  constexpr int k = f (g);
+                    ^
+"Test_name.c", line 287: note: attempt to access run-time storage
+    return v;
+           ^
+
+"Test_name.c", line 308: error: expression must have a constant value
+  constexpr int k = f (1);
+                    ^
+"Test_name.c", line 304: note: cannot call non-constexpr function "rt" (declared at line 32)
+    return rt () ? 1 : 1;
+           ^
+
+"Test_name.c", line 325: error: expression must have a constant value
+  constexpr int k = f (1);
+                    ^
+"Test_name.c", line 321: note: cannot call non-constexpr function "rt" (declared at line 32)
+    return rt () ? 1 : 1;
+           ^
+
+"Test_name.c", line 348: error: expression must have a constant value
+  constexpr int k = f (g);
+                    ^
+"Test_name.c", line 337: note: attempt to access run-time storage
+    return v;
+           ^
+"Test_name.c", line 344: note: called from:
+    return inner (v);
+                 ^
+
+"Test_name.c", line 371: error: expression must have a constant value
+  constexpr int k = f (g);
+                    ^
+"Test_name.c", line 360: note: attempt to access run-time storage
+    return v;
+           ^
+"Test_name.c", line 367: note: called from:
+    return inner (v);
+                 ^
+
+"Test_name.c", line 394: error: expression must have a constant value
+  constexpr int k = f (g);
+                    ^
+"Test_name.c", line 383: note: attempt to access run-time storage
+    return v;
+           ^
+"Test_name.c", line 390: note: called from:
+    return inner (v);
+                 ^
+
+"Test_name.c", line 417: error: expression must have a constant value
+  constexpr int k = f (1);
+                    ^
+"Test_name.c", line 406: note: cannot call non-constexpr function "rt" (declared at line 32)
+    return rt () ? 1 : 1;
+           ^
+"Test_name.c", line 413: note: called from:
+    return inner (v);
+                 ^
+
+"Test_name.c", line 440: error: expression must have a constant value
+  constexpr int k = f (1);
+                    ^
+"Test_name.c", line 429: note: cannot call non-constexpr function "rt" (declared at line 32)
+    return rt () ? 1 : 1;
+           ^
+"Test_name.c", line 436: note: called from:
+    return inner (v);
+                 ^
+
+"Test_name.c", line 457: error: expression must have a constant value
+  constinit int k = f (g);
+                    ^
+"Test_name.c", line 453: note: attempt to access run-time storage
+    return v;
+           ^
+
+"Test_name.c", line 474: error: expression must have a constant value
+  constinit int k = f (1);
+                    ^
+"Test_name.c", line 470: note: cannot call non-constexpr function "rt" (declared at line 32)
+    return rt () ? 1 : 1;
+           ^
+
+"Test_name.c", line 491: error: expression must have a constant value
+  static_assert (f (g) == 1);
+                 ^
+"Test_name.c", line 487: note: attempt to access run-time storage
+    return v;
+           ^
+
+"Test_name.c", line 508: error: expression must have a constant value
+  static_assert (f (1) == 1);
+                 ^
+"Test_name.c", line 504: note: cannot call non-constexpr function "rt" (declared at line 32)
+    return rt () ? 1 : 1;
+           ^
+
+"Test_name.c", line 526: error: expression must have a constant value
+  X<f (g)> x;
+    ^
+"Test_name.c", line 521: note: attempt to access run-time storage
+    return v;
+           ^
+
+"Test_name.c", line 544: error: expression must have a constant value
+  X<f (1)> x;
+    ^
+"Test_name.c", line 539: note: cannot call non-constexpr function "rt" (declared at line 32)
+    return rt () ? 1 : 1;
+           ^
+
+"Test_name.c", line 561: error: expression must have a constant value
+  enum E { e = f (g) };
+               ^
+"Test_name.c", line 557: note: attempt to access run-time storage
+    return v;
+           ^
+
+"Test_name.c", line 578: error: expression must have a constant value
+  enum E { e = f (1) };
+               ^
+"Test_name.c", line 574: note: cannot call non-constexpr function "rt" (declared at line 32)
+    return rt () ? 1 : 1;
+           ^
+
+"Test_name.c", line 600: error: expression must have a constant value
+      case f (g):
+           ^
+"Test_name.c", line 591: note: attempt to access run-time storage
+    return v;
+           ^
+
+"Test_name.c", line 626: error: expression must have a constant value
+      case f (1):
+           ^
+"Test_name.c", line 617: note: cannot call non-constexpr function "rt" (declared at line 32)
+    return rt () ? 1 : 1;
+           ^
+
+"Test_name.c", line 650: error: expression must have a constant value
+    if constexpr (f (g) == 1)
+                  ^
+"Test_name.c", line 643: note: attempt to access run-time storage
+    return v;
+           ^
+
+"Test_name.c", line 673: error: expression must have a constant value
+    if constexpr (f (1) == 1)
+                  ^
+"Test_name.c", line 666: note: cannot call non-constexpr function "rt" (declared at line 32)
+    return rt () ? 1 : 1;
+           ^
+
+"Test_name.c", line 48: warning: variable "constexpr_var_pp_F_NC_u_reads_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 65: warning: variable "constexpr_var_pp_NR_F_u_reads_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 82: warning: variable "constexpr_var_pp_NR_NC_u_reads_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 99: warning: variable "constexpr_var_pp_T_T_u_reads_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 116: warning: variable "constexpr_var_pp_F_NC_k_rt_observe::k" was declared but never referenced
+  constexpr int k = f (1);
+                ^
+
+"Test_name.c", line 133: warning: variable "constexpr_var_pp_NC_F_k_rt_observe::k" was declared but never referenced
+  constexpr int k = f (1);
+                ^
+
+"Test_name.c", line 150: warning: variable "constexpr_var_pp_F_F_k_rt_observe::k" was declared but never referenced
+  constexpr int k = f (1);
+                ^
+
+"Test_name.c", line 168: warning: variable "constexpr_var_pa_F_NC_u_reads_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 186: warning: variable "constexpr_var_pa_NR_F_u_reads_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 204: warning: variable "constexpr_var_pa_NR_NC_u_reads_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 222: warning: variable "constexpr_var_pa_F_NC_k_rt_observe::k" was declared but never referenced
+  constexpr int k = f (1);
+                ^
+
+"Test_name.c", line 240: warning: variable "constexpr_var_pa_CD_NC_k_rt_observe::k" was declared but never referenced
+  constexpr int k = f (1);
+                ^
+
+"Test_name.c", line 257: warning: variable "constexpr_var_pq_F_NC_u_reads_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 274: warning: variable "constexpr_var_pq_NR_F_u_reads_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 291: warning: variable "constexpr_var_pq_NR_NC_u_reads_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 308: warning: variable "constexpr_var_pq_F_NC_k_rt_observe::k" was declared but never referenced
+  constexpr int k = f (1);
+                ^
+
+"Test_name.c", line 325: warning: variable "constexpr_var_pq_CD_NC_k_rt_observe::k" was declared but never referenced
+  constexpr int k = f (1);
+                ^
+
+"Test_name.c", line 348: warning: variable "constexpr_var_nest_F_NC_u_reads_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 371: warning: variable "constexpr_var_nest_NR_F_u_reads_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 394: warning: variable "constexpr_var_nest_NR_NC_u_reads_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 417: warning: variable "constexpr_var_nest_F_NC_k_rt_observe::k" was declared but never referenced
+  constexpr int k = f (1);
+                ^
+
+"Test_name.c", line 440: warning: variable "constexpr_var_nest_CD_NC_k_rt_observe::k" was declared but never referenced
+  constexpr int k = f (1);
+                ^
+
+34 errors detected in the compilation of "Test_name.c".
