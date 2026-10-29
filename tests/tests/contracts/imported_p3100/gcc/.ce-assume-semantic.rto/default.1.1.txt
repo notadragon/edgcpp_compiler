@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_allow_assume --contract_evaluation_semantic=assume Test_name.c
+"Test_name.c", line 19: warning: variable "a" was declared but never referenced
+  constexpr int a = f (-1);          // false predicate
+                ^
+
+"Test_name.c", line 20: warning: variable "b" was declared but never referenced
+  constexpr int b = h (1);           // non-constant predicate
+                ^
+

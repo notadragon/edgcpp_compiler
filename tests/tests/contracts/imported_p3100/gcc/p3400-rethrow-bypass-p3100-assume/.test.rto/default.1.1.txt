@@ -1,0 +1,1 @@
+eccp -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p3100 --contract_evaluation_semantic=observe --contract_configuration_file=p3400-rethrow-bypass-p3100-assume.json Test_name.c

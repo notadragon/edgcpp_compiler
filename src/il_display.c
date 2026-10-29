@@ -6133,6 +6133,10 @@ Display the indicated contract specifier entry.
     disp_unsigned_long("label_computed_noexcept_semantics[1]",
              (unsigned long)ptr->label_computed_noexcept_semantics[1]);
   }  /* if */
+  if (ptr->label_computed_assume_semantic != 0) {
+    disp_unsigned_long("label_computed_assume_semantic",
+                       (unsigned long)ptr->label_computed_assume_semantic);
+  }  /* if */
   if (ptr->label_allowed_proving_semantics != 0) {
     disp_unsigned_long("label_allowed_proving_semantics",
                        (unsigned long)ptr->label_allowed_proving_semantics);

@@ -401,6 +401,8 @@ enum an_option_kind {
   optk_contracts_p4298,
   optk_contracts_p4299,
   optk_contracts_p4301,
+  optk_contracts_p3100,
+  optk_contracts_allow_assume,
   optk_contracts_p4405,
   optk_contract_analysis_semantic,
   optk_contracts_prove_fold,
@@ -2995,6 +2997,9 @@ enum a_contract_evaluation_semantic {
 			   terminated if the violation handler exits with an
 			   exception. */
   ces_noexcept_enforce,	/* P4298: as ces_enforce, likewise. */
+  ces_assume,		/* P3100: the predicate is not evaluated, and a
+			   violation is undefined behavior (as ces_ignore;
+			   only with --contracts_allow_assume). */
   ces_prove,		/* P4405: the predicate is not evaluated, and the
 			   program is ill-formed unless it can be proven
 			   to hold; nothing is proven, so every evaluation
@@ -3068,6 +3073,19 @@ EXTERN_THREAD a_boolean
 			   contracts, it predefines __cpp_contracts_report,
 			   by which the standard library declares
 			   contract_violation::report(). */
+
+EXTERN_THREAD a_boolean
+		contracts_p3100_enabled;
+			/* TRUE if P3100 (implicit contract assertions) is
+			   enabled: with contracts, it predefines the vendor
+			   macro of the compiler emulated.  The front end
+			   makes no implicit contract assertions. */
+
+EXTERN_THREAD a_boolean
+		contracts_allow_assume_enabled;
+			/* TRUE if the assume evaluation semantic (P3100) may
+			   be chosen; otherwise its best fit is used
+			   instead, as GCC does. */
 
 EXTERN_THREAD a_boolean
 		contracts_p4405_enabled;

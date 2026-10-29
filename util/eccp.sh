@@ -925,9 +925,11 @@ check_abbreviation()
 --contract_evaluation_semantic
 --contract_group_evaluation_semantic
 --contracts
+--contracts_allow_assume
 --contracts_p3097
 --contracts_p3098
 --contracts_p3099
+--contracts_p3100
 --contracts_p3290
 --contracts_p3400
 --contracts_p3850
@@ -1110,9 +1112,11 @@ check_abbreviation()
 --no_concepts
 --no_const_string_literals
 --no_contracts
+--no_contracts_allow_assume
 --no_contracts_p3097
 --no_contracts_p3098
 --no_contracts_p3099
+--no_contracts_p3100
 --no_contracts_p3290
 --no_contracts_p3400
 --no_contracts_p3850
@@ -1973,6 +1977,10 @@ process_option()
          --no_contracts_p4299 | \
          --contracts_p4301 | \
          --no_contracts_p4301 | \
+         --contracts_p3100 | \
+         --no_contracts_p3100 | \
+         --contracts_allow_assume | \
+         --no_contracts_allow_assume | \
          --contracts_p4405 | \
          --no_contracts_p4405 | \
          --contracts_prove_fold | \

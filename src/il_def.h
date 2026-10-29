@@ -12387,6 +12387,9 @@ typedef struct a_contract_specifier {
 			/* Likewise for the values 6 (noexcept_observe) and 7
 			   (noexcept_enforce), with P4298; all are 0 without
 			   it. */
+  a_byte	label_computed_assume_semantic;
+			/* Likewise for the value 5 (assume), with
+			   --contracts_allow_assume (P3100); 0 without it. */
   a_byte	label_allowed_proving_semantics;
 			/* With P4405, the label's allowed_semantics facet
 			   for the values 8 (prove) and 9 (diagnose): bit
