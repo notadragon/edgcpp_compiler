@@ -1,0 +1,2 @@
+./a.out
+HANDLER kind=5
