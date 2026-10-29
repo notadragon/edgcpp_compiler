@@ -40,6 +40,18 @@ is an error, diagnose a warning (contract_unproven), as is taking an address
 where a label allows only those (contract_address_unproven).
 
 
+10/5/26  []
+Contracts (P4299): the C spellings of contract assertions in C++
+
+The new --[no_]contracts_p4299 option makes _Pre, _Post and _ContractAssert,
+P4299's spellings of contract assertions for C, alternative spellings of
+pre, post and contract_assert in C++ when contracts are enabled; _Pre and
+_Post are keywords, as in Clang, so they cannot be used as identifiers.
+Without the option they are ordinary identifiers.  It does not enable
+contracts, is not implied by --contracts_p3850, is an error in C (not
+supported), and predefines __gcc_contracts_p4299 (__clang_contracts_p4299).
+
+
 10/4/26  []
 Contracts (P4298): the noexcept semantics with the C-generating back end
 

@@ -12549,6 +12549,18 @@ command line -D options.
                              /*cannot_be_redefined=*/TRUE,
                              /*ref_suppresses_pch_file=*/FALSE);
   }  /* if */
+  if (contracts_enabled && contracts_p4299_enabled &&
+      (gnu_mode || clang_mode)) {
+    /* P4299 (contracts for C): its spellings are usable in C++ too, and
+       WG14 has no feature-test macros for language features, so the
+       compiler emulated defines a vendor macro (the implemented revision's
+       date). */
+    (void)enter_predef_macro("202610L",
+                             clang_mode ? "__clang_contracts_p4299"
+                                        : "__gcc_contracts_p4299",
+                             /*cannot_be_redefined=*/TRUE,
+                             /*ref_suppresses_pch_file=*/FALSE);
+  }  /* if */
   /* In GNU C/C++ mode, enter the macros that GNU compilers define. */
   if (gnu_mode) init_gnu_predefined_macros();
   if (contracts_enabled && contracts_p3290_enabled &&

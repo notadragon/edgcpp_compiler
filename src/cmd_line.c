@@ -1876,6 +1876,12 @@ Initialize the option information table.
   add_option_description(optk_contracts_p4298, "no_contracts_p4298", '\0',
                          /*value=*/FALSE, /*arg_required=*/FALSE,
                          pchek_command_line);
+  add_option_description(optk_contracts_p4299, "contracts_p4299", '\0',
+                         /*value=*/TRUE, /*arg_required=*/FALSE,
+                         pchek_command_line);
+  add_option_description(optk_contracts_p4299, "no_contracts_p4299", '\0',
+                         /*value=*/FALSE, /*arg_required=*/FALSE,
+                         pchek_command_line);
   add_option_description(optk_contracts_p4405, "contracts_p4405", '\0',
                          /*value=*/TRUE, /*arg_required=*/FALSE,
                          pchek_command_line);
@@ -4092,6 +4098,10 @@ setting is used, and to set various unmentioned settings as needed.
     command_line_error(ec_cl_contracts_option_only_in_cplusplus);
   }  /* if */
   if (option_kind_used[(int)optk_contracts_p4298] && contracts_p4298_enabled) {
+    command_line_error(ec_cl_contracts_option_only_in_cplusplus);
+  }  /* if */
+  if (option_kind_used[(int)optk_contracts_p4299] && contracts_p4299_enabled) {
+    /* Contracts in C are not supported. */
     command_line_error(ec_cl_contracts_option_only_in_cplusplus);
   }  /* if */
   if (option_kind_used[(int)optk_contracts_p4405] && contracts_p4405_enabled) {
@@ -12487,6 +12497,9 @@ enable_microsoft_mode:
       case optk_contracts_p4298:
         contracts_p4298_enabled = opt_value;
         break;
+      case optk_contracts_p4299:
+        contracts_p4299_enabled = opt_value;
+        break;
       case optk_contracts_p4405:
         contracts_p4405_enabled = opt_value;
         break;
@@ -14263,6 +14276,7 @@ variables declared in cmd_line.h.
   contracts_p3400_enabled = FALSE;
   contracts_p4283_enabled = FALSE;
   contracts_p4298_enabled = FALSE;
+  contracts_p4299_enabled = FALSE;
   contracts_p4405_enabled = FALSE;
   contract_analysis_semantic = ces_ignore;
   contracts_prove_fold_enabled = FALSE;
