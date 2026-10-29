@@ -1905,6 +1905,11 @@ of lambda expressions.
       scope_ptr->variant.routine.constructor_inits =
                                       dtor_initializer(rout_ptr);
     }  /* if */
+    /* The positions of the parameters the definition leaves unnamed, for
+       check_postcondition_params_of_definition. */
+    Value_saver<a_param_id_ptr>  param_ids_saver(
+                                            &contract_definition_param_ids,
+                                            func_info->param_id_list);
     if (is_function_try_block) {
       /* Scan the function try block.  This includes scanning the catch
          clauses that follow the function body. */
@@ -4599,6 +4604,10 @@ is set to TRUE.
       root_sssep->last_dep_statement = csp;
     }  /* if */
     rp->is_coroutine = TRUE;
+    /* A coroutine's postconditions cannot use its parameters (P2900). */
+    check_postcondition_params_of_definition(
+                      rp, innermost_function_scope->variant.routine.parameters,
+                      /*is_coroutine=*/TRUE);
     if (!rp->is_declared_constexpr && !rp->is_consteval) {
       rp->is_constexpr = FALSE;
     }

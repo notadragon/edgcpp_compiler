@@ -1,0 +1,8 @@
+Matches for "line 21: error: an unnamed value parameter used in a postcondition must be declared const":
+  <-----------------------------------------------------------------------------
+  line 21: error: an unnamed value parameter used in a postcondition must be declared const
+  ----------------------------------------------------------------------------->
+Matches for "line 23: error: an unnamed parameter of a coroutine cannot be odr-used in a postcondition":
+  <-----------------------------------------------------------------------------
+  line 23: error: an unnamed parameter of a coroutine cannot be odr-used in a postcondition
+  ----------------------------------------------------------------------------->

@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
+"Test_name.c", line 18: error: expression must be a modifiable lvalue
+    auto l3 = [](int x) pre(({ ++x; true; })) { return x; };            // Error
+                                 ^
+
+"Test_name.c", line 19: error: expression must be a modifiable lvalue
+    auto l4 = [c](int x) pre(({ ++c; true; })) { return x; };           // Error
+                                  ^
+
+"Test_name.c", line 31: error: statement expressions are only allowed in block scope
+  int k(int x) pre(({ x > 0; }));                                        // Error
+                    ^
+
+"Test_name.c", line 33: error: statement expressions are only allowed in block scope
+    struct S { int n(int x) pre(({ x > 0; })) { return x; } };           // Error
+                                 ^
+
+4 errors detected in the compilation of "Test_name.c".

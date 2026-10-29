@@ -1,0 +1,88 @@
+Matches for "line 34: error: "this" cannot be implicitly captured only for contract assertions; capture it explicitly":
+  <-----------------------------------------------------------------------------
+  line 34: error: "this" cannot be implicitly captured only for contract assertions; capture it explicitly
+  ----------------------------------------------------------------------------->
+Matches for "line 38: error: "this" cannot be implicitly captured only for contract assertions; capture it explicitly":
+  <-----------------------------------------------------------------------------
+  line 38: error: "this" cannot be implicitly captured only for contract assertions; capture it explicitly
+  ----------------------------------------------------------------------------->
+Matches for "line 43: error: "this" cannot be implicitly captured only for contract assertions; capture it explicitly":
+  <-----------------------------------------------------------------------------
+  line 43: error: "this" cannot be implicitly captured only for contract assertions; capture it explicitly
+  ----------------------------------------------------------------------------->
+Matches for "line 44: error: "this" cannot be implicitly captured only for contract assertions; capture it explicitly":
+  <-----------------------------------------------------------------------------
+  line 44: error: "this" cannot be implicitly captured only for contract assertions; capture it explicitly
+  ----------------------------------------------------------------------------->
+Matches for "line 48: error: "x" .* cannot be implicitly captured only for contract assertions; capture it explicitly":
+  <-----------------------------------------------------------------------------
+  line 48: error: "x" (declared at line 46) cannot be implicitly captured only for contract assertions; capture it explicitly
+  ----------------------------------------------------------------------------->
+Matches for "line 49: error: "x" .* cannot be implicitly captured only for contract assertions; capture it explicitly":
+  <-----------------------------------------------------------------------------
+  line 49: error: "x" (declared at line 46) cannot be implicitly captured only for contract assertions; capture it explicitly
+  ----------------------------------------------------------------------------->
+Matches for "line 53: error: "x" .* cannot be implicitly captured only for contract assertions; capture it explicitly":
+  <-----------------------------------------------------------------------------
+  line 53: error: "x" (declared at line 46) cannot be implicitly captured only for contract assertions; capture it explicitly
+  ----------------------------------------------------------------------------->
+Matches for "line 54: error: "x" .* cannot be implicitly captured only for contract assertions; capture it explicitly":
+  <-----------------------------------------------------------------------------
+  line 54: error: "x" (declared at line 46) cannot be implicitly captured only for contract assertions; capture it explicitly
+  ----------------------------------------------------------------------------->
+Matches for "line 56: error: "x" .* cannot be implicitly captured only for contract assertions; capture it explicitly":
+  <-----------------------------------------------------------------------------
+  line 56: error: "x" (declared at line 46) cannot be implicitly captured only for contract assertions; capture it explicitly
+  ----------------------------------------------------------------------------->
+Matches for "line 57: error: "[^"]*::y" .* cannot be implicitly captured only for contract assertions; capture it explicitly":
+  <-----------------------------------------------------------------------------
+  line 57: error: "lambda []()->auto::y" (declared at line 57) cannot be implicitly captured only for contract assertions; capture it explicitly
+  ----------------------------------------------------------------------------->
+Matches for "line 58: error: "x" .* cannot be implicitly captured only for contract assertions; capture it explicitly":
+  <-----------------------------------------------------------------------------
+  line 58: error: "x" (declared at line 46) cannot be implicitly captured only for contract assertions; capture it explicitly
+  ----------------------------------------------------------------------------->
+Matches for "line 61: error: "x" .* cannot be implicitly captured only for contract assertions; capture it explicitly":
+  <-----------------------------------------------------------------------------
+  line 61: error: "x" (declared at line 46) cannot be implicitly captured only for contract assertions; capture it explicitly
+  ----------------------------------------------------------------------------->
+Matches for "line 63: error: "x" .* cannot be implicitly captured only for contract assertions; capture it explicitly":
+  <-----------------------------------------------------------------------------
+  line 63: error: "x" (declared at line 46) cannot be implicitly captured only for contract assertions; capture it explicitly
+  ----------------------------------------------------------------------------->
+Matches for "line 73: error: "a" .* cannot be implicitly captured only for contract assertions; capture it explicitly":
+  <-----------------------------------------------------------------------------
+  line 73: error: "a" (declared at line 72) cannot be implicitly captured only for contract assertions; capture it explicitly
+  ----------------------------------------------------------------------------->
+Matches for "line 77: error: "x" .* cannot be implicitly captured only for contract assertions; capture it explicitly":
+  <-----------------------------------------------------------------------------
+  line 77: error: "x" (declared at line 76) cannot be implicitly captured only for contract assertions; capture it explicitly
+  ----------------------------------------------------------------------------->
+Matches for "line 83: error: "ts" .* cannot be implicitly captured only for contract assertions; capture it explicitly":
+  <-----------------------------------------------------------------------------
+  line 83: error: "ts" (declared at line 82) cannot be implicitly captured only for contract assertions; capture it explicitly
+  ----------------------------------------------------------------------------->
+Matches for "line 93: error: "this" cannot be implicitly captured only for contract assertions; capture it explicitly":
+  <-----------------------------------------------------------------------------
+  line 93: error: "this" cannot be implicitly captured only for contract assertions; capture it explicitly
+  ----------------------------------------------------------------------------->
+Matches for "line 98: error: "i" .* cannot be implicitly captured only for contract assertions; capture it explicitly":
+  <-----------------------------------------------------------------------------
+  line 98: error: "i" (declared at line 96) cannot be implicitly captured only for contract assertions; capture it explicitly
+  ----------------------------------------------------------------------------->
+Matches for "line 101: error: "i" .* cannot be implicitly captured only for contract assertions; capture it explicitly":
+  <-----------------------------------------------------------------------------
+  line 101: error: "i" (declared at line 96) cannot be implicitly captured only for contract assertions; capture it explicitly
+  ----------------------------------------------------------------------------->
+Matches for "line 102: error: "y" .* cannot be implicitly captured only for contract assertions; capture it explicitly":
+  <-----------------------------------------------------------------------------
+  line 102: error: "y" (declared at line 97) cannot be implicitly captured only for contract assertions; capture it explicitly
+  ----------------------------------------------------------------------------->
+Matches for "line 108: error: "i" .* cannot be implicitly captured only for contract assertions; capture it explicitly":
+  <-----------------------------------------------------------------------------
+  line 108: error: "i" (declared at line 96) cannot be implicitly captured only for contract assertions; capture it explicitly
+  ----------------------------------------------------------------------------->
+Matches for "line 109: error: "i" .* cannot be implicitly captured only for contract assertions; capture it explicitly":
+  <-----------------------------------------------------------------------------
+  line 109: error: "i" (declared at line 96) cannot be implicitly captured only for contract assertions; capture it explicitly
+  ----------------------------------------------------------------------------->

@@ -1,0 +1,34 @@
+fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
+"Test_name.c", line 23: error: expression must be a modifiable lvalue
+    contract_assert([] { ++g_n; return true; }());
+                           ^
+
+"Test_name.c", line 24: error: expression must be a modifiable lvalue
+    contract_assert([] { ++HasStatic::s; return true; }());
+                           ^
+
+"Test_name.c", line 25: error: expression must be a modifiable lvalue
+    contract_assert([&] { ++local_static; return true; }());
+                            ^
+
+"Test_name.c", line 26: error: expression must be a modifiable lvalue
+    contract_assert([&] { return [&] { return ++x > 0; }(); }());
+                                                ^
+
+"Test_name.c", line 27: error: expression must be a modifiable lvalue
+    contract_assert([&x] { return [&x] { return ++x > 0; }(); }());
+                                                  ^
+
+"Test_name.c", line 43: error: expression must be a modifiable lvalue
+  int r1() post(r: [&] { return ++r > 0; }()) { return 1; }
+                                  ^
+
+"Test_name.c", line 44: error: expression must be a modifiable lvalue
+  int r2() post(r: [] { return ++g_n > 0; }()) { return 1; }
+                                 ^
+
+"Test_name.c", line 48: error: expression must be a modifiable lvalue
+    void h() { contract_assert([&] { [&] { ++m; }(); return true; }()); }
+                                             ^
+
+8 errors detected in the compilation of "Test_name.c".
