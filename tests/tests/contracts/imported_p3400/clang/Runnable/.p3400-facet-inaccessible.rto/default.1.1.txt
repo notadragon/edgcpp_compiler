@@ -1,0 +1,31 @@
+eccp -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contract_evaluation_semantic=observe Test_name.c
+Test_name.c:117:28: warning: 'priv_comment_t' does not provide the 'compute_comment' facet because that member is inaccessible [-Wcontract-invalid-label-facet]
+  117 | void f_priv_comment(int x) pre<priv_comment>(x > 0) {}
+      |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:86:105: note: declared here
+   86 | PRIVATE_LABEL(priv_comment_t, COMMENT_M) PUBLIC_LABEL(pub_comment_t, COMMENT_M)
+      |                                                                                                         ^              
+Test_name.c:119:28: warning: 'priv_message_t' does not provide the 'compute_message' facet because that member is inaccessible [-Wcontract-invalid-label-facet]
+  119 | void f_priv_message(int x) pre<priv_message>(x > 0) {}
+      |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:87:105: note: declared here
+   87 | PRIVATE_LABEL(priv_message_t, MESSAGE_M) PUBLIC_LABEL(pub_message_t, MESSAGE_M)
+      |                                                                                                         ^              
+Test_name.c:121:26: warning: 'priv_query_t' does not provide the 'query' facet because that member is inaccessible [-Wcontract-invalid-label-facet]
+  121 | void f_priv_query(int x) pre<priv_query>(x > 0) {}
+      |                          ^~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:88:85: note: declared here
+   88 | PRIVATE_LABEL(priv_query_t, QUERY_M) PUBLIC_LABEL(pub_query_t, QUERY_M)
+      |                                                                                     ^    
+Test_name.c:123:28: warning: 'priv_handler_t' does not provide the 'handle_contract_violation' facet because that member is inaccessible [-Wcontract-invalid-label-facet]
+  123 | void f_priv_handler(int x) pre<priv_handler>(x > 0) {}
+      |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:89:88: note: declared here
+   89 | PRIVATE_LABEL(priv_handler_t, HANDLER_M) PUBLIC_LABEL(pub_handler_t, HANDLER_M)
+      |                                                                                        ^                        
+Test_name.c:125:24: warning: 'priv_sem_t' does not provide the 'compute_semantic' facet because that member is inaccessible [-Wcontract-invalid-label-facet]
+  125 | void f_priv_sem(int x) pre<priv_sem>(x > 0) {}
+      |                        ^~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:90:121: note: declared here
+   90 | PRIVATE_LABEL(priv_sem_t, SEM_M) PUBLIC_LABEL(pub_sem_t, SEM_M)
+      |                                                                                                                         ^               

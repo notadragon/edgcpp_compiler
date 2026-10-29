@@ -1,0 +1,12 @@
+Matches for "line 9: error: assertion-control specifiers require --contracts_p3400":
+  <-----------------------------------------------------------------------------
+  line 9: error: assertion-control specifiers require --contracts_p3400
+  ----------------------------------------------------------------------------->
+Matches for "line 10: error: assertion-control specifiers require --contracts_p3400":
+  <-----------------------------------------------------------------------------
+  line 10: error: assertion-control specifiers require --contracts_p3400
+  ----------------------------------------------------------------------------->
+Matches for "line 11: error: assertion-control specifiers require --contracts_p3400":
+  <-----------------------------------------------------------------------------
+  line 11: error: assertion-control specifiers require --contracts_p3400
+  ----------------------------------------------------------------------------->

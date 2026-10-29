@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 Test_name.c
+"Test_name.c", line 24: error: namespace "N" has no member "lab"
+  int w = N::lab;    // { dg-error "is not a member of 'N'" }
+             ^
+
+1 error detected in the compilation of "Test_name.c".

@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 Test_name.c
+"Test_name.c", line 18: error: an assertion-control expression must be a constant expression
+    auto a = contract_control(l);      // expected-error {{constant expression}} expected-note {{read of non-constexpr variable 'l'}} expected-note {{in call to 'L(l)'}}
+             ^
+
+"Test_name.c", line 19: error: an assertion-control expression must be a constant expression
+    auto b = contract_control(x + 1);  // expected-error {{constant expression}} expected-note {{function parameter 'x' with unknown value}}
+             ^
+
+"Test_name.c", line 17: warning: variable "l" was set but never used
+    L l{x}; // expected-note {{declared here}}
+      ^
+
+2 errors detected in the compilation of "Test_name.c".

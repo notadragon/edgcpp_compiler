@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 Test_name.c
+"Test_name.c", line 50: error: the compute_semantic facet of assertion-control object "non_constexpr_semantic_t" must be usable in a constant expression
+  void f1 (int x) pre<non_constexpr_semantic> (x > 0) { }  // { dg-error "'compute_semantic' facet of assertion-control object 'non_constexpr_semantic_t' must be usable in a constant expression" }
+                  ^
+
+"Test_name.c", line 51: error: the compute_comment facet of assertion-control object "non_constexpr_comment_t" must be usable in a constant expression
+  void f2 (int x) pre<non_constexpr_comment> (x > 0) { }   // { dg-error "'compute_comment' facet of assertion-control object 'non_constexpr_comment_t' must be usable in a constant expression" }
+                  ^
+
+"Test_name.c", line 52: error: the compute_message facet of assertion-control object "non_constexpr_message_t" must be usable in a constant expression
+  void f3 (int x) pre<non_constexpr_message> (x > 0) { }   // { dg-error "'compute_message' facet of assertion-control object 'non_constexpr_message_t' must be usable in a constant expression" }
+                  ^
+
+3 errors detected in the compilation of "Test_name.c".

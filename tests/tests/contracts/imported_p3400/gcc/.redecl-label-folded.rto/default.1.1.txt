@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 Test_name.c
+"Test_name.c", line 25: error: mismatched assertion-control label in declaration (previous contract specifier declared at line 22)
+  void f (int x) pre<b> (x > 0) {}	// { dg-error "mismatched assertion-control label" }
+                 ^
+
+"Test_name.c", line 26: error: mismatched assertion-control label in declaration (previous contract specifier declared at line 23)
+  void g (int x) pre<L{}> (x > 0) {}	// { dg-error "mismatched assertion-control label" }
+                 ^
+
+2 errors detected in the compilation of "Test_name.c".

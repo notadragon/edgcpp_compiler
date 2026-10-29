@@ -392,6 +392,10 @@ extern void resolve_pending_mapped_exc_spec(a_symbol_ptr                sym,
                                             an_exception_specification  *esp);
 
 extern void scan_contract_assertion_attributes(void);
+extern a_boolean curr_token_starts_labeled_contract_specifier(void);
+extern void cache_contract_label(a_contract_specifier_ptr  csp,
+                                 a_boolean                 skip);
+extern void scan_cached_contract_label(a_contract_specifier_ptr  csp);
 extern a_boolean contract_specifiers_are_cached(
                                          a_contract_specifier_ptr  csp);
 extern void scan_cached_contract_specifiers(

@@ -1,0 +1,1 @@
+eccp -DTEST_NUMBER=1 --c++26 --c++26 --contracts_p3400 --contracts_p3098 --contract_group_evaluation_semantic=g:ignore --contract_evaluation_semantic=enforce Test_name.c

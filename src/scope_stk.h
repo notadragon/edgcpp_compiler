@@ -1065,6 +1065,11 @@ typedef struct a_scope_stack_entry {
 			   has been seen.  (Additional elements may follow in
 			   C++, including trailing return types and exception
 			   specifications.) */
+  a_bit_field	saved_in_assertion_control_expression:1;
+			/* For a scope pushed by
+			   push_template_instantiation_scope, the value of
+			   in_assertion_control_expression it replaced with
+			   FALSE (P3400). */
   a_bit_field	in_field_initializer:1;
 			/* TRUE while scanning a field initializer.  This flag
 			   is set to TRUE in the class (reactivation) scope for

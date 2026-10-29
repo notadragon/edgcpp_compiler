@@ -1,0 +1,7 @@
+eccp -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contract_evaluation_semantic=observe Test_name.c
+Test_name.c:47:14: warning: 'label_t' does not provide the 'handle_contract_violation' facet because that member is not 'const'; a facet member must be 'const' or 'static' [-Wcontract-invalid-label-facet]
+   47 | int f (int x) pre<label> (x > 0) { return x; }  // { dg-warning "does not provide the 'handle_contract_violation' facet" }
+      |              ^~~~~~~~~~~~~~~~~~~
+Test_name.c:36:35: note: declared here
+   36 |   handle_contract_violation (const contract_violation&)  // { dg-message "declared here" }
+      |                                   ^~~~~~~~~~~~~~~~~~~~~~~~~

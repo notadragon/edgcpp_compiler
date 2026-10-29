@@ -122,6 +122,18 @@ locator.  In the case of an ambiguity, return NULL.
 }  /* find_nested_type_symbol */
 
 
+/*
+TRUE if the using-directive udp, or the active using-directive entry audp,
+applies to the current lookup: a namespace nominated by "using contract_control
+namespace N;" (P3400) is visible only within an assertion-control specifier
+or a contract_control expression (see in_assertion_control_expression).
+*/
+#define using_directive_applies(udp)                                         \
+  (!(udp)->is_contract_control || in_assertion_control_expression)
+#define active_using_directive_applies(audp)                                 \
+  (!(audp)->contract_control_only || in_assertion_control_expression)
+
+
 a_scope_number scope_depth_for_synth_namespace_symbol(void)
 /*
 Determine the depth at which a synthesized namespace symbol for the
@@ -2517,6 +2529,14 @@ of the lookup is returned to the caller.
   a_boolean		gpp_namespace_only_mode = FALSE;
 
   db_enter(4, "do_using_directive_lookup");
+  if (in_assertion_control_expression && sym_from_scope != NULL &&
+      sym_from_scope->kind == (a_symbol_kind)sk_undefined) {
+    /* P3400: the name may be one made visible by a contract_control
+       using-directive whose use outside assertion-control expressions was
+       diagnosed as undefined (see enter_undefined_symbol).  Look for the
+       real one. */
+    sym = NULL;
+  }  /* if */
   if (microsoft_bugs && microsoft_version < 1400 && sym_from_scope != NULL) {
     /* In Microsoft bugs mode for older MSVC versions, a class template
        symbol found suppresses the using-directive lookup from that
@@ -2546,6 +2566,7 @@ of the lookup is returned to the caller.
          to an inline namespace. */
       continue;
     }  /* if */
+    if (!active_using_directive_applies(audp)) continue;
     /* Search for a symbol in the lookup table for the namespace. */
     nssp = audp->namespace_supplement;
     ns_sym = fundamental_symbol_of(nssp->symbol);
@@ -6203,7 +6224,7 @@ If no symbol is found in the specified namespace, NULL is returned.
   for (; udp != NULL; udp = udp->next) {
     /* Ignore using-directives that are not for inline namespaces
        if the inline_namespace_only flag was passed in. */
-    if (udp->is_using_directive &&
+    if (udp->is_using_directive && using_directive_applies(udp) &&
         (!inline_namespace_only || udp->inline_namespace)) {
       a_namespace_symbol_supplement_ptr	next_nssp;
       a_namespace_ptr			assoc_namespace;
@@ -7526,6 +7547,7 @@ symbol found by the normal lookup.
        loop because a namespace was found. */
     for (audp = ssep->using_directives_that_apply_here;
          audp != NULL; audp = audp->next_that_applies_at_depth) {
+      if (!active_using_directive_applies(audp)) continue;
       nsp = audp->namespace_supplement->symbol->variant.namespace_info.ptr;
       /* Don't remove a namespace if the using-directive appeared after
          the point where the normal symbol was found. */
