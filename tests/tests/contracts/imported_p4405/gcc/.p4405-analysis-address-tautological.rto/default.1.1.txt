@@ -1,0 +1,81 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 Test_name.c
+"Test_name.c", line 88: warning: variable "p1" was set but never used
+    void (*p1) (int) = t1;			// { dg-bogus "address" }
+           ^
+
+"Test_name.c", line 89: warning: variable "p2" was set but never used
+    void (*p2) (int) = &t2;			// { dg-bogus "address" }
+           ^
+
+"Test_name.c", line 91: warning: variable "p4" was set but never used
+    void (*p4) (int) = t4;			// { dg-bogus "address" }
+           ^
+
+"Test_name.c", line 92: warning: variable "p5" was set but never used
+    void (*p5) (int) = t5;			// { dg-bogus "address" }
+           ^
+
+"Test_name.c", line 93: warning: variable "pm" was set but never used
+    auto pm = &S::mt;				// { dg-bogus "address" }
+         ^
+
+"Test_name.c", line 94: warning: variable "ps" was set but never used
+    void (*ps) (int) = S::st;			// { dg-bogus "address" }
+           ^
+
+"Test_name.c", line 95: warning: variable "pt" was set but never used
+    void (*pt) (int) = tt<int>;			// { dg-bogus "address" }
+           ^
+
+"Test_name.c", line 97: warning: variable "pl" was set but never used
+    int (*pl) (int) = l;				// { dg-bogus "address" }
+          ^
+
+"Test_name.c", line 99: warning: variable "q1" was set but never used
+    void (*q1) (int) = z1;			// { dg-error "contract predicate is always false for a call through the address of 'void z1\\(int\\)'" }
+           ^
+
+"Test_name.c", line 100: warning: variable "q2" was set but never used
+    void (*q2) (int) = z2;			// { dg-warning "contract predicate is always false for a call through the address of 'void z2\\(int\\)' \\\[-Wcontract-unproven\\\]" }
+           ^
+
+"Test_name.c", line 101: warning: variable "q3" was set but never used
+    void (*q3) (int) = m1;			// { dg-error "contract assertion cannot be proven for a call through the address of 'void m1\\(int\\)'" }
+           ^
+
+"Test_name.c", line 102: warning: variable "q4" was set but never used
+    void (*q4) (int) = m2;			// { dg-warning "contract assertion cannot be proven for a call through the address of 'void m2\\(int\\)'" }
+           ^
+
+Test_name.c:82:4: error: contract predicate is always false for a call through the address of 'DZ::~DZ()'
+   82 | DZ dz1;                                         // { dg-error "contract predicate is always false for a call through the address of 'DZ::~DZ\\(\\)'" }
+      |    ^~~
+Test_name.c:82:4: note: 'dz1', of static storage duration, is destroyed by a call through the address of its destructor
+Test_name.c:74:7: note: precondition here
+   74 |   ~DZ () pre<always_prove> (k == 4);    // { dg-message "precondition here" }
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c: In function 'void use()':
+Test_name.c:99:19: error: contract predicate is always false for a call through the address of 'void z1(int)'
+   99 |   void (*q1) (int) = z1;                        // { dg-error "contract predicate is always false for a call through the address of 'void z1\\(int\\)'" }
+      |                   ^~
+Test_name.c:54:16: note: precondition here
+   54 | void z1 (int x) pre<always_prove> (false);      // { dg-message "precondition here" }
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:100:19: warning: contract predicate is always false for a call through the address of 'void z2(int)' [-Wcontract-unproven]
+  100 |   void (*q2) (int) = z2;                        // { dg-warning "contract predicate is always false for a call through the address of 'void z2\\(int\\)' \\\[-Wcontract-unproven\\\]" }
+      |                   ^~
+Test_name.c:55:16: note: precondition here
+   55 | void z2 (int x) pre<always_diagnose> (k < 0);   // { dg-message "precondition here" }
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:101:19: error: contract assertion cannot be proven for a call through the address of 'void m1(int)'
+  101 |   void (*q3) (int) = m1;                        // { dg-error "contract assertion cannot be proven for a call through the address of 'void m1\\(int\\)'" }
+      |                   ^~
+Test_name.c:56:72: note: precondition here
+   56 | void m1 (int x) pre<always_prove> (true) pre<always_diagnose> (x > 0) pre<always_prove> (x < 9);        // { dg-message "precondition here" }
+      |                                                                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:102:19: warning: contract assertion cannot be proven for a call through the address of 'void m2(int)' [-Wcontract-unproven]
+  102 |   void (*q4) (int) = m2;                        // { dg-warning "contract assertion cannot be proven for a call through the address of 'void m2\\(int\\)'" }
+      |                   ^~
+Test_name.c:57:42: note: precondition here
+   57 | void m2 (int x) pre<always_prove> (true) pre<always_diagnose> (x > 0);  // { dg-message "precondition here" }
+      |                                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~

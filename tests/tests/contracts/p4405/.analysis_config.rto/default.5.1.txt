@@ -1,0 +1,5 @@
+fe_only -DTEST_NUMBER=5 --c++26 --contracts_p4405 --contract_configuration=[{"match":{"analysis":true},"output":{"semantic":"assume"}}] Test_name.c
+Command-line error: invalid contract configuration (<command-line>:1:50): the "semantic" of an entry matching "analysis" must be "ignore", "diagnose" or "prove"
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation terminated.

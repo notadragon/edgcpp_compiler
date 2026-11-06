@@ -1,0 +1,53 @@
+//remark: imported from gcc:p4405-analysis-system-header.C
+//type: cp
+//require: BACK_END_IS_CP_GEN_BE 1
+//source_files: p4405-analysis-system-header.h
+//options: --c++26 --contracts --contracts_p3400 --contracts_p4405 -O0
+//use_system_includes: true
+//match_regex: p4405-analysis-system-header\.h:20:[0-9]+: warning: contract assertion cannot be proven \[-Wcontract-unproven\]
+// EDG: adapted -- the front end gives no analysis diagnostic through edg_gxx.sh:
+// g++ makes the analysis evaluations, so the test compiles (type cp) and
+// matches g++'s diagnostics; the header's "#pragma GCC system_header"
+// reaches g++ as the system-header flag of cpfe-cp's line directives.
+// D4405 ("The Analysis Evaluation") and notadragon_wg21 DECISIONS.md E186
+// (a): a diagnose warning whose analysis evaluation is in a system header
+// is shown when the contract assertion is the program's -- a closure's
+// precondition analyzed where a system header's forwarding template calls
+// it -- located at that call, with the instantiation trail into this file.
+// A warning for an assertion that is itself in a system header stays
+// hidden without -Wsystem-headers: sys_caller's call of sys_callee, and the
+// header's own closure passed to sys_invoke.  A call of sys_callee made
+// here is located here and warned about as any other.  Compiled at -O0, so
+// nothing here depends on inlining; p4405-analysis-indirect-lambda.C has
+// the libstdc++ form at -O2, and p4405-analysis-system-header-sys.C shows
+// the hidden warnings with -Wsystem-headers.
+// { dg-do compile { target c++26 } }
+// { dg-additional-options "-fcontracts -fcontracts-p3400 -fcontracts-p4405 -O0" }
+// { dg-skip-if "requires hosted libstdc++ for stdc++exp" { ! hostedlib } }
+
+#include "p4405-analysis-system-header.h"
+
+struct always_diagnose_t {
+  using assertion_control_object = always_diagnose_t;
+  static constexpr std::contracts::evaluation_semantic_set
+    allowed_semantics{std::contracts::evaluation_semantic::diagnose};
+};
+constexpr always_diagnose_t always_diagnose{};
+
+void
+use (int n)
+{
+  auto ld = [] (int x) pre<always_diagnose> (x > 0) {};	// { dg-message "the predicate of the contract assertion" }
+  sys_invoke (ld, n);				// { dg-message "required from here" }
+  sys_caller (n);
+  sys_lambda_caller (n);
+  sys_callee (n);				// { dg-warning "contract assertion cannot be proven" }
+}
+
+// The closure's precondition, analyzed at sys_invoke's call of it (line 20
+// of the header).  The header's own closure, analyzed there too, and
+// sys_callee's precondition analyzed at sys_caller's call (line 32) are not
+// reported.
+// { dg-regexp {[^\n]*p4405-analysis-system-header\.h:20:[0-9]+: warning: contract assertion cannot be proven \[-Wcontract-unproven\]\n} }
+// { dg-message "In instantiation of" "" { target *-*-* } 0 }
+// { dg-message "the predicate of the contract assertion" "" { target *-*-* } 0 }

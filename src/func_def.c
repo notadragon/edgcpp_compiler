@@ -2015,6 +2015,11 @@ of lambda expressions.
        body too (EDG-86). */
     protect_contract_captures();
   }  /* if */
+  if (CONTRACT_CHECKS_IN_FRONT_END && contracts_p4405_enabled) {
+    /* The analysis evaluations of the preconditions of the routines the
+       body calls (P4405). */
+    diagnose_contract_analyses_in_body();
+  }  /* if */
   if (func_info->lambda != NULL) {
     /* Remove unneeded captures. */
     a_lambda_capture_ptr  *p_lcp = &func_info->lambda->capture_list;

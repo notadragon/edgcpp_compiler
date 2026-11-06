@@ -1,0 +1,95 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p4405 --contract_evaluation_semantic=ignore --contract_analysis_semantic=prove -O2 Test_name.c
+"Test_name.c", line 72: warning: statement is unreachable
+  int live5 (int y) { if (1) return g3 (0); return y; }	// { dg-error "contract predicate is always false" }
+                                            ^
+
+Test_name.c: In function 'int live1()':
+Test_name.c:68:34: error: contract predicate is always false
+   68 | int live1 () { return 0 ? 2 : g3 (0); }         // { dg-error "contract predicate is always false" }
+      |                                ~~^~~
+Test_name.c:42:21: note: the predicate of the contract assertion
+   42 | int g3 (int x) pre (x != 0);    // { dg-message "the predicate of the contract assertion" }
+      |                   ~~^~~~
+Test_name.c: In function 'bool live2()':
+Test_name.c:69:33: error: contract predicate is always false
+   69 | bool live2 () { return true && g3 (0); }        // { dg-error "contract predicate is always false" }
+      |                               ~~^~~
+Test_name.c:42:21: note: the predicate of the contract assertion
+   42 | int g3 (int x) pre (x != 0);    // { dg-message "the predicate of the contract assertion" }
+      |                   ~~^~~~
+Test_name.c: In function 'bool live3()':
+Test_name.c:70:32: error: contract predicate is always false
+   70 | bool live3 () { return 0 || g3 (0); }           // { dg-error "contract predicate is always false" }
+      |                              ~~^~~
+Test_name.c:42:21: note: the predicate of the contract assertion
+   42 | int g3 (int x) pre (x != 0);    // { dg-message "the predicate of the contract assertion" }
+      |                   ~~^~~~
+Test_name.c: In function 'int live4(int)':
+Test_name.c:71:57: error: contract predicate is always false
+   71 | int live4 (int y) { if (0) return y; else return g3 (0); }      // { dg-error "contract predicate is always false" }
+      |                                                       ~~^~~~~~~~
+Test_name.c:42:21: note: the predicate of the contract assertion
+   42 | int g3 (int x) pre (x != 0);    // { dg-message "the predicate of the contract assertion" }
+      |                   ~~^~~~
+Test_name.c: In function 'int live5(int)':
+Test_name.c:72:38: error: contract predicate is always false
+   72 | int live5 (int y) { if (1) return g3 (0); return y; }   // { dg-error "contract predicate is always false" }
+      |                                    ~~^~~
+Test_name.c:42:21: note: the predicate of the contract assertion
+   42 | int g3 (int x) pre (x != 0);    // { dg-message "the predicate of the contract assertion" }
+      |                   ~~^~~~
+Test_name.c: In function 'int live6(int)':
+Test_name.c:73:51: error: contract predicate is always false
+   73 | int live6 (int y) { if (0) return y; return g3 (0); }   // { dg-error "contract predicate is always false" }
+      |                                                 ~~^~~
+Test_name.c:42:21: note: the predicate of the contract assertion
+   42 | int g3 (int x) pre (x != 0);    // { dg-message "the predicate of the contract assertion" }
+      |                   ~~^~~~
+Test_name.c: In function 'bool live7()':
+Test_name.c:74:41: error: contract predicate is always false
+   74 | bool live7 () { return 0 && g3 (0) || g3 (0); } // { dg-error "contract predicate is always false" }
+      |                                       ~~^~~
+Test_name.c:42:21: note: the predicate of the contract assertion
+   42 | int g3 (int x) pre (x != 0);    // { dg-message "the predicate of the contract assertion" }
+      |                   ~~^~~~
+Test_name.c: In function 'int h4(int)':
+Test_name.c:75:45: error: contract predicate is always false
+   75 | int h4 (int y) { return y > 0 && y < 0 ? g3 (0) : y; }  // { dg-error "contract predicate is always false" }
+      |                                           ~~^~~
+Test_name.c:42:21: note: the predicate of the contract assertion
+   42 | int g3 (int x) pre (x != 0);    // { dg-message "the predicate of the contract assertion" }
+      |                   ~~^~~~
+Test_name.c: In function 'int h8(int)':
+Test_name.c:79:17: error: contract predicate is always false
+   79 | int h8 (int y) { contract_assert (false && g3 (0)); return y; } // { dg-error "contract predicate is always false" }
+      |                 ^~~~~~~~~~~~~~~
+Test_name.c: In instantiation of 'int tlive1() [with T = int]':
+Test_name.c:113:28:   required from here
+  113 | template int tlive1<int> ();
+      |                            ^
+Test_name.c:96:60: error: contract predicate is always false
+   96 | template <typename T> int tlive1 () { return 0 ? 2 : g3 (0); }  // { dg-error "contract predicate is always false" }
+      |                                                         ~~~^~~~~~
+Test_name.c:42:21: note: the predicate of the contract assertion
+   42 | int g3 (int x) pre (x != 0);    // { dg-message "the predicate of the contract assertion" }
+      |                   ~~^~~~
+Test_name.c: In instantiation of 'bool tlive2() [with int N = 1]':
+Test_name.c:114:27:   required from here
+  114 | template bool tlive2<1> ();
+      |                           ^
+Test_name.c:97:53: error: contract predicate is always false
+   97 | template <int N> bool tlive2 () { return N && g3 (0); } // { dg-error "contract predicate is always false" }
+      |                                                  ~~~^~~~~
+Test_name.c:42:21: note: the predicate of the contract assertion
+   42 | int g3 (int x) pre (x != 0);    // { dg-message "the predicate of the contract assertion" }
+      |                   ~~^~~~
+Test_name.c: In instantiation of 'int th4(int) [with T = int]':
+Test_name.c:115:28:   required from here
+  115 | template int th4<int> (int);
+      |                            ^
+Test_name.c:98:72: error: contract predicate is always false
+   98 | template <typename T> int th4 (int y) { return y > 0 && y < 0 ? g3 (0) : y; }   // { dg-error "contract predicate is always false" }
+      |                                                                     ~~~^~~~~
+Test_name.c:42:21: note: the predicate of the contract assertion
+   42 | int g3 (int x) pre (x != 0);    // { dg-message "the predicate of the contract assertion" }
+      |                   ~~^~~~

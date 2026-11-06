@@ -1,0 +1,270 @@
+fe_only -DTEST_NUMBER=3 --c++26 --contracts_p3400 --contracts_p4405 --no_contracts_prove_fold --contract_evaluation_semantic=ignore --contract_analysis_semantic=prove Test_name.c
+"Test_name.c", line 64: error: contract assertion cannot be proven for a call through the address of "DT::~DT() noexcept"
+            variable "dt1", of static storage duration, is destroyed by a call through the address of its destructor
+            the precondition at line 57
+  DT dt1;                          // Tautological: nothing.
+     ^
+
+"Test_name.c", line 65: warning: contract assertion cannot be proven for a call through the address of "DK::~DK() noexcept"
+            variable "dk1", of static storage duration, is destroyed by a call through the address of its destructor
+            the precondition at line 58
+  DK dk1;
+     ^
+
+"Test_name.c", line 66: error: contract assertion cannot be proven for a call through the address of "DT::~DT() noexcept"
+            variable "dt2", of static storage duration, is destroyed by a call through the address of its destructor
+            the precondition at line 57
+  thread_local DT dt2;
+                  ^
+
+"Test_name.c", line 67: error: contract assertion cannot be proven for a call through the address of "DT::~DT() noexcept"
+            variable "dta", of static storage duration, is destroyed by a call through the address of its destructor
+            the precondition at line 57
+  DT dta[2];                       // Nothing for the address; its element
+     ^
+
+"Test_name.c", line 67: error: contract assertion cannot be proven
+  DT dta[2];                       // Nothing for the address; its element
+     ^
+
+"Test_name.c", line 69: error: contract assertion cannot be proven for a call through the address of "DT::~DT() noexcept"
+            a temporary lifetime-extended to static or thread storage duration is destroyed by a call through the address of its destructor
+            the precondition at line 57
+  const DT &rt = DT();
+                 ^
+
+"Test_name.c", line 70: error: contract assertion cannot be proven for a call through the address of "DZ::~DZ() noexcept"
+            variable "dz1", of static storage duration, is destroyed by a call through the address of its destructor
+            the precondition at line 59
+  DZ dz1;                          // Always false.
+     ^
+
+"Test_name.c", line 71: error: contract assertion cannot be proven for a call through the address of "DN::~DN() noexcept"
+            variable "dn1", of static storage duration, is destroyed by a call through the address of its destructor
+            the precondition at line 60
+  DN dn1;                          // An error, naming dn1.
+     ^
+
+"Test_name.c", line 72: error: contract assertion cannot be proven for a call through the address of "DN::~DN() noexcept"
+            variable "dn2", of static storage duration, is destroyed by a call through the address of its destructor
+            the precondition at line 60
+  thread_local DN dn2;             // Likewise, of thread storage duration.
+                  ^
+
+"Test_name.c", line 73: error: contract assertion cannot be proven for a call through the address of "DN::~DN() noexcept"
+            a temporary lifetime-extended to static or thread storage duration is destroyed by a call through the address of its destructor
+            the precondition at line 60
+  const DN &rn = DN();             // Likewise, a temporary.
+                 ^
+
+"Test_name.c", line 74: warning: contract assertion cannot be proven for a call through the address of "DW::~DW() noexcept"
+            variable "dw1", of static storage duration, is destroyed by a call through the address of its destructor
+            the precondition at line 61
+  DW dw1;                          // A warning.
+     ^
+
+"Test_name.c", line 86: error: contract assertion cannot be proven for a call through the address of "DT::~DT() noexcept"
+            variable "dt3", of static storage duration, is destroyed by a call through the address of its destructor
+            the precondition at line 57
+    static DT dt3;
+              ^
+
+"Test_name.c", line 78: error: contract assertion cannot be proven for a call through the address of "void t1(int)"
+            the precondition at line 31
+    void (*p1)(int) = t1;
+                    ^
+
+"Test_name.c", line 79: error: contract assertion cannot be proven for a call through the address of "void t2(int)"
+            the precondition at line 32
+    void (*p2)(int) = &t2;
+                    ^
+
+"Test_name.c", line 80: error: contract assertion cannot be proven for a call through the address of "void t3(int)"
+            the precondition at line 33
+    void (&r3)(int) = t3;
+                    ^
+
+"Test_name.c", line 81: warning: contract assertion cannot be proven for a call through the address of "void t4(int)"
+            the precondition at line 34
+    void (*p4)(int) = t4;
+                    ^
+
+"Test_name.c", line 82: error: contract assertion cannot be proven for a call through the address of "void t5(int)"
+            the precondition at line 35
+    void (*p5)(int) = t5;
+                    ^
+
+"Test_name.c", line 83: error: contract assertion cannot be proven for a call through the address of "void S::mt(int)"
+            the precondition at line 50
+    void (S::*pm)(int) = &S::mt;
+                       ^
+
+"Test_name.c", line 84: error: contract assertion cannot be proven for a call through the address of "void S::st(int)"
+            the precondition at line 51
+    void (*ps)(int) = S::st;
+                    ^
+
+"Test_name.c", line 85: error: contract assertion cannot be proven for a call through the address of "void tt(T) [with T=int]"
+            the precondition at line 54
+    void (*pt)(int) = tt<int>;
+                    ^
+
+"Test_name.c", line 87: error: contract assertion cannot be proven for a call through the address of "void z1(int)"
+            the precondition at line 37
+    void (*q1)(int) = z1;          // Always false, an error.
+                    ^
+
+"Test_name.c", line 88: warning: contract assertion cannot be proven for a call through the address of "void z2(int)"
+            the precondition at line 38
+    void (*q2)(int) = z2;          // Always false, a warning.
+                    ^
+
+"Test_name.c", line 89: error: contract assertion cannot be proven for a call through the address of "void m1(int)"
+            the precondition at line 40
+    void (*q3)(int) = m1;          // m1's third precondition, an error.
+                    ^
+
+"Test_name.c", line 90: error: contract assertion cannot be proven for a call through the address of "void m2(int)"
+            the precondition at line 42
+    void (*q4)(int) = m2;          // m2's second, a warning.
+                    ^
+
+"Test_name.c", line 91: error: contract assertion cannot be proven for a call through the address of "void f1(int)"
+            the precondition at line 44
+    void (*g1)(int) = &f1;         // OK, proven tautological.
+                    ^
+
+"Test_name.c", line 92: error: contract assertion cannot be proven for a call through the address of "void f2(int)"
+            the precondition at line 45
+    void (*g2)(int) = &f2;         // Error, cannot be proven through g2.
+                    ^
+
+"Test_name.c", line 93: warning: contract assertion cannot be proven for a call through the address of "void f3(int)"
+            the precondition at line 46
+    void (*g3)(int) = &f3;         // OK, warns: cannot be proven through g3.
+                    ^
+
+"Test_name.c", line 95: error: contract assertion cannot be proven for a call through the address of "void S::mu(int)"
+            the precondition at line 52
+    void (S::*qm)(int) = &S::mu;   // An error.
+                       ^
+
+"Test_name.c", line 96: error: contract assertion cannot be proven for a call through the address of "void tu(T) [with T=int]"
+            the precondition at line 55
+    void (*qt)(int) = tu<int>;     // An error.
+                    ^
+
+"Test_name.c", line 78: warning: variable "p1" was set but never used
+    void (*p1)(int) = t1;
+           ^
+
+"Test_name.c", line 79: warning: variable "p2" was set but never used
+    void (*p2)(int) = &t2;
+           ^
+
+"Test_name.c", line 81: warning: variable "p4" was set but never used
+    void (*p4)(int) = t4;
+           ^
+
+"Test_name.c", line 82: warning: variable "p5" was set but never used
+    void (*p5)(int) = t5;
+           ^
+
+"Test_name.c", line 83: warning: variable "pm" was set but never used
+    void (S::*pm)(int) = &S::mt;
+              ^
+
+"Test_name.c", line 84: warning: variable "ps" was set but never used
+    void (*ps)(int) = S::st;
+           ^
+
+"Test_name.c", line 85: warning: variable "pt" was set but never used
+    void (*pt)(int) = tt<int>;
+           ^
+
+"Test_name.c", line 87: warning: variable "q1" was set but never used
+    void (*q1)(int) = z1;          // Always false, an error.
+           ^
+
+"Test_name.c", line 88: warning: variable "q2" was set but never used
+    void (*q2)(int) = z2;          // Always false, a warning.
+           ^
+
+"Test_name.c", line 89: warning: variable "q3" was set but never used
+    void (*q3)(int) = m1;          // m1's third precondition, an error.
+           ^
+
+"Test_name.c", line 90: warning: variable "q4" was set but never used
+    void (*q4)(int) = m2;          // m2's second, a warning.
+           ^
+
+"Test_name.c", line 91: warning: variable "g1" was set but never used
+    void (*g1)(int) = &f1;         // OK, proven tautological.
+           ^
+
+"Test_name.c", line 92: warning: variable "g2" was set but never used
+    void (*g2)(int) = &f2;         // Error, cannot be proven through g2.
+           ^
+
+"Test_name.c", line 93: warning: variable "g3" was set but never used
+    void (*g3)(int) = &f3;         // OK, warns: cannot be proven through g3.
+           ^
+
+"Test_name.c", line 94: warning: variable "g4" was set but never used
+    void (*g4)(int) = &f4;         // OK, calls through g4 are not analyzed.
+           ^
+
+"Test_name.c", line 95: warning: variable "qm" was set but never used
+    void (S::*qm)(int) = &S::mu;   // An error.
+              ^
+
+"Test_name.c", line 96: warning: variable "qt" was set but never used
+    void (*qt)(int) = tu<int>;     // An error.
+           ^
+
+"Test_name.c", line 108: error: contract assertion cannot be proven for a call through the address of function "lambda [](int)->int"
+            the precondition at line 107
+    int (*p1)(int) = l1;           // An error.
+                   ^
+
+"Test_name.c", line 110: error: contract assertion cannot be proven for a call through the address of function "lambda [](int) static->int"
+            the precondition at line 109
+    int (*p2)(int) = l2;           // An error.
+                   ^
+
+"Test_name.c", line 112: error: contract assertion cannot be proven for a call through the address of function "lambda [](auto)->auto [with <auto-1>=int]"
+            the precondition at line 111
+    int (*p3)(int) = l3;           // An error.
+                   ^
+
+"Test_name.c", line 114: warning: contract assertion cannot be proven for a call through the address of function "lambda [](int)->int"
+            the precondition at line 113
+    int (*p4)(int) = +l4;          // A warning.
+                   ^
+
+"Test_name.c", line 115: warning: contract assertion cannot be proven for a call through the address of function "lambda [](int)->int"
+            the precondition at line 113
+    auto p5 = static_cast<int (*)(int)>(l4);   // A warning.
+            ^
+
+"Test_name.c", line 117: warning: contract assertion cannot be proven for a call through the address of function "lambda [](auto) static->auto [with <auto-1>=long]"
+            the precondition at line 116
+    long (*p6)(long) = l6;         // A warning.
+                     ^
+
+"Test_name.c", line 123: error: contract assertion cannot be proven for a call through the address of function "lambda [](int)->int"
+            the precondition at line 120
+    int (*p8)(int) = l8;           // Tautological: nothing.
+                   ^
+
+"Test_name.c", line 136: warning: variable "l" was set but never used
+    auto l = [](int x) pre<always_prove>(x > 0) { return x; };
+         ^
+
+"Test_name.c", line 128: error: contract assertion cannot be proven for a call through the address of function "lambda [](int)->int"
+            the precondition at line 127
+    T (*p)(T) = l;                 // An error, in in_template<int>.
+              ^
+          detected during instantiation of "T in_template(T) [with T=int]" at line 131
+
+29 errors detected in the compilation of "Test_name.c".

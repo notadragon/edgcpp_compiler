@@ -1,0 +1,96 @@
+fe_only -DTEST_NUMBER=3 --c++26 --contracts_p3400 --contracts_p4405 --no_contracts_prove_fold --contract_evaluation_semantic=ignore --contract_analysis_semantic=prove Test_name.c
+"Test_name.c", line 46: error: contract assertion cannot be proven for a call through the address of "void a1(int)"
+            the precondition at line 36
+            precondition of a call in the predicate cannot be proven at line 32
+    void (*p1)(int) = &a1;
+                    ^
+
+"Test_name.c", line 47: error: contract assertion cannot be proven for a call through the address of "void a2(int)"
+            the precondition at line 37
+            precondition of a call in the predicate cannot be proven at line 32
+    void (*p2)(int) = &a2;
+                    ^
+
+"Test_name.c", line 48: error: contract assertion cannot be proven for a call through the address of "void a3(int)"
+            the precondition at line 38
+            precondition of a call in the predicate cannot be proven at line 32
+    void (*p3)(int) = &a3;
+                    ^
+
+"Test_name.c", line 49: error: contract assertion cannot be proven for a call through the address of "void a4(int)"
+            the precondition at line 39
+    void (*p4)(int) = &a4;
+                    ^
+
+"Test_name.c", line 50: error: contract assertion cannot be proven for a call through the address of "void a5(int)"
+            the precondition at line 40
+    void (*p5)(int) = &a5;
+                    ^
+
+"Test_name.c", line 41: warning: contract assertion cannot be proven
+  void a6(int x) pre<always_prove>(gd(x) == 1);     // gd's warned.
+                                     ^
+
+"Test_name.c", line 51: error: contract assertion cannot be proven for a call through the address of "void a6(int)"
+            the precondition at line 41
+    void (*p6)(int) = &a6;
+                    ^
+
+"Test_name.c", line 41: warning: contract assertion cannot be proven
+  void a6(int x) pre<always_prove>(gd(x) == 1);     // gd's warned.
+                                     ^
+
+"Test_name.c", line 52: error: contract assertion cannot be proven for a call through the address of "void a6(int)"
+            the precondition at line 41
+    void (*p7)(int) = &a6;         // gd's warned again.
+                    ^
+
+"Test_name.c", line 53: error: contract assertion cannot be proven for a call through the address of "void a7(int)"
+            the precondition at line 42
+            precondition of a call in the predicate cannot be proven at line 33
+    void (*p8)(int) = &a7;
+                    ^
+
+"Test_name.c", line 54: warning: contract assertion cannot be proven for a call through the address of "void a8(int)"
+            the precondition at line 43
+            precondition of a call in the predicate cannot be proven at line 33
+    void (*p9)(int) = &a8;
+                    ^
+
+"Test_name.c", line 46: warning: variable "p1" was set but never used
+    void (*p1)(int) = &a1;
+           ^
+
+"Test_name.c", line 47: warning: variable "p2" was set but never used
+    void (*p2)(int) = &a2;
+           ^
+
+"Test_name.c", line 48: warning: variable "p3" was set but never used
+    void (*p3)(int) = &a3;
+           ^
+
+"Test_name.c", line 49: warning: variable "p4" was set but never used
+    void (*p4)(int) = &a4;
+           ^
+
+"Test_name.c", line 50: warning: variable "p5" was set but never used
+    void (*p5)(int) = &a5;
+           ^
+
+"Test_name.c", line 51: warning: variable "p6" was set but never used
+    void (*p6)(int) = &a6;
+           ^
+
+"Test_name.c", line 52: warning: variable "p7" was set but never used
+    void (*p7)(int) = &a6;         // gd's warned again.
+           ^
+
+"Test_name.c", line 53: warning: variable "p8" was set but never used
+    void (*p8)(int) = &a7;
+           ^
+
+"Test_name.c", line 54: warning: variable "p9" was set but never used
+    void (*p9)(int) = &a8;
+           ^
+
+8 errors detected in the compilation of "Test_name.c".

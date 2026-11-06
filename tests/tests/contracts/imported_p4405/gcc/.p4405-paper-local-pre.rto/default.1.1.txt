@@ -1,0 +1,12 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 -O2 Test_name.c
+"Test_name.c", line 35: warning: variable "always_diagnose" was declared but never referenced
+  constexpr always_diagnose_t always_diagnose{};
+                              ^
+
+Test_name.c: In function 'void g(int)':
+Test_name.c:42:2: error: contract assertion cannot be proven
+   42 |   f(y);         // Error, cannot be proven      { dg-error "contract assertion cannot be proven" }
+      |  ^~~
+Test_name.c:37:37: note: the predicate of the contract assertion
+   37 | void f(int x) pre<always_prove>(x > 0); // { dg-message "the predicate of the contract assertion" }
+      |                                   ~~^~~

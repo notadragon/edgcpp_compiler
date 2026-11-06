@@ -1,0 +1,40 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 --contract_analysis_semantic=prove Test_name.c
+"Test_name.c", line 50: warning: variable "p1" was set but never used
+    void (*p1) (int) = &a1;
+           ^
+
+"Test_name.c", line 51: warning: variable "p2" was set but never used
+    void (*p2) (int) = &a2;	// { dg-error "contract assertion cannot be proven for a call through the address of 'void a2\\(int\\)'" }
+           ^
+
+"Test_name.c", line 52: warning: variable "p3" was set but never used
+    void (*p3) (int) = &a3;	// { dg-error "contract assertion cannot be proven for a call through the address of 'void a3\\(int\\)'" }
+           ^
+
+"Test_name.c", line 53: warning: variable "p4" was set but never used
+    void (*p4) (int) = &a4;
+           ^
+
+"Test_name.c", line 54: warning: variable "p5" was set but never used
+    void (*p5) (int) = &a5;
+           ^
+
+Test_name.c: In function 'void take()':
+Test_name.c:51:21: error: contract assertion cannot be proven for a call through the address of 'void a2(int)'
+   51 |   void (*p2) (int) = &a2;       // { dg-error "contract assertion cannot be proven for a call through the address of 'void a2\\(int\\)'" }
+      |                     ^~
+Test_name.c:42:16: note: precondition here
+   42 | void a2 (int x) pre<always_prove> (g (0) == 1); // { dg-message "precondition here" }
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:38:30: note: precondition of a call in the predicate is always false
+   38 | constexpr int g (int x) pre (x != 0) { return 1; }      // { dg-message "precondition of a call in the predicate is always false" }
+      |                            ~~^~~~
+Test_name.c:52:21: error: contract assertion cannot be proven for a call through the address of 'void a3(int)'
+   52 |   void (*p3) (int) = &a3;       // { dg-error "contract assertion cannot be proven for a call through the address of 'void a3\\(int\\)'" }
+      |                     ^~
+Test_name.c:43:16: note: precondition here
+   43 | void a3 (int x) pre<always_prove> (g (x) == 1); // { dg-message "precondition here" }
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:38:30: note: precondition of a call in the predicate cannot be proven
+   38 | constexpr int g (int x) pre (x != 0) { return 1; }      // { dg-message "precondition of a call in the predicate is always false" }
+      |                            ~~^~~~

@@ -7308,6 +7308,46 @@ give the starting and ending positions of the break statement.
 }  /* add_goto_for_break */
 
 
+static a_boolean contract_semantic_is_proving(a_contract_specifier_ptr  csp)
+/*
+Return TRUE if the analysis evaluation (P4405) of the contract assertion csp,
+in the current function, has the prove or diagnose semantic: nothing is
+proven, so it is diagnosed (see diagnose_unproven_contract).  A run-time
+evaluation never has either, and its check is made whatever this gives.
+*/
+{
+  a_contract_evaluation_semantic  semantic =
+              contract_analysis_semantic_for(csp, current_routine_entry());
+
+  return semantic == ces_prove || semantic == ces_diagnose;
+}  /* contract_semantic_is_proving */
+
+
+static void diagnose_unproven_with_nested(a_contract_specifier_ptr  csp,
+                                          a_boolean                 is_prove,
+                                          a_source_position         *pos);
+
+
+static void diagnose_unproven_contract(a_contract_specifier_ptr  csp)
+/*
+A check of the contract assertion csp, a postcondition or contract_assert of
+the current function, would be made here (see contract_checks_wanted), after
+its analysis evaluation (P4405), whatever the check's semantic.  Nothing is
+proven, so an analysis with prove is an error and one with diagnose a warning
+(contract_unproven), as in our GCC.  Called once for each assertion of each
+definition (a precondition's analysis is at each call instead).
+*/
+{
+  a_contract_evaluation_semantic  semantic;
+
+  if (!contract_semantic_is_proving(csp)) return;
+  /* An erroneous assertion has had its error. */
+  if (contract_assertion_is_erroneous(csp)) return;
+  semantic = contract_analysis_semantic_for(csp, current_routine_entry());
+  diagnose_unproven_with_nested(csp, semantic == ces_prove, &csp->position);
+}  /* diagnose_unproven_contract */
+
+
 static a_boolean contract_check_wanted(a_contract_specifier_ptr  csp)
 /*
 Return TRUE if a check of the contract assertion csp, in the current
@@ -7887,6 +7927,10 @@ make_contract_capture_inits) and destroyed at the end of the epilogue.
       capture_dtors = stmt;
       continue;
     }  /* if */
+    if (csp->kind == ctk_post && rp->contract_interface_target == NULL) {
+      /* Diagnosed once, here, not again in an interface wrapper (P4405). */
+      diagnose_unproven_contract(csp);
+    }  /* if */
     if (csp->kind == ctk_assert || !contract_check_wanted(csp)) continue;
     if (csp->kind == ctk_post && csp->captures != NULL) {
       /* The captures (P3098) are initialized in declaration order with the
@@ -7970,6 +8014,7 @@ them (see prepare_contract_checks_for_lowering).
                                   csp)) {
       continue;
     }  /* if */
+    diagnose_unproven_contract(csp);
     if (contract_check_wanted(csp)) {
       if (result_var == NULL) result_var = make_contract_result_variable();
       if (csp->captures != NULL) {
@@ -8164,6 +8209,7 @@ sequence.  The syntax is:
   sp->end_position = curr_construct_end_position;
 #endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
   stmt_update_source_sequence_list(sp);
+  if (contract_checks_wanted()) diagnose_unproven_contract(csp);
   if (contract_checks_wanted() && contract_check_wanted(csp)) {
     /* The check follows the statement, which itself generates nothing. */
     add_contract_check(csp);
@@ -10282,6 +10328,1714 @@ of the front end.
   cfd_id_number = 0;
 #endif /* DEBUG */
 }  /* statements_init */
+
+
+/*
+The state of the walk of a function body for the analysis evaluations of
+the preconditions of the routines it calls, and for the addresses of
+routines it takes (P4405; see diagnose_contract_analyses_in_body).
+*/
+STATIC_THREAD an_expr_node_ptr
+		analysis_walk_callee;
+			/* The routine operand of the call last visited,
+			   which is not an address taken. */
+STATIC_THREAD an_expr_node_ptr
+		analysis_walk_default_arg;
+			/* The copy of a default argument being visited, if
+			   any: the address it takes is taken where the
+			   default argument is written. */
+STATIC_THREAD a_source_position
+		analysis_walk_position;
+			/* The position of the expression or statement last
+			   visited. */
+STATIC_THREAD int
+		analysis_walk_dead;
+			/* Nonzero while code never evaluated is visited
+			   (see contract_never_evaluated_condition): its
+			   calls have no analysis evaluation there. */
+STATIC_THREAD a_boolean
+		analysis_walk_in_check;
+			/* TRUE while the check of a contract assertion is
+			   visited (see contract_report_group). */
+STATIC_THREAD a_source_position
+		analysis_walk_check_position;
+			/* The position of that check, its assertion's. */
+
+
+static void diagnose_contract_analyses_at_call_with_args(
+                                        a_routine_ptr      rp,
+                                        an_expr_node_ptr   args,
+                                        a_boolean          args_known,
+                                        a_source_position  *pos);
+static an_expr_node_ptr contract_call_explicit_args(an_expr_node_ptr  call);
+static a_boolean contract_never_evaluated_condition(an_expr_node_ptr  cond,
+                                                    a_boolean         *value);
+
+
+static void analysis_walk_never_evaluated(
+                                an_expr_node_ptr                     expr,
+                                a_boolean                            dead,
+                                an_expr_or_stmt_traversal_block_ptr  tblock)
+/*
+Walk expr, an operand of the expression being visited by the walk of tblock
+(see diagnose_contract_analyses_in_body), as code never evaluated if dead.
+*/
+{
+  if (expr == NULL) return;
+  if (dead) analysis_walk_dead++;
+  traverse_expr(expr, tblock);
+  if (dead) analysis_walk_dead--;
+}  /* analysis_walk_never_evaluated */
+
+
+static void analysis_walk_never_evaluated_stmt(
+                                a_statement_ptr                      statement,
+                                a_boolean                            dead,
+                                an_expr_or_stmt_traversal_block_ptr  tblock)
+/*
+Walk statement, a substatement of the statement being visited by the walk of
+tblock, as code never evaluated if dead.
+*/
+{
+  if (statement == NULL) return;
+  if (dead) analysis_walk_dead++;
+  traverse_statement(statement, tblock);
+  if (dead) analysis_walk_dead--;
+}  /* analysis_walk_never_evaluated_stmt */
+
+
+static a_routine_ptr lambda_conversion_call_operator(a_routine_ptr  rp)
+/*
+If rp is the conversion function of a lambda's closure type to a pointer to
+function, return the lambda's function call operator, whose address the
+conversion gives (directly, for a static call operator, or through its
+alternate static entry point; for a generic lambda, the specialization
+converted to), else NULL.
+*/
+{
+  a_type_ptr     closure, target;
+  a_scope_ptr    scope;
+  a_routine_ptr  entry;
+
+  if (rp == NULL || !special_kind_is(rp, sfk_conversion) ||
+      !rp->source_corresp.is_class_member) {
+    return NULL;
+  }  /* if */
+  closure = skip_typerefs(parent_class_of(rp));
+  if (closure == NULL || !type_is_lambda_closure(closure)) return NULL;
+  target = skip_typerefs(rp->type->variant.routine.return_type);
+  if (!is_pointer_type(target)) return NULL;
+  target = skip_typerefs(type_pointed_to(target));
+  scope = class_type_supp(closure)->assoc_scope;
+  if (scope_is_null_or_placeholder(scope)) return NULL;
+  for (entry = scope->routines; entry != NULL; entry = entry->next) {
+    if (special_kind_is(entry, sfk_lambda_entry_point)) {
+      if (identical_types(skip_typerefs(entry->type), target)) {
+        return entry->variant.lambda_call_operator;
+      }  /* if */
+    } else if (entry->is_lambda_body &&
+               !routine_type_is_nonstatic_member_function(entry->type) &&
+               identical_types(skip_typerefs(entry->type), target)) {
+      return entry;
+    }  /* if */
+  }  /* for */
+  return NULL;
+}  /* lambda_conversion_call_operator */
+
+
+static void analysis_walk_expr(an_expr_node_ptr                     expr,
+                               an_expr_or_stmt_traversal_block_ptr  tblock)
+/*
+Process expr in the walk of diagnose_contract_analyses_in_body: a direct call
+of a routine analyzes its preconditions there (a call through a pointer
+does not), and any other reference to a routine takes its address (binding a
+reference to it, too, as in our GCC), as does converting a closure to a
+pointer to function (see lambda_conversion_call_operator).  A call of an
+immediate function is constant-evaluated, so neither is analyzed in it.  With
+--contract_analysis_skip_dead_calls, an operand of ?:, && or || that a
+condition the front end folds never lets be evaluated is code never evaluated
+(see contract_never_evaluated_condition): the addresses it takes are taken,
+but its calls are not analyzed.
+*/
+{
+  a_boolean  value;
+
+  if (expr->position.seq != 0) analysis_walk_position = expr->position;
+  if (expr->generated_default_arg && analysis_walk_default_arg == NULL) {
+    analysis_walk_default_arg = expr;
+  }  /* if */
+  if (is_operation_node(expr) && expr->variant.operation.is_consteval_call) {
+    tblock->suppress_subtree_walk = TRUE;
+  } else if (contract_analysis_skip_dead_calls_enabled &&
+             is_operation_node(expr) &&
+             (node_operator_is(expr, eok_question) ||
+              node_operator_is(expr, eok_land) ||
+              node_operator_is(expr, eok_lor)) &&
+             expr->variant.operation.operands != NULL &&
+             expr->variant.operation.operands->next != NULL &&
+             contract_never_evaluated_condition(
+                              expr->variant.operation.operands, &value)) {
+    an_expr_node_ptr  opnd = expr->variant.operation.operands;
+    traverse_expr(opnd, tblock);
+    if (node_operator_is(expr, eok_question)) {
+      analysis_walk_never_evaluated(opnd->next, !value, tblock);
+      analysis_walk_never_evaluated(opnd->next->next, value, tblock);
+    } else {
+      /* false && ..., true || ...: the right operand is never evaluated. */
+      analysis_walk_never_evaluated(opnd->next,
+                                    value != node_operator_is(expr, eok_land),
+                                    tblock);
+    }  /* if */
+    tblock->suppress_subtree_walk = TRUE;
+  } else if (is_call_node(expr)) {
+    an_expr_node_ptr  callee = expr->variant.operation.operands;
+    if (callee != NULL && is_routine_node(callee)) {
+      a_routine_ptr  call_op =
+                      lambda_conversion_call_operator(node_routine(callee));
+      diagnose_contract_analyses_at_call_with_args(
+                                         node_routine(callee),
+                                         contract_call_explicit_args(expr),
+                                         /*args_known=*/TRUE,
+                                         &analysis_walk_position);
+      if (call_op != NULL && analysis_walk_default_arg == NULL) {
+        /* Converting a closure to a pointer to function takes the address
+           of its call operator. */
+        diagnose_contract_address_taken(call_op, &analysis_walk_position);
+      }  /* if */
+      analysis_walk_callee = callee;
+    }  /* if */
+  } else if (is_routine_node(expr)) {
+    if (expr == analysis_walk_callee) {
+      analysis_walk_callee = NULL;
+    } else if (analysis_walk_default_arg == NULL) {
+      diagnose_contract_address_taken(node_routine(expr),
+                                      &analysis_walk_position);
+    }  /* if */
+  }  /* if */
+}  /* analysis_walk_expr */
+
+
+static void analysis_walk_post_expr(
+                                an_expr_node_ptr                     expr,
+                                an_expr_or_stmt_traversal_block_ptr  tblock)
+/*
+The subtree of expr has been walked by diagnose_contract_analyses_in_body.
+*/
+{
+  (void)tblock;
+  if (expr == analysis_walk_default_arg) analysis_walk_default_arg = NULL;
+}  /* analysis_walk_post_expr */
+
+
+static void analysis_walk_constant(a_constant_ptr                       cp,
+                                   an_expr_or_stmt_traversal_block_ptr  tblock)
+/*
+Process the constant cp in the walk of diagnose_contract_analyses_in_body:
+the address of a routine, or a pointer to a member function, takes the
+routine's address.
+*/
+{
+  a_routine_ptr  rp = NULL;
+
+  (void)tblock;
+  if (constant_is(cp, ck_address) &&
+      cp->variant.address.kind == (an_address_base_kind)abk_routine) {
+    rp = cp->variant.address.variant.routine;
+  } else if (constant_is(cp, ck_ptr_to_member) &&
+             cp->variant.ptr_to_member.is_function_ptr) {
+    rp = cp->variant.ptr_to_member.variant.routine;
+  }  /* if */
+  if (rp != NULL && analysis_walk_default_arg == NULL) {
+    diagnose_contract_address_taken(rp, &analysis_walk_position);
+  }  /* if */
+}  /* analysis_walk_constant */
+
+
+static a_boolean aggregate_element_holds(a_constant_ptr      cp,
+                                         a_constant_ptr      inner,
+                                         a_dynamic_init_ptr  dip)
+/*
+Return TRUE if cp, an element of an aggregate constant, is the
+initialization dip (if inner is NULL) or the aggregate constant inner,
+directly or as the constant of a dynamic initialization (see
+partial_cleanup_is_potentially_invoked).
+*/
+{
+  a_dynamic_init_ptr  edip;
+
+  if (!constant_is(cp, ck_dynamic_init)) return inner != NULL && cp == inner;
+  edip = cp->variant.dynamic_init.ptr;
+  if (inner == NULL) return edip == dip;
+  return (dyn_init_is(edip, dik_nonconstant_aggregate) ||
+          dyn_init_is(edip, dik_lambda)) &&
+         edip->variant.constant.ptr == inner;
+}  /* aggregate_element_holds */
+
+
+static a_boolean partial_cleanup_is_potentially_invoked(
+                                a_dynamic_init_ptr                   dip,
+                                an_expr_or_stmt_traversal_block_ptr  tblock)
+/*
+dip, the initialization of a subobject (a base, a member, a capture, an
+array element) of an aggregate visited by the walk of tblock, has the
+cleanup of a partially constructed aggregate.  Return TRUE if that
+destructor call is potentially invoked: some later subobject of the
+aggregate, or of an enclosing one, is initialized after dip, by an
+initializer or a default member initializer, whether or not that can throw
+(DECISIONS.md E160 (a) in notadragon_wg21).  A subobject left to implicit
+value-initialization has no element in the aggregate constant, so it does
+not count, and the last subobject has nothing after it, as in our GCC.  The
+safe answer, if dip is not found in the aggregates being walked, is TRUE:
+so it is for the element of a repeated initialization (array elements
+initialized alike), which the later repetitions follow.
+*/
+{
+  an_aggregate_constant_stack_entry  *sp;
+  a_constant_ptr                     inner = NULL;
+
+  for (sp = tblock->curr_aggregate; sp != NULL; sp = sp->prev) {
+    a_constant_ptr  cp = sp->aggr_constant->variant.aggregate.first_constant;
+    for (; cp != NULL; cp = cp->next) {
+      if (aggregate_element_holds(cp, inner, dip)) break;
+    }  /* for */
+    if (cp == NULL || cp->next != NULL) {
+      /* Not found, or with a later element. */
+      return TRUE;
+    }  /* if */
+    inner = sp->aggr_constant;
+  }  /* for */
+  return inner == NULL;
+}  /* partial_cleanup_is_potentially_invoked */
+
+
+static void analysis_walk_dynamic_init(
+                                a_dynamic_init_ptr                   dip,
+                                an_expr_or_stmt_traversal_block_ptr  tblock)
+/*
+Process the dynamic initialization dip in the walk of
+diagnose_contract_analyses_in_body: the constructor it calls, and the
+destructor called when an object of automatic storage duration is
+destroyed, analyze their preconditions there.  (An object of static or
+thread storage duration is destroyed through the destructor's address, see
+note_contract_static_destruction.)
+*/
+{
+  a_source_position  pos = dip->variable != NULL
+                             ? dip->variable->source_corresp.decl_position
+                             : analysis_walk_position;
+
+  if (dip->kind == (a_dynamic_init_kind)dik_constructor &&
+      dip->variant.constructor.ptr != NULL) {
+    a_boolean  known =
+              !dip->variant.constructor.is_copy_constructor_with_implied_source;
+    diagnose_contract_analyses_at_call_with_args(
+                                 dip->variant.constructor.ptr,
+                                 known ? dip->variant.constructor.args
+                                       : (an_expr_node_ptr)NULL,
+                                 known, &pos);
+  }  /* if */
+  /* The cleanup of a member of a partially constructed aggregate is a call
+     made in the initialization itself, whatever the aggregate's storage
+     duration (EDG-150), if it is potentially invoked. */
+  if (dip->destructor != NULL && dip->lifetime != NULL &&
+      !dip->is_freeing_of_storage_on_exception &&
+      (dip->destruction_is_for_partially_constructed_aggregate
+         ? partial_cleanup_is_potentially_invoked(dip, tblock)
+         : !is_static_object_lifetime_kind(dip->lifetime->kind))) {
+    diagnose_contract_analyses_at_call(dip->destructor, &pos);
+  }  /* if */
+}  /* analysis_walk_dynamic_init */
+
+
+static void analysis_walk_statement(
+                                a_statement_ptr                      statement,
+                                an_expr_or_stmt_traversal_block_ptr  tblock)
+/*
+Process statement in the walk of diagnose_contract_analyses_in_body.  The
+condition of a constexpr if statement and its discarded statement are not
+walked, nor the branch of an "if consteval" statement taken in constant
+evaluation, nor a contract_assert statement (the check that follows it, if
+any, holds its predicate).  The check of a contract assertion is walked as
+such (see contract_report_group).  With --contract_analysis_skip_dead_calls,
+a substatement of an if statement that a condition the front end folds never
+selects is code never evaluated (see contract_never_evaluated_condition).
+*/
+{
+  a_boolean  value;
+
+  if (statement->position.seq != 0) {
+    analysis_walk_position = statement->position;
+  }  /* if */
+  if (statement->kind == (a_statement_kind)stmk_contract_assert) {
+    tblock->suppress_subtree_walk = TRUE;
+  } else if (statement->kind == (a_statement_kind)stmk_if &&
+             statement->is_contract_check) {
+    a_boolean          saved_in_check = analysis_walk_in_check;
+    a_source_position  saved_check_position = analysis_walk_check_position;
+    analysis_walk_in_check = TRUE;
+    analysis_walk_check_position = statement->position;
+    if (statement->expr != NULL) traverse_expr(statement->expr, tblock);
+    analysis_walk_never_evaluated_stmt(
+                              statement->variant.if_stmt.then_statement,
+                              /*dead=*/FALSE, tblock);
+    analysis_walk_never_evaluated_stmt(
+                              statement->variant.if_stmt.else_statement,
+                              /*dead=*/FALSE, tblock);
+    analysis_walk_in_check = saved_in_check;
+    analysis_walk_check_position = saved_check_position;
+    tblock->suppress_subtree_walk = TRUE;
+  } else if (statement->kind == (a_statement_kind)stmk_if &&
+             contract_analysis_skip_dead_calls_enabled &&
+             statement->expr != NULL &&
+             contract_never_evaluated_condition(statement->expr, &value)) {
+    traverse_expr(statement->expr, tblock);
+    analysis_walk_never_evaluated_stmt(
+                              statement->variant.if_stmt.then_statement,
+                              /*dead=*/!value, tblock);
+    analysis_walk_never_evaluated_stmt(
+                              statement->variant.if_stmt.else_statement,
+                              /*dead=*/value, tblock);
+    tblock->suppress_subtree_walk = TRUE;
+  } else if (statement->kind == (a_statement_kind)stmk_constexpr_if) {
+    /* The condition is a constant expression, and the discarded statement
+       is never evaluated. */
+    a_constexpr_if_ptr  cip = statement->variant.constexpr_if;
+    if (!cip->value_known || cip->value) {
+      if (cip->then_statement != NULL) {
+        traverse_statement(cip->then_statement, tblock);
+      }  /* if */
+    }  /* if */
+    if (!cip->value_known || !cip->value) {
+      if (cip->else_statement != NULL) {
+        traverse_statement(cip->else_statement, tblock);
+      }  /* if */
+    }  /* if */
+    tblock->suppress_subtree_walk = TRUE;
+  } else if (statement->kind == (a_statement_kind)stmk_if_consteval ||
+             statement->kind == (a_statement_kind)stmk_if_not_consteval) {
+    a_statement_ptr  run_time =
+                    statement->kind == (a_statement_kind)stmk_if_consteval
+                      ? statement->variant.if_stmt.else_statement
+                      : statement->variant.if_stmt.then_statement;
+    if (run_time != NULL) traverse_statement(run_time, tblock);
+    tblock->suppress_subtree_walk = TRUE;
+  }  /* if */
+}  /* analysis_walk_statement */
+
+
+static void init_analysis_walk(an_expr_or_stmt_traversal_block_ptr  tblock,
+                               a_source_position                    *pos)
+/*
+Prepare tblock for a walk for the analysis evaluations of the preconditions
+of the routines called, and the addresses of routines taken (P4405; see
+diagnose_contract_analyses_in_body), starting at pos.
+*/
+{
+  clear_expr_or_stmt_traversal_block(tblock);
+  tblock->process_expr = analysis_walk_expr;
+  tblock->process_post_expr = analysis_walk_post_expr;
+  tblock->process_constant = analysis_walk_constant;
+  tblock->process_dynamic_init = analysis_walk_dynamic_init;
+  tblock->process_statement = analysis_walk_statement;
+  tblock->process_non_dynamic_constants = TRUE;
+  analysis_walk_callee = NULL;
+  analysis_walk_default_arg = NULL;
+  analysis_walk_position = *pos;
+  analysis_walk_dead = 0;
+  analysis_walk_in_check = FALSE;
+}  /* init_analysis_walk */
+
+
+void diagnose_contract_analyses_in_body(void)
+/*
+The body of the current function definition has been scanned.  Where the
+front end generates the checks of contract assertions (see
+contract_checks_wanted), with P4405, a precondition's analysis evaluation is
+made at each call, in the caller (D4405R0, "The Analysis Evaluation"): walk
+the body, and the checks made for its own preconditions and postconditions,
+for the calls it makes directly and the addresses of routines it takes (see
+diagnose_contract_analyses_at_call and diagnose_contract_address_taken).
+Constant evaluation is never analyzed, and the calls in a constant
+expression (the initializer of a constexpr variable, a static_assert, a
+template argument and the like) are no longer in the IL, nor are those of
+an immediate function, which is not walked.  An interface wrapper (P3097)
+is not walked either: its virtual call was analyzed where it was written.
+*/
+{
+  a_routine_ptr                    rp = current_routine_entry();
+  a_scope_ptr                      fsp = innermost_function_scope;
+  an_expr_or_stmt_traversal_block  tblock;
+
+  if (!contract_checks_wanted() || !contracts_p4405_enabled || fsp == NULL ||
+      rp == NULL || rp->is_consteval ||
+      rp->contract_interface_target != NULL) {
+    return;
+  }  /* if */
+  init_analysis_walk(&tblock, &rp->source_corresp.decl_position);
+  traverse_statement_list(fsp->variant.routine.contract_prologue, &tblock);
+  if (fsp->assoc_block != NULL &&
+      fsp->assoc_block->kind == (a_statement_kind)stmk_block) {
+    /* Not the outermost block itself: traverse_statement would also walk
+       the expressions the function scope keeps for file-scope entities
+       (expr_node_refs: the operands of decltype, constant array bounds,
+       attribute arguments), which are never evaluated (EDG-147). */
+    traverse_statement_list(fsp->assoc_block->variant.block.statements,
+                            &tblock);
+  } else if (fsp->assoc_block != NULL) {
+    traverse_statement(fsp->assoc_block, &tblock);
+  }  /* if */
+  traverse_statement_list(fsp->variant.routine.contract_epilogue, &tblock);
+}  /* diagnose_contract_analyses_in_body */
+
+
+void diagnose_contract_analyses_in_static_init(a_variable_ptr      vp,
+                                               a_dynamic_init_ptr  dip)
+/*
+The initialization of the variable vp, of static or thread storage duration,
+has been scanned: dip, a dynamic initialization at file scope, or if dip is
+NULL, the constant vp->initializer.constant.  As for a function body (see
+diagnose_contract_analyses_in_body), walk it for the calls it makes and the
+addresses it takes (P4405).  (The initialization of a local static variable
+is a statement of the function's body.)
+*/
+{
+  an_expr_or_stmt_traversal_block  tblock;
+
+  if (!contract_checks_wanted() || !contracts_p4405_enabled) return;
+  init_analysis_walk(&tblock, &vp->source_corresp.decl_position);
+  if (dip != NULL) {
+    traverse_dynamic_init(dip, &tblock);
+  } else if (vp->init_kind == (an_init_kind)initk_static &&
+             vp->initializer.constant != NULL) {
+    traverse_constant(vp->initializer.constant, &tblock);
+  }  /* if */
+}  /* diagnose_contract_analyses_in_static_init */
+
+
+a_contract_evaluation_semantic contract_analysis_stronger(
+                                         a_contract_evaluation_semantic  a,
+                                         a_contract_evaluation_semantic  b)
+/*
+Return the stronger of the semantics a and b of an analysis evaluation
+(P4405), each ignore, diagnose or prove: diagnose is stronger than ignore,
+and prove than both.
+*/
+{
+  if (a == ces_prove || b == ces_prove) return ces_prove;
+  if (a == ces_diagnose || b == ces_diagnose) return ces_diagnose;
+  return ces_ignore;
+}  /* contract_analysis_stronger */
+
+
+a_contract_evaluation_semantic contract_analysis_semantic_for(
+                                        a_contract_specifier_ptr  csp,
+                                        a_routine_ptr             routine)
+/*
+Return the semantic of the analysis evaluation (P4405) of the contract
+assertion csp, of routine (NULL if unknown): ignore, diagnose or prove, as
+contract_semantic_for resolves it with the run-time semantic.  For a
+precondition it is the same at every call: no match key makes it depend on
+the caller.
+*/
+{
+  (void)contract_semantic_for(csp, routine, /*in_ce=*/FALSE);
+  return (a_contract_evaluation_semantic)csp->resolved_analysis_semantic;
+}  /* contract_analysis_semantic_for */
+
+
+static a_boolean contract_allows_no_runtime_semantic(
+                                              a_contract_specifier_ptr  csp)
+/*
+Return TRUE if the label of the contract assertion csp allows it no run-time
+semantic (P4405): it restricts the semantics to prove and diagnose (see
+apply_contract_label_facets_analysis), so that its analysis evaluation must
+be prove or diagnose in every translation unit and its run-time evaluations
+are ignore.
+*/
+{
+  unsigned  runtime = (1u << 1) | (1u << 2) | (1u << 3) | (1u << 4);
+
+  if (csp->label == NULL ||
+      (csp->label_allowed_semantics == 0 &&
+       csp->label_allowed_proving_semantics == 0)) {
+    return FALSE;
+  }  /* if */
+  if (contracts_allow_assume_enabled) runtime |= 1u << 5;
+  if (contracts_p4298_enabled) runtime |= (1u << 6) | (1u << 7);
+  return ((unsigned)csp->label_allowed_semantics & runtime) == 0;
+}  /* contract_allows_no_runtime_semantic */
+
+
+static a_boolean contract_analysis_wanted(void)
+/*
+Return TRUE if the analysis evaluations of contract assertions (P4405) are
+diagnosed by the front end in the current context: where it generates the
+checks of contract assertions (CONTRACT_CHECKS_IN_FRONT_END; through the
+C++-generating back end the compiler of the generated code does it), with
+contracts and P4405 enabled, outside a template-dependent context.
+*/
+{
+  return CONTRACT_CHECKS_IN_FRONT_END && contracts_enabled &&
+         contracts_p4405_enabled && !is_template_dependent_context();
+}  /* contract_analysis_wanted */
+
+
+/*
+The nested analysis evaluations (P4405; DECISIONS.md E169 in notadragon_wg21):
+an analysis evaluation depends on the analysis evaluations of the
+preconditions of the calls its predicate makes, recursively through those
+preconditions' own predicates, whether or not the predicate is evaluated at
+run time.  With nothing proven here but by folding, each nested evaluation is
+decided by folding its precondition in the frame of its call, with the
+call's arguments substituted where they fold (see contract_fold_value).  A
+nested prove evaluation not proven makes every evaluation it is nested in
+unproven, and is noted on their diagnostics ("precondition of a call in the
+predicate cannot be proven" / "... is always false"), never reported on its
+own; a nested diagnose evaluation not proven is reported on its own, at its
+call, and counts for nothing else.  As in our GCC, the walk of a predicate
+(see contract_nested_walk) skips unevaluated operands, lambdas and the
+operands of &&, || and ?: that folding shows are not evaluated, goes at most
+CONTRACT_NESTED_DEPTH levels deep, and does not make again a precondition
+whose evaluation is already on the chain.
+*/
+#define CONTRACT_NESTED_DEPTH 8
+
+/*
+The frame of a call whose precondition's predicate is folded or walked: the
+routine called, and its explicit arguments (without the object of a member
+function call), each of which folds in the frame up, if they are known.
+*/
+typedef struct a_contract_fold_frame *a_contract_fold_frame_ptr;
+typedef struct a_contract_fold_frame {
+  a_contract_fold_frame_ptr
+		up;
+			/* The frame in which the arguments are folded (NULL
+			   for none: nothing is known of its parameters). */
+  a_routine_ptr	routine;
+			/* The routine called. */
+  an_expr_node_ptr
+		args;
+			/* Its first explicit argument; the rest follow on
+			   its next links. */
+  a_boolean	args_known;
+			/* TRUE if args are the arguments of the call. */
+} a_contract_fold_frame;
+
+/*
+A nested prove evaluation that is not proven, a cause noted on the
+diagnostics of the evaluations it is nested in.
+*/
+typedef struct a_contract_nested_cause *a_contract_nested_cause_ptr;
+typedef struct a_contract_nested_cause {
+  a_contract_nested_cause_ptr
+		next;
+  a_source_position
+		position;
+			/* The position of the precondition's predicate. */
+  a_boolean	always_false;
+			/* TRUE if its predicate folds to false. */
+} a_contract_nested_cause;
+
+/*
+An analysis evaluation on the chain of the nested evaluations being made: the
+outermost, or a nested one whose predicate is being walked.
+*/
+typedef struct a_contract_nesting *a_contract_nesting_ptr;
+typedef struct a_contract_nesting {
+  a_contract_nesting_ptr
+		up;
+			/* The evaluation it is nested in, or NULL. */
+  a_contract_specifier_ptr
+		csp;
+			/* Its contract assertion (NULL if none). */
+  a_contract_nested_cause_ptr
+		causes;
+			/* The nested prove evaluations not proven, at any
+			   depth below it, in the order found. */
+} a_contract_nesting;
+
+/*
+The report-once group of an analysis evaluation (E169 (9), (11), (15)): the
+place of the outermost evaluation it belongs to.  The analysis evaluation of
+a postcondition or contract_assert and the check of that assertion in the
+same function definition are one group (routine, the assertion's position,
+serial 0), and the evaluations at the calls in that check belong to it; any
+other evaluation at a call is a group of its own (a new serial), as is each
+evaluation of a precondition at a call (so the same nested evaluation under
+several outer evaluations is warned once for each, and a precondition
+checked in its function and analyzed at a call is two groups).  The nested
+evaluations of an evaluation belong to its group.
+*/
+typedef struct a_contract_report_group {
+  a_routine_ptr	routine;
+			/* The function definition walked (NULL for none). */
+  a_source_position
+		position;
+			/* The assertion's position, or the call's. */
+  unsigned long	serial;
+			/* 0 for an assertion's analysis evaluation and
+			   check, else unique. */
+} a_contract_report_group;
+
+/*
+A precondition's analysis evaluation with diagnose reported at a call, as
+an evaluation nested in another (see contract_nested_call) or as the
+evaluation at a call in a check (see
+diagnose_contract_analyses_at_call_with_args), so that the warning for the
+same call in the same report-once group is given once (E169 (9), (11)).
+*/
+typedef struct a_contract_nested_report *a_contract_nested_report_ptr;
+typedef struct a_contract_nested_report {
+  a_contract_nested_report_ptr
+		next;
+  a_contract_specifier_ptr
+		csp;
+			/* The precondition. */
+  a_source_position
+		position;
+			/* The position of the call. */
+  a_boolean	nested;
+			/* TRUE for a nested evaluation, FALSE for the
+			   evaluation at a call in a check. */
+  a_contract_report_group
+		group;
+			/* Its report-once group. */
+} a_contract_nested_report;
+
+/*
+A nested diagnose evaluation not proven whose warning, at its call, waits
+(see contract_nested_evaluations_deferred).
+*/
+typedef struct a_contract_nested_warning *a_contract_nested_warning_ptr;
+typedef struct a_contract_nested_warning {
+  a_contract_nested_warning_ptr
+		next;
+  a_contract_specifier_ptr
+		csp;
+			/* The precondition. */
+  a_source_position
+		position;
+			/* The position of the call. */
+  a_source_position
+		predicate_position;
+			/* The position of its predicate. */
+  a_contract_nested_cause_ptr
+		causes;
+			/* Its own nested prove evaluations not proven. */
+} a_contract_nested_warning;
+
+STATIC_THREAD a_contract_nested_report_ptr
+		contract_nested_reports;
+			/* The warnings given at calls in the translation
+			   unit contract_nested_reports_unit. */
+STATIC_THREAD a_translation_unit_ptr
+		contract_nested_reports_unit;
+STATIC_THREAD a_contract_report_group
+		contract_report_group;
+			/* The report-once group of the evaluation whose
+			   nested evaluations are being made. */
+STATIC_THREAD unsigned long
+		contract_report_group_serial;
+			/* The serial of the last group of its own. */
+STATIC_THREAD a_contract_nested_warning_ptr
+		*contract_nested_warnings;
+			/* If not NULL, where the nested diagnose
+			   evaluations not proven are put instead of being
+			   warned (see a_contract_nested_warning). */
+
+/* The state of the walk of a predicate (see contract_nested_walk). */
+STATIC_THREAD a_contract_fold_frame_ptr
+		contract_nested_frame;
+			/* The frame in which the predicate is folded. */
+STATIC_THREAD a_contract_nesting_ptr
+		contract_nested_chain;
+			/* The evaluation whose predicate is walked. */
+STATIC_THREAD unsigned
+		contract_nested_depth;
+			/* Its depth: 0 for the outermost. */
+STATIC_THREAD a_source_position
+		contract_nested_position;
+			/* The position of the expression last visited. */
+STATIC_THREAD a_boolean
+		contract_nested_report_once;
+			/* TRUE if a nested diagnose evaluation is reported
+			   only once per call (see contract_nested_reported);
+			   FALSE for those of a precondition at an address
+			   taken, reported for each address taken, as in our
+			   GCC. */
+
+
+static a_boolean same_source_position(a_source_position  *a,
+                                      a_source_position  *b)
+/*
+Return TRUE if the source positions *a and *b are the same.
+*/
+{
+  return a->seq == b->seq && a->column == b->column;
+}  /* same_source_position */
+
+
+static void set_contract_report_group(a_source_position  *pos,
+                                      a_boolean          own)
+/*
+Make the report-once group (see a_contract_report_group) of the evaluations
+about to be made: if own, a group of their own, at pos; else that of the
+assertion at pos (whose position its check has) in the current function
+definition.
+*/
+{
+  contract_report_group.routine = innermost_function_scope != NULL
+                                     ? current_routine_entry()
+                                     : (a_routine_ptr)NULL;
+  contract_report_group.position = *pos;
+  contract_report_group.serial = own ? ++contract_report_group_serial : 0;
+}  /* set_contract_report_group */
+
+
+static a_boolean contract_nested_reported(a_contract_specifier_ptr  csp,
+                                          a_source_position         *pos,
+                                          a_boolean                 nested)
+/*
+Return TRUE if the warning for an analysis evaluation with diagnose of the
+precondition csp at the call at pos, a nested evaluation if nested, else the
+evaluation at that call in a check, has been given already in this
+translation unit in the current report-once group (see
+contract_report_group and contract_nested_reports): for a nested one, as
+either kind; for one at a call in a check, as a nested one (two evaluations
+at the same call in checks, such as the destructor calls of two array
+elements, are each reported).  If not, record that it is about to be.
+*/
+{
+  a_contract_nested_report_ptr  rp;
+  a_contract_report_group       *gp = &contract_report_group;
+
+  if (contract_nested_reports_unit != curr_translation_unit) {
+    /* Another translation unit's (their memory is not reclaimed). */
+    contract_nested_reports = NULL;
+    contract_nested_reports_unit = curr_translation_unit;
+  }  /* if */
+  for (rp = contract_nested_reports; rp != NULL; rp = rp->next) {
+    if (rp->csp == csp && same_source_position(&rp->position, pos) &&
+        (nested || rp->nested) && rp->group.routine == gp->routine &&
+        rp->group.serial == gp->serial &&
+        same_source_position(&rp->group.position, &gp->position)) {
+      return TRUE;
+    }  /* if */
+  }  /* for */
+  rp = alloc_fe<a_contract_nested_report>();
+  rp->csp = csp;
+  rp->position = *pos;
+  rp->nested = nested;
+  rp->group = *gp;
+  rp->next = contract_nested_reports;
+  contract_nested_reports = rp;
+  return FALSE;
+}  /* contract_nested_reported */
+
+
+static a_boolean integer_typed(an_expr_node_ptr  expr)
+/*
+Return TRUE if expr has an integral type (bool included), the only kind of
+value contract_fold_value folds.
+*/
+{
+  a_type_ptr  tp = expr->type != NULL ? skip_typerefs(expr->type) : NULL;
+
+  return tp != NULL && type_is(tp, tk_integer);
+}  /* integer_typed */
+
+
+static an_expr_node_ptr contract_fold_frame_argument(
+                                         a_contract_fold_frame_ptr  frame,
+                                         an_expr_node_ptr           param_ref)
+/*
+param_ref is an enk_param_ref in the predicate of a precondition of
+frame->routine.  Return the argument of the call of frame that it refers to,
+matched by parameter number as param_variable_for_param_ref matches the
+parameter variables, or NULL if it is not known.
+*/
+{
+  a_type_ptr        rtype;
+  a_param_type_ptr  ptp;
+  an_expr_node_ptr  arg;
+  unsigned int      n;
+  unsigned int      param_num = param_ref->variant.param_ref.param_num;
+  unsigned int      element_num =
+                            param_ref->variant.param_ref.pack_element_num;
+
+  if (frame == NULL || !frame->args_known || frame->routine == NULL ||
+      param_ref->variant.param_ref.levels_up != 0 || param_num == 0) {
+    return NULL;
+  }  /* if */
+  rtype = skip_typerefs(frame->routine->type);
+  if (!type_is(rtype, tk_routine)) return NULL;
+  ptp = rtype->variant.routine.extra_info->param_type_list;
+  for (n = 1, arg = frame->args; arg != NULL && ptp != NULL;
+       ++n, arg = arg->next, ptp = ptp->next) {
+    if (ptp->is_explicit_this) return NULL;
+    if ((ptp->param_num != 0 ? ptp->param_num : n) == param_num) {
+      if (element_num <= 1) return arg;
+      --element_num;
+    }  /* if */
+  }  /* for */
+  return NULL;
+}  /* contract_fold_frame_argument */
+
+
+static a_boolean contract_fold_value(an_expr_node_ptr           expr,
+                                     a_contract_fold_frame_ptr  frame,
+                                     a_constant_ptr             result);
+
+
+static a_boolean contract_fold_truth(an_expr_node_ptr           expr,
+                                     a_contract_fold_frame_ptr  frame,
+                                     a_boolean                  *value)
+/*
+Fold expr in frame (see contract_fold_value) as a condition: if it folds,
+set *value to its truth and return TRUE, else return FALSE.
+*/
+{
+  a_boolean       folded;
+  a_constant_ptr  con = local_constant();
+
+  folded = contract_fold_value(expr, frame, con) &&
+           constant_bool_value_known_at_compile_time(con);
+  if (folded) *value = !is_false_constant(con);
+  release_local_constant(&con);
+  return folded;
+}  /* contract_fold_truth */
+
+
+static a_boolean contract_never_evaluated_condition(an_expr_node_ptr  cond,
+                                                    a_boolean         *value)
+/*
+cond is the condition of ?:, if, or the left operand of && or ||, in the code
+walked for the analysis evaluations at calls (see
+diagnose_contract_analyses_in_body).  If it folds (see contract_fold_value,
+with nothing known of any parameter, as the walk of a predicate folds the
+same operators: a constant, or integral operators on constants, a constexpr
+variable of integral type the front end has replaced by its value included),
+set *value to its truth and return TRUE, so that the operand it never lets be
+evaluated is code never evaluated, whose calls have no analysis evaluation
+there under --contract_analysis_skip_dead_calls (DECISIONS.md E169 (14),
+(18) in notadragon_wg21).  Folding decides the same in a template instance as
+in a non-template.
+*/
+{
+  return contract_fold_truth(cond, (a_contract_fold_frame_ptr)NULL, value);
+}  /* contract_never_evaluated_condition */
+
+
+static a_boolean contract_fold_value(an_expr_node_ptr           expr,
+                                     a_contract_fold_frame_ptr  frame,
+                                     a_constant_ptr             result)
+/*
+Fold expr, from the predicate of a contract assertion, in frame: a reference
+to a parameter of frame's routine is its argument, folded in frame->up.  Only
+integral values are folded (constants, the arithmetic, shift, bitwise,
+comparison and logical operators, conversions and the comma and conditional
+operators); anything else, a call in particular, does not fold.  If expr
+folds, put its value in *result and return TRUE; the safe answer is FALSE.
+*/
+{
+  a_boolean          folded = FALSE, value, did_not_fold = FALSE;
+  a_boolean          template_constant = FALSE;
+  an_error_code      err = ec_no_error;
+  an_expr_node_ptr   opnd, opnd2;
+  a_constant_ptr     con1, con2;
+
+  expr = skip_parens(expr);
+  if (is_constant_node(expr)) {
+    if (constant_is(node_constant(expr), ck_integer)) {
+      copy_constant(node_constant(expr), result);
+      folded = TRUE;
+    }  /* if */
+    return folded;
+  }  /* if */
+  if (node_is(expr, enk_param_ref)) {
+    an_expr_node_ptr  arg = contract_fold_frame_argument(frame, expr);
+    return arg != NULL && integer_typed(expr) &&
+           contract_fold_value(arg, frame->up, result);
+  }  /* if */
+  if (!is_operation_node(expr) || !integer_typed(expr)) return FALSE;
+  opnd = expr->variant.operation.operands;
+  opnd2 = opnd != NULL ? opnd->next : NULL;
+  switch (expr->variant.operation.kind) {
+    case eok_land:
+    case eok_lor:
+      if (contract_fold_truth(opnd, frame, &value)) {
+        a_boolean  is_and = node_operator_is(expr, eok_land);
+        if (value != is_and) {
+          /* false && ..., true || ...: the right operand is not
+             evaluated. */
+        } else if (!contract_fold_truth(opnd2, frame, &value)) {
+          return FALSE;
+        }  /* if */
+        set_integer_constant(result, (a_host_large_integer)value,
+                     skip_typerefs(expr->type)->variant.integer.int_kind);
+        result->type = expr->type;
+        folded = TRUE;
+      }  /* if */
+      break;
+    case eok_question:
+      if (opnd2 != NULL && contract_fold_truth(opnd, frame, &value)) {
+        folded = contract_fold_value(value ? opnd2 : opnd2->next, frame,
+                                     result);
+      }  /* if */
+      break;
+    case eok_comma:
+      folded = opnd2 != NULL && contract_fold_value(opnd2, frame, result);
+      break;
+    case eok_lvalue_adjust:
+      /* The value of an integral parameter. */
+      folded = integer_typed(opnd) && contract_fold_value(opnd, frame, result);
+      break;
+    case eok_bool_cast:
+    case eok_not:
+      if (contract_fold_truth(opnd, frame, &value)) {
+        if (node_operator_is(expr, eok_not)) value = !value;
+        set_integer_constant(result, (a_host_large_integer)value,
+                     skip_typerefs(expr->type)->variant.integer.int_kind);
+        result->type = expr->type;
+        folded = TRUE;
+      }  /* if */
+      break;
+    case eok_cast:
+      if (integer_typed(opnd) && contract_fold_value(opnd, frame, result)) {
+        type_change_constant_full(result, expr->type,
+                                  /*is_implicit_cast=*/FALSE,
+                                  /*constant_context=*/TRUE,
+                                  /*evaluated_context=*/TRUE,
+                                  /*fold_constant_addr_exprs=*/FALSE,
+                                  /*is_cli_attr_arg_expression=*/FALSE,
+                                  /*check_cast_access=*/FALSE,
+                                  /*check_ambiguity=*/FALSE,
+                                  /*is_reinterpret_cast=*/FALSE,
+                                  /*maintain_expression=*/FALSE,
+                                  &did_not_fold, &err, &expr->position);
+        folded = !did_not_fold && err == ec_no_error &&
+                 constant_is(result, ck_integer);
+      }  /* if */
+      break;
+    case eok_negate:
+    case eok_unary_plus:
+    case eok_complement:
+      con1 = local_constant();
+      if (integer_typed(opnd) && contract_fold_value(opnd, frame, con1)) {
+        unary_operation(expr->variant.operation.kind, con1, expr->type,
+                        result, /*constant_context=*/TRUE,
+                        /*evaluated_context=*/TRUE, &did_not_fold,
+                        &template_constant, &err, &expr->position);
+        folded = !did_not_fold && err == ec_no_error &&
+                 constant_is(result, ck_integer);
+      }  /* if */
+      release_local_constant(&con1);
+      break;
+    case eok_add:
+    case eok_subtract:
+    case eok_multiply:
+    case eok_divide:
+    case eok_remainder:
+    case eok_shiftl:
+    case eok_shiftr:
+    case eok_and:
+    case eok_or:
+    case eok_xor:
+    case eok_eq:
+    case eok_ne:
+    case eok_gt:
+    case eok_lt:
+    case eok_ge:
+    case eok_le:
+      con1 = local_constant();
+      con2 = local_constant();
+      if (opnd2 != NULL && integer_typed(opnd) && integer_typed(opnd2) &&
+          contract_fold_value(opnd, frame, con1) &&
+          contract_fold_value(opnd2, frame, con2)) {
+        binary_operation(expr->variant.operation.kind, con1, con2,
+                         expr->type, result, /*constant_context=*/TRUE,
+                         /*evaluated_context=*/TRUE, &did_not_fold,
+                         &template_constant, &err, &expr->position);
+        folded = !did_not_fold && err == ec_no_error &&
+                 constant_is(result, ck_integer);
+      }  /* if */
+      release_local_constant(&con1);
+      release_local_constant(&con2);
+      break;
+    default:
+      break;
+  }  /* switch */
+  return folded;
+}  /* contract_fold_value */
+
+
+static void add_contract_nested_cause(a_contract_nesting_ptr  np,
+                                      a_source_position       *pos,
+                                      a_boolean               always_false)
+/*
+Append a cause (see a_contract_nested_cause) to the list of np, unless the
+same cause is there already.
+*/
+{
+  a_contract_nested_cause_ptr  cp, *p_cp;
+
+  for (p_cp = &np->causes; *p_cp != NULL; p_cp = &(*p_cp)->next) {
+    if (same_source_position(&(*p_cp)->position, pos) &&
+        (*p_cp)->always_false == always_false) {
+      return;
+    }  /* if */
+  }  /* for */
+  cp = alloc_fe<a_contract_nested_cause>();
+  cp->next = NULL;
+  cp->position = *pos;
+  cp->always_false = always_false;
+  *p_cp = cp;
+}  /* add_contract_nested_cause */
+
+
+static void free_contract_nested_causes(a_contract_nested_cause_ptr  causes)
+/*
+Free the list of causes.
+*/
+{
+  while (causes != NULL) {
+    a_contract_nested_cause_ptr  next = causes->next;
+    free_fe(causes, sizeof(*causes));
+    causes = next;
+  }  /* while */
+}  /* free_contract_nested_causes */
+
+
+static void add_contract_nested_notes(a_diagnostic_ptr             dp,
+                                      a_contract_nested_cause_ptr  causes)
+/*
+Add a note to the diagnostic dp for each of the causes.
+*/
+{
+  for (; causes != NULL; causes = causes->next) {
+    add_diag_info_with_pos_insert(dp, causes->always_false
+                                        ? ec_contract_nested_always_false
+                                        : ec_contract_nested_unproven,
+                                  &causes->position);
+  }  /* for */
+}  /* add_contract_nested_notes */
+
+
+static void contract_nested_walk(an_expr_node_ptr           pred,
+                                 a_contract_fold_frame_ptr  frame,
+                                 a_contract_nesting_ptr     np,
+                                 unsigned                   depth);
+
+
+static void contract_nested_call(a_routine_ptr      rp,
+                                 an_expr_node_ptr   args,
+                                 a_boolean          args_known,
+                                 a_source_position  *pos)
+/*
+A call of rp, with the explicit arguments args if args_known, is made at pos
+in the predicate being walked (see contract_nested_walk): make the nested
+analysis evaluations of rp's preconditions there.  Each is decided by folding
+its predicate in the frame of the call; a prove one not proven is a cause for
+every evaluation on the chain, a diagnose one not proven (by its own
+predicate or by its nested evaluations) is reported here, once (see
+contract_nested_reported), with a note for each of its causes.
+*/
+{
+  a_contract_fold_frame     frame;
+  a_contract_specifier_ptr  csp;
+  a_source_position         call_pos = *pos;
+
+  if (rp == NULL || special_kind_is(rp, sfk_lambda_entry_point)) return;
+  instantiate_contract_specifiers_if_needed(symbol_for(rp));
+  frame.up = contract_nested_frame;
+  frame.routine = rp;
+  frame.args = args;
+  frame.args_known = args_known;
+  for (csp = rp->contract_specifiers; csp != NULL; csp = csp->next) {
+    a_contract_evaluation_semantic  analysis;
+    an_expr_node_ptr                pred;
+    a_contract_nesting              nesting;
+    a_contract_nesting_ptr          np;
+    a_boolean                       value, proven = FALSE;
+    a_boolean                       always_false = FALSE;
+    a_source_position               pred_pos;
+    if (csp->kind != ctk_pre || csp->discarded ||
+        contract_assertion_is_erroneous(csp)) {
+      continue;
+    }  /* if */
+    analysis = contract_analysis_semantic_for(csp, rp);
+    if (analysis != ces_prove && analysis != ces_diagnose) continue;
+    for (np = contract_nested_chain; np != NULL; np = np->up) {
+      if (np->csp == csp) break;
+    }  /* for */
+    if (np != NULL) {
+      /* Already on the chain (a recursive precondition). */
+      continue;
+    }  /* if */
+    pred = contract_specifier_predicate(csp);
+    if (pred != NULL && contracts_prove_fold_enabled &&
+        contract_fold_truth(pred, &frame, &value)) {
+      proven = value;
+      always_false = !value;
+    }  /* if */
+    pred_pos = pred != NULL && pred->position.seq != 0 ? pred->position
+                                                       : csp->position;
+    nesting.up = contract_nested_chain;
+    nesting.csp = csp;
+    nesting.causes = NULL;
+    if (pred != NULL && contract_nested_depth + 1 < CONTRACT_NESTED_DEPTH) {
+      contract_nested_walk(pred, &frame, &nesting, contract_nested_depth + 1);
+    }  /* if */
+    if (analysis == ces_prove) {
+      /* Counted for every evaluation it is nested in. */
+      if (!proven) {
+        for (np = contract_nested_chain; np != NULL; np = np->up) {
+          add_contract_nested_cause(np, &pred_pos, always_false);
+        }  /* for */
+      }  /* if */
+    } else if ((!proven || nesting.causes != NULL) &&
+               contract_nested_warnings != NULL) {
+      /* Warned later, if at all (see contract_nested_evaluations_deferred),
+         once per call. */
+      a_contract_nested_warning_ptr  wp, *p_wp;
+      for (p_wp = contract_nested_warnings; *p_wp != NULL;
+           p_wp = &(*p_wp)->next) {
+        if ((*p_wp)->csp == csp &&
+            same_source_position(&(*p_wp)->position, &call_pos)) {
+          break;
+        }  /* if */
+      }  /* for */
+      if (*p_wp == NULL) {
+        wp = alloc_fe<a_contract_nested_warning>();
+        wp->next = NULL;
+        wp->csp = csp;
+        wp->position = call_pos;
+        wp->predicate_position = pred_pos;
+        wp->causes = nesting.causes;
+        nesting.causes = NULL;
+        *p_wp = wp;
+      }  /* if */
+    } else if ((!proven || nesting.causes != NULL) &&
+               (!contract_nested_report_once ||
+                !contract_nested_reported(csp, &call_pos,
+                                          /*nested=*/TRUE))) {
+      a_diagnostic_ptr  dp =
+              pos_start_diagnostic(es_warning,
+                                   always_false
+                                     ? ec_contract_always_false_warning
+                                     : ec_contract_unproven_warning,
+                                   &call_pos);
+      add_contract_nested_notes(dp, nesting.causes);
+      end_diagnostic(dp);
+    }  /* if */
+    free_contract_nested_causes(nesting.causes);
+  }  /* for */
+}  /* contract_nested_call */
+
+
+static an_expr_node_ptr contract_call_explicit_args(an_expr_node_ptr  call)
+/*
+Return the first explicit argument of the call node call, whose first operand
+is the routine called: for a member function call the object comes before
+the arguments.
+*/
+{
+  an_expr_node_ptr  args = call->variant.operation.operands->next;
+
+  if ((node_operator_is(call, eok_dot_member_call) ||
+       node_operator_is(call, eok_points_to_member_call)) && args != NULL) {
+    args = args->next;
+  }  /* if */
+  return args;
+}  /* contract_call_explicit_args */
+
+
+static void contract_nested_walk_expr(
+                                an_expr_node_ptr                     expr,
+                                an_expr_or_stmt_traversal_block_ptr  tblock)
+/*
+Process expr in the walk of contract_nested_walk.
+*/
+{
+  if (expr->position.seq != 0) contract_nested_position = expr->position;
+  switch (expr->kind) {
+    case enk_lambda:
+    case enk_typeid:
+    case enk_sizeof:
+    case enk_sizeof_pack:
+    case enk_alignof:
+    case enk_datasizeof:
+    case enk_requires:
+    case enk_statement:
+      /* Not evaluated here. */
+      tblock->suppress_subtree_walk = TRUE;
+      break;
+    case enk_constant: {
+      /* A constant folded from an expression: the calls constant evaluation
+         made (under a semantic that may not have checked their
+         preconditions) are still the predicate's. */
+      an_expr_node_ptr  folded = node_constant(expr)->expr;
+      if (folded != NULL && folded != expr &&
+          !tblock->visited_shared_exprs->contains(folded)) {
+        tblock->visited_shared_exprs->add(folded);
+        traverse_expr(folded, tblock);
+      }  /* if */
+      break;
+    }
+    case enk_operation: {
+      an_expr_node_ptr  opnd = expr->variant.operation.operands;
+      a_boolean         value;
+      if (expr->variant.operation.is_consteval_call ||
+          node_operator_is(expr, eok_noexcept)) {
+        /* Constant-evaluated, or an unevaluated operand. */
+        tblock->suppress_subtree_walk = TRUE;
+      } else if (node_operator_is(expr, eok_land) ||
+                 node_operator_is(expr, eok_lor)) {
+        /* The right operand only if folding does not show that it is
+           not evaluated. */
+        traverse_expr(opnd, tblock);
+        if (!contract_fold_truth(opnd, contract_nested_frame, &value) ||
+            value == node_operator_is(expr, eok_land)) {
+          traverse_expr(opnd->next, tblock);
+        }  /* if */
+        tblock->suppress_subtree_walk = TRUE;
+      } else if (node_operator_is(expr, eok_question)) {
+        a_boolean  folded = contract_fold_truth(opnd, contract_nested_frame,
+                                                &value);
+        traverse_expr(opnd, tblock);
+        if (!folded || value) traverse_expr(opnd->next, tblock);
+        if (!folded || !value) traverse_expr(opnd->next->next, tblock);
+        tblock->suppress_subtree_walk = TRUE;
+      } else if (is_call_node(expr) && opnd != NULL &&
+                 is_routine_node(opnd)) {
+        contract_nested_call(node_routine(opnd),
+                             contract_call_explicit_args(expr),
+                             /*args_known=*/TRUE, &contract_nested_position);
+      }  /* if */
+      break;
+    }
+    default:
+      break;
+  }  /* switch */
+}  /* contract_nested_walk_expr */
+
+
+static void contract_nested_walk_dynamic_init(
+                                a_dynamic_init_ptr                   dip,
+                                an_expr_or_stmt_traversal_block_ptr  tblock)
+/*
+Process the dynamic initialization dip in the walk of contract_nested_walk:
+the constructor it calls has its preconditions' nested evaluations.
+*/
+{
+  (void)tblock;
+  if (dip->kind == (a_dynamic_init_kind)dik_constructor &&
+      dip->variant.constructor.ptr != NULL) {
+    a_boolean  known =
+              !dip->variant.constructor.is_copy_constructor_with_implied_source;
+    contract_nested_call(dip->variant.constructor.ptr,
+                         known ? dip->variant.constructor.args
+                               : (an_expr_node_ptr)NULL,
+                         known, &contract_nested_position);
+  }  /* if */
+}  /* contract_nested_walk_dynamic_init */
+
+
+static void contract_nested_walk_statement(
+                                a_statement_ptr                      statement,
+                                an_expr_or_stmt_traversal_block_ptr  tblock)
+/*
+Process a statement in the walk of contract_nested_walk: a statement in a
+predicate (a GNU statement expression, a lambda's body) is not walked.
+*/
+{
+  (void)statement;
+  tblock->suppress_subtree_walk = TRUE;
+}  /* contract_nested_walk_statement */
+
+
+static void contract_nested_walk(an_expr_node_ptr           pred,
+                                 a_contract_fold_frame_ptr  frame,
+                                 a_contract_nesting_ptr     np,
+                                 unsigned                   depth)
+/*
+Walk the predicate pred of the analysis evaluation np, at the given depth,
+folded in frame, for the calls it makes (see contract_nested_call), the
+calls folded into constants included (see contract_nested_walk_expr).
+*/
+{
+  a_contract_fold_frame_ptr        saved_frame = contract_nested_frame;
+  a_contract_nesting_ptr           saved_chain = contract_nested_chain;
+  unsigned                         saved_depth = contract_nested_depth;
+  a_source_position                saved_position = contract_nested_position;
+  an_expr_or_stmt_traversal_block  tblock;
+  Ptr_set<a_void_ptr>              visited_shared_exprs(/*mask_width=*/6u);
+
+  contract_nested_frame = frame;
+  contract_nested_chain = np;
+  contract_nested_depth = depth;
+  clear_expr_or_stmt_traversal_block(&tblock);
+  tblock.process_expr = contract_nested_walk_expr;
+  tblock.process_dynamic_init = contract_nested_walk_dynamic_init;
+  tblock.process_statement = contract_nested_walk_statement;
+  tblock.visited_shared_exprs = &visited_shared_exprs;
+  traverse_expr(pred, &tblock);
+  contract_nested_frame = saved_frame;
+  contract_nested_chain = saved_chain;
+  contract_nested_depth = saved_depth;
+  contract_nested_position = saved_position;
+}  /* contract_nested_walk */
+
+
+static a_contract_nested_cause_ptr contract_nested_evaluations(
+                                   a_contract_specifier_ptr   csp,
+                                   an_expr_node_ptr           pred,
+                                   a_contract_fold_frame_ptr  frame,
+                                   a_boolean                  report_once)
+/*
+Make the nested analysis evaluations (see contract_nested_call) of the
+analysis evaluation of the contract assertion csp, whose predicate pred is
+folded in frame (NULL if nothing is known of its parameters).  The nested
+diagnose evaluations not proven are reported (once per call if
+report_once, see contract_nested_report_once); return the nested prove
+evaluations not proven, the causes to note on its diagnostic (or on its
+address-of diagnostic), which the caller frees (free_contract_nested_causes).
+*/
+{
+  a_contract_nesting  nesting;
+
+  nesting.up = NULL;
+  nesting.csp = csp;
+  nesting.causes = NULL;
+  if (pred != NULL && !is_error_node(pred)) {
+    a_boolean  saved_report_once = contract_nested_report_once;
+    contract_nested_report_once = report_once;
+    contract_nested_walk(pred, frame, &nesting, /*depth=*/0);
+    contract_nested_report_once = saved_report_once;
+  }  /* if */
+  return nesting.causes;
+}  /* contract_nested_evaluations */
+
+
+static a_contract_nested_cause_ptr contract_nested_evaluations_deferred(
+                                  a_contract_specifier_ptr       csp,
+                                  an_expr_node_ptr               pred,
+                                  a_contract_nested_warning_ptr  *warnings)
+/*
+Make the nested analysis evaluations (see contract_nested_call) of an
+analysis evaluation of the contract assertion csp, whose predicate is pred,
+with nothing known of its parameters, whose diagnostics wait (until it is
+known whether they are given, and with what text).  Return its nested prove
+evaluations not proven (see contract_nested_evaluations), and put its nested
+diagnose ones not proven in *warnings, once per call, instead of warning
+(see warn_contract_nested_deferred); none is reported once with another.
+*/
+{
+  a_contract_nested_warning_ptr  *saved_warnings = contract_nested_warnings;
+  a_contract_nested_cause_ptr    causes;
+
+  contract_nested_warnings = warnings;
+  causes = contract_nested_evaluations(csp, pred,
+                                       (a_contract_fold_frame_ptr)NULL,
+                                       /*report_once=*/FALSE);
+  contract_nested_warnings = saved_warnings;
+  return causes;
+}  /* contract_nested_evaluations_deferred */
+
+
+static void warn_contract_nested_deferred(
+                                  a_contract_nested_warning_ptr  warnings,
+                                  an_error_code                  ec,
+                                  a_symbol_ptr                   sym,
+                                  an_error_code                  note_ec,
+                                  a_boolean                      warn)
+/*
+If warn, warn about each of the nested diagnose evaluations not proven that
+waited (see contract_nested_evaluations_deferred), at its call, with the
+message ec naming sym, a note note_ec at its predicate and one for each of
+its own nested prove evaluations not proven.  Free them.
+*/
+{
+  while (warnings != NULL) {
+    a_contract_nested_warning_ptr  next = warnings->next;
+    if (warn) {
+      a_diagnostic_ptr  dp = pos_sy_start_diagnostic(es_warning, ec,
+                                                     &warnings->position, sym);
+      add_diag_info_with_pos_insert(dp, note_ec, &warnings->predicate_position);
+      add_contract_nested_notes(dp, warnings->causes);
+      end_diagnostic(dp);
+    }  /* if */
+    free_contract_nested_causes(warnings->causes);
+    free_fe(warnings, sizeof(*warnings));
+    warnings = next;
+  }  /* while */
+}  /* warn_contract_nested_deferred */
+
+
+static void diagnose_contract_analyses_at_call_with_args(
+                                        a_routine_ptr      rp,
+                                        an_expr_node_ptr   args,
+                                        a_boolean          args_known,
+                                        a_source_position  *pos)
+/*
+A call of the routine rp, with the explicit arguments args if args_known, is
+made at pos (see diagnose_contract_analyses_in_body).  Each of its
+preconditions has its analysis evaluation there, in the caller (P4405).
+Nothing is proven, so diagnose each whose analysis evaluation has the prove
+semantic (an error) or the diagnose semantic (a warning, contract_unproven),
+as our GCC does for a call whose precondition it cannot prove, after the
+nested evaluations of the calls in its predicate, each noted if it is a
+prove one not proven (E169; folded with rp's arguments substituted).  A
+diagnose one already reported at this call as a nested evaluation in the
+same report-once group is not reported again (E169 (9), (11); see
+contract_report_group): in the check of an assertion, the group of the
+assertion's analysis evaluation, else one of its own.  A call in code never
+evaluated (see contract_never_evaluated_condition) has none.
+*/
+{
+  a_contract_specifier_ptr  csp;
+
+  if (rp == NULL || !contract_analysis_wanted() || analysis_walk_dead != 0) {
+    return;
+  }  /* if */
+  for (csp = rp->contract_specifiers; csp != NULL; csp = csp->next) {
+    a_contract_evaluation_semantic  analysis;
+    a_contract_fold_frame           frame;
+    a_contract_nested_cause_ptr     causes;
+    a_diagnostic_ptr                dp;
+    if (csp->kind != ctk_pre || csp->discarded ||
+        contract_assertion_is_erroneous(csp)) {
+      continue;
+    }  /* if */
+    analysis = contract_analysis_semantic_for(csp, rp);
+    if (analysis != ces_prove && analysis != ces_diagnose) continue;
+    frame.up = NULL;
+    frame.routine = rp;
+    frame.args = args;
+    frame.args_known = args_known;
+    if (analysis_walk_in_check) {
+      set_contract_report_group(&analysis_walk_check_position, /*own=*/FALSE);
+    } else {
+      set_contract_report_group(pos, /*own=*/TRUE);
+    }  /* if */
+    causes = contract_nested_evaluations(csp, contract_specifier_predicate(csp),
+                                         &frame, /*report_once=*/TRUE);
+    if (analysis == ces_prove) {
+      dp = pos_start_diagnostic(es_error, ec_contract_unproven, pos);
+      add_contract_nested_notes(dp, causes);
+      end_diagnostic(dp);
+    } else if (!contract_nested_reported(csp, pos, /*nested=*/FALSE)) {
+      dp = pos_start_diagnostic(es_warning, ec_contract_unproven_warning,
+                                pos);
+      add_contract_nested_notes(dp, causes);
+      end_diagnostic(dp);
+    }  /* if */
+    free_contract_nested_causes(causes);
+  }  /* for */
+}  /* diagnose_contract_analyses_at_call_with_args */
+
+
+static void diagnose_unproven_with_nested(a_contract_specifier_ptr  csp,
+                                          a_boolean                 is_prove,
+                                          a_source_position         *pos)
+/*
+The analysis evaluation of the contract assertion csp, a postcondition or
+contract_assert of the current function, is not proven: diagnose it at pos,
+an error if is_prove, else a warning (contract_unproven), after its nested
+evaluations (E169; nothing is known of the function's parameters), with a
+note for each nested prove evaluation not proven (see diagnose_unproven_contract).
+*/
+{
+  a_contract_nested_cause_ptr  causes;
+  a_diagnostic_ptr             dp;
+
+  /* One report-once group with the assertion's check (see
+     contract_report_group). */
+  set_contract_report_group(&csp->position, /*own=*/FALSE);
+  causes = contract_nested_evaluations(csp, contract_specifier_predicate(csp),
+                                       (a_contract_fold_frame_ptr)NULL,
+                                       /*report_once=*/TRUE);
+  dp = pos_start_diagnostic(is_prove ? es_error : es_warning,
+                            is_prove ? ec_contract_unproven
+                                     : ec_contract_unproven_warning,
+                            pos);
+  add_contract_nested_notes(dp, causes);
+  end_diagnostic(dp);
+  free_contract_nested_causes(causes);
+}  /* diagnose_unproven_with_nested */
+
+
+void diagnose_contract_analyses_at_call(a_routine_ptr      rp,
+                                        a_source_position  *pos)
+/*
+A call of the routine rp, whose arguments are not known, is made at pos:
+see diagnose_contract_analyses_at_call_with_args.
+*/
+{
+  diagnose_contract_analyses_at_call_with_args(rp, (an_expr_node_ptr)NULL,
+                                               /*args_known=*/FALSE, pos);
+}  /* diagnose_contract_analyses_at_call */
+
+
+static a_boolean is_false_constant_predicate(an_expr_node_ptr  expr)
+/*
+Return TRUE if the predicate expr has a constant value that is false (folding
+it, with nothing known of any parameter, gives false; compare
+is_true_constant_expr).  The safe answer, if that cannot be discovered, is
+FALSE.
+*/
+{
+  expr = skip_parens(expr);
+  while (is_operation_node(expr) && node_operator_is(expr, eok_bool_cast)) {
+    expr = skip_parens(expr->variant.operation.operands);
+  }  /* while */
+  return is_constant_node(expr) &&
+         constant_bool_value_known_at_compile_time(node_constant(expr)) &&
+         is_false_constant(node_constant(expr));
+}  /* is_false_constant_predicate */
+
+
+static void diagnose_contract_address_unproven(a_routine_ptr       rp,
+                                               a_source_position   *pos,
+                                               a_dynamic_init_ptr  dip)
+/*
+The address of the routine rp is taken at pos (see
+diagnose_contract_address_taken); if dip is not NULL, it is the
+initialization of an object of static or thread storage duration (or of a
+temporary extended to it) destroyed through the address of its destructor
+rp (see note_contract_static_destruction), named in a note.
+*/
+{
+  a_contract_specifier_ptr     csp, unproven = NULL;
+  a_boolean                    unproven_prove = FALSE, unproven_false = FALSE;
+  a_contract_nested_cause_ptr  causes, unproven_causes = NULL;
+  an_error_code                ec;
+  a_diagnostic_ptr             dp;
+
+  if (rp != NULL && special_kind_is(rp, sfk_lambda_entry_point)) {
+    /* The alternate static entry point of a lambda's call operator, the
+       value of a constant conversion of the closure. */
+    rp = rp->variant.lambda_call_operator;
+  }  /* if */
+  if (rp == NULL || !contract_analysis_wanted()) return;
+  instantiate_contract_specifiers_if_needed(symbol_for(rp));
+  for (csp = rp->contract_specifiers; csp != NULL; csp = csp->next) {
+    a_contract_evaluation_semantic  analysis;
+    an_expr_node_ptr                pred;
+    if (csp->kind != ctk_pre || csp->discarded ||
+        contract_assertion_is_erroneous(csp)) {
+      continue;
+    }  /* if */
+    analysis = contract_analysis_semantic_for(csp, rp);
+    if ((analysis != ces_prove && analysis != ces_diagnose) ||
+        !contract_allows_no_runtime_semantic(csp)) {
+      /* A precondition that allows a run-time semantic: what the calls
+         through the address are is not determined here. */
+      continue;
+    }  /* if */
+    if (unproven != NULL && (unproven_prove || analysis != ces_prove)) {
+      continue;
+    }  /* if */
+    pred = contract_specifier_predicate(csp);
+    /* The nested evaluations of the calls in its predicate, with nothing
+       known of the arguments (E169). */
+    causes = contract_nested_evaluations(csp, pred,
+                                         (a_contract_fold_frame_ptr)NULL,
+                                         /*report_once=*/FALSE);
+    if (!contracts_prove_fold_enabled) {
+      /* --no_contracts_prove_fold: nothing is folded. */
+      pred = NULL;
+    }  /* if */
+    if (pred != NULL && is_true_constant_expr(pred) && causes == NULL) {
+      /* Proven tautological by folding. */
+      continue;
+    }  /* if */
+    free_contract_nested_causes(unproven_causes);
+    unproven = csp;
+    unproven_prove = analysis == ces_prove;
+    unproven_false = pred != NULL && is_false_constant_predicate(pred);
+    unproven_causes = causes;
+  }  /* for */
+  if (unproven == NULL) return;
+  if (unproven_prove) {
+    ec = unproven_false ? ec_contract_address_always_false
+                        : ec_contract_address_unproven;
+  } else {
+    ec = unproven_false ? ec_contract_address_always_false_warning
+                        : ec_contract_address_unproven_warning;
+  }  /* if */
+  dp = pos_sy_start_diagnostic(unproven_prove ? es_error : es_warning, ec,
+                               pos, symbol_for(rp));
+  if (dip != NULL) {
+    a_variable_ptr  vp = dip->variable;
+    if (vp == NULL || vp->compiler_generated) {
+      add_diag_info(dp, ec_contract_address_temporary);
+    } else {
+      sym_add_diag_info(dp, vp->is_thread_local
+                              ? ec_contract_address_thread_variable
+                              : ec_contract_address_static_variable,
+                        symbol_for(vp));
+    }  /* if */
+  }  /* if */
+  add_diag_info_with_pos_insert(dp, ec_contract_address_precondition,
+                                &unproven->position);
+  add_contract_nested_notes(dp, unproven_causes);
+  end_diagnostic(dp);
+  free_contract_nested_causes(unproven_causes);
+}  /* diagnose_contract_address_unproven */
+
+
+void diagnose_contract_address_taken(a_routine_ptr      rp,
+                                     a_source_position  *pos)
+/*
+The address of the routine rp is taken at pos (P4405, D4405R0's "Taking the
+Address of a Function"): a call through it has no analysis evaluation, so a
+precondition can be proven for it only if it is tautological.  That is
+known to be needed only for a precondition whose label allows no run-time
+semantic (see contract_allows_no_runtime_semantic) and that is analyzed with
+prove or diagnose: the first such one that folding does not prove true, or
+whose predicate's calls have a nested prove evaluation that is not proven
+(E169; see contract_nested_evaluations), with prove, else with diagnose, is
+diagnosed -- an error for prove, a warning for diagnose
+(contract_address_unproven), "contract assertion cannot be proven for a call
+through the address of" rp ("contract predicate is always false ..." if it
+folds to false), with a note for each such nested evaluation, as our GCC
+does.  A
+precondition analyzed with prove or diagnose only by the configuration
+draws nothing: this translation unit's configuration does not determine
+the calls through the address.
+*/
+{
+  diagnose_contract_address_unproven(rp, pos, (a_dynamic_init_ptr)NULL);
+}  /* diagnose_contract_address_taken */
+
+
+void note_contract_static_destruction(a_dynamic_init_ptr  dip)
+/*
+The object initialized by dip, of static or thread storage duration (a
+variable, or a temporary whose lifetime is extended to that duration), is
+to be destroyed by a call of its destructor dip->destructor at exit (or when
+the thread ends), through the destructor's address (P4405; D4405R0, section
+2.1): diagnose that as taking the address (see
+diagnose_contract_address_taken), at the variable, or at the current
+position for a temporary, with a note naming the object.  The calls of the
+destructor for the elements of an array are made directly, by the
+implementation, and are analyzed as well, with nothing to prove them by, as
+our GCC does.
+*/
+{
+  a_source_position  pos;
+  a_type_ptr         type;
+
+  if (dip->destructor == NULL || !contract_analysis_wanted()) return;
+  pos = dip->variable != NULL ? dip->variable->source_corresp.decl_position
+                              : error_position;
+  diagnose_contract_address_unproven(dip->destructor, &pos, dip);
+  type = dip->variable != NULL ? skip_typerefs(dip->variable->type) : NULL;
+  if (type != NULL && is_array_type(type)) {
+    diagnose_contract_analyses_at_call(dip->destructor, &pos);
+  }  /* if */
+}  /* note_contract_static_destruction */
 
 /* Conditionally close the "edg" namespace. */
 END_EDG_NAMESPACE

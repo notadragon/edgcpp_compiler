@@ -1,0 +1,2 @@
+eccp -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contract_analysis_skip_dead_calls --contract_evaluation_semantic=observe -O2 Test_name.c
+cc1plus: warning: '-fcontract-analysis-skip-dead-calls' has no effect without '-fcontracts-p4405'

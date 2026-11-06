@@ -1,0 +1,18 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p4405 --contract_evaluation_semantic=prove -O2 Test_name.c
+"Test_name.c", line 33: warning: variable "l" was set but never used
+    auto l = [] (int a, int b) static pre (b > 0) { return a + b; };	// { dg-message "the predicate of the contract assertion" }
+         ^
+
+Test_name.c: In function 'int use(S)':
+Test_name.c:31:10: error: contract predicate is always false
+   31 |   int r = s (1, -1);    // { dg-error "contract predicate is always false" }
+      |         ~^~~~~~~
+Test_name.c:25:43: note: the predicate of the contract assertion
+   25 |   static int operator() (int a, int b) pre (b > 0);     // { dg-message "the predicate of the contract assertion" }
+      |                                         ~~^~~
+Test_name.c:35:7: error: contract predicate is always false
+   35 |   r += l (1, -1);       // { dg-error "contract predicate is always false" }
+      |      ~^~~~~~~
+Test_name.c:33:41: note: the predicate of the contract assertion
+   33 |   auto l = [] (int a, int b) static pre (b > 0) { return a + b; };      // { dg-message "the predicate of the contract assertion" }
+      |                                       ~~^~~

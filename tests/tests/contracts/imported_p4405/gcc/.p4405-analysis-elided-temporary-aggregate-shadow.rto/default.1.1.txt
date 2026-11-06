@@ -1,0 +1,192 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 -O2 Test_name.c
+Test_name.c:95:4: warning: contract assertion cannot be proven for a call through the address of 'DN::~DN()' [-Wcontract-unproven]
+   95 | DN e8[2] = {DN (), DN ()};      // { dg-warning "contract assertion cannot be proven" }
+      |    ^~
+Test_name.c:95:4: note: 'e8', of static storage duration, is destroyed by a call through the address of its destructor
+Test_name.c:75:7: note: precondition here
+   75 |   ~DN () pre<always_diagnose> (g > 0);  // { dg-message "predicate of the contract assertion" }
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c: In function 'void h()':
+Test_name.c:111:11: warning: contract assertion cannot be proven for a call through the address of 'DN::~DN()' [-Wcontract-unproven]
+  111 |   static DN b9[2] = {DN (), DN ()};     // { dg-warning "contract assertion cannot be proven" }
+      |           ^~
+Test_name.c:111:11: note: 'b9', of static storage duration, is destroyed by a call through the address of its destructor
+Test_name.c:75:7: note: precondition here
+   75 |   ~DN () pre<always_diagnose> (g > 0);  // { dg-message "predicate of the contract assertion" }
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c: At global scope:
+Test_name.c:45:17: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   45 | A na{DP (), thr ()};    // { dg-warning "contract assertion cannot be proven" }
+      |                 ^
+Test_name.c:38:32: note: the predicate of the contract assertion
+   38 |   ~DP () pre<always_diagnose> (g > 0);  // { dg-message "predicate of the contract assertion" }
+      |                              ~~^~~
+Test_name.c:46:19: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   46 | A nb{make (), thr ()};  // { dg-warning "contract assertion cannot be proven" }
+      |                   ^
+Test_name.c:38:32: note: the predicate of the contract assertion
+   38 |   ~DP () pre<always_diagnose> (g > 0);  // { dg-message "predicate of the contract assertion" }
+      |                              ~~^~~
+Test_name.c:48:21: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   48 | A SA::sa{DP (), thr ()};        // { dg-warning "contract assertion cannot be proven" }
+      |                     ^
+Test_name.c:38:32: note: the predicate of the contract assertion
+   38 |   ~DP () pre<always_diagnose> (g > 0);  // { dg-message "predicate of the contract assertion" }
+      |                              ~~^~~
+Test_name.c: In function 'void f()':
+Test_name.c:54:16: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   54 |   A b{DP (), thr ()};   // { dg-warning "contract assertion cannot be proven" }
+      |                ^
+Test_name.c:38:32: note: the predicate of the contract assertion
+   38 |   ~DP () pre<always_diagnose> (g > 0);  // { dg-message "predicate of the contract assertion" }
+      |                              ~~^~~
+Test_name.c: In destructor 'A::~A()':
+Test_name.c:42:8: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   42 | struct A { DP p; int i; };      // { dg-warning "contract assertion cannot be proven" }
+      |        ^
+Test_name.c:38:32: note: the predicate of the contract assertion
+   38 |   ~DP () pre<always_diagnose> (g > 0);  // { dg-message "predicate of the contract assertion" }
+      |                              ~~^~~
+Test_name.c: In function 'void f()':
+Test_name.c:55:23: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   55 |   static A c{DP (), thr ()};    // { dg-warning "contract assertion cannot be proven" }
+      |                       ^
+Test_name.c:38:32: note: the predicate of the contract assertion
+   38 |   ~DP () pre<always_diagnose> (g > 0);  // { dg-message "predicate of the contract assertion" }
+      |                              ~~^~~
+Test_name.c: At global scope:
+Test_name.c:86:13: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   86 | A e1{DP (), 1};                 // { dg-warning "contract assertion cannot be proven" }
+      |             ^
+Test_name.c:38:32: note: the predicate of the contract assertion
+   38 |   ~DP () pre<always_diagnose> (g > 0);  // { dg-message "predicate of the contract assertion" }
+      |                              ~~^~~
+Test_name.c:87:19: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   87 | A e2{DP (), nothr ()};          // { dg-warning "contract assertion cannot be proven" }
+      |                   ^
+Test_name.c:38:32: note: the predicate of the contract assertion
+   38 |   ~DP () pre<always_diagnose> (g > 0);  // { dg-message "predicate of the contract assertion" }
+      |                              ~~^~~
+Test_name.c:88:13: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   88 | A e3(DP (), 1);                 // { dg-warning "contract assertion cannot be proven" }
+      |             ^
+Test_name.c:38:32: note: the predicate of the contract assertion
+   38 |   ~DP () pre<always_diagnose> (g > 0);  // { dg-message "predicate of the contract assertion" }
+      |                              ~~^~~
+Test_name.c:89:11: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   89 | D e4{{}, 1};                    // { dg-warning "contract assertion cannot be proven" }
+      |           ^
+Test_name.c:38:32: note: the predicate of the contract assertion
+   38 |   ~DP () pre<always_diagnose> (g > 0);  // { dg-message "predicate of the contract assertion" }
+      |                              ~~^~~
+Test_name.c:90:11: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   90 | AI e5{DP ()};                   // { dg-warning "contract assertion cannot be proven" }
+      |           ^
+Test_name.c:38:32: note: the predicate of the contract assertion
+   38 |   ~DP () pre<always_diagnose> (g > 0);  // { dg-message "predicate of the contract assertion" }
+      |                              ~~^~~
+Test_name.c:94:17: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   94 | A SE::se{DP (), 1};             // { dg-warning "contract assertion cannot be proven" }
+      |                 ^
+Test_name.c:38:32: note: the predicate of the contract assertion
+   38 |   ~DP () pre<always_diagnose> (g > 0);  // { dg-message "predicate of the contract assertion" }
+      |                              ~~^~~
+Test_name.c:95:23: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   95 | DN e8[2] = {DN (), DN ()};      // { dg-warning "contract assertion cannot be proven" }
+      |                       ^
+Test_name.c:75:32: note: the predicate of the contract assertion
+   75 |   ~DN () pre<always_diagnose> (g > 0);  // { dg-message "predicate of the contract assertion" }
+      |                              ~~^~~
+Test_name.c: In function 'void h()':
+Test_name.c:101:13: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  101 |   A b1{DP (), 1};               // { dg-warning "contract assertion cannot be proven" }
+      |             ^
+Test_name.c:38:32: note: the predicate of the contract assertion
+   38 |   ~DP () pre<always_diagnose> (g > 0);  // { dg-message "predicate of the contract assertion" }
+      |                              ~~^~~
+Test_name.c:102:26: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  102 |   static A b2{DP (), nothr ()}; // { dg-warning "contract assertion cannot be proven" }
+      |                          ^
+Test_name.c:38:32: note: the predicate of the contract assertion
+   38 |   ~DP () pre<always_diagnose> (g > 0);  // { dg-message "predicate of the contract assertion" }
+      |                              ~~^~~
+Test_name.c:103:13: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  103 |   A b3(DP (), 1);               // { dg-warning "contract assertion cannot be proven" }
+      |             ^
+Test_name.c:38:32: note: the predicate of the contract assertion
+   38 |   ~DP () pre<always_diagnose> (g > 0);  // { dg-message "predicate of the contract assertion" }
+      |                              ~~^~~
+Test_name.c:104:11: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  104 |   D b4{{}, 1};                  // { dg-warning "contract assertion cannot be proven" }
+      |           ^
+Test_name.c:38:32: note: the predicate of the contract assertion
+   38 |   ~DP () pre<always_diagnose> (g > 0);  // { dg-message "predicate of the contract assertion" }
+      |                              ~~^~~
+Test_name.c:105:18: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  105 |   static AI b5{DP ()};          // { dg-warning "contract assertion cannot be proven" }
+      |                  ^
+Test_name.c:38:32: note: the predicate of the contract assertion
+   38 |   ~DP () pre<always_diagnose> (g > 0);  // { dg-message "predicate of the contract assertion" }
+      |                              ~~^~~
+Test_name.c: In destructor 'AI::~AI()':
+Test_name.c:78:8: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   78 | struct AI { DP p; int i = 5; }; // { dg-warning "contract assertion cannot be proven" }
+      |        ^~
+Test_name.c:38:32: note: the predicate of the contract assertion
+   38 |   ~DP () pre<always_diagnose> (g > 0);  // { dg-message "predicate of the contract assertion" }
+      |                              ~~^~~
+Test_name.c: In destructor 'L::~L()':
+Test_name.c:79:8: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   79 | struct L { int i; DP p; };      // { dg-warning "contract assertion cannot be proven" }
+      |        ^
+Test_name.c:38:32: note: the predicate of the contract assertion
+   38 |   ~DP () pre<always_diagnose> (g > 0);  // { dg-message "predicate of the contract assertion" }
+      |                              ~~^~~
+Test_name.c: In destructor 'h()::<lambda()>::~<lambda>()':
+Test_name.c:109:27: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  109 |   auto b8 = [p = DP (), i = 1]  // { dg-warning "contract assertion cannot be proven" }
+      |                           ^
+Test_name.c:38:32: note: the predicate of the contract assertion
+   38 |   ~DP () pre<always_diagnose> (g > 0);  // { dg-message "predicate of the contract assertion" }
+      |                              ~~^~~
+Test_name.c: In function 'void h()':
+Test_name.c:110:3: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  110 |     {};                         // { dg-warning "contract assertion cannot be proven" }
+      |   ^
+Test_name.c:38:32: note: the predicate of the contract assertion
+   38 |   ~DP () pre<always_diagnose> (g > 0);  // { dg-message "predicate of the contract assertion" }
+      |                              ~~^~~
+Test_name.c:111:30: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  111 |   static DN b9[2] = {DN (), DN ()};     // { dg-warning "contract assertion cannot be proven" }
+      |                              ^
+Test_name.c:75:32: note: the predicate of the contract assertion
+   75 |   ~DN () pre<always_diagnose> (g > 0);  // { dg-message "predicate of the contract assertion" }
+      |                              ~~^~~
+Test_name.c: In function 'void __tcf_ZZ1hvE2b9(void*)':
+Test_name.c:111:30: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  111 |   static DN b9[2] = {DN (), DN ()};     // { dg-warning "contract assertion cannot be proven" }
+      |                              ^
+Test_name.c:75:32: note: the predicate of the contract assertion
+   75 |   ~DN () pre<always_diagnose> (g > 0);  // { dg-message "predicate of the contract assertion" }
+      |                              ~~^~~
+Test_name.c: In function 'void h()':
+Test_name.c:113:23: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  113 |   AR b10{{DN (), DN ()}, 1};            // { dg-warning "contract assertion cannot be proven" }
+      |                       ^
+Test_name.c:75:32: note: the predicate of the contract assertion
+   75 |   ~DN () pre<always_diagnose> (g > 0);  // { dg-message "predicate of the contract assertion" }
+      |                              ~~^~~
+Test_name.c: In destructor 'AR::~AR()':
+Test_name.c:84:8: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   84 | struct AR { DN a[2]; int i; };  // { dg-warning "contract assertion cannot be proven" }
+      |        ^~
+Test_name.c:75:32: note: the predicate of the contract assertion
+   75 |   ~DN () pre<always_diagnose> (g > 0);  // { dg-message "predicate of the contract assertion" }
+      |                              ~~^~~
+Test_name.c: In function 'void __tcfe8(void*)':
+Test_name.c:95:4: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   95 | DN e8[2] = {DN (), DN ()};      // { dg-warning "contract assertion cannot be proven" }
+      |    ^~
+Test_name.c:75:32: note: the predicate of the contract assertion
+   75 |   ~DN () pre<always_diagnose> (g > 0);  // { dg-message "predicate of the contract assertion" }
+      |                              ~~^~~

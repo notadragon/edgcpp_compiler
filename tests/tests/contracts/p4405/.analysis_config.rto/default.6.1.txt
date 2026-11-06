@@ -1,0 +1,5 @@
+fe_only -DTEST_NUMBER=6 --c++26 --contracts_p4405 --contract_configuration=[{"match":{"constexpr":true,"kind":"pre"},"output":{"semantic":"prove"}}] Test_name.c
+Command-line error: invalid contract configuration (<command-line>:1:64): the "semantic" of an entry matching "constexpr" cannot be "prove" or "diagnose"
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation terminated.

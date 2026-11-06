@@ -1,0 +1,9 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p4405 --contract_evaluation_semantic=diagnose -Werror=contract-unproven Test_name.c
+Test_name.c: In function 'int g(int)':
+Test_name.c:19:24: error: contract assertion cannot be proven [-Werror=contract-unproven]
+   19 | int g (int y) { return f (y); }         // { dg-error "contract assertion cannot be proven \\\[-Werror=contract-unproven\\\]" }
+      |                       ~^~~
+Test_name.c:18:20: note: the predicate of the contract assertion
+   18 | int f (int x) pre (x > 0) { return x; } // { dg-message "the predicate of the contract assertion" }
+      |                  ~~^~~
+cc1plus: some warnings being treated as errors

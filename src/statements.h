@@ -613,6 +613,11 @@ extern a_boolean in_switch_statement(void);
 
 extern void record_entity_in_decl_stmt_if_needed(a_symbol_ptr  sym);
 
+extern void diagnose_contract_analyses_in_body(void);
+
+extern void diagnose_contract_analyses_in_static_init(a_variable_ptr      vp,
+                                                      a_dynamic_init_ptr  dip);
+
 extern void statements_one_time_init(void);
 
 extern void statements_trans_unit_init(void);

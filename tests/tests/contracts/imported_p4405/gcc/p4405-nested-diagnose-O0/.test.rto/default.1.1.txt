@@ -1,0 +1,27 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p4405 --contract_evaluation_semantic=ignore --contract_analysis_semantic=prove --contract_configuration_file=p4405-nested-diagnose.json -O0 Test_name.c
+Test_name.c: In function 'int unprovable(int)':
+Test_name.c:40:34: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   40 |   contract_assert (             // { dg-error "contract assertion cannot be proven" }
+      |                 ~~~~~~~~~~~~~~~~~^~~
+Test_name.c:29:21: note: the predicate of the contract assertion
+   29 | int g1 (int x) pre (x != 0);    // { dg-message "the predicate of the contract assertion" }
+      |                   ~~^~~~
+Test_name.c:40:1: error: contract assertion cannot be proven
+   40 |   contract_assert (             // { dg-error "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:40:38: note: the predicate of the contract assertion
+   40 |   contract_assert (             // { dg-error "contract assertion cannot be proven" }
+      |                 ~~~~~~~~~~~~~~~~~~~~~^~~~
+Test_name.c: In function 'int guarded(int)':
+Test_name.c:50:34: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   50 |   contract_assert (             // { dg-error "contract assertion cannot be proven" }
+      |                 ~~~~~~~~~~~~~~~~~^~~
+Test_name.c:32:21: note: the predicate of the contract assertion
+   32 | int g2 (int x) pre (x != 0);    // { dg-message "the predicate of the contract assertion" }
+      |                   ~~^~~~
+Test_name.c:50:1: error: contract assertion cannot be proven
+   50 |   contract_assert (             // { dg-error "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:50:38: note: the predicate of the contract assertion
+   50 |   contract_assert (             // { dg-error "contract assertion cannot be proven" }
+      |                 ~~~~~~~~~~~~~~~~~~~~~^~~~

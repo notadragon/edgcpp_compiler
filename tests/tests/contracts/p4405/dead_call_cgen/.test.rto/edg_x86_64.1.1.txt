@@ -1,0 +1,105 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contracts_p3400 --contracts_p4405 --contract_evaluation_semantic=ignore --contract_analysis_semantic=prove Test_name.c
+"Test_name.c", line 43: error: contract assertion cannot be proven
+  int h1() { return 1 ? g4(1) : g3(0); }
+                          ^
+
+"Test_name.c", line 59: error: contract assertion cannot be proven
+  int h11(int y) { return (k || 0) ? g3(0) : y + g4(y); }
+                                                   ^
+
+"Test_name.c", line 63: error: contract assertion cannot be proven
+  int lam() { return 0 ? [] { return g3(0); }() : 1; }
+                                       ^
+
+"Test_name.c", line 66: error: contract assertion cannot be proven
+  int live1() { return 0 ? 2 : g3(0); }
+                                 ^
+
+"Test_name.c", line 67: error: contract assertion cannot be proven
+  bool live2() { return true && g3(0); }
+                                  ^
+
+"Test_name.c", line 68: error: contract assertion cannot be proven
+  bool live3() { return 0 || g3(0); }
+                               ^
+
+"Test_name.c", line 69: error: contract assertion cannot be proven
+  int live4(int y) { if (0) return y; else return g3(0); }
+                                                    ^
+
+"Test_name.c", line 70: warning: statement is unreachable
+  int live5(int y) { if (1) return g3(0); return y; }
+                                          ^
+
+"Test_name.c", line 70: error: contract assertion cannot be proven
+  int live5(int y) { if (1) return g3(0); return y; }
+                                     ^
+
+"Test_name.c", line 71: error: contract assertion cannot be proven
+  int live6(int y) { if (0) return y; return g3(0); }
+                                               ^
+
+"Test_name.c", line 72: error: contract assertion cannot be proven
+  bool live7() { return 0 && g3(0) || g3(0); }
+                                        ^
+
+"Test_name.c", line 73: error: contract assertion cannot be proven
+  int h4(int y) { return y > 0 && y < 0 ? g3(0) : y; }
+                                            ^
+
+"Test_name.c", line 74: warning: statement is unreachable
+  int a1(int y) { return y; g3(0); }
+                            ^
+
+"Test_name.c", line 74: error: contract assertion cannot be proven
+  int a1(int y) { return y; g3(0); }
+                              ^
+
+"Test_name.c", line 75: error: contract assertion cannot be proven
+  int s1() { switch (1) { case 0: return g3(0); case 1: return 1; } return 0; }
+                                           ^
+
+"Test_name.c", line 80: error: contract assertion cannot be proven for a call through the address of "void ap(int)"
+            the precondition at line 38
+  void (*addr(int y))(int) { return 1 ? pick(y) : &ap; }
+                                                   ^
+
+"Test_name.c", line 81: error: contract assertion cannot be proven for a call through the address of "void ap(int)"
+            the precondition at line 38
+  void (*addr2(void (*fp)(int)))(int) { if (0) fp = &ap; return fp; }
+                                                    ^
+
+"Test_name.c", line 85: error: contract assertion cannot be proven
+  int h7(int y) { contract_assert((1 ? g4(1) : g3(0)) == 10); return y; }
+                  ^
+
+"Test_name.c", line 86: error: contract assertion cannot be proven
+  int h8(int y) { contract_assert(false && g3(0)); return y; }
+                  ^
+
+"Test_name.c", line 89: error: contract assertion cannot be proven
+  template <typename T> int t1() { return 1 ? g4(1) : g3(0); }
+                                                ^
+          detected during instantiation of "int t1<T>() [with T=int]" at line 104
+
+"Test_name.c", line 96: error: contract assertion cannot be proven
+  template <int N> int tn1() { return N ? g4(1) : g3(0); }
+                                            ^
+          detected during instantiation of "int tn1<N>() [with N=1]" at line 111
+
+"Test_name.c", line 100: error: contract assertion cannot be proven
+  template <typename T> int tlive1() { return 0 ? 2 : g3(0); }
+                                                        ^
+          detected during instantiation of "int tlive1<T>() [with T=int]" at line 115
+
+"Test_name.c", line 101: error: contract assertion cannot be proven
+  template <int N> bool tlive2() { return N && g3(0); }
+                                                 ^
+          detected during instantiation of "bool tlive2<N>() [with N=1]" at line 116
+
+"Test_name.c", line 102: error: contract assertion cannot be proven
+  template <typename T> int th4(int y) { return y > 0 && y < 0 ? g3(0) : y; }
+                                                                   ^
+          detected during instantiation of "int th4<T>(int) [with T=int]" at line 117
+
+22 errors detected in the compilation of "Test_name.c".

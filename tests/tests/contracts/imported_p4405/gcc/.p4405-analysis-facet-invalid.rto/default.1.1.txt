@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 --contract_evaluation_semantic=ignore Test_name.c
+"Test_name.c", line 50: error: analysis_semantic result is not ignore, diagnose or prove
+  int a (int x) pre<to_enforce> (x > 0) { return x; }	// { dg-error "'analysis_semantic' result is not 'ignore', 'diagnose' or 'prove'" }
+                ^
+
+"Test_name.c", line 51: error: analysis_semantic result is not ignore, diagnose or prove
+  int b (int x) pre<to_unspecified> (x > 0) { return x; }	// { dg-error "'analysis_semantic' result is not 'ignore', 'diagnose' or 'prove'" }
+                ^
+
+"Test_name.c", line 52: error: analysis_semantic result is not ignore, diagnose or prove
+  int c (int x) pre<to_unknown> (x > 0) { return x; }	// { dg-error "'analysis_semantic' result is not 'ignore', 'diagnose' or 'prove'" }
+                ^
+
+"Test_name.c", line 53: error: analysis_semantic result is not ignore, diagnose or prove
+  int d (int x) pre<diagnosed | to_enforce> (x > 0) { return x; }	// { dg-error "'analysis_semantic' result is not 'ignore', 'diagnose' or 'prove'" }
+                ^
+
+"Test_name.c", line 54: error: the analysis_semantic facet of assertion-control object "not_constexpr" must be usable in a constant expression
+  int e (int x) pre<nc> (x > 0) { return x; }	// { dg-error "the 'analysis_semantic' facet of assertion-control object 'not_constexpr' must be usable in a constant expression" }
+                ^
+
+5 errors detected in the compilation of "Test_name.c".

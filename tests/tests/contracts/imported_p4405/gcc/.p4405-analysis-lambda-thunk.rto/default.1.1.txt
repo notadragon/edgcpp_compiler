@@ -1,0 +1,14 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p4405 --contract_analysis_semantic=diagnose -O0 Test_name.c
+Test_name.c: In function 'int use(int)':
+Test_name.c:31:7: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   31 |   r += n (y);                                   // { dg-warning "contract assertion cannot be proven" }
+      |      ~^~~
+Test_name.c:29:27: note: the predicate of the contract assertion
+   29 |   auto n = [] (int x) pre (x > 0) { return x; };        // { dg-message "the predicate of the contract assertion" }
+      |                         ~~^~~
+Test_name.c:32:7: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   32 |   r += g (y);                                   // { dg-warning "contract assertion cannot be proven" }
+      |      ~^~~
+Test_name.c:25:31: note: the predicate of the contract assertion
+   25 |   auto g = [] (auto x) pre (x > 0) { return x; };       // { dg-message "the predicate of the contract assertion" }
+      |                             ~~^~~

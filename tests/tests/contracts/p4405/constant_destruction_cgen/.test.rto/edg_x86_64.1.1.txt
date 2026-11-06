@@ -1,0 +1,44 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contracts_p3400 --contracts_p4405 --contract_evaluation_semantic=ignore --contract_analysis_semantic=ignore Test_name.c
+"Test_name.c", line 48: error: contract assertion cannot be proven for a call through the address of "DE::~DE() noexcept"
+            variable "e1", of static storage duration, is destroyed by a call through the address of its destructor
+            the precondition at line 30
+  DE e1;                           // An error, through the address.
+     ^
+
+"Test_name.c", line 64: warning: variable "m" was set but never used
+    static constinit int m = (DE(), 4);
+                         ^
+
+"Test_name.c", line 72: error: contract assertion cannot be proven
+    DE d;                          // An error, where d is destroyed.
+       ^
+
+"Test_name.c", line 38: warning: variable "ce2" was declared but never referenced
+  constexpr DE ce2{};
+               ^
+
+"Test_name.c", line 39: warning: variable "ce3" was declared but never referenced
+  constexpr DE ce3 = DE();
+               ^
+
+"Test_name.c", line 40: warning: variable "ca" was declared but never referenced
+  constexpr DE ca[2];
+               ^
+
+"Test_name.c", line 41: warning: variable "ch" was declared but never referenced
+  constexpr H ch;
+              ^
+
+"Test_name.c", line 42: warning: variable "cha" was declared but never referenced
+  constexpr HA cha{DE(), 1};
+               ^
+
+"Test_name.c", line 44: warning: variable "ci1" was declared but never referenced
+  constexpr int ci1 = (DE(), 1);   // Temporaries of a constant
+                ^
+
+"Test_name.c", line 46: warning: variable "cv" was declared but never referenced
+  constexpr V cv{DE()};
+              ^
+
+2 errors detected in the compilation of "Test_name.c".

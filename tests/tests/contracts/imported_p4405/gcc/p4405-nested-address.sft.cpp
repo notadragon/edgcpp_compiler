@@ -1,0 +1,56 @@
+//remark: imported from gcc:p4405-nested-address.C
+//type: cn
+//require: BACK_END_IS_CP_GEN_BE 1
+//options: --c++26 --contracts --contracts_p3400 --contracts_p4405 --contract_analysis_semantic=prove
+//match_regex: Test_name.c:51:[0-9]+: error: 
+//match_regex: Test_name.c:52:[0-9]+: error: 
+// EDG: adapted -- the front end gives no analysis diagnostic through edg_gxx.sh:
+// g++ makes the analysis evaluations (and applies the address-of rule), so
+// the test compiles (type cn) and matches g++'s diagnostics.
+// P4405, DECISIONS.md E169, "Taking the Address of a Function": where the
+// address of a function whose precondition allows no runtime semantic is
+// taken, folding decides that precondition together with the
+// preconditions of the calls in its predicate, with nothing known of the
+// arguments.  `g (1)' is proven, so `a1' is not diagnosed; `g (0)' is
+// always false and `g (x)' cannot be proven, each noted.  A call the
+// predicate never evaluates -- the right operand of `true ||', an
+// unevaluated operand -- has nothing nested.
+//
+// Mirror: clang/test/Contracts/p4405-nested-address.cpp in the
+// llvm_llvm-project fork.
+// { dg-do compile { target c++26 } }
+// { dg-additional-options "-fcontracts -fcontracts-p3400 -fcontracts-p4405" }
+// { dg-additional-options "-fcontract-analysis-semantic=prove" }
+// { dg-skip-if "requires hosted libstdc++ for stdc++exp" { ! hostedlib } }
+
+#include <contracts>
+
+using std::contracts::evaluation_semantic;
+using std::contracts::evaluation_semantic_set;
+
+struct always_prove_t {
+  using assertion_control_object = always_prove_t;
+  static constexpr evaluation_semantic_set
+    allowed_semantics{evaluation_semantic::prove};
+};
+constexpr always_prove_t always_prove{};
+
+constexpr int g (int x) pre (x != 0) { return 1; }	// { dg-message "precondition of a call in the predicate is always false" }
+							// { dg-message "precondition of a call in the predicate cannot be proven" "" { target *-*-* } .-1 }
+
+void a1 (int x) pre<always_prove> (g (1) == 1);
+void a2 (int x) pre<always_prove> (g (0) == 1);	// { dg-message "precondition here" }
+void a3 (int x) pre<always_prove> (g (x) == 1);	// { dg-message "precondition here" }
+void a4 (int x) pre<always_prove> (true || g (0) == 1);
+void a5 (int x) pre<always_prove> (sizeof (g (0)) == sizeof (int));
+
+void
+take ()
+{
+  void (*p1) (int) = &a1;
+  void (*p2) (int) = &a2;	// { dg-error "contract assertion cannot be proven for a call through the address of 'void a2\\(int\\)'" }
+  void (*p3) (int) = &a3;	// { dg-error "contract assertion cannot be proven for a call through the address of 'void a3\\(int\\)'" }
+  void (*p4) (int) = &a4;
+  void (*p5) (int) = &a5;
+  (void) p1; (void) p2; (void) p3; (void) p4; (void) p5;
+}

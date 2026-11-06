@@ -1,0 +1,225 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 -O0 Test_name.c
+Test_name.c:72:17: error: contract assertion cannot be proven
+   72 | A na{DP (), thr ()};    // { dg-error "contract assertion cannot be proven" }
+      |                 ^
+Test_name.c:65:29: note: the predicate of the contract assertion
+   65 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "predicate of the contract assertion" }
+      |                           ~~^~~
+Test_name.c:73:19: error: contract assertion cannot be proven
+   73 | A nb{make (), thr ()};  // { dg-error "contract assertion cannot be proven" }
+      |                   ^
+Test_name.c:65:29: note: the predicate of the contract assertion
+   65 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "predicate of the contract assertion" }
+      |                           ~~^~~
+Test_name.c:75:21: error: contract assertion cannot be proven
+   75 | A SA::sa{DP (), thr ()};        // { dg-error "contract assertion cannot be proven" }
+      |                     ^
+Test_name.c:65:29: note: the predicate of the contract assertion
+   65 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "predicate of the contract assertion" }
+      |                           ~~^~~
+Test_name.c: In function 'void f()':
+Test_name.c:81:16: error: contract assertion cannot be proven
+   81 |   A b{DP (), thr ()};   // { dg-error "contract assertion cannot be proven" }
+      |                ^
+Test_name.c:65:29: note: the predicate of the contract assertion
+   65 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "predicate of the contract assertion" }
+      |                           ~~^~~
+Test_name.c: In destructor 'A::~A()':
+Test_name.c:69:8: error: contract assertion cannot be proven
+   69 | struct A { DP p; int i; };      // { dg-error "contract assertion cannot be proven" }
+      |        ^
+Test_name.c:65:29: note: the predicate of the contract assertion
+   65 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "predicate of the contract assertion" }
+      |                           ~~^~~
+Test_name.c: In function 'void f()':
+Test_name.c:81:16: note: synthesized method 'A::~A()' first required here
+   81 |   A b{DP (), thr ()};   // { dg-error "contract assertion cannot be proven" }
+      |                ^
+Test_name.c:83:23: error: contract assertion cannot be proven
+   83 |   static A c{DP (), thr ()};    // { dg-error "contract assertion cannot be proven" }
+      |                       ^
+Test_name.c:65:29: note: the predicate of the contract assertion
+   65 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "predicate of the contract assertion" }
+      |                           ~~^~~
+Test_name.c: At global scope:
+Test_name.c:114:13: error: contract assertion cannot be proven
+  114 | A e1{DP (), 1};                 // { dg-error "contract assertion cannot be proven" }
+      |             ^
+Test_name.c:65:29: note: the predicate of the contract assertion
+   65 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "predicate of the contract assertion" }
+      |                           ~~^~~
+Test_name.c:115:19: error: contract assertion cannot be proven
+  115 | A e2{DP (), nothr ()};          // { dg-error "contract assertion cannot be proven" }
+      |                   ^
+Test_name.c:65:29: note: the predicate of the contract assertion
+   65 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "predicate of the contract assertion" }
+      |                           ~~^~~
+Test_name.c:116:13: error: contract assertion cannot be proven
+  116 | A e3(DP (), 1);                 // { dg-error "contract assertion cannot be proven" }
+      |             ^
+Test_name.c:65:29: note: the predicate of the contract assertion
+   65 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "predicate of the contract assertion" }
+      |                           ~~^~~
+Test_name.c:117:11: error: contract assertion cannot be proven
+  117 | D e4{{}, 1};                    // { dg-error "contract assertion cannot be proven" }
+      |           ^
+Test_name.c:65:29: note: the predicate of the contract assertion
+   65 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "predicate of the contract assertion" }
+      |                           ~~^~~
+Test_name.c:118:11: error: contract assertion cannot be proven
+  118 | AI e5{DP ()};                   // { dg-error "contract assertion cannot be proven" }
+      |           ^
+Test_name.c:65:29: note: the predicate of the contract assertion
+   65 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "predicate of the contract assertion" }
+      |                           ~~^~~
+Test_name.c:122:17: error: contract assertion cannot be proven
+  122 | A SE::se{DP (), 1};             // { dg-error "contract assertion cannot be proven" }
+      |                 ^
+Test_name.c:65:29: note: the predicate of the contract assertion
+   65 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "predicate of the contract assertion" }
+      |                           ~~^~~
+Test_name.c:123:23: error: contract assertion cannot be proven
+  123 | DN e8[2] = {DN (), DN ()};      // { dg-error "contract assertion cannot be proven" }
+      |                       ^
+Test_name.c:103:29: note: the predicate of the contract assertion
+  103 |   ~DN () pre<always_prove> (g > 0);     // { dg-message "predicate of the contract assertion" }
+      |                           ~~^~~
+Test_name.c:123:4: error: contract assertion cannot be proven for a call through the address of 'DN::~DN()'
+  123 | DN e8[2] = {DN (), DN ()};      // { dg-error "contract assertion cannot be proven" }
+      |    ^~
+Test_name.c:123:4: note: 'e8', of static storage duration, is destroyed by a call through the address of its destructor
+Test_name.c:103:7: note: precondition here
+  103 |   ~DN () pre<always_prove> (g > 0);     // { dg-message "predicate of the contract assertion" }
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c: In function 'void h()':
+Test_name.c:129:13: error: contract assertion cannot be proven
+  129 |   A b1{DP (), 1};               // { dg-error "contract assertion cannot be proven" }
+      |             ^
+Test_name.c:65:29: note: the predicate of the contract assertion
+   65 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "predicate of the contract assertion" }
+      |                           ~~^~~
+Test_name.c:130:26: error: contract assertion cannot be proven
+  130 |   static A b2{DP (), nothr ()}; // { dg-error "contract assertion cannot be proven" }
+      |                          ^
+Test_name.c:65:29: note: the predicate of the contract assertion
+   65 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "predicate of the contract assertion" }
+      |                           ~~^~~
+Test_name.c:131:13: error: contract assertion cannot be proven
+  131 |   A b3(DP (), 1);               // { dg-error "contract assertion cannot be proven" }
+      |             ^
+Test_name.c:65:29: note: the predicate of the contract assertion
+   65 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "predicate of the contract assertion" }
+      |                           ~~^~~
+Test_name.c:132:11: error: contract assertion cannot be proven
+  132 |   D b4{{}, 1};                  // { dg-error "contract assertion cannot be proven" }
+      |           ^
+Test_name.c:65:29: note: the predicate of the contract assertion
+   65 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "predicate of the contract assertion" }
+      |                           ~~^~~
+Test_name.c:133:18: error: contract assertion cannot be proven
+  133 |   static AI b5{DP ()};          // { dg-error "contract assertion cannot be proven" }
+      |                  ^
+Test_name.c:65:29: note: the predicate of the contract assertion
+   65 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "predicate of the contract assertion" }
+      |                           ~~^~~
+Test_name.c: In destructor 'AI::~AI()':
+Test_name.c:106:8: error: contract assertion cannot be proven
+  106 | struct AI { DP p; int i = 5; }; // { dg-error "contract assertion cannot be proven" }
+      |        ^~
+Test_name.c:65:29: note: the predicate of the contract assertion
+   65 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "predicate of the contract assertion" }
+      |                           ~~^~~
+Test_name.c: In function 'void h()':
+Test_name.c:133:18: note: synthesized method 'AI::~AI()' first required here
+  133 |   static AI b5{DP ()};          // { dg-error "contract assertion cannot be proven" }
+      |                  ^
+Test_name.c: In destructor 'L::~L()':
+Test_name.c:107:8: error: contract assertion cannot be proven
+  107 | struct L { int i; DP p; };      // { dg-error "contract assertion cannot be proven" }
+      |        ^
+Test_name.c:65:29: note: the predicate of the contract assertion
+   65 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "predicate of the contract assertion" }
+      |                           ~~^~~
+Test_name.c: In function 'void h()':
+Test_name.c:136:13: note: synthesized method 'L::~L()' first required here
+  136 |   L b7{1, DP ()};               // { dg-bogus "cannot be proven" }
+      |             ^
+Test_name.c: In destructor 'h()::<lambda()>::~<lambda>()':
+Test_name.c:139:27: error: contract assertion cannot be proven
+  139 |   auto b8 = [p = DP (), i = 1]  // { dg-error "contract assertion cannot be proven" }
+      |                           ^
+Test_name.c:65:29: note: the predicate of the contract assertion
+   65 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "predicate of the contract assertion" }
+      |                           ~~^~~
+Test_name.c: In function 'void h()':
+Test_name.c:139:11: note: synthesized method 'h()::<lambda()>::~<lambda>()' first required here
+  139 |   auto b8 = [p = DP (), i = 1]  // { dg-error "contract assertion cannot be proven" }
+      |           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  140 |   // { dg-message "synthesized method" "" { target *-*-* } .-1 }
+      |   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  141 |     {};                         // { dg-error "contract assertion cannot be proven" }
+      |            
+Test_name.c:141:3: error: contract assertion cannot be proven
+  141 |     {};                         // { dg-error "contract assertion cannot be proven" }
+      |   ^
+Test_name.c:65:29: note: the predicate of the contract assertion
+   65 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "predicate of the contract assertion" }
+      |                           ~~^~~
+Test_name.c:142:30: error: contract assertion cannot be proven
+  142 |   static DN b9[2] = {DN (), DN ()};     // { dg-error "contract assertion cannot be proven" }
+      |                              ^
+Test_name.c:103:29: note: the predicate of the contract assertion
+  103 |   ~DN () pre<always_prove> (g > 0);     // { dg-message "predicate of the contract assertion" }
+      |                           ~~^~~
+Test_name.c:142:11: error: contract assertion cannot be proven for a call through the address of 'DN::~DN()'
+  142 |   static DN b9[2] = {DN (), DN ()};     // { dg-error "contract assertion cannot be proven" }
+      |           ^~
+Test_name.c:142:11: note: 'b9', of static storage duration, is destroyed by a call through the address of its destructor
+Test_name.c:103:7: note: precondition here
+  103 |   ~DN () pre<always_prove> (g > 0);     // { dg-message "predicate of the contract assertion" }
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:142:30: error: contract assertion cannot be proven
+  142 |   static DN b9[2] = {DN (), DN ()};     // { dg-error "contract assertion cannot be proven" }
+      |                              ^
+Test_name.c:103:29: note: the predicate of the contract assertion
+  103 |   ~DN () pre<always_prove> (g > 0);     // { dg-message "predicate of the contract assertion" }
+      |                           ~~^~~
+Test_name.c: In function 'void __tcf_ZZ1hvE2b9(void*)':
+Test_name.c:142:30: error: contract assertion cannot be proven
+  142 |   static DN b9[2] = {DN (), DN ()};     // { dg-error "contract assertion cannot be proven" }
+      |                              ^
+Test_name.c:103:29: note: the predicate of the contract assertion
+  103 |   ~DN () pre<always_prove> (g > 0);     // { dg-message "predicate of the contract assertion" }
+      |                           ~~^~~
+Test_name.c: In function 'void h()':
+Test_name.c:144:23: error: contract assertion cannot be proven
+  144 |   AR b10{{DN (), DN ()}, 1};            // { dg-error "contract assertion cannot be proven" }
+      |                       ^
+Test_name.c:103:29: note: the predicate of the contract assertion
+  103 |   ~DN () pre<always_prove> (g > 0);     // { dg-message "predicate of the contract assertion" }
+      |                           ~~^~~
+Test_name.c: In destructor 'AR::~AR()':
+Test_name.c:112:8: error: contract assertion cannot be proven
+  112 | struct AR { DN a[2]; int i; };  // { dg-error "contract assertion cannot be proven" }
+      |        ^~
+Test_name.c:103:29: note: the predicate of the contract assertion
+  103 |   ~DN () pre<always_prove> (g > 0);     // { dg-message "predicate of the contract assertion" }
+      |                           ~~^~~
+Test_name.c: In function 'void h()':
+Test_name.c:144:23: note: synthesized method 'AR::~AR()' first required here
+  144 |   AR b10{{DN (), DN ()}, 1};            // { dg-error "contract assertion cannot be proven" }
+      |                       ^
+Test_name.c: In function 'void __static_initialization_and_destruction_0()':
+Test_name.c:123:4: error: contract assertion cannot be proven
+  123 | DN e8[2] = {DN (), DN ()};      // { dg-error "contract assertion cannot be proven" }
+      |    ^~
+Test_name.c:103:29: note: the predicate of the contract assertion
+  103 |   ~DN () pre<always_prove> (g > 0);     // { dg-message "predicate of the contract assertion" }
+      |                           ~~^~~
+Test_name.c: In function 'void __tcfe8(void*)':
+Test_name.c:123:4: error: contract assertion cannot be proven
+  123 | DN e8[2] = {DN (), DN ()};      // { dg-error "contract assertion cannot be proven" }
+      |    ^~
+Test_name.c:103:29: note: the predicate of the contract assertion
+  103 |   ~DN () pre<always_prove> (g > 0);     // { dg-message "predicate of the contract assertion" }
+      |                           ~~^~~
