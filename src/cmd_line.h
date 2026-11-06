@@ -277,6 +277,8 @@ enum an_option_kind {
   optk_macro_positions_in_diagnostics,
 #endif /* FULLY_RESOLVED_MACRO_POSITIONS */
   optk_trigraphs,
+  optk_macro_prefix_map,
+  optk_canon_prefix_map,
   optk_nonstandard_default_arg_deduction,
   optk_stdc_zero_in_system_headers,
   optk_template_typedefs_in_diagnostics,
@@ -2063,6 +2065,44 @@ EXTERN_THREAD a_boolean
 EXTERN_THREAD a_boolean
 		trigraphs_allowed;
 			/* TRUE if trigraphs should be allowed. */
+
+/*
+A --macro_prefix_map=OLD=NEW option (see macro_prefix_maps).
+*/
+typedef struct a_macro_prefix_map *a_macro_prefix_map_ptr;
+typedef struct a_macro_prefix_map {
+  a_macro_prefix_map_ptr
+		next;
+			/* The map given before this one. */
+  a_const_char	*old_prefix;
+			/* The prefix replaced (OLD). */
+  sizeof_t	old_len;
+			/* Its length. */
+  a_const_char	*new_prefix;
+			/* What replaces it (NEW). */
+  a_boolean	canonical;
+			/* TRUE if --canon_prefix_map was in effect for the
+			   map: OLD and the file name are compared with every
+			   symbolic link, "." and ".." resolved. */
+} a_macro_prefix_map;
+
+EXTERN_THREAD a_macro_prefix_map_ptr
+		macro_prefix_maps;
+			/* The --macro_prefix_map=OLD=NEW options, the last
+			   given first: the file name a __FILE__,
+			   __FILE_NAME__ or __BASE_FILE__ expansion yields,
+			   outside preprocessing directives, has the prefix
+			   OLD of the first map whose OLD it begins with
+			   replaced with NEW (as GCC's -fmacro-prefix-map=
+			   and -ffile-prefix-map=, which edg_gxx.sh passes
+			   on). */
+
+EXTERN_THREAD a_boolean
+		canon_prefix_map;
+			/* TRUE while --canon_prefix_map is in effect (as
+			   GCC's -fcanon-prefix-map): the
+			   --macro_prefix_map options that follow it are
+			   canonical (see a_macro_prefix_map). */
 
 #if DO_IL_LOWERING && MINIMAL_INLINING
 EXTERN_THREAD a_boolean

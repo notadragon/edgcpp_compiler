@@ -3313,6 +3313,7 @@ EXTERN_THREAD char
 extern void reset_working_directory();
 extern void set_working_directory(a_const_char *dir_name);
 extern a_const_char *get_working_directory();
+extern a_const_char *canonical_file_name(a_const_char *file_name);
 
 /*
 Data structure that defines a list of directory names (as for a search

@@ -5754,6 +5754,47 @@ a space.  If first_macro_arg is NULL, return an empty string.
 #endif /* RECORD_MACRO_ARGS */
 
 
+static a_const_char *remap_macro_file_name(a_const_char  *file_name)
+/*
+Return file_name, which a __FILE__, __FILE_NAME__ or __BASE_FILE__ expansion
+yields, remapped by the first of the --macro_prefix_map options (see
+macro_prefix_maps) whose prefix it begins with (as GCC's remap_filename);
+the result is valid until the next call.
+*/
+{
+  static a_text_buffer_ptr  buffer = NULL;
+  static a_const_char       *canonical_for = NULL, *canonical = NULL;
+  a_macro_prefix_map_ptr    map;
+  a_const_char              *name;
+
+  for (map = macro_prefix_maps; map != NULL; map = map->next) {
+    name = file_name;
+    if (map->canonical && strpbrk(file_name, "/\\") != NULL) {
+      /* Compare the file name with links, "." and ".." resolved; a name
+         without a directory is compared as it is, as GCC does. */
+      if (canonical_for == NULL || strcmp(canonical_for, file_name) != 0) {
+        char  *copy = (char *)alloc_general((sizeof_t)(strlen(file_name) +
+                                                       1));
+        (void)strcpy(copy, file_name);
+        canonical_for = copy;
+        canonical = canonical_file_name(file_name);
+      }  /* if */
+      name = canonical;
+    }  /* if */
+    if (strncmp(name, map->old_prefix, (size_t)map->old_len) == 0) {
+      if (buffer == NULL) buffer = alloc_text_buffer((sizeof_t)256);
+      reset_text_buffer(buffer);
+      add_to_text_buffer(buffer, map->new_prefix,
+                         (sizeof_t)strlen(map->new_prefix));
+      add_to_text_buffer(buffer, name + map->old_len,
+                         (sizeof_t)strlen(name + map->old_len) + 1);
+      return buffer->buffer;
+    }  /* if */
+  }  /* for */
+  return file_name;
+}  /* remap_macro_file_name */
+
+
 a_token_kind macro_invocation(a_symbol_ptr  macro_symbol,
                               a_boolean     *rescan)
 /*
@@ -6257,6 +6298,9 @@ make_inert_macro:
         }  /* if */
         reset_text_buffer(file_name_text_buffer);
         add_to_text_buffer(file_name_text_buffer, "\"", 1);
+        if (macro_prefix_maps != NULL && !in_preprocessing_directive) {
+          result_name = remap_macro_file_name(result_name);
+        }  /* if */
         write_file_name_to_text_buffer(result_name, file_name_text_buffer,
                                        /*process_escapes=*/TRUE,
                                        /*escape_nonprintable=*/FALSE);

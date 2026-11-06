@@ -1,0 +1,4 @@
+./a.out
+Test_name.c
+Test_name.c
+dir/renamed.cpp

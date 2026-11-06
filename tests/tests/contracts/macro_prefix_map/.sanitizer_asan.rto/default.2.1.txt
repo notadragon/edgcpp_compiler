@@ -1,0 +1,1 @@
+eccp -DTEST_NUMBER=2 --c++26 -fsanitize=address -fmacro-prefix-map==MACRO-PREFIX/ Test_name.c

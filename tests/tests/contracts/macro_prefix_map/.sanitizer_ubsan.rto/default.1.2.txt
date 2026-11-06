@@ -1,0 +1,3 @@
+./a.out
+__FILE__ is /mapped/repro.cpp
+/mapped/repro.cpp:5:10: runtime error: division by zero

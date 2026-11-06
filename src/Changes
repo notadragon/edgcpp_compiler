@@ -1,3 +1,20 @@
+11/5/26 []
+Prefix maps: --macro_prefix_map
+
+The new --macro_prefix_map=OLD=NEW option, which may be repeated, replaces
+the prefix OLD of the file name that __FILE__, __BASE_FILE__ and
+__FILE_NAME__ yield outside preprocessing directives with NEW, the last map
+given being tried first, as GCC's -fmacro-prefix-map= does; an argument
+without "=" is an error.  For the maps given after --canon_prefix_map (until
+--no_canon_prefix_map), OLD and a file name with a directory are compared
+with ".", ".." and symbolic links resolved, as under GCC's
+-fcanon-prefix-map.  edg_gxx.sh passes -fmacro-prefix-map= and
+-ffile-prefix-map= to the front end as well as to g++, in g++'s order of
+precedence (every -ffile-prefix-map= first), with -fcanon-prefix-map as
+--canon_prefix_map, so that __FILE__ is remapped as g++ remaps the file
+names it records (macro prefix maps).
+
+
 Version 7.1
 
 10/28/26 [GH #400]

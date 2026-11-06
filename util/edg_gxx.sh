@@ -24,6 +24,15 @@
 # options are passed with -Xedg <option> or --edg=<option>.
 #
 #
+# Prefix maps.  -fmacro-prefix-map= and -ffile-prefix-map= go to both: the
+# front end expands __FILE__, __FILE_NAME__ and __BASE_FILE__ (as
+# --macro_prefix_map=), and g++ remaps the file names it records (debug
+# information, std::source_location, contract violations, sanitizer
+# reports).  They go to the front end in g++'s order of precedence, every
+# -ffile-prefix-map= ahead of every -fmacro-prefix-map= and the last given
+# first, each canonical if -fcanon-prefix-map was in effect for it (as
+# --canon_prefix_map); -f[no-]canon-prefix-map goes to g++ as well.
+#
 # Environment:
 #   EDG_GXX           the g++ to pair with
 #   EDG_GXX_VERBOSE   when nonzero, print each command before running it
@@ -81,6 +90,9 @@ sources=()
 stop_after_edg=0
 edg_only_mode=""
 explicit_lang=""
+canon_prefix_map=0
+macro_prefix_map_words=0
+
 while [ $# -gt 0 ] ; do
   arg=$1
   shift
@@ -127,6 +139,28 @@ while [ $# -gt 0 ] ; do
       edg_args+=("--no_rtti"); gxx_args+=("$arg") ;;
     -w)
       edg_args+=("--no_warnings"); gxx_args+=("$arg") ;;
+    -fmacro-prefix-map=*|-ffile-prefix-map=*)
+      # The front end tries the last map given first, and g++ tries every
+      # -ffile-prefix-map= before any -fmacro-prefix-map=, so the macro maps
+      # go ahead of all other front end options, in their order.
+      map_words=("--macro_prefix_map=${arg#*=}")
+      if [ $canon_prefix_map = 1 ] ; then
+        map_words=(--canon_prefix_map "${map_words[@]}" --no_canon_prefix_map)
+      fi
+      case $arg in
+        -fmacro-prefix-map=*)
+          edg_args=("${edg_args[@]:0:$macro_prefix_map_words}"
+                    "${map_words[@]}"
+                    "${edg_args[@]:$macro_prefix_map_words}")
+          macro_prefix_map_words=$((macro_prefix_map_words + ${#map_words[@]})) ;;
+        *)
+          edg_args+=("${map_words[@]}") ;;
+      esac
+      gxx_args+=("$arg") ;;
+    -fcanon-prefix-map)
+      canon_prefix_map=1; gxx_args+=("$arg") ;;
+    -fno-canon-prefix-map)
+      canon_prefix_map=0; gxx_args+=("$arg") ;;
     -E)
       edg_only_mode=preprocess; stop_after_edg=1 ;;
     -fsyntax-only)

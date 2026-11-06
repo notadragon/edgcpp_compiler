@@ -1402,6 +1402,15 @@ Initialize the option information table.
                          '\0', /*value=*/FALSE, /*arg_required=*/FALSE,
                          pchek_none);
 #endif /* FULLY_RESOLVED_MACRO_POSITIONS */
+  add_option_description(optk_macro_prefix_map, "macro_prefix_map", '\0',
+                         /*value=*/TRUE, /*arg_required=*/TRUE,
+                         pchek_command_line);
+  add_option_description(optk_canon_prefix_map, "canon_prefix_map", '\0',
+                         /*value=*/TRUE, /*arg_required=*/FALSE,
+                         pchek_command_line);
+  add_option_description(optk_canon_prefix_map, "no_canon_prefix_map", '\0',
+                         /*value=*/FALSE, /*arg_required=*/FALSE,
+                         pchek_command_line);
   add_option_description(optk_trigraphs,
 			 "trigraphs",
                          '\0', /*value=*/TRUE, /*arg_required=*/FALSE,
@@ -11931,6 +11940,33 @@ enable_microsoft_mode:
         macro_positions_in_diagnostics = opt_value;
         break;
 #endif /* FULLY_RESOLVED_MACRO_POSITIONS */
+      case optk_macro_prefix_map:
+        /* OLD=NEW, split at the last "=", as GCC splits its prefix maps. */
+        { a_const_char            *eq = strrchr(opt_arg, '=');
+          a_macro_prefix_map_ptr  map;
+          char                    *old_prefix;
+          if (eq == NULL) {
+            str_command_line_error(ec_cl_invalid_macro_prefix_map, opt_arg);
+            break;
+          }  /* if */
+          map = alloc_general_of_type(a_macro_prefix_map);
+          old_prefix = (char *)alloc_general((sizeof_t)(eq - opt_arg + 1));
+          (void)memcpy(old_prefix, opt_arg, (size_t)(eq - opt_arg));
+          old_prefix[eq - opt_arg] = '\0';
+          map->canonical = canon_prefix_map;
+          if (map->canonical) {
+            old_prefix = (char *)canonical_file_name(old_prefix);
+          }  /* if */
+          map->old_prefix = old_prefix;
+          map->old_len = (sizeof_t)strlen(old_prefix);
+          map->new_prefix = eq + 1;
+          map->next = macro_prefix_maps;
+          macro_prefix_maps = map;
+        }
+        break;
+      case optk_canon_prefix_map:
+        canon_prefix_map = opt_value;
+        break;
       case optk_trigraphs:
         /* Trigraphs should or should not be allowed. */
         trigraphs_allowed = opt_value;
@@ -13526,6 +13562,8 @@ variables declared in cmd_line.h.
   default_max_member_alignment = 0;
   alternative_tokens_allowed = DEFAULT_ALTERNATIVE_TOKENS_ALLOWED;
   trigraphs_allowed = DEFAULT_TRIGRAPHS_ALLOWED;
+  macro_prefix_maps = NULL;
+  canon_prefix_map = FALSE;
 #if DO_IL_LOWERING && MINIMAL_INLINING
   inlining_enabled = TRUE;
   inline_statement_limit = DEFAULT_INLINE_STATEMENT_LIMIT;

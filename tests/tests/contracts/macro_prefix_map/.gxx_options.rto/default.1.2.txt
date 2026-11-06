@@ -1,0 +1,3 @@
+./a.out
+FILE/Test_name.c
+FILE/././Test_name.c
