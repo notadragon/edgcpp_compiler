@@ -1,0 +1,20 @@
+Matches for "line 21: error: "i" .* cannot be implicitly captured only for contract assertions; capture it explicitly":
+  <-----------------------------------------------------------------------------
+  line 21: error: "i" (declared at line 20) cannot be implicitly captured only for contract assertions; capture it explicitly
+  ----------------------------------------------------------------------------->
+Matches for "line 24: error: "i" .* cannot be implicitly captured only for contract assertions; capture it explicitly":
+  <-----------------------------------------------------------------------------
+  line 24: error: "i" (declared at line 20) cannot be implicitly captured only for contract assertions; capture it explicitly
+  ----------------------------------------------------------------------------->
+Matches for "line 28: error: "i" .* cannot be implicitly captured only for contract assertions; capture it explicitly":
+  <-----------------------------------------------------------------------------
+  line 28: error: "i" (declared at line 27) cannot be implicitly captured only for contract assertions; capture it explicitly
+  ----------------------------------------------------------------------------->
+Matches for "line 29: error: "i" .* cannot be implicitly captured only for contract assertions; capture it explicitly":
+  <-----------------------------------------------------------------------------
+  line 29: error: "i" (declared at line 27) cannot be implicitly captured only for contract assertions; capture it explicitly
+  ----------------------------------------------------------------------------->
+Matches for "line 35: error: "j" .* cannot be implicitly captured only for contract assertions; capture it explicitly":
+  <-----------------------------------------------------------------------------
+  line 35: error: "j" (declared at line 34) cannot be implicitly captured only for contract assertions; capture it explicitly
+  ----------------------------------------------------------------------------->

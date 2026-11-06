@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contract_evaluation_semantic=quick_enforce Test_name.c
+"Test_name.c", line 6: error: value parameter "x" used in a postcondition must be declared const
+  int h(int x) post (r: r > x) try { return x + 1; } catch (...) { return 0; }
+            ^
+
+1 error detected in the compilation of "Test_name.c".

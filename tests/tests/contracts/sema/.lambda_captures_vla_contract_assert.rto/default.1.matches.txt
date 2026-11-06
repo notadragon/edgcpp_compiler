@@ -1,0 +1,12 @@
+Matches for "line 13: error: "a" .* cannot be implicitly captured only for contract assertions":
+  <-----------------------------------------------------------------------------
+  line 13: error: "a" (declared at line 12) cannot be implicitly captured only for contract assertions
+  ----------------------------------------------------------------------------->
+Matches for "line 28: error: expression must be a modifiable lvalue":
+  <-----------------------------------------------------------------------------
+  line 28: error: expression must be a modifiable lvalue
+  ----------------------------------------------------------------------------->
+Matches for "line 32: error: expression must be a modifiable lvalue":
+  <-----------------------------------------------------------------------------
+  line 32: error: expression must be a modifiable lvalue
+  ----------------------------------------------------------------------------->

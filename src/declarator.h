@@ -456,6 +456,15 @@ a_param_type_ptr scan_requires_expr_parameters(a_decl_parse_state  *dps);
 
 extern void make_param_syms_invisible(a_boolean  is_invisible);
 
+extern a_boolean contract_operands_wait_for_declaration(
+                                                a_decl_parse_state  *dps,
+                                                a_func_info_block   *func_info,
+                                                a_symbol_locator    *loc);
+extern void scan_contract_operands_of_declaration(
+                                                a_routine_ptr       rp,
+                                                a_decl_parse_state  *dps,
+                                                a_func_info_block   *func_info);
+
 extern void declarator_one_time_init(void);
 
 extern void declarator_init(void);

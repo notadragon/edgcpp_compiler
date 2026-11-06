@@ -1,0 +1,11 @@
+fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
+"Test_name.c", line 11: error: value parameter "a" used in a postcondition must be declared const
+  bool f(B a) post(typeid(a) == typeid(B)) { return true; }        // Error
+           ^
+
+"Test_name.c", line 15: error: value parameter "a" used in a postcondition must be declared const
+  template <class T> bool t(T a) post(typeid(a) == typeid(T)) { return true; }  // Error in t<B>
+                              ^
+          detected during instantiation of "bool t(T) [with T=B]" at line 16
+
+2 errors detected in the compilation of "Test_name.c".
