@@ -7856,6 +7856,8 @@ sequence.  The syntax is:
   assertion-statement:
 		contract_assert attribute-specifier-seq opt
 						( conditional-expression ) ;
+  (P3400: an assertion-control specifier, "< constant-expression >", may
+  precede the attribute-specifier-seq.)
 */
 {
   a_statement_ptr           sp;
@@ -7868,6 +7870,10 @@ sequence.  The syntax is:
   csp->position = pos_curr_token;
   /* Advance over the "contract_assert". */
   (void)get_token();
+  if (curr_token == tok_lt) {
+    /* An assertion-control specifier (P3400). */
+    cache_contract_label(csp, /*skip=*/FALSE);
+  }  /* if */
   scan_contract_assertion_attributes();
   if (curr_token == tok_lbracket) {
     /* A capture list (P3098) is for postconditions only: skip it. */
@@ -7884,6 +7890,10 @@ sequence.  The syntax is:
              curr_token != tok_end_of_source);
   }  /* if */
   if (required_token(tok_lparen, ec_exp_lparen)) {
+    if (csp->label_token_cache != NULL) {
+      /* The label, in the scope of the predicate. */
+      scan_cached_contract_label(csp);
+    }  /* if */
     csp->predicate = scan_contract_predicate(&csp->comment, &csp->message);
     (void)required_token(tok_rparen, ec_exp_rparen);
   }  /* if */

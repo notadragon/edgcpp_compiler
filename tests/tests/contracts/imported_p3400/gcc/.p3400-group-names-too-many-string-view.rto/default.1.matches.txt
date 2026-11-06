@@ -1,0 +1,16 @@
+Matches for "", line 100: error: the group_names facet of assertion-control object "range_label<4097>" holds more than 4096 names$":
+  <-----------------------------------------------------------------------------
+  ", line 100: error: the group_names facet of assertion-control object "range_label<4097>" holds more than 4096 names
+  ----------------------------------------------------------------------------->
+Matches for "", line 101: error: the group_names facet of assertion-control object "array_label<4097>" holds more than 4096 names$":
+  <-----------------------------------------------------------------------------
+  ", line 101: error: the group_names facet of assertion-control object "array_label<4097>" holds more than 4096 names
+  ----------------------------------------------------------------------------->
+Matches for "", line 102: error: the group_names facet of assertion-control object "class_label<4097>" holds more than 4096 names$":
+  <-----------------------------------------------------------------------------
+  ", line 102: error: the group_names facet of assertion-control object "class_label<4097>" holds more than 4096 names
+  ----------------------------------------------------------------------------->
+Matches for "^3 errors detected":
+  <-----------------------------------------------------------------------------
+  3 errors detected
+  ----------------------------------------------------------------------------->

@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 Test_name.c
+"Test_name.c", line 22: error: namespace "lib" has no member "l"
+  auto z = lib::l;                                       // { dg-error "not a member" }
+                ^
+
+1 error detected in the compilation of "Test_name.c".

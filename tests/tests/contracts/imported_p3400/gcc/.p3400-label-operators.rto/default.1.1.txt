@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts_p3400 Test_name.c
+"Test_name.c", line 27: error: an assertion-control expression must be of a class type with a nested type assertion_control_object
+    pre<(weird_label_t{} < weird_label_t{})>(x > 0)  // { dg-error "class type" }
+        ^
+
+"Test_name.c", line 33: error: an assertion-control expression must be of a class type with a nested type assertion_control_object
+    pre<(weird_label > weird_label)>(x > 0)  // { dg-error "class type" }
+        ^
+
+2 errors detected in the compilation of "Test_name.c".

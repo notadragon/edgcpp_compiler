@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contract_evaluation_semantic=enforce --contract_group_evaluation_semantic=safety:ignore --max_cost_constexpr_call=1000 Test_name.c
+"Test_name.c", line 50: error: the group_names facet of assertion-control object "many_t" must be usable in a constant expression
+  void f (int x) pre<many> (x > 0) {}		// { dg-error "'group_names' facet of assertion-control object 'many_t' must be usable in a constant expression" }
+                 ^
+
+1 error detected in the compilation of "Test_name.c".
