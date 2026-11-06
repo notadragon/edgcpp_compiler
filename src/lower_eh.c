@@ -2386,7 +2386,8 @@ conversion in cases where their value is not used.
   typeid_type = opnds->variant.type_operand.type;
   typeid_expr = opnds->next;
   if (!expr->variant.typeid_info.is_dynamic) {
-    /* The operand expression is not needed; the type is known statically. */
+    /* The type is known statically, so the operand expression is needed
+       only for its side effects (see below). */
     /* Make the runtime typeinfo variable. */
 #if IA64_ABI
     a_type_ptr typeinfo_type;
@@ -2409,6 +2410,16 @@ conversion in cases where their value is not used.
       new_expr = field_lvalue_selection_expr(new_expr, field);
     }  /* for */
 #endif /* !IA64_ABI */
+    if (typeid_expr != NULL && is_glvalue_node(typeid_expr) &&
+        is_polymorphic_class_type(typeid_expr->type) &&
+        node_has_side_effects(typeid_expr, (a_boolean *)NULL)) {
+      /* A glvalue of polymorphic class type is evaluated
+         ([expr.typeid]/3), even when its dynamic type is known: Keep its
+         side effects, ahead of the typeinfo. */
+      lower_expr(typeid_expr);
+      set_expr_result_not_used(typeid_expr);
+      new_expr = make_comma_node(typeid_expr, new_expr);
+    }  /* if */
   } else {
     /* Polymorphic class case with expression. */
     check_assertion(is_glvalue_node(typeid_expr));
