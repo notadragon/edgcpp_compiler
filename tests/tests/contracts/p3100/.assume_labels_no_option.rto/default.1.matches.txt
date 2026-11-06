@@ -1,0 +1,16 @@
+Matches for "line 44: error: no valid evaluation semantic for contract assertion":
+  <-----------------------------------------------------------------------------
+  line 44: error: no valid evaluation semantic for contract assertion
+  ----------------------------------------------------------------------------->
+Matches for "line 45: warning: contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  line 45: warning: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+Matches for "line 47: error: compute_semantic result is not in the allowed evaluation semantics":
+  <-----------------------------------------------------------------------------
+  line 47: error: compute_semantic result is not in the allowed evaluation semantics
+  ----------------------------------------------------------------------------->
+Matches for "line 48: warning: contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  line 48: warning: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
