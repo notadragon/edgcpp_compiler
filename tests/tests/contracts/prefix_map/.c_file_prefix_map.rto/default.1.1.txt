@@ -1,0 +1,1 @@
+eccp -DTEST_NUMBER=1 --c++26 --contracts_p4299 --contract_evaluation_semantic=observe -ffile-prefix-map==FILE-PREFIX Test_name.c

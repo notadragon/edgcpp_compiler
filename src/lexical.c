@@ -17379,6 +17379,29 @@ This uses the same hashing algorithm found in hash_source_string.
 
 #endif /* UNICODE_VULNERABILITY_DETECTION_SUPPORTED */
 
+void demote_p4299_contract_keyword(void)
+/*
+With --contracts_p4299 (and contracts), _Pre and _Post are keywords (P4299's
+C spellings, as Clang has them), which introduce a precondition and a
+postcondition as the C++ context-sensitive keywords pre and post do.  If the
+current token, where a function contract specifier may begin, is one of
+them, make it the identifier pre or post, which the contract specifier code
+recognizes.
+*/
+{
+  if (curr_token == tok_p4299_pre || curr_token == tok_p4299_post) {
+    if (curr_token == tok_p4299_pre) {
+      (void)find_symbol_header("pre", sizeof("pre") - 1,
+                               &locator_for_curr_id);
+    } else {
+      (void)find_symbol_header("post", sizeof("post") - 1,
+                               &locator_for_curr_id);
+    }  /* if */
+    curr_token = tok_identifier;
+  }  /* if */
+}  /* demote_p4299_contract_keyword */
+
+
 a_token_kind get_token(void)
 /*
 Scan the next token of input, and return its kind.  The kind of token is
