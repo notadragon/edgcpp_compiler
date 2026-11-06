@@ -1,0 +1,8 @@
+eccp -DTEST_NUMBER=1 --c++26 Test_name.c
+Internal error: assertion failed at: "il.c", line <suppressed> in enclosing_routine_for_local_type
+
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation aborted.
+Aborted
+eccp: front end returned an exit status of 134
