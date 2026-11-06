@@ -3786,6 +3786,7 @@ ec_contract_override_predicate;INTERNAL;"the predicate of the contract assertion
 ec_contract_nested_unproven;INTERNAL;"precondition of a call in the predicate cannot be proven %p"
 ec_contract_nested_always_false;INTERNAL;"precondition of a call in the predicate is always false %p"
 ec_contract_always_false_warning;contract_always_false;"contract predicate is always false"
+ec_cl_invalid_contract_violation_information;;"unrecognized contract violation information (must be full or none): %s"
 ec_contract_terminating_needs_option;;"assertion-control specifier <terminating> requires --contracts_p4451"
 ec_contract_label_only_terminating;;"only <terminating> is allowed as an assertion-control specifier without --contracts_p3400"
 ec_contract_terminating_not_declared;;"no declaration of std::contracts::labels::terminating precedes this assertion-control specifier"

@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contracts_p3099 --contract_evaluation_semantic=quick_enforce --contract_violation_information=none Test_name.c
+"Test_name.c", line 14: error: contract predicate is false in constant expression (pre message)
+    pre(x > 0, "pre message")
+    ^
+
+"Test_name.c", line 22: error: contract predicate is false in constant expression (assert message)
+    contract_assert(x > 0, "assert message");
+    ^
+
+"Test_name.c", line 26: warning: variable "a" was declared but never referenced
+  constexpr int a = pre_f(0);
+                ^
+
+"Test_name.c", line 27: warning: variable "b" was declared but never referenced
+  constexpr int b = assert_f(0);
+                ^
+
+2 errors detected in the compilation of "Test_name.c".

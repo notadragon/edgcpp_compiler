@@ -1,0 +1,7 @@
+./a.out
+contract violation in function void pre_f(int) at Test_name.c:14: x > 0
+[assertion_kind: pre, semantic: noexcept_observe, mode: predicate_false, terminating: no]
+contract violation in function void assert_f(int) at Test_name.c:15: x > 0
+[assertion_kind: assert, semantic: noexcept_observe, mode: predicate_false, terminating: no]
+contract violation at line 7: only a line
+[assertion_kind: manual, semantic: observe, mode: unspecified, terminating: no]

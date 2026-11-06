@@ -1944,6 +1944,10 @@ Initialize the option information table.
                          "no_contracts_prove_override", '\0',
                          /*value=*/FALSE, /*arg_required=*/FALSE,
                          pchek_command_line);
+  add_option_description(optk_contract_violation_information,
+                         "contract_violation_information", '\0',
+                         /*value=*/TRUE, /*arg_required=*/TRUE,
+                         pchek_command_line);
   add_option_description(optk_contracts_p4451, "contracts_p4451", '\0',
                          /*value=*/TRUE, /*arg_required=*/FALSE,
                          pchek_command_line);
@@ -12629,6 +12633,19 @@ enable_microsoft_mode:
       case optk_contracts_prove_override:
         contracts_prove_override_enabled = opt_value;
         break;
+      case optk_contract_violation_information:
+        /* Whether a contract-violation record carries its source location,
+           comment and message (full, the default) or none of them (none),
+           in C and C++ alike, as GCC's -fcontract-violation-information=. */
+        if (strcmp(opt_arg, "full") == 0) {
+          contract_violation_information_none = FALSE;
+        } else if (strcmp(opt_arg, "none") == 0) {
+          contract_violation_information_none = TRUE;
+        } else {
+          str_command_line_error(ec_cl_invalid_contract_violation_information,
+                                 opt_arg);
+        }  /* if */
+        break;
       case optk_contracts_p4451:
         contracts_p4451_enabled = opt_value;
         break;
@@ -14437,6 +14454,7 @@ variables declared in cmd_line.h.
   contracts_prove_fold_enabled = FALSE;
   contract_analysis_skip_dead_calls_enabled = FALSE;
   contracts_prove_override_enabled = FALSE;
+  contract_violation_information_none = FALSE;
   contracts_p4451_enabled = FALSE;
   incognito = DEFAULT_INCOGNITO;
   keep_restrict_in_signatures = FALSE;

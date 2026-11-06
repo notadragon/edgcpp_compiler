@@ -12671,6 +12671,20 @@ command line -D options.
                                /*ref_suppresses_pch_file=*/FALSE);
     }  /* if */
   }  /* if */
+  if (contract_violation_information_none && (gnu_mode || clang_mode)) {
+    /* --contract_violation_information=none: the macro of the compiler
+       emulated, under which its <cassert> contract path, its P3290 manual
+       API and <contracts.h> pass an empty location and comment.  Like the
+       option, in C and C++ and whatever the other contract options; both
+       compilers define it as 1. */
+    (void)enter_predef_macro("1",
+                             clang_mode ?
+                               "__clang_contracts_violation_information_none" :
+                               "__gcc_contracts_violation_information_none",
+                             /*cannot_be_redefined=*/TRUE,
+                             /*ref_suppresses_pch_file=*/FALSE);
+  }  /* if */
+
   /* __LINE__, __FILE__, defined, etc., are special (they cannot be defined
      in terms of a simple replacement string).  Therefore, they are entered
      with a NULL replacement text, and code on the expansion end handles

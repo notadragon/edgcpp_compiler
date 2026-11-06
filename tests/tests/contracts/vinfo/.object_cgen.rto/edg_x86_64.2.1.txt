@@ -1,0 +1,10 @@
+cpfe -DTEST_NUMBER=2 --c++26 --contracts_p4298 --contracts_p4299 --contract_evaluation_semantic=noexcept_observe --contract_violation_information=full Test_name.c
+d vi_assert_function_token
+t vi_c_function_token
+t vi_pre_function_token
+vi_assert_token
+vi_c_pre_token
+vi_file_name_token
+vi_post_token
+vi_pre_token
+done

@@ -926,6 +926,7 @@ check_abbreviation()
 --contract_configuration_file
 --contract_evaluation_semantic
 --contract_group_evaluation_semantic
+--contract_violation_information
 --contracts
 --contracts_allow_assume
 --contracts_p3097
@@ -2166,6 +2167,7 @@ process_option()
          --contract_configuration | \
          --contract_configuration_file | \
          --contract_group_evaluation_semantic | \
+         --contract_violation_information | \
          --wdir)
       used_two_params=1
 #     See if an instantiation mode was specified
@@ -2300,6 +2302,7 @@ process_option()
           --contract_configuration=* | \
           --contract_configuration_file=* | \
           --contract_group_evaluation_semantic=* | \
+          --contract_violation_information=* | \
           --wdir=* | \
           --create_header_unit=* | \
           --create_module_interface=* | \

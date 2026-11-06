@@ -1,0 +1,2 @@
+cpfe -DTEST_NUMBER=1 --c++26 --contracts_p4298 --contracts_p4299 --contract_evaluation_semantic=noexcept_observe --contract_violation_information=none Test_name.c
+done

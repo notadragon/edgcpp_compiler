@@ -34,6 +34,21 @@ Clang modes __gcc_contracts_p4451 (__clang_contracts_p4451) is predefined.
 With P3400, "<terminating>" is an ordinary label.
 
 
+11/2/26 []
+Contracts: --contract_violation_information=full|none
+
+The new --contract_violation_information option (full by default; C and
+C++) is passed on to our GCC by the drivers, as
+-fcontract-violation-information=.  Under none, in GNU and Clang modes,
+__gcc_contracts_violation_information_none (Clang:
+__clang_contracts_violation_information_none) is predefined, so that the
+emulated compiler's library passes an empty location and comment from its
+<cassert> contract path, P3290 manual API and <contracts.h>; with the
+C-generating back end every contract-violation record has an empty file
+name, function name and comment, and line 0.  Constant evaluation's
+diagnostics are unchanged.
+
+
 11/1/26 []
 Contracts (P4405): --[no_]contract_analysis_skip_dead_calls; report once
 
