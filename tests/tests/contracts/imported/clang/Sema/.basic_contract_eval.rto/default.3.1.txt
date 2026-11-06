@@ -1,0 +1,1 @@
+fe_only -DTEST_NUMBER=3 --c++26 --contracts --c++26 --contract_evaluation_semantic=quick_enforce Test_name.c

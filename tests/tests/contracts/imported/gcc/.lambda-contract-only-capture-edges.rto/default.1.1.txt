@@ -1,0 +1,86 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contract_evaluation_semantic=enforce Test_name.c
+"Test_name.c", line 46: error: "this" cannot be implicitly captured only for contract assertions; capture it explicitly
+    void h1 () { [&] (auto a) { contract_assert (get () > a); } (1); }	// { dg-error "not implicitly captured by a contract assertion" }
+                                                 ^
+
+"Test_name.c", line 52: error: "this" cannot be implicitly captured only for contract assertions; capture it explicitly
+    int f = [this] { [&] { contract_assert (m > 0); } (); return 1; } ();	// { dg-error "not implicitly captured by a contract assertion" }
+                                            ^
+
+"Test_name.c", line 53: error: "this" cannot be implicitly captured only for contract assertions; capture it explicitly
+    int g = [&] { contract_assert (this->m > 0); return 1; } ();	// { dg-error "not implicitly captured by a contract assertion" }
+                                   ^
+
+"Test_name.c", line 58: error: "x" (declared at line 56) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto l1 = [=] { return [=] { contract_assert (x > 0); }; };	// { dg-error "not implicitly captured by a contract assertion" }
+                                                  ^
+
+"Test_name.c", line 59: error: "x" (declared at line 56) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto l2 = [=] { contract_assert ([=] { return x > 0; } ()); };	// { dg-error "not implicitly captured by a contract assertion" }
+                                                  ^
+
+"Test_name.c", line 61: error: "x" (declared at line 56) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto l4 = [=] { contract_assert ([x] { return x > 0; } ()); };	// { dg-error "not implicitly captured by a contract assertion" }
+                                      ^
+
+"Test_name.c", line 62: error: "lambda []()->auto::y" (declared at line 62) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto l5 = [y = x] { [=] { contract_assert (y > 0); } (); };	// { dg-error "not implicitly captured by a contract assertion" }
+                                               ^
+
+"Test_name.c", line 63: error: "x" (declared at line 56) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto l6 = [&] { contract_assert (x > 0); contract_assert (x < 9); };	// { dg-error "not implicitly captured by a contract assertion" }
+                                     ^
+
+"Test_name.c", line 64: error: "x" (declared at line 56) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto l7 = [=] { contract_assert ([=] { contract_assert (x > 0); return x > 1; } ()); };	// { dg-error "not implicitly captured by a contract assertion" }
+                                                            ^
+
+"Test_name.c", line 65: error: "x" (declared at line 56) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto l8 = [&] { [&] { contract_assert (x > 0); } (); (void) x; };	// { dg-error "not implicitly captured by a contract assertion" }
+                                           ^
+
+"Test_name.c", line 76: error: "a" (declared at line 75) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto l = [&] { contract_assert (a > 0); };	// { dg-error "not implicitly captured by a contract assertion" }
+                                    ^
+
+"Test_name.c", line 83: error: "x" (declared at line 81) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto l = [=] { contract_assert (x > 0); };	// { dg-error "not implicitly captured by a contract assertion" }
+                                    ^
+
+"Test_name.c", line 92: error: "i" (declared at line 89) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto p1 = [=] (const int a) post (i > a) {};	// { dg-error "not implicitly captured by a contract assertion" }
+                                      ^
+
+"Test_name.c", line 93: error: "y" (declared at line 91) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto p2 = [=] pre ([=] { return y; } ()) {};	// { dg-error "not implicitly captured by a contract assertion" }
+                                    ^
+
+"Test_name.c", line 94: error: "i" (declared at line 89) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto p3 = [=] { return [=] pre (i > 0) {}; };	// { dg-error "not implicitly captured by a contract assertion" }
+                                    ^
+
+"Test_name.c", line 95: error: "i" (declared at line 89) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto p4 = [=] { (void) i; return [=] pre (i > 0) {}; };	// { dg-error "not implicitly captured by a contract assertion" }
+                                              ^
+
+"Test_name.c", line 96: error: "i" (declared at line 89) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto p5 = [=] (auto a) pre (i > a) {};	// { dg-error "not implicitly captured by a contract assertion" }
+                                ^
+
+"Test_name.c", line 97: error: "i" (declared at line 89) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto p6 = [=] (const auto a) post (i > a) {};	// { dg-error "not implicitly captured by a contract assertion" }
+                                       ^
+
+"Test_name.c", line 104: error: "i" (declared at line 102) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto q1 = [=] pre (i > 0) {};	// { dg-error "not implicitly captured by a contract assertion" }
+                       ^
+
+"Test_name.c", line 105: error: "i" (declared at line 102) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto q2 = [=] (auto a) pre (i > a) {};	// { dg-error "not implicitly captured by a contract assertion" }
+                                ^
+
+"Test_name.c", line 112: error: "j" (declared at line 110) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto r = [=] (auto a) { return [=] (auto b) pre (b > j) { return a + b; }; };	// { dg-error "not implicitly captured by a contract assertion" }
+                                                         ^
+
+21 errors detected in the compilation of "Test_name.c".

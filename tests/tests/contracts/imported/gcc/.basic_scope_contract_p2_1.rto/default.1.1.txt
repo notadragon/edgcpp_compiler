@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contract_evaluation_semantic=observe Test_name.c
+"Test_name.c", line 15: error: the result name of a postcondition cannot have the same name as a function parameter
+    post (r: r > 5) // { dg-error "contract postcondition result name shadows a function parameter" }
+          ^
+
+1 error detected in the compilation of "Test_name.c".

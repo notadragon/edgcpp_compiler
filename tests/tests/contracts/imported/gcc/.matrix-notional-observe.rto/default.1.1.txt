@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contract_evaluation_semantic=observe Test_name.c
+"Test_name.c", line 391: warning: variable "constexpr_var_pp_T_T_u_const_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 408: warning: variable "constexpr_var_pp_CD_CD_k_const_observe::k" was declared but never referenced
+  constexpr int k = f (1);
+                ^
+

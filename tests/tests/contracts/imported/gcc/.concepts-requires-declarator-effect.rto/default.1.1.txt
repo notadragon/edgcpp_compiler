@@ -1,0 +1,86 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 Test_name.c
+"Test_name.c", line 60: error: no instance of function template "n1" matches the argument list
+            argument types are: (int)
+    n1 (0);	// { dg-error "no matching function" "PR123909" }
+    ^
+"Test_name.c", line 49: note: substituting "<int>" for function template "n1" failed constraints
+  template <class T> int (*n1 (T)) (int) requires Never<T>;	// { dg-bogus "requires-clause" "PR123909" }
+                           ^
+"Test_name.c", line 49: note: concept "Never" not satisfied for "<int>"
+  template <class T> int (*n1 (T)) (int) requires Never<T>;	// { dg-bogus "requires-clause" "PR123909" }
+                                                  ^
+"Test_name.c", line 36: note: atomic constraint evaluates to false
+  template <class T> concept Never = false;
+                                     ^
+
+"Test_name.c", line 61: error: no instance of function template "n4" matches the argument list
+            argument types are: (int)
+    n4 (0);	// { dg-error "no matching function" "PR123909" }
+    ^
+"Test_name.c", line 50: note: substituting "<int>" for function template "n4" failed constraints
+  template <class T> auto n4 (T) -> int (*) (int) requires Never<T>; // { dg-bogus "requires-clause" "PR123909" }
+                          ^
+"Test_name.c", line 50: note: concept "Never" not satisfied for "<int>"
+  template <class T> auto n4 (T) -> int (*) (int) requires Never<T>; // { dg-bogus "requires-clause" "PR123909" }
+                                                           ^
+"Test_name.c", line 36: note: atomic constraint evaluates to false
+  template <class T> concept Never = false;
+                                     ^
+
+"Test_name.c", line 62: error: no instance of function template "n6" matches the argument list
+            argument types are: (int)
+    n6 (0);	// { dg-error "no matching function" "PR94984" }
+    ^
+"Test_name.c", line 51: note: substituting "<int>" for function template "n6" failed constraints
+  template <class T> char (*n6 (T)) [3] requires Never<T>;	// { dg-bogus "expected initializer" "PR94984" }
+                            ^
+"Test_name.c", line 51: note: concept "Never" not satisfied for "<int>"
+  template <class T> char (*n6 (T)) [3] requires Never<T>;	// { dg-bogus "expected initializer" "PR94984" }
+                                                 ^
+"Test_name.c", line 36: note: atomic constraint evaluates to false
+  template <class T> concept Never = false;
+                                     ^
+
+"Test_name.c", line 64: error: no instance of function template "nc1" matches the argument list
+            argument types are: (int)
+    nc1 (0);	// { dg-error "no matching function" }
+    ^
+"Test_name.c", line 53: note: substituting "<int>" for function template "nc1" failed constraints
+  template <class T> int nc1 (T) requires Never<T>;
+                         ^
+"Test_name.c", line 53: note: concept "Never" not satisfied for "<int>"
+  template <class T> int nc1 (T) requires Never<T>;
+                                          ^
+"Test_name.c", line 36: note: atomic constraint evaluates to false
+  template <class T> concept Never = false;
+                                     ^
+
+"Test_name.c", line 65: error: no instance of function template "nc2" matches the argument list
+            argument types are: (int)
+    nc2 (0);	// { dg-error "no matching function" }
+    ^
+"Test_name.c", line 54: note: substituting "<int>" for function template "nc2" failed constraints
+  template <class T> auto nc2 (T) -> int requires Never<T>;
+                          ^
+"Test_name.c", line 54: note: concept "Never" not satisfied for "<int>"
+  template <class T> auto nc2 (T) -> int requires Never<T>;
+                                                  ^
+"Test_name.c", line 36: note: atomic constraint evaluates to false
+  template <class T> concept Never = false;
+                                     ^
+
+"Test_name.c", line 66: error: no instance of function template "nc3" matches the argument list
+            argument types are: (int)
+    nc3 (0);	// { dg-error "no matching function" }
+    ^
+"Test_name.c", line 55: note: substituting "<int>" for function template "nc3" failed constraints
+  template <class T> auto nc3 (T) -> char (*) [3] requires Never<T>;
+                          ^
+"Test_name.c", line 55: note: concept "Never" not satisfied for "<int>"
+  template <class T> auto nc3 (T) -> char (*) [3] requires Never<T>;
+                                                           ^
+"Test_name.c", line 36: note: atomic constraint evaluates to false
+  template <class T> concept Never = false;
+                                     ^
+
+6 errors detected in the compilation of "Test_name.c".

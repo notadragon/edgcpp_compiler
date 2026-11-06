@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=2 --c++26 --c++26 --no_contracts Test_name.c
+"Test_name.c", line 15: error: identifier "__contract_assert" is undefined
+  void g(int x) { __contract_assert(x > 0); } // expected-error {{'__contract_assert' requires '-fcontracts'}}
+                  ^
+
+"Test_name.c", line 18: error: a value of type "const char *" cannot be used to initialize an entity of type "int"
+  int after = "x"; // expected-error {{cannot initialize a variable of type 'int' with an lvalue of type 'const char[2]'}}
+              ^
+
+2 errors detected in the compilation of "Test_name.c".

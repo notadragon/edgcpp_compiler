@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 22: error: expression must be a modifiable lvalue
+    contract_assert(__extension__({ ++j; }) > 0); // expected-error {{inside of a contract}}
+                                      ^
+
+1 error detected in the compilation of "Test_name.c".

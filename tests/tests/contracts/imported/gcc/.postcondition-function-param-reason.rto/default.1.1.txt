@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 14: error: value parameter "g" used in a postcondition must be declared const
+  void f2 (int (*g) ()) post (g != nullptr) {} // { dg-error "must be const" }
+                 ^
+
+1 error detected in the compilation of "Test_name.c".

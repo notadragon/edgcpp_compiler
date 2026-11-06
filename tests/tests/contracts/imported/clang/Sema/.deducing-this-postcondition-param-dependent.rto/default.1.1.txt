@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 44: error: value parameter "self" used in a postcondition must be declared const
+    template <class Self> void f(this Self self) post(self.x == 0);
+                                           ^
+          detected during instantiation of "void DeducedByValue::f(Self) [with Self=DeducedByValue]" at line 49
+
+"Test_name.c", line 63: error: value parameter "t" used in a postcondition must be declared const
+  template <class T> void deduced_ordinary(T t) post(t.x == 0);
+                                             ^
+          detected during instantiation of "void deduced_ordinary(T) [with T=S]" at line 67
+
+"Test_name.c", line 75: error: value parameter "t" used in a postcondition must be declared const
+    void f(T t) post(t.x == 0);
+             ^
+          detected during instantiation of "void InClassTemplate<T>::f(T) [with T=S]" at line 81
+
+"Test_name.c", line 88: error: value parameter "self" used in a postcondition must be declared const
+    void f(this ExplicitObjectInClassTemplate self) post(self.x == 0);
+                                              ^
+          detected during instantiation of "void ExplicitObjectInClassTemplate<T>::f(ExplicitObjectInClassTemplate<T>) [with T=int]" at line 93
+
+4 errors detected in the compilation of "Test_name.c".

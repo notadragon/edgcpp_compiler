@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 18: error: expression must have bool type (or be convertible to bool)
+    void f(A a) pre(a) // { dg-error "could not convert" }
+                    ^
+
+"Test_name.c", line 19: error: class "A" has no member "b"
+                pre(a.b) // { dg-error "has no member" }
+                      ^
+
+"Test_name.c", line 24: error: expression must have bool type (or be convertible to bool)
+  void f(A a) pre(a) // { dg-error "could not convert" }
+                  ^
+
+"Test_name.c", line 25: error: class "A" has no member "b"
+  	    pre(a.b) // { dg-error "has no member" }
+  	          ^
+
+"Test_name.c", line 27: error: expression must have bool type (or be convertible to bool)
+    contract_assert(a); // { dg-error "could not convert" }
+                    ^
+
+"Test_name.c", line 28: error: class "A" has no member "b"
+    contract_assert(a.b); // { dg-error "has no member" }
+                      ^
+
+6 errors detected in the compilation of "Test_name.c".

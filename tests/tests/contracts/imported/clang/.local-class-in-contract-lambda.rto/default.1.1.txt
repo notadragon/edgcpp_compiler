@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 20: error: a parameter is not allowed
+  void f1(int x) pre([&] { struct Q { int m() { return x; } }; return true; }()); // expected-error {{reference to local variable 'x' declared in enclosing}} expected-note {{'x' declared here}}
+                                                       ^
+
+"Test_name.c", line 21: error: a parameter is not allowed
+  void f2(int x) pre([&] { struct Q { int m() { return x; } }; return Q{}.m() > 0; }()) {} // expected-error {{reference to local variable 'x' declared in enclosing}} expected-note {{'x' declared here}}
+                                                       ^
+
+"Test_name.c", line 24: error: reference to local variable of enclosing function is not allowed
+    contract_assert([&] { struct Q { int m() { return x; } }; return true; }()); // expected-error {{reference to local variable 'x' declared in enclosing function}}
+                                                      ^
+
+"Test_name.c", line 28: error: reference to local variable of enclosing function is not allowed
+    contract_assert([&] { return [&] { struct Q { int m() { return x; } }; return true; }(); }()); // expected-error {{reference to local variable 'x' declared in enclosing function}}
+                                                                   ^
+
+4 errors detected in the compilation of "Test_name.c".

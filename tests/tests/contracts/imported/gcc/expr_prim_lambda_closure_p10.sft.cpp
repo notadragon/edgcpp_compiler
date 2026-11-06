@@ -1,0 +1,70 @@
+//remark: imported from gcc:expr.prim.lambda.closure.p10.C
+//type: fn
+//require: BACK_END_IS_CP_GEN_BE 1
+//options: --c++26 --contracts
+//match_regex: ", line 33: (?:catastrophic )?error
+//match_regex: ", line 39: (?:catastrophic )?error
+//match_regex: ", line 55: (?:catastrophic )?error
+// N5008 :
+// [expr.prim.lambda.closure]/p10
+// If all potential references to a local entity implicitly captured by a
+// lambda-expression L occur within the function contract assertions of the
+// call operator or operator template of L or within assertion-statements
+// within the body of L, the program is ill-formed.
+// [Note 4: Adding a contract assertion to an existing C++ program cannot
+//  cause additional captures. — end note]
+// { dg-do compile { target c++26 } }
+// { dg-additional-options "-fcontracts -fsyntax-only" }
+
+auto gl0 = [] (int x) 
+  pre (x > 10) { return x; }; // OK
+
+static int i = 0;
+
+void
+foo ()
+{
+  auto f1 = [=]
+    pre (i > 0) {};  // OK, no local entities are captured.
+
+  int i = 1;
+
+  auto f2 = [=]
+    pre (i > 0) {};  // { dg-error {'i' is not implicitly captured by a contract assertion} }
+
+  auto f3 = [i]
+    pre (i > 0) {};  // OK, i is captured explicitly.
+
+  auto f4 = [=] {
+    contract_assert (i > 0); // { dg-error {'i' is not implicitly captured by a contract assertion} }
+  };
+
+  auto f5 = [=] {
+    contract_assert (i > 0); // OK, i is referenced elsewhere.
+    return i;
+  };
+
+  auto f6 = [=] pre (                // #1
+    []{
+      bool x = true;
+      return [=]{ return x; }();    // OK, #1 captures nothing.
+    }()) {};
+
+  bool y = true;
+  auto f7 = [=]
+    pre([=]{ return y; }()) {};  // { dg-error {'y' is not implicitly captured by a contract assertion} } outer capture of y is invalid.
+
+  int x = 4;
+  auto f8 = [&] 
+    pre (x > 0) { (void) x; };
+}
+
+int
+main()
+{
+  int x = 3;
+  auto lambda = [=] 
+	pre (x > 0) 
+	{ (void)x; };
+  lambda();
+}
