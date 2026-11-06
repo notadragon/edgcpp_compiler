@@ -1,0 +1,60 @@
+Matches for "line 22: error: requires clause on contract assertion only allowed on templated functions":
+  <-----------------------------------------------------------------------------
+  line 22: error: requires clause on contract assertion only allowed on templated functions
+  ----------------------------------------------------------------------------->
+Matches for "line 23: error: requires clause on contract assertion only allowed on templated functions":
+  <-----------------------------------------------------------------------------
+  line 23: error: requires clause on contract assertion only allowed on templated functions
+  ----------------------------------------------------------------------------->
+Matches for "line 24: error: requires clause on contract assertion only allowed on templated functions":
+  <-----------------------------------------------------------------------------
+  line 24: error: requires clause on contract assertion only allowed on templated functions
+  ----------------------------------------------------------------------------->
+Matches for "line 26: error: requires clause on contract assertion only allowed on templated functions":
+  <-----------------------------------------------------------------------------
+  line 26: error: requires clause on contract assertion only allowed on templated functions
+  ----------------------------------------------------------------------------->
+Matches for "line 28: error: requires clause on contract assertion only allowed on templated functions":
+  <-----------------------------------------------------------------------------
+  line 28: error: requires clause on contract assertion only allowed on templated functions
+  ----------------------------------------------------------------------------->
+Matches for "line 29: error: requires clause on contract assertion only allowed on templated functions":
+  <-----------------------------------------------------------------------------
+  line 29: error: requires clause on contract assertion only allowed on templated functions
+  ----------------------------------------------------------------------------->
+Matches for "line 31: error: requires clause on contract assertion only allowed on templated functions":
+  <-----------------------------------------------------------------------------
+  line 31: error: requires clause on contract assertion only allowed on templated functions
+  ----------------------------------------------------------------------------->
+Matches for "line 33: error: requires clause on contract assertion only allowed on templated functions":
+  <-----------------------------------------------------------------------------
+  line 33: error: requires clause on contract assertion only allowed on templated functions
+  ----------------------------------------------------------------------------->
+Matches for "line 34: error: requires clause on contract assertion only allowed on templated functions":
+  <-----------------------------------------------------------------------------
+  line 34: error: requires clause on contract assertion only allowed on templated functions
+  ----------------------------------------------------------------------------->
+Matches for "line 38: error: mismatched requires clause on contract assertion in declaration":
+  <-----------------------------------------------------------------------------
+  line 38: error: mismatched requires clause on contract assertion in declaration
+  ----------------------------------------------------------------------------->
+Matches for "line 42: error: mismatched requires clause on contract assertion in declaration":
+  <-----------------------------------------------------------------------------
+  line 42: error: mismatched requires clause on contract assertion in declaration
+  ----------------------------------------------------------------------------->
+Matches for "line 44: error: mismatched requires clause on contract assertion in declaration":
+  <-----------------------------------------------------------------------------
+  line 44: error: mismatched requires clause on contract assertion in declaration
+  ----------------------------------------------------------------------------->
+Matches for "line 46: error: expected a "\("":
+  <-----------------------------------------------------------------------------
+  line 46: error: expected a "("
+  ----------------------------------------------------------------------------->
+Matches for "line 49: error: requires clause on contract assertion only allowed on templated functions":
+  <-----------------------------------------------------------------------------
+  line 49: error: requires clause on contract assertion only allowed on templated functions
+  ----------------------------------------------------------------------------->
+Matches for "line 50: error: requires clause on contract assertion only allowed on templated functions":
+  <-----------------------------------------------------------------------------
+  line 50: error: requires clause on contract assertion only allowed on templated functions
+  ----------------------------------------------------------------------------->

@@ -1,0 +1,21 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p4283 Test_name.c
+"Test_name.c", line 21: warning: attribute "unlikely" does not apply here
+    pre requires (std::integral<T>) [[unlikely]] (x > 0) // { dg-warning "attributes are ignored" }
+                                      ^
+
+"Test_name.c", line 27: warning: attribute "unlikely" does not apply here
+    post requires (std::integral<T>) [[unlikely]] (r: r == x) // { dg-warning "attributes are ignored" }
+                                       ^
+
+"Test_name.c", line 34: warning: attribute "unlikely" does not apply here
+    contract_assert requires (std::integral<T>) [[unlikely]] (x != T{}); // { dg-warning "attributes are ignored" }
+                                                  ^
+
+"Test_name.c", line 40: warning: attribute "unlikely" does not apply here
+    pre requires (std::integral<T>) [[unlikely]] [[maybe_unused]] (x >= 0) // { dg-warning "attributes are ignored" }
+                                      ^
+
+"Test_name.c", line 40: warning: attribute "maybe_unused" does not apply here
+    pre requires (std::integral<T>) [[unlikely]] [[maybe_unused]] (x >= 0) // { dg-warning "attributes are ignored" }
+                                                   ^
+

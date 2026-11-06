@@ -4284,6 +4284,14 @@ handle_class_type_supplement_for_class:
       conditionally_clear_fe_pointer(eptr->label_token_cache);
       walk_string_ptr(eptr->label_message, iek_other_text, 0);
       walk_string_ptr(eptr->label_groups, iek_other_text, 0);
+      /* The requires-clause (P4283), possibly through a local expression
+         node reference; its token cache is for front end use only. */
+      walk_ptr(eptr->requires_constraint, an_expr_node_ptr, iek_expr_node);
+      if (eptr->local_requires_clause) {
+        walk_ptr(eptr->requires_sexpr, a_scoped_expression_ptr,
+                 iek_scoped_expression);
+      }  /* if */
+      conditionally_clear_fe_pointer(eptr->requires_token_cache);
       /* The token cache pointer is for front end use only. */
       conditionally_clear_fe_pointer(eptr->token_cache);
 #undef eptr

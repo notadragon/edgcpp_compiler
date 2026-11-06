@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p4283 --contract_evaluation_semantic=quick_enforce Test_name.c
+"Test_name.c", line 23: error: requires clause on contract assertion only allowed on templated functions
+  auto lam = [] (int x) pre requires C<int> (x > 0) {};  // expected-error {{only allowed on templated functions}}
+                            ^
+
+"Test_name.c", line 25: error: requires clause on contract assertion only allowed on templated functions
+    void m (int x) pre requires C<int> (x > 0) {}  // expected-error {{only allowed on templated functions}}
+                       ^
+
+"Test_name.c", line 26: error: requires clause on contract assertion only allowed on templated functions
+    void n (int x) { contract_assert requires C<int> (x > 0); }  // expected-error {{only allowed on templated functions}}
+                                     ^
+
+"Test_name.c", line 30: error: requires clause on contract assertion only allowed on templated functions
+  void d1 (int x) post requires (true) (x > 0);  // expected-error {{only allowed on templated functions}}
+                       ^
+
+"Test_name.c", line 31: error: requires clause on contract assertion only allowed on templated functions
+  constexpr int d2 (int x) pre requires (true) (x > 0) { return x; }  // expected-error {{only allowed on templated functions}}
+                               ^
+
+5 errors detected in the compilation of "Test_name.c".
