@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3097 Test_name.c
+"Test_name.c", line 39: error: expected a ";"
+    void f() pre(true) override; // expected-error {{'override' must appear before the function contract specifiers}}
+                       ^
+
+"Test_name.c", line 42: error: expected a ";"
+    void g() pre(true) final; // expected-error {{'final' must appear before the function contract specifiers}}
+                       ^
+
+"Test_name.c", line 47: error: expected a ";"
+    void h() pre(true) __attribute__((unused)) override; // expected-error {{'override' must appear before the function contract specifiers}}
+                                               ^
+
+"Test_name.c", line 54: error: expected a ";"
+    void p() pre(true) requires C<T>; // expected-error {{'requires' must appear before the function contract specifiers}}
+                       ^
+
+"Test_name.c", line 59: error: expected a ";"
+  int free_wrong_order(T v) pre(v > T{}) requires C<T>; // expected-error {{'requires' must appear before the function contract specifiers}}
+                                         ^
+
+5 errors detected in the compilation of "Test_name.c".

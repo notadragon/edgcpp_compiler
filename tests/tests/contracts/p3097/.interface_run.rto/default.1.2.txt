@@ -1,0 +1,22 @@
+./a.out
+start
+-- B via B*
+B::f pre
+B::f pre
+B::f post
+B::f post
+-- D via B*
+B::f pre
+D::f pre
+B::f post
+-- qualified
+B::f pre
+B::f post
+B::g pre
+D::g pre
+arg copies 0
+B::h post
+result copies 0 value 3
+B::self post
+self ok
+end

@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3850 --contract_evaluation_semantic=enforce --contract_configuration_file=contract-constexpr-observe-masks-enforce.json Test_name.c
+"Test_name.c", line 20: warning: contract predicate is false in constant expression
+  namespace A { constexpr int obs (int x) { contract_assert (x > 0);   return x; } } // { dg-warning "contract predicate is false in constant expression" }
+                                            ^
+
+"Test_name.c", line 26: error: contract predicate is false in constant expression
+      contract_assert (x > 100); // { dg-error "contract predicate is false in constant expression" }
+      ^
+
+"Test_name.c", line 31: warning: variable "bad" was declared but never referenced
+  constexpr int bad = A::obs (-1) + B::enf (-1);
+                ^
+
+1 error detected in the compilation of "Test_name.c".

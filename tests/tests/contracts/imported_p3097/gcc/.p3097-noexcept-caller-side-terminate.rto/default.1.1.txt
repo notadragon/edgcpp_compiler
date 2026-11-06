@@ -1,0 +1,9 @@
+eccp -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3097 --contract_evaluation_semantic=enforce Test_name.c
+"Test_name.c", line 60: warning: function "call_v" was declared but never referenced
+  static int call_v (B &b) { return b.v (-1, 0); }	// the variadic wrapper
+             ^
+
+"Test_name.c", line 61: warning: function "call_d" was declared but never referenced
+  static int call_d (B *b) { delete b; return 0; }	// the destructor's
+             ^
+

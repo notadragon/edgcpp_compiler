@@ -12128,6 +12128,12 @@ command line -D options.
            enabled paper gives it: P2900's 202502L when none raises it. */
         a_host_large_integer  contracts_value = 202502L;
         char                  contracts_buffer[50];
+        if (contracts_p3097_enabled) {
+          /* P3097 (contracts for virtual functions) has no macro of its
+             own; GCC raises the value instead, to a private date, which
+             tracks the month. */
+          if (contracts_value < 202610L) contracts_value = 202610L;
+        }  /* if */
         (void)signed_to_string_buf(contracts_value, contracts_buffer);
         (void)strcat(contracts_buffer, "L");
         (void)enter_predef_macro(contracts_buffer, "__cpp_contracts",
