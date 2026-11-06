@@ -1,3 +1,9 @@
+constexpr/explicit_specialization_in_class.sft.cpp:fn:-DTEST_NUMBER=1:PASS:
+constexpr/not_manifest.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: an evaluation that is not manifestly constant-evaluated and meets a violation is not constant
+constexpr/observe.sft.cpp:fp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: a violation in constant evaluation is a warning under observe, and the value stands
+constexpr/observe_gxx.sft.cpp:cp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: through edg-gxx an observed violation in constant evaluation is warned about by the front end and again by g++
+constexpr/result_name.sft.cpp:fn:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: a postcondition's result name in constant evaluation
+constexpr/statement_expression_lambda.sft.cpp:fn:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: a statement expression in a lambda's precondition or postcondition in constant evaluation
 harness/gxx_exceptions.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:gxx configuration: catch an exception thrown by libstdc++
 macro_prefix_map/gxx_options.sft.cpp:rp:-DTEST_NUMBER=1 -fmacro-prefix-map==MACRO/ -ffile-prefix-map==FILE/:REQUIREMENTS NOT MET:prefix maps: through edg-gxx -fmacro-prefix-map= and -ffile-prefix-map= remap __FILE__ as g++ does: every -ffile-prefix-map= is tried before any -fmacro-prefix-map=, whatever their order, the last given of each first; under -fcanon-prefix-map OLD and a file name with a directory are compared with ".", ".." and links resolved
 macro_prefix_map/gxx_options.sft.cpp:rp:-DTEST_NUMBER=2 -ffile-prefix-map==FILE/ -fmacro-prefix-map==MACRO/:REQUIREMENTS NOT MET:prefix maps: through edg-gxx -fmacro-prefix-map= and -ffile-prefix-map= remap __FILE__ as g++ does: every -ffile-prefix-map= is tried before any -fmacro-prefix-map=, whatever their order, the last given of each first; under -fcanon-prefix-map OLD and a file name with a directory are compared with ".", ".." and links resolved
