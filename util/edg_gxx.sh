@@ -38,6 +38,9 @@
 # declaration with the name of a "C++" dynamic selector but not its type is
 # warned about by g++ alone, on the generated C++, so -fsyntax-only (which
 # stops after cpfe-cp) does not give that warning.
+# -f[no-]contracts-p3850 (every extension paper) goes to both; g++ gets it
+# unchanged, so it enables there even the papers the front end does not
+# implement yet.
 #
 # Prefix maps.  -fmacro-prefix-map= and -ffile-prefix-map= go to both: the
 # front end expands __FILE__, __FILE_NAME__ and __BASE_FILE__ (as
@@ -173,6 +176,10 @@ while [ $# -gt 0 ] ; do
     -Wno-contract-configuration)
       edg_args+=("--diag_suppress=contract_configuration")
       gxx_args+=("$arg") ;;
+    -fcontracts-p3850)
+      edg_args+=("--contracts_p3850"); gxx_args+=("$arg") ;;
+    -fno-contracts-p3850)
+      edg_args+=("--no_contracts_p3850"); gxx_args+=("$arg") ;;
     -fmacro-prefix-map=*|-ffile-prefix-map=*)
       # The front end tries the last map given first, and g++ tries every
       # -ffile-prefix-map= before any -fmacro-prefix-map=, so the macro maps

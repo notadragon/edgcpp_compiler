@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3850 Test_name.c
+"Test_name.c", line 36: error: mismatched contract condition in declaration (previous contract specifier declared at line 35)
+    friend int f (int x) pre (x < 0); // { dg-error "mismatched contract condition" }
+                         ^
+
+"Test_name.c", line 47: error: mismatched contract condition in declaration (previous contract specifier declared at line 46)
+    friend int g (int y) pre (y < 0); // { dg-error "mismatched contract condition" }
+                         ^
+
+2 errors detected in the compilation of "Test_name.c".
