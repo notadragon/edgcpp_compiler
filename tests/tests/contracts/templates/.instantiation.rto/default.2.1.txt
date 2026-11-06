@@ -1,0 +1,7 @@
+fe_only -DTEST_NUMBER=2 --c++26 -DCASE=2 Test_name.c
+"Test_name.c", line 13: error: expression must have class type but it has type "const int"
+  template <class T> int f(T t) pre(t.m > 0);  // Error, f<int> is odr-used
+                                    ^
+          detected during instantiation of "int f(T) [with T=int]" at line 14
+
+1 error detected in the compilation of "Test_name.c".

@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
+"Test_name.c", line 21: error: mismatched contract condition in declaration (previous contract specifier declared at line 20)
+  template <> void ft<int>(int x) pre(x > 6) {}            // Error, condition
+                                  ^
+
+"Test_name.c", line 23: error: declaration adds contracts to "void ft(T) [with T=long]"
+  template <> void ft<long>(long y) pre(y > 0) {}          // Error, adds
+                                    ^
+
+"Test_name.c", line 25: error: mismatched contract condition in declaration (previous contract specifier declared at line 24)
+  template <> void B<int>::m(int x) pre(x > 6) {}          // Error, condition
+                                    ^
+
+"Test_name.c", line 27: error: declaration adds contracts to "void B<T>::m(T) [with T=long]"
+  template <> void B<long>::m(long x) pre(x > 0) {}        // Error, adds
+                                      ^
+
+"Test_name.c", line 30: error: mismatched contract condition in declaration (previous contract specifier declared at line 28)
+  void A<int>::f(int x, Q) pre(x > 5) {}                   // Error, condition
+                           ^
+
+"Test_name.c", line 33: error: declaration adds contracts to "void A<long>::f(long, P)"
+  void A<long>::f(long x, Q) pre(x > 0) {}                 // Error, adds
+                             ^
+
+"Test_name.c", line 41: error: identifier "zz" is undefined
+  template <> void ft<float>(float a) pre(zz > a);         // Error
+                                          ^
+
+7 errors detected in the compilation of "Test_name.c".

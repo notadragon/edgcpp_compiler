@@ -1,0 +1,28 @@
+Matches for "line 21: error: mismatched contract condition in declaration":
+  <-----------------------------------------------------------------------------
+  line 21: error: mismatched contract condition in declaration
+  ----------------------------------------------------------------------------->
+Matches for "line 23: error: declaration adds contracts to":
+  <-----------------------------------------------------------------------------
+  line 23: error: declaration adds contracts to
+  ----------------------------------------------------------------------------->
+Matches for "line 25: error: mismatched contract condition in declaration":
+  <-----------------------------------------------------------------------------
+  line 25: error: mismatched contract condition in declaration
+  ----------------------------------------------------------------------------->
+Matches for "line 27: error: declaration adds contracts to":
+  <-----------------------------------------------------------------------------
+  line 27: error: declaration adds contracts to
+  ----------------------------------------------------------------------------->
+Matches for "line 30: error: mismatched contract condition in declaration":
+  <-----------------------------------------------------------------------------
+  line 30: error: mismatched contract condition in declaration
+  ----------------------------------------------------------------------------->
+Matches for "line 33: error: declaration adds contracts to":
+  <-----------------------------------------------------------------------------
+  line 33: error: declaration adds contracts to
+  ----------------------------------------------------------------------------->
+Matches for "line 41: error: identifier "zz" is undefined":
+  <-----------------------------------------------------------------------------
+  line 41: error: identifier "zz" is undefined
+  ----------------------------------------------------------------------------->

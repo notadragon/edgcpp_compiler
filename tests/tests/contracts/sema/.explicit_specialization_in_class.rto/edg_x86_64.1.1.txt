@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
+"Test_name.c", line 29: error: declaration adds contracts to "void S::f(T) [with T=float]"
+    template <> void f<float>(float a) pre(a > lim());        // Error, adds
+                                       ^
+
+"Test_name.c", line 27: error: mismatched contract condition in declaration (previous contract specifier declared at line 26)
+    template <> void f<long>(long a) pre(a > 2);              // Error, condition
+                                     ^
+
+"Test_name.c", line 30: error: identifier "zz" is undefined
+    template <> void f<double>(double a) pre(a > zz());       // Error
+                                                 ^
+
+3 errors detected in the compilation of "Test_name.c".
