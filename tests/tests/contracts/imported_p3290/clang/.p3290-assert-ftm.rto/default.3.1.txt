@@ -1,0 +1,1 @@
+fe_only -DTEST_NUMBER=3 --c++26 --c++26 --contracts --contracts_p3290 -DHDR_ASSERT_H Test_name.c

@@ -42,6 +42,7 @@
 # unchanged, so it enables there even the papers the front end does not
 # implement yet.
 # -f[no-]contracts-p3097 goes to both.
+# -f[no-]contracts-p3290 goes to both.
 #
 # Prefix maps.  -fmacro-prefix-map= and -ffile-prefix-map= go to both: the
 # front end expands __FILE__, __FILE_NAME__ and __BASE_FILE__ (as
@@ -185,6 +186,10 @@ while [ $# -gt 0 ] ; do
       edg_args+=("--contracts_p3097"); gxx_args+=("$arg") ;;
     -fno-contracts-p3097)
       edg_args+=("--no_contracts_p3097"); gxx_args+=("$arg") ;;
+    -fcontracts-p3290)
+      edg_args+=("--contracts_p3290"); gxx_args+=("$arg") ;;
+    -fno-contracts-p3290)
+      edg_args+=("--no_contracts_p3290"); gxx_args+=("$arg") ;;
     -fmacro-prefix-map=*|-ffile-prefix-map=*)
       # The front end tries the last map given first, and g++ tries every
       # -ffile-prefix-map= before any -fmacro-prefix-map=, so the macro maps
