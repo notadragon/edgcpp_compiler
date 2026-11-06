@@ -3682,5 +3682,6 @@ ec_tag_redefined_differently;;"this declaration of %n does not declare the same 
 ec_bad_gcc_unroll_pragma_value;;"the argument of \"#pragma GCC unroll\" must be a non-negative integral constant less than 65535"
 ec_constexpr_destroying_outside_lifetime;;"attempt to destroy an object outside its lifetime"
 ec_constexpr_modifying_outside_lifetime;;"attempt to modify an object outside its lifetime"
+ec_constexpr_member_before_construction;;"attempt to refer to a member of an object whose construction has not begun"
  ###############################################################################
 
