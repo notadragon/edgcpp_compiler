@@ -1,0 +1,46 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts_p4451 Test_name.c
+"Test_name.c", line 27: error: unqualified lookup of "terminating" from this assertion-control specifier finds a declaration other than std::contracts::labels::terminating
+    void f (int terminating) pre<terminating> (true);	// { dg-error "unqualified lookup of .terminating. from this assertion-control-specifier finds" }
+                             ^
+
+"Test_name.c", line 34: error: unqualified lookup of "terminating" from this assertion-control specifier finds a declaration other than std::contracts::labels::terminating
+      void f () pre<terminating> (true);	// { dg-error "unqualified lookup of .terminating. from this assertion-control-specifier finds" }
+                ^
+
+"Test_name.c", line 42: error: unqualified lookup of "terminating" from this assertion-control specifier finds a declaration other than std::contracts::labels::terminating
+    void f () pre<terminating> (true);	// { dg-error "unqualified lookup of .terminating. from this assertion-control-specifier finds" }
+              ^
+
+"Test_name.c", line 48: error: unqualified lookup of "terminating" from this assertion-control specifier finds a declaration other than std::contracts::labels::terminating
+    void f () pre<terminating> (true);	// { dg-error "unqualified lookup of .terminating. from this assertion-control-specifier finds" }
+              ^
+
+"Test_name.c", line 69: error: unqualified lookup of "terminating" from this assertion-control specifier finds a declaration other than std::contracts::labels::terminating
+    void f () pre<terminating> (true);	// { dg-error "unqualified lookup of .terminating. from this assertion-control-specifier finds" }
+              ^
+
+"Test_name.c", line 77: error: unqualified lookup of "terminating" from this assertion-control specifier finds a declaration other than std::contracts::labels::terminating
+      contract_assert<terminating> (x > 0);	// { dg-error "unqualified lookup of .terminating. from this assertion-control-specifier finds" }
+      ^
+
+"Test_name.c", line 76: warning: variable "terminating" was declared but never referenced
+      int terminating = x;
+          ^
+
+"Test_name.c", line 79: error: unqualified lookup of "terminating" from this assertion-control specifier finds a declaration other than std::contracts::labels::terminating
+    auto l = [] (int terminating) pre<terminating> (true) { };	// { dg-error "unqualified lookup of .terminating. from this assertion-control-specifier finds" }
+                                  ^
+
+"Test_name.c", line 47: warning: variable "n4::terminating" was declared but never referenced
+    constexpr int terminating = 0;
+                  ^
+
+"Test_name.c", line 65: warning: variable "n7::a::terminating" was declared but never referenced
+    namespace a { constexpr int terminating = 0; }
+                                ^
+
+"Test_name.c", line 66: warning: variable "n7::b::terminating" was declared but never referenced
+    namespace b { constexpr int terminating = 1; }
+                                ^
+
+7 errors detected in the compilation of "Test_name.c".

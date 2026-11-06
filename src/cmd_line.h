@@ -408,6 +408,7 @@ enum an_option_kind {
   optk_contracts_prove_fold,
   optk_contract_analysis_skip_dead_calls,
   optk_contracts_prove_override,
+  optk_contracts_p4451,
   optk_last		/* Must be last. */
 };
 
@@ -3155,6 +3156,20 @@ EXTERN_THREAD a_boolean
 			   strategy, so it does not consult it (see
 			   note_contract_override_obligations): the drivers
 			   pass it on to g++. */
+
+EXTERN_THREAD a_boolean
+		contracts_p4451_enabled;
+			/* TRUE if P4451 (terminating contract assertions)
+			   is enabled; implied by --contracts_p3850 and
+			   --contracts_p3400.  Without P3400 the only
+			   assertion-control specifier is "<terminating>",
+			   which marks a contract assertion terminating (see
+			   a_contract_specifier::is_terminating); with it,
+			   "terminating" is an ordinary P3400 label.  With
+			   contracts, it raises __cpp_contracts and
+			   predefines the vendor macro by which the standard
+			   library declares std::contracts::labels::
+			   terminating. */
 
 EXTERN_THREAD a_boolean
 		contracts_p3290_enabled;

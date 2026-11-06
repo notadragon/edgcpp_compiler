@@ -62,6 +62,8 @@
 # calls are never evaluated.
 # -f[no-]contracts-prove-override goes to both; the override obligations of
 # virtual functions are g++'s, which proves them with that strategy.
+# -f[no-]contracts-p4451 goes to both; g++ gets the "<terminating>" the
+# front end puts out for a terminating contract assertion.
 #
 # Prefix maps.  -fmacro-prefix-map= and -ffile-prefix-map= go to both: the
 # front end expands __FILE__, __FILE_NAME__ and __BASE_FILE__ (as
@@ -256,6 +258,10 @@ while [ $# -gt 0 ] ; do
       edg_args+=("--contracts_prove_override"); gxx_args+=("$arg") ;;
     -fno-contracts-prove-override)
       edg_args+=("--no_contracts_prove_override"); gxx_args+=("$arg") ;;
+    -fcontracts-p4451)
+      edg_args+=("--contracts_p4451"); gxx_args+=("$arg") ;;
+    -fno-contracts-p4451)
+      edg_args+=("--no_contracts_p4451"); gxx_args+=("$arg") ;;
     -fmacro-prefix-map=*|-ffile-prefix-map=*)
       # The front end tries the last map given first, and g++ tries every
       # -ffile-prefix-map= before any -fmacro-prefix-map=, so the macro maps

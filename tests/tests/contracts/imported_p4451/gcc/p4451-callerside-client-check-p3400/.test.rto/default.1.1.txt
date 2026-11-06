@@ -1,0 +1,1 @@
+eccp -DTEST_NUMBER=1 --c++26 --c++26 --contracts_p3400 --contract_configuration=[{"match":{"caller":true,"kind":"pre"},"output":{"semantic":"enforce"}}] Test_name.c

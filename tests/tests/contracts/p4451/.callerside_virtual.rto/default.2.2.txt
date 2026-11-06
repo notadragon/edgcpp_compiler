@@ -1,0 +1,4 @@
+./a.out
+1
+contract violation in function virtual void B::f() at Test_name.c:24: check(1)
+[assertion_kind: pre, semantic: enforce, mode: predicate_false, terminating: yes]

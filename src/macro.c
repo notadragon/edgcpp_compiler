@@ -12134,6 +12134,11 @@ command line -D options.
              tracks the month. */
           if (contracts_value < 202610L) contracts_value = 202610L;
         }  /* if */
+        if (contracts_p4451_enabled) {
+          /* Nor has P4451 (terminating contract assertions): D4451R0's
+             wording gives the value 202611L, which is used as is. */
+          if (contracts_value < 202611L) contracts_value = 202611L;
+        }  /* if */
         (void)signed_to_string_buf(contracts_value, contracts_buffer);
         (void)strcat(contracts_buffer, "L");
         (void)enter_predef_macro(contracts_buffer, "__cpp_contracts",
@@ -12626,6 +12631,18 @@ command line -D options.
     (void)enter_predef_macro("202610L",
                              clang_mode ? "__clang_contracts_p3290"
                                         : "__gcc_contracts_p3290",
+                             /*cannot_be_redefined=*/TRUE,
+                             /*ref_suppresses_pch_file=*/FALSE);
+  }  /* if */
+  if (contracts_enabled && contracts_p4451_enabled &&
+      (gnu_mode || clang_mode)) {
+    /* P4451 (terminating contract assertions) raises __cpp_contracts,
+       which the standard library cannot key on (P3097 raises it too): the
+       vendor macro of the compiler emulated, by which it declares
+       std::contracts::labels::terminating and raises __cpp_lib_contracts. */
+    (void)enter_predef_macro("202610L",
+                             clang_mode ? "__clang_contracts_p4451"
+                                        : "__gcc_contracts_p4451",
                              /*cannot_be_redefined=*/TRUE,
                              /*ref_suppresses_pch_file=*/FALSE);
   }  /* if */

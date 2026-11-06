@@ -1676,6 +1676,11 @@ of a label (P3400) adjust it (see apply_contract_label_facets).
                                     csp->label_computed_semantics[1] != 0 ||
                                     csp->label_analysis_semantic != 0);
 
+  if (csp->is_terminating) {
+    /* P4451: the facets of P3400's labels::terminating, which allows some
+       semantic. */
+    has_facets = TRUE;
+  }  /* if */
   for (entry = config_entries; entry != NULL; entry = entry->next) {
     /* An entry for the analysis evaluation (P4405) has its own lookup. */
     if (entry->analysis) continue;
@@ -1727,6 +1732,10 @@ of a label (P3400) adjust it (see apply_contract_label_facets).
        label's analysis_semantic facet applies too (P4405). */
     semantic = apply_contract_label_facets_analysis(csp, semantic, &analysis,
                                                     in_ce);
+  } else
+  if (csp->is_terminating) {
+    /* P4451: as for P3400's labels::terminating. */
+    semantic = apply_contract_label_facets(csp, semantic, in_ce);
   } else
   if (csp->label != NULL &&
       (csp->label_allowed_semantics != 0 ||

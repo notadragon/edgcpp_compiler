@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts_p4451 Test_name.c
+"Test_name.c", line 18: error: mismatched assertion-control specifier in declaration (previous contract specifier declared at line 17)
+  void f (int x) pre (x > 0) { }	// { dg-error "mismatched assertion-control-specifier in declaration" }
+                 ^
+
+"Test_name.c", line 21: error: mismatched assertion-control specifier in declaration (previous contract specifier declared at line 20)
+  void g (int x) pre<terminating> (x > 0) { }	// { dg-error "mismatched assertion-control-specifier in declaration" }
+                 ^
+
+"Test_name.c", line 31: error: mismatched assertion-control specifier in declaration (previous contract specifier declared at line 28)
+  void S::m (int x) pre (x > 0) { }	// { dg-error "mismatched assertion-control-specifier in declaration" }
+                    ^
+
+3 errors detected in the compilation of "Test_name.c".

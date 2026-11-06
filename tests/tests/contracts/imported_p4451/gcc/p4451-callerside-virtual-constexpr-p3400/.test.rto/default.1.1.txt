@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts_p3400 --contracts_p3097 --contract_evaluation_semantic=ignore --contract_configuration_file=p4451-callerside-virtual.json Test_name.c
+"Test_name.c", line 31: error: contract predicate is false in constant expression
+      pre<terminating> (x > 0)		// { dg-error "contract predicate is false" }
+      ^
+
+"Test_name.c", line 33: error: contract predicate is false in constant expression
+      post<terminating> (r : r < 10)	// { dg-error "contract predicate is false" }
+      ^
+
+"Test_name.c", line 51: warning: variable "a" was declared but never referenced
+  constexpr int a = call (1);	// the ordinary precondition is skipped
+                ^
+
+"Test_name.c", line 52: warning: variable "b" was declared but never referenced
+  constexpr int b = call (-1);
+                ^
+
+"Test_name.c", line 53: warning: variable "c" was declared but never referenced
+  constexpr int c = call (20);
+                ^
+
+2 errors detected in the compilation of "Test_name.c".

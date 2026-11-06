@@ -5093,6 +5093,7 @@ region, initialize its fields, and return a pointer to it.
   csp->label_groups = NULL;
   csp->has_label_message = FALSE;
   csp->label_facet_diagnosed = FALSE;
+  csp->is_terminating = FALSE;
   csp->local_predicate = FALSE;
   csp->predicate_sexpr = NULL;
   csp->operand_cached = FALSE;

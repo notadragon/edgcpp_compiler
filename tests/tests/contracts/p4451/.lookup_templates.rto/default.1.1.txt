@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contracts_p4451 Test_name.c
+"Test_name.c", line 9: error: unqualified lookup of "terminating" from this assertion-control specifier finds a declaration other than std::contracts::labels::terminating
+  template <class T> void f(T terminating) pre<terminating>(true);
+                                           ^
+
+"Test_name.c", line 11: error: unqualified lookup of "terminating" from this assertion-control specifier finds a declaration other than std::contracts::labels::terminating
+    void g() pre<terminating>(true);
+             ^
+
+"Test_name.c", line 18: error: unqualified lookup of "terminating" from this assertion-control specifier finds a declaration other than std::contracts::labels::terminating
+    contract_assert<terminating>(x > 0);
+    ^
+
+"Test_name.c", line 17: warning: variable "terminating" was declared but never referenced
+    int terminating = 0;
+        ^
+
+3 errors detected in the compilation of "Test_name.c".

@@ -15,6 +15,25 @@ precedence (every -ffile-prefix-map= first), with -fcanon-prefix-map as
 names it records (macro prefix maps).
 
 
+11/3/26 []
+Contracts (P4451): terminating contract assertions
+
+The new --[no_]contracts_p4451 option (implied by --contracts_p3850 and
+--contracts_p3400 unless given, and enabling contracts; an error in C) is
+passed on to our GCC by the drivers, as -f[no-]contracts-p4451.  Without
+P3400 the only assertion-control specifier is "< terminating >", in which
+"terminating" is not looked up as an expression: it makes the contract
+assertion a terminating one, whose semantics are chosen as for P3400's
+std::contracts::labels::terminating (enforce or quick_enforce, and prove
+with P4405; quick_enforce with the C-generating back end).  A declaration of
+std::contracts::labels::terminating must precede the specifier, unqualified
+lookup of "terminating" from it must find nothing or only that declaration
+(both checked where the predicate is scanned), and the declarations of a
+function must agree on it.  __cpp_contracts is 202611L, and in GNU and
+Clang modes __gcc_contracts_p4451 (__clang_contracts_p4451) is predefined.
+With P3400, "<terminating>" is an ordinary label.
+
+
 11/1/26 []
 Contracts (P4405): --[no_]contract_analysis_skip_dead_calls; report once
 

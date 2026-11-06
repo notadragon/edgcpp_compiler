@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts_p4451 Test_name.c
+"Test_name.c", line 11: error: only <terminating> is allowed as an assertion-control specifier without --contracts_p3400
+  auto l = [](int x) pre<other>(x > 0) { return x; };
+                        ^
+
+"Test_name.c", line 13: error: only <terminating> is allowed as an assertion-control specifier without --contracts_p3400
+    void m(int x) pre<other>(x > 0);
+                     ^
+
+2 errors detected in the compilation of "Test_name.c".

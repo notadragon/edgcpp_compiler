@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contracts_p4451 --contracts_p3097 --contract_evaluation_semantic=ignore --contract_configuration=[{"match":{"caller":true},"output":{"semantic":"ignore"}},{"match":{"constexpr":true},"output":{"semantic":"ignore"}}] -DVIOLATE=1 Test_name.c
+"Test_name.c", line 13: error: contract predicate is false in constant expression
+      pre<terminating>(x != 1)
+      ^
+
+1 error detected in the compilation of "Test_name.c".
