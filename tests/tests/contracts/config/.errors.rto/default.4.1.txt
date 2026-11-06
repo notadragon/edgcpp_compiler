@@ -1,0 +1,5 @@
+fe_only -DTEST_NUMBER=4 --c++26 --contract_configuration=[{"output":{"dynamic":{"name":"a::::b"}}}] Test_name.c
+Command-line error: invalid contract configuration (<command-line>:1:31): "name" in "dynamic" is not a valid qualified name
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation terminated.

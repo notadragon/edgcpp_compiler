@@ -1,0 +1,3 @@
+[
+  {"match":{"group":"g\u0000x"},"output":{"semantic":"ignore"}}
+]

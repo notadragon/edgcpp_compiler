@@ -1,0 +1,3 @@
+[
+  {"match":{"location":"t.cpp\u0000x"},"output":{"semantic":"ignore"}}
+]

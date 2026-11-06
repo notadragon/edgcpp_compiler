@@ -1,0 +1,6 @@
+Matches for "^compiler_generated:\s+TRUE\nis_contract_check:\s+TRUE\nkind:\s+stmk_if":
+  <-----------------------------------------------------------------------------
+  compiler_generated:      TRUE
+  is_contract_check:       TRUE
+  kind:                    stmk_if
+  ----------------------------------------------------------------------------->

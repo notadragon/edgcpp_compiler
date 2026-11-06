@@ -1,0 +1,4 @@
+Matches for "Command-line error: invalid contract configuration \([a-z_]+\.json:2:[0-9]+\): "(kind|group|namespace|location|semantic|name|linkage)"( in "(caller|dynamic)")? must not contain a null character$":
+  <-----------------------------------------------------------------------------
+  Command-line error: invalid contract configuration (caller_location.json:2:34): "location" in "caller" must not contain a null character
+  ----------------------------------------------------------------------------->

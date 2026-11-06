@@ -1,0 +1,1 @@
+eccp -DTEST_NUMBER=2 --c++26 --contract_evaluation_semantic=quick_enforce --contract_configuration_file=config.json -DVIOLATE=1 Test_name.c

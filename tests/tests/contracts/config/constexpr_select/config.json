@@ -1,0 +1,16 @@
+// Entries valid in both configurations: the C-generating one takes only
+// ignore and quick_enforce outside constant evaluation.
+[
+  {"match": {"namespace": "obs", "constexpr": true},
+   "output": {"semantic": "observe"}},
+  {"match": {"namespace": "ign"}, "output": {"semantic": "ignore"}},
+  {"match": {"kind": "contract_assert", "constexpr": true},
+   "output": {"semantic": "observe"}},
+  {"match": {"location": "Test_name.c:62-63", "constexpr": true},
+   "output": {"semantic": "observe"}},
+  {"match": {"constexpr": true}, "output": {"dynamic": {"name": "sel"}}},
+  {"match": {"caller": true}, "output": {"semantic": "observe"}},
+  {"match": {"group": "g"}, "output": {"semantic": "ignore"}},
+  {"match": {"kind": "implicit"}, "output": {"semantic": "ignore"}},
+  {"match": {"constexpr": false}, "output": {"semantic": "ignore"}}
+]

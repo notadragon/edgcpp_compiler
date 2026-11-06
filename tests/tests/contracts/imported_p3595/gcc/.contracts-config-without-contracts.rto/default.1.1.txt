@@ -1,0 +1,3 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++23 --contract_group_evaluation_semantic=a:bogus Test_name.c
+Command-line warning: contract configuration options have no effect when contracts are not enabled
+

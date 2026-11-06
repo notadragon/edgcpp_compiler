@@ -1,0 +1,4 @@
+Matches for "Command-line warning: contract configuration options have no effect when contracts are not enabled":
+  <-----------------------------------------------------------------------------
+  Command-line warning: contract configuration options have no effect when contracts are not enabled
+  ----------------------------------------------------------------------------->

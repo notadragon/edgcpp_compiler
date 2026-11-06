@@ -1,0 +1,5 @@
+[
+  {"match": {"location": "Test_name.c:30-35", "caller": false}, "output": {"semantic": "ignore"}},
+  {"match": {"caller": true}, "output": {"semantic": "ignore"}},
+  {"output": {"semantic": "observe"}}
+]
