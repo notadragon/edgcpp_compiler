@@ -1,0 +1,24 @@
+Matches for "line 41: error: the group_names facet of assertion-control object "n_t<4097>" holds more than 4096 names$":
+  <-----------------------------------------------------------------------------
+  line 41: error: the group_names facet of assertion-control object "n_t<4097>" holds more than 4096 names
+  ----------------------------------------------------------------------------->
+Matches for "line 54: error: the group_names facet of assertion-control object "runtime_t" must be usable in a constant expression$":
+  <-----------------------------------------------------------------------------
+  line 54: error: the group_names facet of assertion-control object "runtime_t" must be usable in a constant expression
+  ----------------------------------------------------------------------------->
+Matches for "line 78: error: contract predicate is false in constant expression$":
+  <-----------------------------------------------------------------------------
+  line 78: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+Matches for "line 87: error: contract predicate is false in constant expression$":
+  <-----------------------------------------------------------------------------
+  line 87: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+Matches for "line 125: error: contract predicate is false in constant expression$":
+  <-----------------------------------------------------------------------------
+  line 125: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+Matches for "^5 errors detected":
+  <-----------------------------------------------------------------------------
+  5 errors detected
+  ----------------------------------------------------------------------------->

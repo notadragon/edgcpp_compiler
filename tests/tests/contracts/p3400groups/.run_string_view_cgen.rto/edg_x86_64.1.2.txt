@@ -1,0 +1,11 @@
+./a.out
+inner checked
+end checked
+before_dot checked
+part_inner checked
+part_end checked
+part_before_dot checked
+part_split checked
+partial checked
+leaf_inner checked
+done

@@ -1,0 +1,38 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contracts_p3400 --contract_evaluation_semantic=enforce --contract_group_evaluation_semantic=safety:ignore,lib.part:ignore,ub:conv.lval.valid.representation.bool.enum:ignore Test_name.c
+"Test_name.c", line 40: error: contract predicate is false in constant expression
+    contract_assert<inner_label>(x > 0);
+    ^
+
+"Test_name.c", line 49: error: contract predicate is false in constant expression
+    contract_assert<end_label>(x > 0);
+    ^
+
+"Test_name.c", line 67: error: contract predicate is false in constant expression
+    contract_assert<before_dot_label>(x > 0);
+    ^
+
+"Test_name.c", line 102: error: contract predicate is false in constant expression
+    contract_assert<part_inner_label>(x > 0);
+    ^
+
+"Test_name.c", line 111: error: contract predicate is false in constant expression
+    contract_assert<part_end_label>(x > 0);
+    ^
+
+"Test_name.c", line 120: error: contract predicate is false in constant expression
+    contract_assert<part_before_dot_label>(x > 0);
+    ^
+
+"Test_name.c", line 139: error: contract predicate is false in constant expression
+    contract_assert<part_split_label>(x > 0);
+    ^
+
+"Test_name.c", line 149: error: contract predicate is false in constant expression
+    contract_assert<partial_label>(x > 0);
+    ^
+
+"Test_name.c", line 160: error: contract predicate is false in constant expression
+    contract_assert<leaf_inner_label>(x > 0);
+    ^
+
+9 errors detected in the compilation of "Test_name.c".

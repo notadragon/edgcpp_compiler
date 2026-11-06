@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contracts_p3400 --contract_evaluation_semantic=quick_enforce --contract_group_evaluation_semantic=ub:conv.lval.valid.representation.bool.enum:ignore Test_name.c
+"Test_name.c", line 46: error: contract predicate is false in constant expression
+  constexpr bool f_parent() { contract_assert<parent_label>(false); return true; }
+                              ^
+
+"Test_name.c", line 47: error: contract predicate is false in constant expression
+  constexpr bool f_boolean() { contract_assert<boolean_label>(false); return true; }
+                               ^
+
+2 errors detected in the compilation of "Test_name.c".

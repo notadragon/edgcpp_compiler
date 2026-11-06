@@ -5308,6 +5308,14 @@ extern void make_builtin_common_type_internal_templates(void);
 
 extern void make_builtin_dedup_pack_internal_template(void);
 
+extern void enter_contract_label_group_reader(void);
+
+EXTERN_THREAD a_boolean
+                contract_label_group_reader_entered;
+                        /* TRUE if the function template that reads the
+                           group names of P3400 labels has been defined (see
+                           enter_contract_label_group_reader). */
+
 EXTERN_THREAD a_symbol_ptr
                 symbol_for_make_integer_seq;
                         /* Symbol for "__make_integer_seq", which is a
