@@ -1121,6 +1121,14 @@ extern an_expr_node_ptr scan_expr_for_attribute(int        precedence,
                                                 a_boolean  evaluated,
                                                 a_boolean  convert_to_bool);
 
+extern a_variable_ptr set_postcondition_captures_in_scope(
+                                                 a_variable_ptr  captures);
+extern a_variable_ptr postcondition_captures_being_scanned(void);
+extern an_expr_node_ptr scan_postcondition_capture_initializer(
+                                                     a_type_ptr  *p_type);
+extern an_expr_node_ptr scan_contract_predicate(a_const_char  **p_comment,
+                                                a_const_char  **p_message);
+
 extern void scan_annotation_value(an_attribute_arg  *aap);
 
 extern

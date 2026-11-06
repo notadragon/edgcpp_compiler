@@ -1,0 +1,17 @@
+eccp -DTEST_NUMBER=1 --c++26 --contract_evaluation_semantic=enforce Test_name.c
+"Test_name.c", line 11: warning: attribute namespace "foo" is unrecognized
+  int f(int x) pre [[foo::bar]] (x > 0) post [[foo::bar]] (r: r > 0) {
+                     ^
+
+"Test_name.c", line 11: warning: attribute namespace "foo" is unrecognized
+  int f(int x) pre [[foo::bar]] (x > 0) post [[foo::bar]] (r: r > 0) {
+                                               ^
+
+"Test_name.c", line 12: warning: attribute "maybe_unused" does not apply here
+    contract_assert [[maybe_unused]] (x > 0);
+                      ^
+
+"Test_name.c", line 16: warning: attribute namespace "foo" is unrecognized
+  int h(int x) post(r [[maybe_unused]] [[foo::bar]] : r > 0) { return x; }
+                                         ^
+

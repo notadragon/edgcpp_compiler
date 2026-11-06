@@ -1204,6 +1204,8 @@ void proto_instantiate_exception_spec_redecl(a_tmpl_decl_state_ptr  decl_state,
 
 extern void instantiate_field_initializer_if_needed(a_field_ptr  field);
 
+extern void scan_member_template_contract_specifiers(a_symbol_ptr  templ_sym);
+
 extern void prescan_function_template_default_arg_expr(
 					a_param_type_ptr  ptp,
 					unsigned long	  param_number);

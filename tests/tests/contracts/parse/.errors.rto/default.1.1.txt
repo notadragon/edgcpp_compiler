@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
+"Test_name.c", line 5: error: a result name cannot be introduced in a postcondition of a function returning void
+  void f() post(r: true);         // Error, result name for a void function
+                ^
+
+1 error detected in the compilation of "Test_name.c".

@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=4 --c++26 Test_name.c
+"Test_name.c", line 12: error: expected a "("
+    contract_assert x;            // Error, parenthesis required
+                    ^
+
+"Test_name.c", line 13: error: expected a ";"
+  }
+  ^
+
+2 errors detected in the compilation of "Test_name.c".
