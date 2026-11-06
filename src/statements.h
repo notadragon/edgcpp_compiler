@@ -544,6 +544,10 @@ extern a_statement_ptr wrap_coroutine_body_in_try_block(
                                            a_coroutine_descr_ptr cr_desc,
                                            an_expr_node_ptr      init_suspend);
 
+extern void add_deferred_postcondition_checks(void);
+
+extern void prepare_contract_interface_checks(void);
+
 extern void wrapup_control_flow_processing(a_scope_ptr  scope_ptr);
 
 extern void warn_if_code_is_unreachable(an_error_code      error_code,

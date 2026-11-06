@@ -2916,6 +2916,15 @@ do_set_proper_definition_needed_flag:
                      iek_variable);
             remap_ptr_not_needed(eptr->variant.routine.return_value_variable,
                                  a_variable_ptr, iek_variable);
+            /* The checks of contract assertions that lowering puts into
+               the body. */
+            walk_list(eptr->variant.routine.contract_prologue,
+                      a_statement_ptr, iek_statement);
+            walk_list(eptr->variant.routine.contract_epilogue,
+                      a_statement_ptr, iek_statement);
+            remap_ptr_not_needed(
+                           eptr->variant.routine.contract_result_variable,
+                           a_variable_ptr, iek_variable);
             break;
           case sck_template_instantiation:
             /* Front end only. */

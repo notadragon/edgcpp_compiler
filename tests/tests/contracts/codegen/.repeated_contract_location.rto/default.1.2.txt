@@ -1,0 +1,6 @@
+./a.out
+function: first declaration
+member: first declaration
+class template member: definition
+class template member, deduced return type: definition
+function template: definition

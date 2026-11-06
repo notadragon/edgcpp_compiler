@@ -1,0 +1,42 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contract_evaluation_semantic=quick_enforce Test_name.c
+"Test_name.c", line 25: error: contract predicate is false in constant expression
+  constexpr int f(const int x) post(r: r > x);
+                               ^
+
+"Test_name.c", line 29: error: contract predicate is false in constant expression
+    constexpr int m(const int x) const pre(x > 0);
+                                       ^
+
+"Test_name.c", line 34: error: contract predicate is false in constant expression
+    constexpr T g(const T x) const post(r: r > x);
+                                   ^
+
+"Test_name.c", line 35: error: contract predicate is false in constant expression
+    constexpr auto a(const T x) const pre(x > 0);
+                                      ^
+
+"Test_name.c", line 42: error: contract predicate is false in constant expression
+  template <class T> constexpr T h(const T x) pre(x > 0);
+                                              ^
+
+"Test_name.c", line 49: warning: variable "bad_f" was declared but never referenced
+  constexpr int bad_f = f(0);
+                ^
+
+"Test_name.c", line 50: warning: variable "bad_m" was declared but never referenced
+  constexpr int bad_m = S{}.m(0);
+                ^
+
+"Test_name.c", line 51: warning: variable "bad_g" was declared but never referenced
+  constexpr int bad_g = Z<int>{}.g(0);
+                ^
+
+"Test_name.c", line 52: warning: variable "bad_a" was declared but never referenced
+  constexpr int bad_a = Z<int>{}.a(0);
+                ^
+
+"Test_name.c", line 53: warning: variable "bad_h" was declared but never referenced
+  constexpr int bad_h = h(0);
+                ^
+
+5 errors detected in the compilation of "Test_name.c".

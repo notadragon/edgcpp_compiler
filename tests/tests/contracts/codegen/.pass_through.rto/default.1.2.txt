@@ -1,0 +1,11 @@
+./a.out
+kind=1 line=20 comment: (((int)x) > 0)
+kind=2 line=20 comment: (((int)((const int)r)) > ((int)x))
+kind=1 line=28 comment: (((int)((const int)a)) >= 0)
+kind=1 line=25 comment: (((int)((const int)a)) < ((int)((const S*)this)->S::v))
+kind=1 line=26 comment: (((int)((const int)a)) != 0)
+kind=1 line=27 comment: (((int)((const S)s).S::v) > 1)
+kind=1 line=45 comment: (((int)((const int)q)) > 1)
+kind=1 line=46 comment: false
+kind=2 line=37 comment: (((int)((const NC)r).NC::k) == 0)
+kind=3 line=51 comment: (((int)((const int)x)) > 0)
