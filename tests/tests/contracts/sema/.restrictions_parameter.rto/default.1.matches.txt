@@ -1,0 +1,8 @@
+Matches for "line 7: error: a function contract specifier can appear only on the declarator of a function declaration":
+  <-----------------------------------------------------------------------------
+  line 7: error: a function contract specifier can appear only on the declarator of a function declaration
+  ----------------------------------------------------------------------------->
+Matches for "line 8: error: a function contract specifier can appear only on the declarator of a function declaration":
+  <-----------------------------------------------------------------------------
+  line 8: error: a function contract specifier can appear only on the declarator of a function declaration
+  ----------------------------------------------------------------------------->

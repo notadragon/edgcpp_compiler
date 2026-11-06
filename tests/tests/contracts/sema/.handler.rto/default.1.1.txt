@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
+"Test_name.c", line 7: error: ::handle_contract_violation cannot be declared inline
+  inline void handle_contract_violation(const cv &) { }  // Error, inline
+              ^
+
+1 error detected in the compilation of "Test_name.c".
