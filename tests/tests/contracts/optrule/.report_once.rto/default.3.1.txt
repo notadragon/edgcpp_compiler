@@ -1,0 +1,2 @@
+cpfe -DTEST_NUMBER=3 --c++26 --c++26 --contracts --contract_evaluation_semantic=noexcept_observe Test_name.c
+EDG_GXX_TMP/Test_name.cpp: warning: '-fcontract-evaluation-semantic=noexcept_observe' requires '-fcontracts-p4298'; 'observe' is used instead

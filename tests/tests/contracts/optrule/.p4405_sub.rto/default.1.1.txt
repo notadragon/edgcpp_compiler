@@ -1,0 +1,7 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_prove_fold --contracts_prove_override --contract_analysis_skip_dead_calls Test_name.c
+Command-line warning: --contracts_prove_fold has no effect without --contracts_p4405
+
+Command-line warning: --contract_analysis_skip_dead_calls has no effect without --contracts_p4405
+
+Command-line warning: --contracts_prove_override has no effect without --contracts_p4405
+

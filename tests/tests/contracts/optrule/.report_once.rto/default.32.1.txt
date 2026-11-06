@@ -1,0 +1,8 @@
+cpfe -DTEST_NUMBER=32 --c++26 --c++23 --contract_evaluation_semantic=enforce Test_name.c
+"Test_name.c", line 21: catastrophic error: cannot open source file "report_once_missing_header.h"
+  #include "report_once_missing_header.h"
+                                         ^
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation terminated.
+cc1plus: warning: '-fcontract-evaluation-semantic=' has no effect without '-fcontracts'

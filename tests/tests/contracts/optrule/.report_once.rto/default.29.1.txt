@@ -1,0 +1,6 @@
+cpfe -DTEST_NUMBER=29 --c++26 --c++26 --contracts --contract_configuration=[{"match":{"module":"m"},"output":{"semantic":"enforce"}},{"match":{"kind":"pre"},"output":{"semantic":"prove"}},{"output":{"semantic":"noexcept_enforce"}}] -Wno-contract-configuration Test_name.c
+"Test_name.c", line 30: error: identifier "undeclared_name" is undefined
+  int g() { return undeclared_name; }
+                   ^
+
+1 error detected in the compilation of "Test_name.c".

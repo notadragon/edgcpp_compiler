@@ -1,0 +1,3 @@
+fe_only -DTEST_NUMBER=15 --c++26 --c++26 --contracts --contract_evaluation_semantic=diagnose Test_name.c
+Command-line warning: --contract_evaluation_semantic=diagnose requires --contracts_p4405; ignore is used instead
+

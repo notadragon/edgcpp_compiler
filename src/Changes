@@ -15,6 +15,24 @@ precedence (every -ffile-prefix-map= first), with -fcanon-prefix-map as
 names it records (macro prefix maps).
 
 
+11/4/26 []
+Contracts: the contracts option rule
+
+As in our GCC, the paper options are additive: --contracts_p3850 and
+--contracts_p3400 enable P4451 whatever the --no_ forms of the other, and a
+--no_contracts_pNNNN never turns contracts off while another paper option is
+on.  A paper option given positively and left on is an error when a final
+--no_contracts turns contracts off, and --no_contracts_p4451 is an error with
+P3400 on.  With contracts off, --contracts_allow_assume,
+--contract_evaluation_semantic and --contract_analysis_semantic warn that they
+have no effect, as do the P4405 strategies given positively without P4405;
+the --no_ forms and --contract_violation_information do not.  A semantic
+that needs a paper option is warned about only with contracts on.  edg-gxx
+leaves to g++ the contract option warnings g++ also gives, so each is given
+once (if cpfe-cp fails, it runs g++ on an empty file for them), and passes
+-fcontract-comment-from-expression to g++ only when contracts are on there.
+
+
 11/3/26 []
 Contracts (P4451): terminating contract assertions
 

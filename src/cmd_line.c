@@ -10702,6 +10702,165 @@ an incompatible value.  For the purposes of this check, treat the two
 }  /* set_C_dialect */
 
 
+/* The warnings that a contract evaluation semantic needs a paper option that
+   is not given, deferred until it is known whether contracts end up enabled
+   (see check_contracts_option_rule). */
+#define MAX_DEFERRED_CONTRACT_SEMANTIC_WARNINGS 4
+static an_error_code
+  deferred_contract_semantic_warnings[MAX_DEFERRED_CONTRACT_SEMANTIC_WARNINGS];
+static int num_deferred_contract_semantic_warnings = 0;
+
+
+static void defer_contract_semantic_warning(an_error_code error_code)
+/*
+Record the command-line warning error_code, about a contract evaluation
+semantic, to be issued by check_contracts_option_rule.
+*/
+{
+  check_assertion(num_deferred_contract_semantic_warnings <
+                  MAX_DEFERRED_CONTRACT_SEMANTIC_WARNINGS);
+  deferred_contract_semantic_warnings
+                       [num_deferred_contract_semantic_warnings++] = error_code;
+}  /* defer_contract_semantic_warning */
+
+
+static void issue_deferred_contract_semantic_warnings(void)
+/*
+Issue the warnings recorded by defer_contract_semantic_warning.
+*/
+{
+  int  i;
+
+  for (i = 0; i < num_deferred_contract_semantic_warnings; i++) {
+    str_command_line_warning(deferred_contract_semantic_warnings[i],
+                             (a_const_char *)NULL);
+  }  /* for */
+  num_deferred_contract_semantic_warnings = 0;
+}  /* issue_deferred_contract_semantic_warnings */
+
+
+static void check_contracts_option_rule(void)
+/*
+Apply the contracts option rule, as our GCC does (notadragon_wg21
+DECISIONS.md E175-E178), once the language mode has been applied, so that
+it is known whether contracts end up enabled.  The paper options are
+additive: each --contracts_pNNNN turns contracts on (unless --[no_]contracts
+is given; see proc_command_line), and one given positively and left on is
+an error when a final --no_contracts turns contracts off (the --no_ forms
+are always accepted).  --no_contracts_p4451 may turn off only what
+--contracts_p3850 adds: with P3400 on it is an error.  The contracts options
+that mean nothing when contracts end up off, and the P4405 strategies given
+positively when P4405 ends up off, warn that they have no effect (the --no_
+forms do not); --contract_violation_information does not, since the
+preprocessor honors it whatever the contracts options.  The warnings that a
+semantic needs a paper option are issued only when contracts are enabled,
+as GCC's are.  In C, where every positive contracts option is already an
+error, only those warnings remain.
+*/
+{
+  if (C_dialect == C_dialect_cplusplus) {
+    struct a_contracts_option {
+      an_option_kind  kind;
+      a_boolean       on;
+      a_const_char    *name;
+    };
+    /* The paper options (--contracts_p4299, a spelling modifier, is not
+       one). */
+    struct a_contracts_option papers[] = {
+      { optk_contracts_p3097, contracts_p3097_enabled, "--contracts_p3097" },
+      { optk_contracts_p3098, contracts_p3098_enabled, "--contracts_p3098" },
+      { optk_contracts_p3099, contracts_p3099_enabled, "--contracts_p3099" },
+      { optk_contracts_p3100, contracts_p3100_enabled, "--contracts_p3100" },
+      { optk_contracts_p3290, contracts_p3290_enabled, "--contracts_p3290" },
+      { optk_contracts_p3400, contracts_p3400_enabled, "--contracts_p3400" },
+      { optk_contracts_p3850, contracts_p3850_enabled, "--contracts_p3850" },
+      { optk_contracts_p4283, contracts_p4283_enabled, "--contracts_p4283" },
+      { optk_contracts_p4298, contracts_p4298_enabled, "--contracts_p4298" },
+      { optk_contracts_p4301, contracts_p4301_enabled, "--contracts_p4301" },
+      { optk_contracts_p4405, contracts_p4405_enabled, "--contracts_p4405" },
+      { optk_contracts_p4451, contracts_p4451_enabled, "--contracts_p4451" }
+    };
+    /* The options that mean nothing when contracts are off (the
+       configuration options have their own warning; see
+       init_contract_config).  A value option is named without its value,
+       and warns whatever the value. */
+    struct a_contracts_option dependent[] = {
+      { optk_contracts_allow_assume, contracts_allow_assume_enabled,
+        "--contracts_allow_assume" },
+      { optk_contract_evaluation_semantic, TRUE,
+        "--contract_evaluation_semantic" },
+      { optk_contract_analysis_semantic, TRUE,
+        "--contract_analysis_semantic" }
+    };
+    /* The P4405 strategies, which mean nothing without P4405. */
+    struct a_contracts_option p4405_dependent[] = {
+      { optk_contracts_prove_fold, contracts_prove_fold_enabled,
+        "--contracts_prove_fold" },
+      { optk_contract_analysis_skip_dead_calls,
+        contract_analysis_skip_dead_calls_enabled,
+        "--contract_analysis_skip_dead_calls" },
+      { optk_contracts_prove_override, contracts_prove_override_enabled,
+        "--contracts_prove_override" }
+    };
+    size_t             i;
+    a_source_position  pos;
+
+    set_position_to(pos, 0, SP_COL_CMD_LINE);
+    if (!contracts_enabled) {
+      /* Name every paper option given positively and left on (one left on
+         only by --contracts_p3850, or P4451 by P3400, is diagnosed through
+         the option that implied it), in one error, since a command-line
+         error ends the compilation. */
+      char  names[sizeof(papers) / sizeof(papers[0]) * 24];
+
+      names[0] = '\0';
+      for (i = 0; i < sizeof(papers) / sizeof(papers[0]); i++) {
+        if (option_kind_used[(int)papers[i].kind] && papers[i].on) {
+          if (names[0] != '\0') strcat(names, ", ");
+          strcat(names, papers[i].name);
+        }  /* if */
+      }  /* for */
+      if (names[0] != '\0') {
+        str_command_line_error(ec_cl_contracts_option_with_no_contracts,
+                               names);
+      }  /* if */
+    } else if (!contracts_p4451_enabled && contracts_p3400_enabled) {
+      /* Only an explicit --no_contracts_p4451 leaves P4451 off with P3400
+         on. */
+      command_line_error(option_kind_used[(int)optk_contracts_p3400]
+                           ? ec_cl_no_contracts_p4451_with_p3400
+                           : ec_cl_no_contracts_p4451_with_p3850);
+    }  /* if */
+    if (!contracts_enabled) {
+      for (i = 0; i < sizeof(dependent) / sizeof(dependent[0]); i++) {
+        if (option_kind_used[(int)dependent[i].kind] && dependent[i].on) {
+          pos_st2_diagnostic(es_command_line_warning,
+                             ec_cl_contract_option_no_effect,
+                             &pos, dependent[i].name,
+                             "--contracts");
+        }  /* if */
+      }  /* for */
+    }  /* if */
+    if (!contracts_enabled || !contracts_p4405_enabled) {
+      for (i = 0; i < sizeof(p4405_dependent) / sizeof(p4405_dependent[0]);
+           i++) {
+        if (option_kind_used[(int)p4405_dependent[i].kind] &&
+            p4405_dependent[i].on) {
+          pos_st2_diagnostic(es_command_line_warning,
+                             ec_cl_contract_option_no_effect,
+                             &pos, p4405_dependent[i].name,
+                             "--contracts_p4405");
+        }  /* if */
+      }  /* for */
+    }  /* if */
+  }  /* if */
+  if (C_dialect != C_dialect_cplusplus || contracts_enabled) {
+    issue_deferred_contract_semantic_warnings();
+  }  /* if */
+  num_deferred_contract_semantic_warnings = 0;
+}  /* check_contracts_option_rule */
+
+
 void proc_command_line(int argc, char *argv[])
 /*
 Process the arguments on the command line that invoked the compiler.
@@ -12865,6 +13024,7 @@ enable_microsoft_mode:
     }  /* if */
     check_and_set_cplusplus_mode_options();
   }  /* if */
+  check_contracts_option_rule();
   if (strict_ansi_mode) {
     check_and_set_ansi_mode_options();
   }  /* if */
