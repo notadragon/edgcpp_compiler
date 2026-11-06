@@ -4115,6 +4115,11 @@ as specified in the control block.
       break;
     case stmk_empty:
       break;
+    case stmk_contract_assert:
+      if (statement->variant.contract_assert->predicate != NULL) {
+        traverse_expr(statement->variant.contract_assert->predicate, tblock);
+      }  /* if */
+      break;
     default:
       unexpected_condition_str("traverse_statement: bad statement kind");
   }  /* if */

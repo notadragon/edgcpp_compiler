@@ -9705,6 +9705,9 @@ Generate C for a statement.
   }  /* if */
   switch (kind) {
     case stmk_empty:
+    case stmk_contract_assert:
+      /* A contract assertion generates nothing itself: the check that
+         follows it (if any) does the work. */
       write_tok_ch(';');
       break;
     case stmk_expr:
