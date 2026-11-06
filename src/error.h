@@ -765,6 +765,11 @@ extern a_diagnostic_ptr pos_start_error(an_error_code     error_code,
 extern a_diagnostic_ptr pos_st_start_error(an_error_code     error_code,
                                            a_source_position *error_pos,
                                            a_const_char      *error_string);
+extern a_diagnostic_ptr pos_st_start_diagnostic(
+                                         an_error_severity error_severity,
+                                         an_error_code     error_code,
+                                         a_source_position *error_pos,
+                                         a_const_char      *error_string);
 extern a_diagnostic_ptr pos_ty_start_error(an_error_code     error_code,
                                            a_source_position *error_pos,
                                            struct a_type     *type);
