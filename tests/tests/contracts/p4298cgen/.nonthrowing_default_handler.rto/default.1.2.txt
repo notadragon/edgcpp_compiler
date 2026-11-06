@@ -1,0 +1,4 @@
+./a.out
+contract violation in function int f(int) at Test_name.c:7: (((int)((const int)x)) > 0)
+[assertion_kind: pre, semantic: noexcept_observe, mode: predicate_false, terminating: no]
+end

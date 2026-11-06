@@ -1,0 +1,3 @@
+./a.out
+kind 1 function int B::f(int) comment x > 0
+end
