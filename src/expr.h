@@ -822,6 +822,10 @@ extern an_expr_node_ptr scan_contract_requires_constraint(
 extern an_expr_node_ptr scan_concept_expression();
 
 #if !STANDALONE_UTILITY_PROGRAM
+extern a_contract_evaluation_semantic apply_contract_label_facets_p4298(
+                              a_contract_specifier_ptr        csp,
+                              a_contract_evaluation_semantic  semantic,
+                              a_boolean                       in_ce);
 extern
 an_init_component_ptr get_braced_init_list(a_boolean          is_full_expr,
                                            a_decl_parse_state *dps);

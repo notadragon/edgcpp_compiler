@@ -1,0 +1,4 @@
+./a.out
+semantic 2
+caught
+end

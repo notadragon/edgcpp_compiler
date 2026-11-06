@@ -1879,6 +1879,12 @@ Initialize the option information table.
   add_option_description(optk_contracts_p4283, "no_contracts_p4283", '\0',
                          /*value=*/FALSE, /*arg_required=*/FALSE,
                          pchek_command_line);
+  add_option_description(optk_contracts_p4298, "contracts_p4298", '\0',
+                         /*value=*/TRUE, /*arg_required=*/FALSE,
+                         pchek_command_line);
+  add_option_description(optk_contracts_p4298, "no_contracts_p4298", '\0',
+                         /*value=*/FALSE, /*arg_required=*/FALSE,
+                         pchek_command_line);
 }  /* initialize_option_descriptions */
 
 
@@ -4066,6 +4072,9 @@ setting is used, and to set various unmentioned settings as needed.
     command_line_error(ec_cl_contracts_option_only_in_cplusplus);
   }  /* if */
   if (option_kind_used[(int)optk_contracts_p4283] && contracts_p4283_enabled) {
+    command_line_error(ec_cl_contracts_option_only_in_cplusplus);
+  }  /* if */
+  if (option_kind_used[(int)optk_contracts_p4298] && contracts_p4298_enabled) {
     command_line_error(ec_cl_contracts_option_only_in_cplusplus);
   }  /* if */
   if (option_kind_used[(int)optk_array_new_and_delete]) {
@@ -12392,6 +12401,12 @@ enable_microsoft_mode:
             contract_evaluation_semantic = ces_enforce;
           } else if (strcmp(semantic_string, "quick_enforce") == 0) {
             contract_evaluation_semantic = ces_quick_enforce;
+          } else if (strcmp(semantic_string, "noexcept_observe") == 0) {
+            /* P4298; without --contracts_p4298, observe (see
+               proc_command_line's wrap-up). */
+            contract_evaluation_semantic = ces_noexcept_observe;
+          } else if (strcmp(semantic_string, "noexcept_enforce") == 0) {
+            contract_evaluation_semantic = ces_noexcept_enforce;
           } else {
             str_command_line_error(
                                ec_cl_invalid_contract_evaluation_semantic,
@@ -12451,6 +12466,9 @@ enable_microsoft_mode:
         break;
       case optk_contracts_p4283:
         contracts_p4283_enabled = opt_value;
+        break;
+      case optk_contracts_p4298:
+        contracts_p4298_enabled = opt_value;
         break;
      default:
         /* It should not be possible to get here. */
@@ -12537,6 +12555,29 @@ enable_microsoft_mode:
   if (contracts_p4283_enabled && !option_kind_used[(int)optk_contracts]) {
     /* So does --contracts_p4283 contracts. */
     contracts_enabled = TRUE;
+  }  /* if */
+  if (contracts_p3850_enabled &&
+      !option_kind_used[(int)optk_contracts_p4298]) {
+    /* --contracts_p3850 enables P4298, unless --[no_]contracts_p4298 is
+       given. */
+    contracts_p4298_enabled = TRUE;
+  }  /* if */
+  if (contracts_p4298_enabled && !option_kind_used[(int)optk_contracts]) {
+    /* So does --contracts_p4298 contracts. */
+    contracts_enabled = TRUE;
+  }  /* if */
+  if (!contracts_p4298_enabled &&
+      (contract_evaluation_semantic == ces_noexcept_observe ||
+       contract_evaluation_semantic == ces_noexcept_enforce)) {
+    /* A noexcept semantic without P4298: its throwing variant, as GCC
+       does. */
+    if (contract_evaluation_semantic == ces_noexcept_observe) {
+      defer_contract_semantic_warning(ec_cl_noexcept_observe_needs_p4298);
+      contract_evaluation_semantic = ces_observe;
+    } else {
+      defer_contract_semantic_warning(ec_cl_noexcept_enforce_needs_p4298);
+      contract_evaluation_semantic = ces_enforce;
+    }  /* if */
   }  /* if */
   /* Check for consistent specification of dialects and language modes. */
   check_dialect_and_language_modes();
@@ -14133,6 +14174,7 @@ variables declared in cmd_line.h.
   contracts_p3290_enabled = FALSE;
   contracts_p3400_enabled = FALSE;
   contracts_p4283_enabled = FALSE;
+  contracts_p4298_enabled = FALSE;
   incognito = DEFAULT_INCOGNITO;
   keep_restrict_in_signatures = FALSE;
   attributes_on_using_declarations = FALSE;
