@@ -58,6 +58,8 @@
 # -f[no-]contracts-prove-fold goes to both; g++ folds what it diagnoses.
 # -f[no-]contract-analysis-skip-dead-calls goes to both; g++ decides which
 # calls are never evaluated.
+# -f[no-]contracts-prove-override goes to both; the override obligations of
+# virtual functions are g++'s, which proves them with that strategy.
 #
 # Prefix maps.  -fmacro-prefix-map= and -ffile-prefix-map= go to both: the
 # front end expands __FILE__, __FILE_NAME__ and __BASE_FILE__ (as
@@ -240,6 +242,10 @@ while [ $# -gt 0 ] ; do
       edg_args+=("--contract_analysis_skip_dead_calls"); gxx_args+=("$arg") ;;
     -fno-contract-analysis-skip-dead-calls)
       edg_args+=("--no_contract_analysis_skip_dead_calls"); gxx_args+=("$arg") ;;
+    -fcontracts-prove-override)
+      edg_args+=("--contracts_prove_override"); gxx_args+=("$arg") ;;
+    -fno-contracts-prove-override)
+      edg_args+=("--no_contracts_prove_override"); gxx_args+=("$arg") ;;
     -fmacro-prefix-map=*|-ffile-prefix-map=*)
       # The front end tries the last map given first, and g++ tries every
       # -ffile-prefix-map= before any -fmacro-prefix-map=, so the macro maps

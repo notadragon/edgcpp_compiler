@@ -1,0 +1,24 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3097 --contracts_p4405 --contract_analysis_semantic=prove --contract_evaluation_semantic=observe -O2 Test_name.c
+Test_name.c: In member function 'virtual int ND::f(int)':
+Test_name.c:38:13: error: contract assertion cannot be proven for a call through 'T TB<T>::f(T) [with T = int]'
+   38 |   int f (int x) override        // { dg-error "cannot be proven for a call through 'T TB<T>::f\\(T\\) \\\[with T = int\\\]'" }
+      |             ^
+Test_name.c:23:56: note: the predicate of the contract assertion
+   23 |   virtual T f (T x) pre (x > T (0)) post (r: r > T (0));        // { dg-message "the predicate of the contract assertion" }
+      |                                                      ~~^~~~~~~~~~~~~~~~
+Test_name.c: In instantiation of 'int ND3<N>::f(int) [with int N = 3]':
+Test_name.c:55:7:   required from here
+   55 |   int f (int x) override        // { dg-error "cannot be proven for a call through 'int NB<N>::f\\(int\\) \\\[with int N = 3\\\]'" }
+      |       ^
+Test_name.c:55:7: error: contract assertion cannot be proven for a call through 'int NB<N>::f(int) [with int N = 3]'
+Test_name.c:45:57: note: the predicate of the contract assertion
+   45 |   virtual int f (int x) pre (x > N) post (r: r > N);    // { dg-message "the predicate of the contract assertion" }
+      |                                                    ~~~~~^~~
+Test_name.c: In instantiation of 'T TE<T>::f(T) [with T = int]':
+Test_name.c:33:5:   required from here
+   33 |   T f (T x) override            // { dg-error "cannot be proven for a call through 'T TB<T>::f\\(T\\) \\\[with T = int\\\]'" }
+      |     ^
+Test_name.c:33:5: error: contract assertion cannot be proven for a call through 'T TB<T>::f(T) [with T = int]'
+Test_name.c:23:56: note: the predicate of the contract assertion
+   23 |   virtual T f (T x) pre (x > T (0)) post (r: r > T (0));        // { dg-message "the predicate of the contract assertion" }
+      |                                                      ~~^~~~~~~~~~~~~~~~

@@ -1,0 +1,8 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3097 --contracts_p4405 --contract_analysis_semantic=prove -O2 Test_name.c
+Test_name.c: In member function 'virtual D* D::maybe(bool)':
+Test_name.c:31:12: error: contract assertion cannot be proven for a call through 'virtual B* B::maybe(bool)'
+   31 |   D *maybe (bool b) override                    // { dg-error "cannot be proven for a call through 'virtual B\\* B::maybe\\(bool\\)'" }
+      |            ^~~~~
+Test_name.c:23:36: note: the predicate of the contract assertion
+   23 |   virtual B *maybe (bool b) post (r: r != nullptr);     // { dg-message "the predicate of the contract assertion" }
+      |                                  ~~^~~~~~~~~~~~

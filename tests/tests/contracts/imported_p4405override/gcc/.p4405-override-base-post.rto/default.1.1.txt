@@ -1,0 +1,20 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3097 --contracts_p4405 --contract_analysis_semantic=prove -O2 Test_name.c
+"Test_name.c", line 48: warning: variable "d" was declared but never referenced
+  void use () { D d; E e; F f; }
+                  ^
+
+"Test_name.c", line 48: warning: variable "e" was declared but never referenced
+  void use () { D d; E e; F f; }
+                       ^
+
+"Test_name.c", line 48: warning: variable "f" was declared but never referenced
+  void use () { D d; E e; F f; }
+                            ^
+
+Test_name.c: In member function 'virtual int D::f(int)':
+Test_name.c:27:13: error: contract assertion cannot be proven for a call through 'virtual int B::f(int)'
+   27 |   int f (int x) override        // { dg-error "contract assertion cannot be proven for a call through 'virtual int B::f\\(int\\)'" }
+      |             ^
+Test_name.c:21:32: note: the predicate of the contract assertion
+   21 |   virtual int f (int x) post (r: r > 0);        // { dg-message "the predicate of the contract assertion" }
+      |                              ~~^~~

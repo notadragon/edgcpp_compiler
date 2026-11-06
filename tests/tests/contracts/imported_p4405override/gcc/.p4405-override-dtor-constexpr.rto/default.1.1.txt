@@ -1,0 +1,19 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3097 --contracts_p4405 --contract_analysis_semantic=prove --contract_evaluation_semantic=observe -O2 Test_name.c
+"Test_name.c", line 22: warning: contract condition is not constant
+      post (__builtin_is_constant_evaluated () || g == 1)	// { dg-error "contract assertion cannot be proven" }
+      ^
+
+Test_name.c: In destructor 'virtual constexpr CB::~CB()':
+Test_name.c:22:2: error: contract assertion cannot be proven
+   22 |     post (__builtin_is_constant_evaluated () || g == 1) // { dg-error "contract assertion cannot be proven" }
+      |  ^  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:22:46: note: the predicate of the contract assertion
+   22 |     post (__builtin_is_constant_evaluated () || g == 1) // { dg-error "contract assertion cannot be proven" }
+      |                                            ~~^~~~
+Test_name.c: In destructor 'virtual constexpr CE::~CE()':
+Test_name.c:31:8: error: contract assertion cannot be proven for a call through 'virtual constexpr CB::~CB()'
+   31 | struct CE : CB {                // { dg-error "cannot be proven for a call through '.*CB::~CB\\(\\)'" }
+      |        ^~
+Test_name.c:22:41: note: the predicate of the contract assertion
+   22 |     post (__builtin_is_constant_evaluated () || g == 1) // { dg-error "contract assertion cannot be proven" }
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~

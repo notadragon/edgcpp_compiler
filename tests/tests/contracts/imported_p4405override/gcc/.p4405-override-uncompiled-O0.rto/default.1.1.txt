@@ -1,0 +1,15 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3097 --contracts_p4405 --contract_analysis_semantic=prove -O0 Test_name.c
+Test_name.c: In member function 'virtual int Here::f(int)':
+Test_name.c:32:13: error: contract assertion cannot be proven for a call through 'virtual int B::f(int)'
+   32 |   int f (int x) override        // { dg-error "cannot be proven for a call through 'virtual int B::f\\(int\\)'" }
+      |             ^
+Test_name.c:33:8: note: the predicate of the contract assertion
+   33 |     pre (x > 10)                // { dg-message "the predicate of the contract assertion" }
+      |      ~~^~~~
+Test_name.c: In member function 'virtual int HereFalse::f(int)':
+Test_name.c:49:13: error: contract predicate is always false for a call through 'virtual int B::f(int)'
+   49 |   int f (int x) override        // { dg-error "contract predicate is always false for a call through 'virtual int B::f\\(int\\)'" }
+      |             ^
+Test_name.c:50:6: note: the predicate of the contract assertion
+   50 |     pre (false)                 // { dg-message "the predicate of the contract assertion" }
+      |      ^~~~~

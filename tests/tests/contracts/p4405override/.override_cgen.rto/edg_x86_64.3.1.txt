@@ -1,0 +1,72 @@
+fe_only -DTEST_NUMBER=3 --c++26 --contracts_p3097 --contracts_p4405 --no_contracts_prove_override --contract_evaluation_semantic=ignore --contract_analysis_semantic=prove Test_name.c
+"Test_name.c", line 22: error: contract assertion cannot be proven for a call through "B::f"
+            the predicate of the contract assertion at line 20
+  int D::f(int x) { return x + 1; }       // D::f's pre and B::f's post.
+         ^
+
+"Test_name.c", line 22: error: contract assertion cannot be proven for a call through "B::f"
+            the predicate of the contract assertion at line 17
+  int D::f(int x) { return x + 1; }       // D::f's pre and B::f's post.
+         ^
+
+"Test_name.c", line 32: error: contract assertion cannot be proven for a call through "B2::g"
+            the predicate of the contract assertion at line 29
+  int D2::g(int x) { return x; }          // Its pre, from nothing.
+          ^
+
+"Test_name.c", line 38: error: contract assertion cannot be proven for a call through "C3::f"
+            the predicate of the contract assertion at line 36
+  int D3::f(int x) { return x + 2; }      // C3::f's post, then B3::f's.
+          ^
+
+"Test_name.c", line 38: error: contract assertion cannot be proven for a call through "B3::f"
+            the predicate of the contract assertion at line 35
+  int D3::f(int x) { return x + 2; }      // C3::f's post, then B3::f's.
+          ^
+
+"Test_name.c", line 44: error: contract assertion cannot be proven for a call through "V::f"
+            the predicate of the contract assertion at line 40
+  int J::f(int x) { return 1; }           // One virtual base: once.
+         ^
+
+"Test_name.c", line 50: error: contract assertion cannot be proven for a call through "N::f"
+            the predicate of the contract assertion at line 46
+  int NJ::f(int x) { return x; }          // Names "this": per subobject, twice.
+          ^
+
+"Test_name.c", line 50: error: contract assertion cannot be proven for a call through "N::f"
+            the predicate of the contract assertion at line 46
+  int NJ::f(int x) { return x; }          // Names "this": per subobject, twice.
+          ^
+
+"Test_name.c", line 56: error: contract assertion cannot be proven for a call through "M::f"
+            the predicate of the contract assertion at line 52
+  int MJ::f(int x) { return x; }          // Does not: once.
+          ^
+
+"Test_name.c", line 59: error: contract assertion cannot be proven for a call through "BD::~BD"
+            the predicate of the contract assertion at line 58
+  struct DD : BD { virtual void key(); };  // Implicit ~DD, put out with the
+         ^
+
+"Test_name.c", line 62: error: contract assertion cannot be proven for a call through "BD::~BD"
+            the predicate of the contract assertion at line 61
+  UD::~UD() { }                           // Its pre and BD's post.
+      ^
+
+"Test_name.c", line 62: error: contract assertion cannot be proven for a call through "BD::~BD"
+            the predicate of the contract assertion at line 58
+  UD::~UD() { }                           // Its pre and BD's post.
+      ^
+
+"Test_name.c", line 68: error: contract assertion cannot be proven for a call through "TB<T>::f [with T=int]"
+            the predicate of the contract assertion at line 65
+    T f(T x) override { return x; }
+      ^
+
+"Test_name.c", line 78: error: contract assertion cannot be proven for a call through "KB::f"
+            the predicate of the contract assertion at line 72
+    int f(int x) override { return x; }
+        ^
+
+14 errors detected in the compilation of "Test_name.c".

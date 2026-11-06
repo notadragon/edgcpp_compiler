@@ -2072,6 +2072,8 @@ of lambda expressions.
     /* This is a member function.  See if the fact that it is defined
        forces definition of virtual functions of the class. */
     require_definitions_of_virtual_functions_due_to_definition_of(rout_ptr);
+    /* A virtual function's override obligations (P4405). */
+    note_contract_override_obligations(rout_ptr);
   }  /* if */
   if (!is_instantiation) {
     /* For templates, the class and/or namespace scopes are pushed and
@@ -3956,6 +3958,9 @@ empty statement block.
       make_default_assignment_body(scope);
     }  /* if */
     end_definition_of_generated_function(rout_ptr, scope, &context);
+    /* An implicitly defined virtual destructor has override obligations
+       too (P4405). */
+    note_contract_override_obligations(rout_ptr);
   }  /* if */
   db_exit();
 }  /* define_special_member_function */

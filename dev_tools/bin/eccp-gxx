@@ -40,6 +40,8 @@
 #   --[no_]contracts_prove_fold  -> the g++ spelling (front end and g++)
 #   --[no_]contract_analysis_skip_dead_calls
 #                                -> the g++ spelling (front end and g++)
+#   --[no_]contracts_prove_override
+#                                -> the g++ spelling (front end and g++)
 #   -f[no-]canon-prefix-map     -> unchanged (edg_gxx.sh gives the prefix
 #                                   maps to the front end too, for __FILE__)
 #   --macro_prefix_map=X, --macro_prefix_map X
@@ -172,6 +174,10 @@ while [ $# -gt 0 ] ; do
       args+=(-fcontract-analysis-skip-dead-calls) ;;
     --no_contract_analysis_skip_dead_calls)
       args+=(-fno-contract-analysis-skip-dead-calls) ;;
+    --contracts_prove_override)
+      args+=(-fcontracts-prove-override) ;;
+    --no_contracts_prove_override)
+      args+=(-fno-contracts-prove-override) ;;
     -fcanon-prefix-map|-fno-canon-prefix-map)
       args+=("$arg") ;;
     --macro_prefix_map=*)
