@@ -1,0 +1,3 @@
+./a.out
+contract violation in function int f(const Throwing&) at Test_name.c:28: count_predicate()
+[assertion_kind: post_capture, semantic: observe, mode: evaluation_exception: threw an instance of 'int', terminating: no]

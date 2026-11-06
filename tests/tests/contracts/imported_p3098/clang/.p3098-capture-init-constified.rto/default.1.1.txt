@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3098 --contract_evaluation_semantic=enforce Test_name.c
+"Test_name.c", line 24: error: expression must be a modifiable lvalue
+  void g() post [j = ++i] (j > 0); // expected-error {{it is considered 'const'}}
+                       ^
+
+"Test_name.c", line 29: error: expression must be a modifiable lvalue
+    void u() post [p = this] (++p->m > 0); // expected-error {{cannot assign to variable 'p' with const-qualified type 'const S *'}} expected-note {{variable 'p' declared const here}}
+                                ^
+
+"Test_name.c", line 30: error: expression must be a modifiable lvalue
+    void v() post [q = ++m] (q > 0); // expected-error {{cannot assign to non-static data member because it is considered 'const' inside of a contract}}
+                         ^
+
+3 errors detected in the compilation of "Test_name.c".

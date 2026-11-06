@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3098 Test_name.c
+"Test_name.c", line 19: error: in a postcondition capture of a constructor, a member must be accessed through an explicit "this"
+    A1 () post [c = v] (c == 0) {} // { dg-error "'this' required" }
+                    ^
+
+1 error detected in the compilation of "Test_name.c".
