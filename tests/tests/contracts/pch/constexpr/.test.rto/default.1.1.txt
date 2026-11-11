@@ -1,0 +1,35 @@
+fe_only -DTEST_NUMBER=1 --c++26 --pch --pch_test_mode --contract_evaluation_semantic=quick_enforce Test_name.c
+"Test_name.c": using precompiled header file "Test_name.pch"
+"header.h", line 1: error: contract predicate is false in constant expression
+  constexpr int cf(int x) pre(x > 0) { return x; }
+                          ^
+
+"header.h", line 2: error: contract predicate is false in constant expression
+  template <class T> constexpr T ct(T x) pre(x > 0) post(r: r < 9) { return x; }
+                                         ^
+
+"header.h", line 2: error: contract predicate is false in constant expression
+  template <class T> constexpr T ct(T x) pre(x > 0) post(r: r < 9) { return x; }
+                                                    ^
+
+"header.h", line 4: error: contract predicate is false in constant expression
+    constexpr S(int x) pre(x > 0) : v(x) {}
+                       ^
+
+"header.h", line 5: error: contract predicate is false in constant expression
+    constexpr int mf(int x) const pre(x < v) { contract_assert(x != 2); return x; }
+                                  ^
+
+"header.h", line 5: error: contract predicate is false in constant expression
+    constexpr int mf(int x) const pre(x < v) { contract_assert(x != 2); return x; }
+                                               ^
+
+"header.h", line 8: error: contract predicate is false in constant expression
+  constexpr auto lam = [](int x) pre(x > 0) { return x; };
+                                 ^
+
+"Test_name.c", line 30: error: mismatched contract condition in declaration (previous contract specifier declared at line 9 of "header.h")
+  int nf(int x) pre(x > 2);         // Error, different contracts
+                ^
+
+8 errors detected in the compilation of "Test_name.c".
