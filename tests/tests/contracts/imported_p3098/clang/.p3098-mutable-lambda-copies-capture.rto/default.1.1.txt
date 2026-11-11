@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3098 --contract_evaluation_semantic=enforce Test_name.c
+"Test_name.c", line 27: error: expression must be a modifiable lvalue
+  int k4(int y) post [old = y] ([=] { return ++old > 1; }()) { return y; } // expected-error {{cannot assign to a variable captured by copy in a non-mutable lambda}}
+                                               ^
+
+1 error detected in the compilation of "Test_name.c".

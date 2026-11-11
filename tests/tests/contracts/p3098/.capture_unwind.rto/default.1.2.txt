@@ -1,0 +1,25 @@
+./a.out
+capture copied
+local destroyed
+capture destroyed
+caught
+capture copied
+local destroyed
+capture destroyed
+capture copied
+local destroyed
+capture destroyed
+capture copied
+capture destroyed
+caught
+capture copied
+capture destroyed
+capture copied
+handler
+capture destroyed
+caught
+capture copied
+handler
+capture destroyed
+capture destroyed
+end

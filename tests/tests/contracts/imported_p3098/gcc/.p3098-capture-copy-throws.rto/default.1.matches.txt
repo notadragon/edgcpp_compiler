@@ -1,0 +1,10 @@
+Matches for "contract violation in function int f.const Throwing.. at .*(\n|\r\n|\r)":
+  <-----------------------------------------------------------------------------
+  contract violation in function int f(const Throwing&) at Test_name.c:28: count_predicate()
+  
+  ----------------------------------------------------------------------------->
+Matches for ".assertion_kind: post_capture, semantic: observe, mode: evaluation_exception.*terminating: no.*(\n|\r\n|\r)":
+  <-----------------------------------------------------------------------------
+  [assertion_kind: post_capture, semantic: observe, mode: evaluation_exception: threw an instance of 'int', terminating: no]
+  
+  ----------------------------------------------------------------------------->

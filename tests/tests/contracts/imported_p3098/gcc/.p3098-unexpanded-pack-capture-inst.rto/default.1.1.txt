@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3098 --contract_evaluation_semantic=enforce Test_name.c
+"Test_name.c", line 14: error: parameter pack "xs" was referenced but not expanded
+  int p3 (T... xs) post [xs] (true) { return 0; }		// { dg-error "not expanded" }
+                         ^
+
+"Test_name.c", line 16: error: parameter pack "y" was referenced but not expanded
+  int p5 (T... xs) post [...y = xs] (y > 0) { return 0; }	// { dg-error "not expanded" }
+                                     ^
+
+2 errors detected in the compilation of "Test_name.c".
