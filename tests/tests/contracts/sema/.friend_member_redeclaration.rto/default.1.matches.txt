@@ -1,0 +1,16 @@
+Matches for "line 22: error: mismatched contract condition in declaration":
+  <-----------------------------------------------------------------------------
+  line 22: error: mismatched contract condition in declaration
+  ----------------------------------------------------------------------------->
+Matches for "line 23: error: identifier "nope" is undefined":
+  <-----------------------------------------------------------------------------
+  line 23: error: identifier "nope" is undefined
+  ----------------------------------------------------------------------------->
+Matches for "line 24: error: declaration adds contracts to":
+  <-----------------------------------------------------------------------------
+  line 24: error: declaration adds contracts to
+  ----------------------------------------------------------------------------->
+Matches for "line 34: error: mismatched contract condition in declaration":
+  <-----------------------------------------------------------------------------
+  line 34: error: mismatched contract condition in declaration
+  ----------------------------------------------------------------------------->

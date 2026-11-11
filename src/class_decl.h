@@ -511,6 +511,9 @@ extern void db_base_class_list(a_type_ptr tp);
 extern void db_all_virtual_function_override_lists(a_type_ptr  class_type);
 #endif /* DEBUG */
 
+extern void defer_contract_redeclaration_match(
+                                           a_contract_specifier_ptr  csps);
+
 /* Conditionally close the "edg" namespace. */
 END_EDG_NAMESPACE
 
