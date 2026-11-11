@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contract_evaluation_semantic=enforce Test_name.c
+"Test_name.c", line 27: error: an unnamed value parameter used in a postcondition must be declared const
+  void r1 (int) {}	// { dg-error "value parameter (.<anonymous>.|.b.) used in a postcondition must be const" }
+           ^
+
+"Test_name.c", line 33: error: an unnamed value parameter used in a postcondition must be declared const
+  void r3 (int, int) {}	// { dg-error "value parameter (.<anonymous>.|.b.) used in a postcondition must be const" }
+                ^
+
+"Test_name.c", line 37: error: an unnamed value parameter used in a postcondition must be declared const
+  void r4 (int) try {} catch (...) {}	// { dg-error "value parameter (.<anonymous>.|.b.) used in a postcondition must be const" }
+           ^
+
+"Test_name.c", line 42: error: an unnamed value parameter used in a postcondition must be declared const
+  template <class T> void t2 (int) {}	// { dg-error "value parameter (.<anonymous>.|.b.) used in a postcondition must be const" }
+                              ^
+
+"Test_name.c", line 50: error: an unnamed value parameter used in a postcondition must be declared const
+  void S::m (int) {}	// { dg-error "value parameter (.<anonymous>.|.b.) used in a postcondition must be const" }
+             ^
+
+"Test_name.c", line 55: error: an unnamed value parameter used in a postcondition must be declared const
+  int r5 (int) { return 1; }	// { dg-error "value parameter (.<anonymous>.|.b.) used in a postcondition must be const" }
+          ^
+
+6 errors detected in the compilation of "Test_name.c".

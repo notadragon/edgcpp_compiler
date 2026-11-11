@@ -1,0 +1,68 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 41: error: expression must be a modifiable lvalue
+    auto l1 = [&] { (void) x; contract_assert ([&] { return ++x; } ()); }; // { dg-error "read-only" }
+                                                              ^
+
+"Test_name.c", line 42: error: expression must be a modifiable lvalue
+    auto l2 = [&] { contract_assert ([&] { return ++x; } ()); (void) x; }; // { dg-error "read-only" }
+                                                    ^
+
+"Test_name.c", line 43: error: expression must be a modifiable lvalue
+    auto l3 = [&x] { contract_assert ([&] { return ++x; } ()); };	// { dg-error "read-only" }
+                                                     ^
+
+"Test_name.c", line 44: error: expression must be a modifiable lvalue
+    auto l4 = [&r = x] { contract_assert ([&r] { return ++r; } ()); }; // { dg-error "read-only" }
+                                                          ^
+
+"Test_name.c", line 45: error: expression must be a modifiable lvalue
+    auto l5 = [&] { (void) x; contract_assert ([&] { return [&] { return ++x; } (); } ()); }; // { dg-error "read-only" }
+                                                                           ^
+
+"Test_name.c", line 52: error: expression must be a modifiable lvalue
+    auto l1 = [=] () mutable { ++x; contract_assert ([&] { return ++x; } ()); }; // { dg-error "read-only" }
+                                                                    ^
+
+"Test_name.c", line 53: error: expression must be a modifiable lvalue
+    auto l2 = [y = x] () mutable { ++y; contract_assert ([&] { return ++y; } ()); }; // { dg-error "read-only" }
+                                                                        ^
+
+"Test_name.c", line 54: error: expression must be a modifiable lvalue
+    auto l3 = [x] () mutable { ++x; contract_assert ([&x] { return ++x; } ()); }; // { dg-error "read-only" }
+                                                                     ^
+
+"Test_name.c", line 65: error: expression must be a modifiable lvalue
+    auto l1 = [&] { (void) a; contract_assert ([&] { return ++a[0]; } ()); }; // { dg-error "read-only" }
+                                                              ^
+
+"Test_name.c", line 66: warning: variable "v" is used before its value is set
+    auto l2 = [&] { (void) v; contract_assert ([&] { return ++v[0]; } ()); }; // { dg-error "read-only" }
+                                                              ^
+
+"Test_name.c", line 66: error: expression must be a modifiable lvalue
+    auto l2 = [&] { (void) v; contract_assert ([&] { return ++v[0]; } ()); }; // { dg-error "read-only" }
+                                                              ^
+
+"Test_name.c", line 67: error: argument of type "const int *" is incompatible with parameter of type "int *"
+    auto l3 = [&] { (void) v; contract_assert ([&] { return take (v); } ()); }; // { dg-error "invalid conversion" }
+                                                                  ^
+
+"Test_name.c", line 68: error: argument of type "const int *" is incompatible with parameter of type "int *"
+    auto l4 = [&v] { contract_assert ([&v] { return take (v); } ()); }; // { dg-error "invalid conversion" }
+                                                          ^
+
+"Test_name.c", line 69: error: argument of type "const int *" is incompatible with parameter of type "int *"
+    auto l5 = [=] () mutable { ++a[0]; contract_assert ([&] { return take (a); } ()); }; // { dg-error "invalid conversion" }
+                                                                           ^
+
+"Test_name.c", line 77: error: expression must be a modifiable lvalue
+    auto l1 = [&] { (void) x; contract_assert ([&] { return ++x; } ()); }; // { dg-error "read-only" }
+                                                              ^
+          detected during instantiation of "void tby_ref(T) [with T=int]" at line 81
+
+"Test_name.c", line 78: error: expression must be a modifiable lvalue
+    auto l2 = [=] () mutable { ++x; contract_assert ([&] { return ++x; } ()); }; // { dg-error "read-only" }
+                                                                    ^
+          detected during instantiation of "void tby_ref(T) [with T=int]" at line 81
+
+15 errors detected in the compilation of "Test_name.c".

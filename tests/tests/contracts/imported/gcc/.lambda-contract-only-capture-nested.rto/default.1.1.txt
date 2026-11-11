@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 20: error: "y" (declared at line 19) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto n1 = [=] pre ([=] { return y; } ()) {};	// { dg-error "captured" }
+                                    ^
+
+"Test_name.c", line 20: warning: variable "n1" was declared but never referenced
+    auto n1 = [=] pre ([=] { return y; } ()) {};	// { dg-error "captured" }
+         ^
+
+"Test_name.c", line 21: warning: variable "n2" was declared but never referenced
+    auto n2 = [=] pre ([=] { return y; } ()) { return y; };	// OK, used outside the predicate too
+         ^
+
+1 error detected in the compilation of "Test_name.c".

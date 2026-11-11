@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 16: error: the result name of a postcondition cannot have the same name as an init-capture of the lambda
+  auto l = [x = 1](int y) post(x : x > 0) { return y; }; // expected-error {{declaration of result name 'x' shadows lambda capture}} expected-note {{previous declaration is here}}
+                               ^
+
+"Test_name.c", line 19: warning: variable "m" was declared but never referenced
+    auto m = [x](int y) post(x : x > 0) { return y + x; }; // OK
+         ^
+
+"Test_name.c", line 20: warning: variable "n" was declared but never referenced
+    auto n = [z = 1] {
+         ^
+
+1 error detected in the compilation of "Test_name.c".

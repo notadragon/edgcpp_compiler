@@ -1,0 +1,82 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contract_evaluation_semantic=enforce Test_name.c
+"Test_name.c", line 36: error: contract predicate is false in constant expression
+  constexpr int f(const int x) pre(x > 0); // expected-error {{contract failed during execution of constexpr function}}
+                               ^
+
+"Test_name.c", line 38: error: contract predicate is false in constant expression
+  constexpr int fp(const int x) post(r : r > x); // expected-error {{contract failed during execution of constexpr function}}
+                                ^
+
+"Test_name.c", line 42: error: contract predicate is false in constant expression
+    constexpr int m(const int x) const pre(x > 0); // expected-error {{contract failed during execution of constexpr function}}
+                                       ^
+
+"Test_name.c", line 43: error: contract predicate is false in constant expression
+    constexpr int mp(const int x) const post(r : r > x); // expected-error {{contract failed during execution of constexpr function}}
+                                        ^
+
+"Test_name.c", line 51: error: contract predicate is false in constant expression
+    constexpr T g(const T x) const pre(x > 0); // expected-error {{contract failed during execution of constexpr function}}
+                                   ^
+
+"Test_name.c", line 52: error: contract predicate is false in constant expression
+    constexpr T gp(const T x) const post(r : r > x); // expected-error {{contract failed during execution of constexpr function}}
+                                    ^
+
+"Test_name.c", line 53: error: contract predicate is false in constant expression
+    constexpr auto a(const T x) const pre(x > 0); // expected-error {{contract failed during execution of constexpr function}}
+                                      ^
+
+"Test_name.c", line 54: error: contract predicate is false in constant expression
+    constexpr auto ap(const T x) const post(r : r > x); // expected-error {{contract failed during execution of constexpr function}}
+                                       ^
+
+"Test_name.c", line 65: error: contract predicate is false in constant expression
+  template <class T> constexpr T h(const T x) pre(x > 0); // expected-error {{contract failed during execution of constexpr function}}
+                                              ^
+
+"Test_name.c", line 67: error: contract predicate is false in constant expression
+  template <class T> constexpr T hp(const T x) post(r : r > x); // expected-error {{contract failed during execution of constexpr function}}
+                                               ^
+
+"Test_name.c", line 77: warning: variable "bad_f" was declared but never referenced
+  constexpr int bad_f = f(0); // Clang: an error and a note here
+                ^
+
+"Test_name.c", line 78: warning: variable "bad_fp" was declared but never referenced
+  constexpr int bad_fp = fp(0); // Clang: an error and a note here
+                ^
+
+"Test_name.c", line 79: warning: variable "bad_m" was declared but never referenced
+  constexpr int bad_m = S{}.m(0); // Clang: an error and a note here
+                ^
+
+"Test_name.c", line 80: warning: variable "bad_mp" was declared but never referenced
+  constexpr int bad_mp = S{}.mp(0); // Clang: an error and a note here
+                ^
+
+"Test_name.c", line 81: warning: variable "bad_g" was declared but never referenced
+  constexpr int bad_g = Z<int>{}.g(0); // Clang: an error and a note here
+                ^
+
+"Test_name.c", line 82: warning: variable "bad_gp" was declared but never referenced
+  constexpr int bad_gp = Z<int>{}.gp(0); // Clang: an error and a note here
+                ^
+
+"Test_name.c", line 83: warning: variable "bad_a" was declared but never referenced
+  constexpr int bad_a = Z<int>{}.a(0); // Clang: an error and a note here
+                ^
+
+"Test_name.c", line 84: warning: variable "bad_ap" was declared but never referenced
+  constexpr int bad_ap = Z<int>{}.ap(0); // Clang: an error and a note here
+                ^
+
+"Test_name.c", line 85: warning: variable "bad_h" was declared but never referenced
+  constexpr int bad_h = h(0); // Clang: an error and a note here
+                ^
+
+"Test_name.c", line 86: warning: variable "bad_hp" was declared but never referenced
+  constexpr int bad_hp = hp(0); // Clang: an error and a note here
+                ^
+
+10 errors detected in the compilation of "Test_name.c".

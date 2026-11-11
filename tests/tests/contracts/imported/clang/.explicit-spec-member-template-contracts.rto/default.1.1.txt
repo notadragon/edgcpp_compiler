@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 36: error: mismatched contract condition in declaration (previous contract specifier declared at line 33)
+  int A<char>::f(char t, Q) pre(t > 5) { return 4; } // expected-error {{method out-of-line definition differs in contract specifier sequence}} expected-note {{in contract specified here}}
+                            ^
+
+"Test_name.c", line 44: error: declaration adds contracts to "int A<unsigned int>::f(unsigned int, P)"
+  int A<unsigned>::f(unsigned t, Q) pre(t > 6) { return 5; } // expected-error {{method out-of-line definition differs in contract specifier sequence}}
+                                    ^
+
+2 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 18: error: "std::contracts::contract_violation::contract_violation(const __cxxabiv1::__cxa_contract_data_block *) noexcept" (declared at line N of "GXX_INCLUDE_CXX/contracts") is inaccessible
+    std::contracts::contract_violation v (nullptr);  // { dg-error "private" }
+                                          ^
+
+1 error detected in the compilation of "Test_name.c".

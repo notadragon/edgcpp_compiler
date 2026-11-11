@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 22: error: contract predicate is false in constant expression
+  constexpr S make7 (const int x) post (r : r.v == 7) { return S{x}; } // { dg-error "contract predicate is false in constant expression" }
+                                  ^
+
+"Test_name.c", line 23: warning: variable "o2" was declared but never referenced
+  constexpr Outer o2{7, make7 (5)};
+                  ^
+
+1 error detected in the compilation of "Test_name.c".

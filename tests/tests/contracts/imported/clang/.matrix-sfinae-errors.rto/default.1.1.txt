@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 54: error: expression must have class type but it has type "const int"
+  template <class T> int f (T t) pre (t.nonexistent ());  // expected-error {{is not a structure or union}}
+                                      ^
+          detected during instantiation of "int odr_used_illformed_predicate_is_an_error::f(T) [with T=int]" at line 56
+
+"Test_name.c", line 69: error: expression must have class type but it has type "const int"
+  template <class T> int chosen (T t) pre (t.nonexistent ()) { return 1; }  // expected-error {{is not a structure or union}}
+                                           ^
+          detected during instantiation of "int illformed_predicate_does_not_sfinae_away::chosen(T) [with T=int]" at line 72
+
+"Test_name.c", line 84: error: expression must have class type but it has type "const int"
+    int f (T t) const pre (t.nonexistent ()) { return 1; }  // expected-error {{is not a structure or union}}
+                           ^
+          detected during instantiation of "int illformed_predicate_in_class_template_member::S<T>::f(T) const [with T=int]" at line 87
+
+"Test_name.c", line 97: error: expression must have class type but it has type "const int"
+  template <class T> int f (T t) pre (t.nonexistent ()) { return 1; }  // expected-error {{is not a structure or union}}
+                                      ^
+          detected during instantiation of "int recovery_other_diagnostics_still_reported::f(T) [with T=int]" at line 99
+
+"Test_name.c", line 100: error: identifier "undeclared_identifier" is undefined
+  int unrelated () { return undeclared_identifier; }  // expected-error {{use of undeclared identifier}}
+                            ^
+
+5 errors detected in the compilation of "Test_name.c".

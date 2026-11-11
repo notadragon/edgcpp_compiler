@@ -1,0 +1,42 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 26: error: "this" cannot be implicitly captured only for contract assertions; capture it explicitly
+      auto s1 = [&] pre(m > 0) {};               // expected-error {{'this' is used only in contract assertions}}
+                        ^
+
+"Test_name.c", line 30: error: "this" cannot be implicitly captured only for contract assertions; capture it explicitly
+      auto s2 = [&] { contract_assert(m > 0); }; // expected-error {{'this' is used only in contract assertions}}
+                                      ^
+
+"Test_name.c", line 26: warning: variable "s1" was declared but never referenced
+      auto s1 = [&] pre(m > 0) {};               // expected-error {{'this' is used only in contract assertions}}
+           ^
+
+"Test_name.c", line 30: warning: variable "s2" was declared but never referenced
+      auto s2 = [&] { contract_assert(m > 0); }; // expected-error {{'this' is used only in contract assertions}}
+           ^
+
+"Test_name.c", line 39: error: "y" (declared at line 38) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto n1 = [=] pre([=] { return y; }()) {};   // expected-error {{local entity 'y' is used only in contract assertions}}
+                                   ^
+
+"Test_name.c", line 39: warning: variable "n1" was declared but never referenced
+    auto n1 = [=] pre([=] { return y; }()) {};   // expected-error {{local entity 'y' is used only in contract assertions}}
+         ^
+
+"Test_name.c", line 46: error: "x" (declared at line 45) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto c = [=] pre(x > 0) {};                  // expected-error {{local entity 'x' is used only in contract assertions}}
+                     ^
+
+"Test_name.c", line 46: warning: variable "c" was declared but never referenced
+    auto c = [=] pre(x > 0) {};                  // expected-error {{local entity 'x' is used only in contract assertions}}
+         ^
+
+"Test_name.c", line 53: error: "t" (declared at line 52) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto t1 = [=](auto u) pre(u > t) {};         // expected-error {{local entity 't' is used only in contract assertions}}
+                                  ^
+
+"Test_name.c", line 58: error: "t" (declared at line 52) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto t2 = [&](auto u) { contract_assert(u > t); }; // expected-error {{local entity 't' is used only in contract assertions}}
+                                                ^
+
+6 errors detected in the compilation of "Test_name.c".

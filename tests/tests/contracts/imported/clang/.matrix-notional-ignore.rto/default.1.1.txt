@@ -1,0 +1,13 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contract_evaluation_semantic=ignore Test_name.c
+"Test_name.c", line 202: warning: variable "constexpr_var_pp_F_NC_u_const_ignore::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 219: warning: variable "constexpr_var_pp_NR_F_u_const_ignore::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 236: warning: variable "constexpr_var_pp_NR_NC_u_const_ignore::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+

@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 32: error: a function contract specifier can appear only on the declarator of a function declaration
+  int s, t pre(true); // expected-error {{'pre' can only appear on a function declaration}}
+           ^
+
+1 error detected in the compilation of "Test_name.c".

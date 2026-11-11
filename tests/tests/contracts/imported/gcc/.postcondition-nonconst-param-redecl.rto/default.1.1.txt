@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 13: error: value parameter "x" used in a postcondition must be declared const
+  int g (int x)			// { dg-message "parameter declared here" }
+             ^
+
+1 error detected in the compilation of "Test_name.c".

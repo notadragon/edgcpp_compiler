@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 11: error: postcondition captures require --contracts_p3098
+    post [i] (true); // { dg-error "postcondition captures require" }
+         ^
+
+1 error detected in the compilation of "Test_name.c".

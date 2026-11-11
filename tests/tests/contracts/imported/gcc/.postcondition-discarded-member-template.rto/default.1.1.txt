@@ -1,0 +1,52 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contract_evaluation_semantic=enforce Test_name.c
+"Test_name.c", line 50: warning: expression has no effect
+  void ns_sm (T s) post ((s.sm, true)) {}	// { dg-error "postcondition must be const" }
+                          ^
+
+"Test_name.c", line 50: error: value parameter "s" used in a postcondition must be declared const
+  void ns_sm (T s) post ((s.sm, true)) {}	// { dg-error "postcondition must be const" }
+                ^
+
+"Test_name.c", line 51: error: value parameter "s" used in a postcondition must be declared const
+  void ns_sm2 (T s) post (s.sm > 0) {}	// { dg-error "postcondition must be const" }
+                 ^
+
+"Test_name.c", line 52: error: value parameter "s" used in a postcondition must be declared const
+  void ns_sf (T s) post (s.sf ()) {}	// { dg-error "postcondition must be const" }
+                ^
+
+"Test_name.c", line 53: error: value parameter "s" used in a postcondition must be declared const
+  void ns_e (T s) post (s.E > 0) {}	// { dg-error "postcondition must be const" }
+               ^
+
+"Test_name.c", line 35: warning: expression has no effect
+  template <class U> void re_tmpl (const U s) post ((s.m, true));
+                                                     ^
+          detected during instantiation of "void re_tmpl(U) [with U=S]" at line 37
+
+"Test_name.c", line 39: warning: expression has no effect
+  template <class U> void mem (U s) post ((s.m, true)) {}	// { dg-bogus "postcondition must be const" }
+                                           ^
+          detected during instantiation of "void mem(U) [with U=S]" at line 40
+
+"Test_name.c", line 43: warning: expression has no effect
+  template <class U> void st (U s) post ((s.sm, true)) {}	// { dg-error "postcondition must be const" }
+                                          ^
+          detected during instantiation of "void st(U) [with U=T]" at line 44
+
+"Test_name.c", line 43: error: value parameter "s" used in a postcondition must be declared const
+  template <class U> void st (U s) post ((s.sm, true)) {}	// { dg-error "postcondition must be const" }
+                                ^
+          detected during instantiation of "void st(U) [with U=T]" at line 44
+
+"Test_name.c", line 45: warning: expression has no effect
+  template <class U> void st_re (U s) post ((s.sm, true));	// { dg-error "postcondition must be const" }
+                                             ^
+          detected during instantiation of "void st_re(U) [with U=T]" at line 47
+
+"Test_name.c", line 45: error: value parameter "s" used in a postcondition must be declared const
+  template <class U> void st_re (U s) post ((s.sm, true));	// { dg-error "postcondition must be const" }
+                                   ^
+          detected during instantiation of "void st_re(U) [with U=T]" at line 47
+
+6 errors detected in the compilation of "Test_name.c".

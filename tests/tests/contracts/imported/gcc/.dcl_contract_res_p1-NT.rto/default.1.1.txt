@@ -1,0 +1,9 @@
+eccp -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contract_evaluation_semantic=enforce Test_name.c
+"Test_name.c", line 62: warning: variable "other" was declared but never referenced
+     int other;  // force a new block
+         ^
+
+"Test_name.c", line 158: warning: variable "other" was declared but never referenced
+        int other;  // force a new block
+            ^
+
