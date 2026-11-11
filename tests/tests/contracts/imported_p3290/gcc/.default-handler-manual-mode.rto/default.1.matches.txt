@@ -1,0 +1,5 @@
+Matches for "manual check[^\n]*\n\[assertion_kind: manual, semantic: observe, mode: unspecified":
+  <-----------------------------------------------------------------------------
+  manual check
+  [assertion_kind: manual, semantic: observe, mode: unspecified
+  ----------------------------------------------------------------------------->

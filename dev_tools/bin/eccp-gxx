@@ -30,6 +30,7 @@
 #                                -> the g++ spellings (front end and g++)
 #   --[no_]contracts_p3850       -> the g++ spelling (front end and g++)
 #   --[no_]contracts_p3097       -> the g++ spelling (front end and g++)
+#   --[no_]contracts_p3290       -> the g++ spelling (front end and g++)
 #   -f[no-]canon-prefix-map     -> unchanged (edg_gxx.sh gives the prefix
 #                                   maps to the front end too, for __FILE__)
 #   --macro_prefix_map=X, --macro_prefix_map X
@@ -126,6 +127,10 @@ while [ $# -gt 0 ] ; do
       args+=(-fcontracts-p3097) ;;
     --no_contracts_p3097)
       args+=(-fno-contracts-p3097) ;;
+    --contracts_p3290)
+      args+=(-fcontracts-p3290) ;;
+    --no_contracts_p3290)
+      args+=(-fno-contracts-p3290) ;;
     -fcanon-prefix-map|-fno-canon-prefix-map)
       args+=("$arg") ;;
     --macro_prefix_map=*)
