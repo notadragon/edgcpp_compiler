@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
+"Test_name.c", line 21: error: "i" (declared at line 20) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto p1 = [=](auto a) pre(i > a) {};                   // Error
+                              ^
+
+"Test_name.c", line 24: error: "i" (declared at line 20) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto p4 = [=](const auto a) post(i > a) {};            // Error
+                                     ^
+
+"Test_name.c", line 28: error: "i" (declared at line 27) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto q1 = [=] pre(i > 0) {};                           // Error
+                      ^
+
+"Test_name.c", line 29: error: "i" (declared at line 27) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto q2 = [=](auto a) pre(i > a) {};                   // Error
+                              ^
+
+"Test_name.c", line 35: error: "j" (declared at line 34) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto r1 = [=](auto a) { return [=](auto b) pre(b > j) { return a + b; }; };  // Error
+                                                       ^
+
+5 errors detected in the compilation of "Test_name.c".

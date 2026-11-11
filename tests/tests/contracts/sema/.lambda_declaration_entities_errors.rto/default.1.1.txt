@@ -1,0 +1,50 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contract_evaluation_semantic=quick_enforce Test_name.c
+"Test_name.c", line 18: error: expression must be a modifiable lvalue
+    void f() pre([this] { return ++m > 0; }());                 // Error
+                                   ^
+
+"Test_name.c", line 19: error: expression must be a modifiable lvalue
+    void g() pre([&] { return ++m > 0; }());                    // Error
+                                ^
+
+"Test_name.c", line 21: error: expression must be a modifiable lvalue
+  void a(int x) pre([&] { return ++x > 0; }());                 // Error
+                                   ^
+
+"Test_name.c", line 22: error: expression must be a modifiable lvalue
+  void b(int x) pre([&x] { return ++x > 0; }());                // Error
+                                    ^
+
+"Test_name.c", line 24: error: expression must be a modifiable lvalue
+  void d(int x) pre([x] { return ++x > 0; }());                 // Error
+                                   ^
+
+"Test_name.c", line 25: error: expression must be a modifiable lvalue
+  int e() post(r: [&r] { return ++r > 0; }());                  // Error
+                                  ^
+
+"Test_name.c", line 27: error: value parameter "x" used in a postcondition must be declared const
+  int p(int x) post([&] { return x > 0; }());                   // Error
+            ^
+
+"Test_name.c", line 28: error: value parameter "x" used in a postcondition must be declared const
+  int p2(int x) post([x] { return x > 0; }());                  // Error
+             ^
+
+"Test_name.c", line 31: error: an enclosing-function local variable cannot be referenced in a lambda body unless it is in the capture list
+  void n(int x) pre([] { return x > 0; }());                    // Error
+                                ^
+
+"Test_name.c", line 32: error: an enclosing-function local variable cannot be referenced in a lambda body unless it is in the capture list
+  void n2(int x) pre([=] { return [] { return x > 0; }(); }()); // Error
+                                              ^
+
+"Test_name.c", line 35: error: in a precondition of a constructor or a postcondition of a destructor, a member must be accessed through an explicit "this"
+    C(int) pre([&] { return m > 0; }());                       // Error
+                            ^
+
+"Test_name.c", line 37: error: in a precondition of a constructor or a postcondition of a destructor, a member must be accessed through an explicit "this"
+    ~C() post([&] { return m > 0; }());                        // Error
+                           ^
+
+12 errors detected in the compilation of "Test_name.c".

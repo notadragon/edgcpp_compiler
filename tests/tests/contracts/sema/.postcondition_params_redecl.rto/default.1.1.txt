@@ -1,0 +1,39 @@
+fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
+"Test_name.c", line 20: error: value parameter "a" used in a postcondition must be declared const
+  int r1(int a);
+             ^
+
+"Test_name.c", line 23: error: an unnamed value parameter used in a postcondition must be declared const
+  void r2(int);
+          ^
+
+"Test_name.c", line 24: error: value parameter "c" used in a postcondition must be declared const
+  struct X { friend void r2(int c); };
+                                ^
+
+"Test_name.c", line 25: error: value parameter "d" used in a postcondition must be declared const
+  void r3(const int d[]) post(d != 0);
+                    ^
+
+"Test_name.c", line 27: error: value parameter "e" used in a postcondition must be declared const
+  void r4(int e[]);
+              ^
+
+"Test_name.c", line 30: error: value parameter "f" used in a postcondition must be declared const
+  template <class T> void t1(int f) post(f > 0) {}
+                                 ^
+
+"Test_name.c", line 32: error: value parameter "g" used in a postcondition must be declared const
+  template <class T> void t2(int g);
+                                 ^
+
+"Test_name.c", line 34: error: value parameter "i" used in a postcondition must be declared const
+  template <class T> struct C { void m(int i) post(i > 0); };
+                                           ^
+
+"Test_name.c", line 33: error: value parameter "h" used in a postcondition must be declared const
+  template <class T> void t3(T h) post(h > 0) {}  // Error in t3<int>
+                               ^
+          detected during instantiation of "void t3(T) [with T=int]" at line 37
+
+9 errors detected in the compilation of "Test_name.c".

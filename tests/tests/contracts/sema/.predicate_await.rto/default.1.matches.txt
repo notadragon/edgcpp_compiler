@@ -1,0 +1,12 @@
+Matches for "line 23: error: "co_await" cannot appear in a contract predicate other than in a lambda-expression":
+  <-----------------------------------------------------------------------------
+  line 23: error: "co_await" cannot appear in a contract predicate other than in a lambda-expression
+  ----------------------------------------------------------------------------->
+Matches for "line 24: error: "co_yield" cannot appear in a contract predicate other than in a lambda-expression":
+  <-----------------------------------------------------------------------------
+  line 24: error: "co_yield" cannot appear in a contract predicate other than in a lambda-expression
+  ----------------------------------------------------------------------------->
+Matches for "line 25: error: "co_await" cannot appear in a contract predicate other than in a lambda-expression":
+  <-----------------------------------------------------------------------------
+  line 25: error: "co_await" cannot appear in a contract predicate other than in a lambda-expression
+  ----------------------------------------------------------------------------->
