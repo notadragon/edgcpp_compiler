@@ -1,0 +1,35 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3097 --contracts_p3098 --contracts_p4405 --contract_analysis_semantic=prove -O2 Test_name.c
+"Test_name.c", line 47: warning: variable "d" was declared but never referenced
+  void use () { D d; E e; }
+                  ^
+
+"Test_name.c", line 47: warning: variable "e" was declared but never referenced
+  void use () { D d; E e; }
+                       ^
+
+Test_name.c: In member function 'virtual int D::f(int)':
+Test_name.c:30:13: error: contract assertion cannot be proven for a call through 'virtual int B::f(int)'
+   30 |   int f (int x) override        // { dg-error "cannot be proven for a call through 'virtual int B::f\\(int\\)'" }
+      |             ^
+Test_name.c:24:48: note: the predicate of the contract assertion
+   24 |   virtual int f (int x) post [c = cap (x)] (r: r >= c); // { dg-message "the predicate of the contract assertion" }
+      |                                              ~~^~~~
+Test_name.c: In member function 'virtual int E::h(int)':
+Test_name.c:42:13: error: contract assertion cannot be proven for a call through 'virtual int B::h(int)'
+   42 |   int h (int x) override        // { dg-error "cannot be proven for a call through 'virtual int B::h\\(int\\)'" }
+      |             ^
+Test_name.c:43:23: note: the predicate of the contract assertion
+   43 |     post [d = x] (r: r == d)    // { dg-error "contract assertion cannot be proven" }
+      |                     ~~^~~~
+Test_name.c:42:13: error: contract assertion cannot be proven for a call through 'virtual int B::h(int)'
+   42 |   int h (int x) override        // { dg-error "cannot be proven for a call through 'virtual int B::h\\(int\\)'" }
+      |             ^
+Test_name.c:26:54: note: the predicate of the contract assertion
+   26 |   virtual int h (int x) pre (x > 0) post [c = 1] (r: r >= c);   // { dg-message "the predicate of the contract assertion" }
+      |                                                    ~~^~~~
+Test_name.c:43:2: error: contract assertion cannot be proven
+   43 |     post [d = x] (r: r == d)    // { dg-error "contract assertion cannot be proven" }
+      |  ^  ~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:43:23: note: the predicate of the contract assertion
+   43 |     post [d = x] (r: r == d)    // { dg-error "contract assertion cannot be proven" }
+      |                     ~~^~~~

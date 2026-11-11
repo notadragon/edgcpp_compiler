@@ -1,0 +1,73 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contracts_p3097 --contracts_p4405 --contract_evaluation_semantic=ignore --contract_analysis_semantic=prove --contract_configuration=[{"match":{"analysis":true,"namespace":"dd"},"output":{"semantic":"diagnose"}}] Test_name.c
+"Test_name.c", line 54: error: contract assertion cannot be proven
+            precondition of a call in the predicate cannot be proven at line 19
+  struct D6 : B6 { int f(int x) override post(r: chk(r - 1) == 1) { return x; } };
+                                         ^
+
+"Test_name.c", line 31: error: contract assertion cannot be proven for a call through "B1::f"
+            the predicate of the contract assertion at line 30
+            precondition of a call in the predicate cannot be proven at line 19
+  struct D1 : B1 { int f(int x) override { return x; } };
+                       ^
+
+"Test_name.c", line 35: error: contract assertion cannot be proven for a call through "B2::f"
+            the predicate of the contract assertion at line 34
+            precondition of a call in the predicate cannot be proven at line 19
+  struct D2 : B2 { int f(int x) override { return x; } };
+                       ^
+
+"Test_name.c", line 39: error: contract assertion cannot be proven for a call through "B3::f"
+            the predicate of the contract assertion at line 38
+            precondition of a call in the predicate is always false at line 19
+  struct D3 : B3 { int f(int x) override { return x; } };
+                       ^
+
+"Test_name.c", line 44: error: contract assertion cannot be proven for a call through "B4::f"
+            the predicate of the contract assertion at line 43
+  struct D4 : B4 { int f(int x) override { return x; } };
+                       ^
+
+"Test_name.c", line 43: warning: contract assertion cannot be proven for a call through "B4::f"
+            the predicate of the contract assertion at line 22
+  struct B4 { virtual int f(int x) post(r: dd::dchk(r) == 1); };
+                                                   ^
+
+"Test_name.c", line 49: error: contract assertion cannot be proven for a call through "B5::f"
+            the predicate of the contract assertion at line 49
+            precondition of a call in the predicate cannot be proven at line 19
+  struct D5 : B5 { int f(int x) override pre(chk(x) == 1) { return x; } };
+                       ^
+
+"Test_name.c", line 58: error: contract assertion cannot be proven for a call through "B7::f"
+            the predicate of the contract assertion at line 58
+  struct D7 : B7 { int f(int x) override pre(dd::dchk(x - 1) == 1) { return x; } };
+                       ^
+
+"Test_name.c", line 58: warning: contract assertion cannot be proven for a call through "B7::f"
+            the predicate of the contract assertion at line 22
+  struct D7 : B7 { int f(int x) override pre(dd::dchk(x - 1) == 1) { return x; } };
+                                                     ^
+
+"Test_name.c", line 64: error: contract assertion cannot be proven for a call through "B8::f"
+            the predicate of the contract assertion at line 63
+            precondition of a call in the predicate is always false at line 26
+  struct D8 : B8 { int f(int x) override { return x; } };
+                       ^
+
+"Test_name.c", line 68: warning: contract assertion cannot be proven for a call through "B9::f"
+            the predicate of the contract assertion at line 24
+  struct B9 { virtual int f(int x) post(r: dd::dc(0) == 1); };
+                                                 ^
+
+"Test_name.c", line 79: error: contract assertion cannot be proven for a call through "BK::f"
+            the predicate of the contract assertion at line 73
+            precondition of a call in the predicate cannot be proven at line 19
+    int f(int x) override { return x; }
+        ^
+
+"Test_name.c", line 73: warning: contract assertion cannot be proven for a call through "BK::f"
+            the predicate of the contract assertion at line 22
+  struct BK { virtual int f(int x) post(r: dd::dchk(r) == 1 && chk(r) == 1); };
+                                                   ^
+
+9 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,21 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3097 --contracts_p4405 --contract_analysis_semantic=prove --contract_evaluation_semantic=observe -O2 Test_name.c
+Test_name.c: In member function 'virtual int D::f()':
+Test_name.c:33:13: error: contract assertion cannot be proven for a call through 'virtual int B::f()'
+   33 |   int f () override             // { dg-error "cannot be proven for a call through 'virtual int B::f\\(\\)'" }
+      |             ^
+Test_name.c:22:38: note: the predicate of the contract assertion
+   22 |   virtual int f () pre (m > 0) post (r: r == m);        // { dg-message "the predicate of the contract assertion" }
+      |                                    ~~^~~~
+Test_name.c: In member function 'virtual int X::f()':
+Test_name.c:57:13: error: contract assertion cannot be proven for a call through 'virtual int B::f()'
+   57 |   int f () override             // { dg-error "cannot be proven for a call through 'virtual int B::f\\(\\)'" }
+      |             ^
+Test_name.c:22:38: note: the predicate of the contract assertion
+   22 |   virtual int f () pre (m > 0) post (r: r == m);        // { dg-message "the predicate of the contract assertion" }
+      |                                    ~~^~~~
+Test_name.c:57:13: error: contract assertion cannot be proven for a call through 'virtual int B::f()'
+   57 |   int f () override             // { dg-error "cannot be proven for a call through 'virtual int B::f\\(\\)'" }
+      |             ^
+Test_name.c:22:38: note: the predicate of the contract assertion
+   22 |   virtual int f () pre (m > 0) post (r: r == m);        // { dg-message "the predicate of the contract assertion" }
+      |                                    ~~^~~~

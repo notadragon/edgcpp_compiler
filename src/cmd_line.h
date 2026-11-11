@@ -405,6 +405,7 @@ enum an_option_kind {
   optk_contract_analysis_semantic,
   optk_contracts_prove_fold,
   optk_contract_analysis_skip_dead_calls,
+  optk_contracts_prove_override,
   optk_last		/* Must be last. */
 };
 
@@ -3128,6 +3129,16 @@ EXTERN_THREAD a_boolean
 			   E169 (14) in notadragon_wg21); implied by
 			   --contracts_p4405.  The drivers pass it on to
 			   g++. */
+
+EXTERN_THREAD a_boolean
+		contracts_prove_override_enabled;
+			/* TRUE if the override proving strategy of P4405
+			   (--contracts_prove_override, as GCC's
+			   -fcontracts-prove-override) is enabled; implied by
+			   --contracts_p4405.  The front end has no proving
+			   strategy, so it does not consult it (see
+			   note_contract_override_obligations): the drivers
+			   pass it on to g++. */
 
 EXTERN_THREAD a_boolean
 		contracts_p3290_enabled;

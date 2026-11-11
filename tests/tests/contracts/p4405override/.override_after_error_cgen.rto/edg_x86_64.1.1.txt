@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contracts_p3097 --contracts_p4405 --contract_evaluation_semantic=ignore --contract_analysis_semantic=diagnose Test_name.c
+"Test_name.c", line 15: warning: contract assertion cannot be proven
+  { return g(x); }
+            ^
+
+"Test_name.c", line 14: warning: contract assertion cannot be proven for a call through "B::f"
+            the predicate of the contract assertion at line 12
+  int D::f(int x)
+         ^
+

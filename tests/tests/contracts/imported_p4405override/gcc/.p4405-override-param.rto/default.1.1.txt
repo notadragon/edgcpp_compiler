@@ -1,0 +1,16 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3097 --contracts_p4405 --contract_analysis_semantic=prove -O2 Test_name.c
+"Test_name.c", line 33: warning: parameter "s" was set but never used
+    int h (S s) override { s.v = 3; return 3; }	// { dg-bogus "cannot be proven" }
+             ^
+
+"Test_name.c", line 36: warning: variable "d" was declared but never referenced
+  void use () { D d; }
+                  ^
+
+Test_name.c: In member function 'virtual int D::g(int)':
+Test_name.c:30:13: error: contract assertion cannot be proven for a call through 'virtual int B::g(int)'
+   30 |   int g (int x) override                        // { dg-error "cannot be proven for a call through 'virtual int B::g\\(int\\)'" }
+      |             ^
+Test_name.c:23:38: note: the predicate of the contract assertion
+   23 |   virtual int g (const int x) post (r: r == x); // { dg-message "the predicate of the contract assertion" }
+      |                                    ~~^~~~
