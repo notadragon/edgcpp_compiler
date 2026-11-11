@@ -1,0 +1,8 @@
+Matches for ""Test_name.c", line 10: warning: contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  "Test_name.c", line 10: warning: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+Matches for "Test_name.c:10:[0-9]+: warning: contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  Test_name.c:10:24: warning: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->

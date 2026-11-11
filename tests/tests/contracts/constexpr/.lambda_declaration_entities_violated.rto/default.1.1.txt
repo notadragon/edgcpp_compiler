@@ -1,0 +1,38 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contract_evaluation_semantic=quick_enforce Test_name.c
+"Test_name.c", line 6: error: contract predicate is false in constant expression
+    constexpr int f(int x) const pre([this] { return m > 0; }()) {
+                                 ^
+
+"Test_name.c", line 9: error: contract predicate is false in constant expression
+    constexpr int k(int x) const pre([this](auto j) { return m > j; }(x)) {
+                                 ^
+
+"Test_name.c", line 13: error: contract predicate is false in constant expression
+  constexpr int f(int x) pre([&] { return x > 0; }()) { return x; }
+                         ^
+
+"Test_name.c", line 14: error: contract predicate is false in constant expression
+  constexpr int g(int x) pre([x] { return x > 0; }()) { return x; }
+                         ^
+
+"Test_name.c", line 15: error: contract predicate is false in constant expression
+  constexpr int g4(int x) pre([&](auto k) { return x > k; }(0)) { return x; }
+                          ^
+
+"Test_name.c", line 16: error: contract predicate is false in constant expression
+  constexpr int a() post(r: [r] { return r > 0; }()) { return 0; }
+                    ^
+
+"Test_name.c", line 17: error: contract predicate is false in constant expression
+  constexpr int b() post(r: [&r] { return r > 0; }()) { return 0; }
+                    ^
+
+"Test_name.c", line 18: error: contract predicate is false in constant expression
+  constexpr int d(const int x) post(r: [=] { return r > x; }()) { return x; }
+                               ^
+
+"Test_name.c", line 19: error: contract predicate is false in constant expression
+  constexpr int e(int x, int y) pre([&] { return x < y; }()) { return y - x; }
+                                ^
+
+9 errors detected in the compilation of "Test_name.c".

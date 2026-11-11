@@ -1,0 +1,42 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contract_evaluation_semantic=quick_enforce Test_name.c
+"Test_name.c", line 17: error: contract predicate is false in constant expression
+  constexpr int pre1(int x) pre(x > 0) { return x; }
+                            ^
+
+"Test_name.c", line 22: error: contract predicate is false in constant expression
+  constexpr int post2(const int x) post(r: r > x) { return x; }
+                                   ^
+
+"Test_name.c", line 27: error: contract predicate is false in constant expression
+    contract_assert(x != 2);
+    ^
+
+"Test_name.c", line 34: error: contract predicate is false in constant expression
+    constexpr int get(int d) const pre(v > d) { return v; }
+                                   ^
+
+"Test_name.c", line 42: error: contract predicate is false in constant expression
+    constexpr C(int a) pre(a > 0) : v(a) {}
+                       ^
+
+"Test_name.c", line 49: error: contract condition is not constant
+  constexpr int nc(int x) pre(not_constexpr(x) > 0) { return x; }
+                          ^
+
+"Test_name.c", line 53: error: contract predicate is false in constant expression
+  constexpr int pre2(int x) pre(x > 0) { return x; }
+                            ^
+
+"Test_name.c", line 24: warning: variable "v1" was declared but never referenced
+  constexpr int v1 = post2(3);    // Error, at the "post"
+                ^
+
+"Test_name.c", line 30: warning: variable "v2" was declared but never referenced
+  constexpr int v2 = assert1(2);  // Error, at the "contract_assert"
+                ^
+
+"Test_name.c", line 50: warning: variable "v3" was declared but never referenced
+  constexpr int v3 = nc(1);       // Error, at the "pre"
+                ^
+
+7 errors detected in the compilation of "Test_name.c".

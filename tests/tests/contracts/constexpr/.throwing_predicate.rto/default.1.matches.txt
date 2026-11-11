@@ -1,0 +1,24 @@
+Matches for "line 36: error: contract condition is not constant":
+  <-----------------------------------------------------------------------------
+  line 36: error: contract condition is not constant
+  ----------------------------------------------------------------------------->
+Matches for "line 40: error: contract condition is not constant":
+  <-----------------------------------------------------------------------------
+  line 40: error: contract condition is not constant
+  ----------------------------------------------------------------------------->
+Matches for "line 44: error: contract condition is not constant":
+  <-----------------------------------------------------------------------------
+  line 44: error: contract condition is not constant
+  ----------------------------------------------------------------------------->
+Matches for "line 48: error: contract condition is not constant":
+  <-----------------------------------------------------------------------------
+  line 48: error: contract condition is not constant
+  ----------------------------------------------------------------------------->
+Matches for "line 53: error: contract condition is not constant":
+  <-----------------------------------------------------------------------------
+  line 53: error: contract condition is not constant
+  ----------------------------------------------------------------------------->
+Matches for "line 74: error: contract condition is not constant":
+  <-----------------------------------------------------------------------------
+  line 74: error: contract condition is not constant
+  ----------------------------------------------------------------------------->

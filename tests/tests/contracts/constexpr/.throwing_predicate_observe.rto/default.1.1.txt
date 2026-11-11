@@ -1,0 +1,25 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contract_evaluation_semantic=observe Test_name.c
+"Test_name.c", line 35: warning: contract condition is not constant
+    contract_assert((throw 1, true));                    // Warning
+    ^
+
+"Test_name.c", line 39: warning: contract condition is not constant
+    contract_assert(thr(1));                             // Warning
+    ^
+
+"Test_name.c", line 43: warning: contract condition is not constant
+    contract_assert((throw owner(), true));              // Warning
+    ^
+
+"Test_name.c", line 47: warning: contract condition is not constant
+    pre((throw x, true))                                 // Warning
+    ^
+
+"Test_name.c", line 52: warning: contract condition is not constant
+    post(thr(x))                                         // Warning
+    ^
+
+"Test_name.c", line 68: warning: contract condition is not constant
+    contract_assert([] { try { throw 1; } catch (int) { return true; } }());
+    ^
+

@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contract_evaluation_semantic=enforce Test_name.c
+"Test_name.c", line 37: error: contract condition is not constant
+    contract_assert((throw 1, true));                    // Error
+    ^
+
+"Test_name.c", line 41: error: contract condition is not constant
+    contract_assert(thr(1));                             // Error
+    ^
+
+"Test_name.c", line 45: error: contract condition is not constant
+    contract_assert((throw owner(), true));              // Error
+    ^
+
+"Test_name.c", line 49: error: contract condition is not constant
+    pre((throw x, true))                                 // Error
+    ^
+
+"Test_name.c", line 54: error: contract condition is not constant
+    post(thr(x))                                         // Error
+    ^
+
+"Test_name.c", line 75: error: contract condition is not constant
+    contract_assert([] { try { throw 1; } catch (int) { return true; } }());
+    ^
+
+6 errors detected in the compilation of "Test_name.c".
