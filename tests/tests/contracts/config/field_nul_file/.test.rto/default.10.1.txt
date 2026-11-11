@@ -1,0 +1,5 @@
+cpfe -DTEST_NUMBER=10 --c++26 --contract_configuration_file=kind.json Test_name.c
+Command-line error: invalid contract configuration (kind.json:2:20): "kind" must not contain a null character
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation terminated.

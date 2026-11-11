@@ -1,0 +1,3 @@
+[
+  {"match":{"namespace":"n\u0000x"},"output":{"semantic":"ignore"}}
+]

@@ -1,0 +1,17 @@
+cpfe -DTEST_NUMBER=3 --c++26 --c++26 --contracts --contract_configuration_file=p3595-config-diagnostic-main-file-location.json Test_name.c
+"Test_name.c", line 32: warning: #warning directive: "located"
+  #warning "located"
+   ^
+
+"Test_name.c", line 37: warning: missing return statement at end of non-void function "f"
+  int f () { }
+             ^
+
+p3595-config-diagnostic-main-file-location.json: In JSON value '/0/match/module'
+p3595-config-diagnostic-main-file-location.json:2:24: warning: unknown key 'module' in 'match' object; the entry is skipped [-Wcontract-configuration]
+    2 |   {"match": {"module": "m"}, "output": {"semantic": "enforce"}}
+      |                        ^~~
+Test_name.c: In function 'int f()':
+Test_name.c:37:11: warning: no return statement in function returning non-void [-Wreturn-type]
+   37 | int f () { }
+      |           ^

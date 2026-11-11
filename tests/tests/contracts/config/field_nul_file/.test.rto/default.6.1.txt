@@ -1,0 +1,5 @@
+fe_only -DTEST_NUMBER=6 --c++26 --contract_configuration_file=caller_namespace.json Test_name.c
+Command-line error: invalid contract configuration (caller_namespace.json:2:35): "namespace" in "caller" must not contain a null character
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation terminated.
