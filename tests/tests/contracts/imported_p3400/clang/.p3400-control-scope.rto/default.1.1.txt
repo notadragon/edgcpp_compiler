@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 Test_name.c
+"Test_name.c", line 23: error: identifier "value" is undefined
+  int x = value; // expected-error {{use of undeclared identifier 'value'}}
+          ^
+
+"Test_name.c", line 26: error: identifier "my_label" is undefined
+  auto bad = my_label; // expected-error {{use of undeclared identifier 'my_label'}}
+             ^
+
+"Test_name.c", line 17: warning: variable "my_labels::value" was declared but never referenced
+    constexpr int value = 42; // expected-note {{'my_labels::value' declared here}}
+                  ^
+
+2 errors detected in the compilation of "Test_name.c".

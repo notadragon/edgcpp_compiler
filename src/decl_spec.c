@@ -12598,6 +12598,13 @@ type_transform_case:
         }  /* if */
         goto general_identifier_case;
       case tok_identifier:  /* Identifier or "::". */
+        if (state->is_trailing_return_type &&
+            (decl_specifiers_seen & DS_TYPE) != 0 &&
+            curr_token_starts_labeled_contract_specifier()) {
+          /* P3400: a labeled function contract specifier ("pre<label>")
+             ends the trailing return type. */
+          goto exit_loop;
+        }  /* if */
         if (locator_for_curr_id.symbol_header != NULL &&
             locator_for_curr_id.symbol_header->has_intrinsic_name &&
             check_type_transform_name() != tok_error) {

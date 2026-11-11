@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contract_evaluation_semantic=quick_enforce --contract_group_evaluation_semantic=safety:ignore Test_name.c
+"Test_name.c", line 109: error: the group_names facet of assertion-control object "range_label<4097>" holds more than 4096 names
+  void f1 (int x) pre<range_too_many> (x > 0) {}	// { dg-error "'group_names' facet of assertion-control object 'range_label<4097>' holds more than 4096 names" }
+                  ^
+
+"Test_name.c", line 110: error: the group_names facet of assertion-control object "array_label<4097>" holds more than 4096 names
+  void f2 (int x) pre<array_too_many> (x > 0) {}	// { dg-error "'group_names' facet of assertion-control object 'array_label<4097>' holds more than 4096 names" }
+                  ^
+
+"Test_name.c", line 111: error: the group_names facet of assertion-control object "class_label<4097>" holds more than 4096 names
+  void f3 (int x) pre<class_too_many> (x > 0) {}	// { dg-error "'group_names' facet of assertion-control object 'class_label<4097>' holds more than 4096 names" }
+                  ^
+
+3 errors detected in the compilation of "Test_name.c".

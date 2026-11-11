@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contract_configuration_file=p3595-dynamic-constexpr-skip.json Test_name.c
+"Test_name.c", line 13: error: contract predicate is false in constant expression
+  constexpr int g(int x) pre(x > 0) { return x; } // { dg-error "contract predicate is false in constant expression" }
+                         ^
+
+"Test_name.c", line 19: warning: variable "good" was declared but never referenced
+  constexpr int good = g(1);   // no error
+                ^
+
+"Test_name.c", line 20: warning: variable "bad" was declared but never referenced
+  constexpr int bad  = g(-1);
+                ^
+
+1 error detected in the compilation of "Test_name.c".
