@@ -1,0 +1,6 @@
+./a.out
+file MACRO-PREFIXTest_name.c
+file MACRO-PREFIXTest_name.c
+file MACRO-PREFIXTest_name.c
+file MACRO-PREFIXTest_name.c
+count 4

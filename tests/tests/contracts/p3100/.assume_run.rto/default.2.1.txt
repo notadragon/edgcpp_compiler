@@ -1,0 +1,1 @@
+eccp -DTEST_NUMBER=2 --c++26 --contracts_allow_assume --contract_evaluation_semantic=assume Test_name.c
