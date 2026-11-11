@@ -1,0 +1,4 @@
+Matches for "^(Command-line warning: --contract_evaluation_semantic=noexcept_(enforce|observe) requires --contracts_p4298; (enforce|observe) is used instead|)$":
+  <-----------------------------------------------------------------------------
+  
+  ----------------------------------------------------------------------------->

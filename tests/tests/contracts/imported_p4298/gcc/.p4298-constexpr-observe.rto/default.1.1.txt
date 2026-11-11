@@ -1,0 +1,9 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p4298 --contract_evaluation_semantic=noexcept_observe Test_name.c
+"Test_name.c", line 12: warning: contract predicate is false in constant expression
+  constexpr int f(int x) pre(x > 0) { return x; } // { dg-warning "contract predicate is false in constant expression" }
+                         ^
+
+"Test_name.c", line 13: warning: variable "bad" was declared but never referenced
+  constexpr int bad = f(-1); // no error: noexcept_observe is not terminating
+                ^
+
