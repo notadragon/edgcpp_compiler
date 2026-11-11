@@ -43690,6 +43690,132 @@ These cases are handled here by coalescing two tokens.
 }  /* check_for_pcc_compound_assignment_operators */
 
 
+/*
+The calls of __edg_contract_check_noexcept_label made by
+contract_label_violation_call, with and without a message.
+*/
+STATIC_THREAD a_token_cache_ptr
+		contract_label_violation_cache;
+STATIC_THREAD a_token_cache_ptr
+		contract_label_violation_no_message_cache;
+
+#define CONTRACT_LABEL_VIOLATION_CALL(message) \
+  "::__edg_contract_check_noexcept_label<" \
+  "::std::contracts::contract_violation>(" CONTRACT_LABEL_COMBINED ", " \
+  "__edg_opnd__(1), " message ", __edg_opnd__(3) != 0, __edg_opnd__(4), " \
+  "__edg_opnd__(5), __edg_opnd__(6), __edg_opnd__(7), __edg_opnd__(8), " \
+  "__edg_opnd__(9));"
+
+
+an_expr_node_ptr contract_label_violation_call(
+                                      a_contract_specifier_ptr  csp,
+                                      a_const_char              *comment,
+                                      a_const_char              *message,
+                                      a_boolean                 compute,
+                                      a_const_char              *file,
+                                      a_const_char              *function,
+                                      unsigned long             line,
+                                      unsigned                  kind,
+                                      unsigned                  semantic,
+                                      unsigned                  mode)
+/*
+Return an expression (of type void) that reports a violation of the
+contract assertion csp, which has a P3400 label, under a noexcept semantic
+(P4298), in a check that the front end generates:
+
+  __edg_contract_check_noexcept_label<std::contracts::contract_violation>(
+      empty_label | label, comment, message, compute, file, function, line,
+      kind, semantic, mode)
+
+(see enter_contract_noexcept_check_routine), with the label's facets
+applied: if compute is TRUE its computed comment and message, and its local
+violation handler and query function.  message is NULL if the assertion
+has none.  Return NULL if the label has no value yet (or <contracts> is not
+included, without which a label has no facets), or the call is invalid.
+*/
+{
+  an_expr_node_ptr        result = NULL;
+  a_constant_ptr          label_con = local_constant();
+  int                     saved_n_internal_opnds = n_internal_opnds;
+  an_operand_ptr          *saved_internal_opnd_array = internal_opnd_array;
+  an_operand_ptr          opnds[10];
+  an_operand              operands[10], operand;
+  an_expr_stack_entry     expr_stack_entry, *saved_expr_stack;
+  a_token_cache_ptr       *p_cache;
+  int                     i;
+
+  if (contract_noexcept_block_routine != NULL &&
+      contract_label_constant(csp, label_con)) {
+    p_cache = message != NULL ? &contract_label_violation_cache
+                              : &contract_label_violation_no_message_cache;
+    if (*p_cache == NULL) {
+      *p_cache = new_fe<a_token_cache>(/*is_reusable=*/TRUE);
+      cache_tokens_from_string(
+                  message != NULL
+                    ? CONTRACT_LABEL_VIOLATION_CALL("__edg_opnd__(2)")
+                    : CONTRACT_LABEL_VIOLATION_CALL(
+                                    "static_cast<const char *>(nullptr)"),
+                  *p_cache, &csp->position);
+    }  /* if */
+    make_constant_operand(label_con, &operands[0]);
+    make_string_constant_operand(
+               shareable_fs_string_constant(
+                 copy_string_to_region(file_scope_region_number, comment)),
+               &operands[1]);
+    if (message != NULL) {
+      make_string_constant_operand(
+               shareable_fs_string_constant(
+                 copy_string_to_region(file_scope_region_number, message)),
+               &operands[2]);
+    } else {
+      make_error_operand(&operands[2]);
+    }  /* if */
+    make_integer_constant_operand(&operands[3],
+                                  (a_host_large_integer)(compute ? 1 : 0));
+    make_string_constant_operand(
+               shareable_fs_string_constant(
+                 copy_string_to_region(file_scope_region_number, file)),
+               &operands[4]);
+    make_string_constant_operand(
+               shareable_fs_string_constant(
+                 copy_string_to_region(file_scope_region_number, function)),
+               &operands[5]);
+    make_integer_constant_operand(&operands[6], (a_host_large_integer)line);
+    make_integer_constant_operand(&operands[7], (a_host_large_integer)kind);
+    make_integer_constant_operand(&operands[8],
+                                  (a_host_large_integer)semantic);
+    make_integer_constant_operand(&operands[9], (a_host_large_integer)mode);
+    for (i = 0; i < 10; i++) opnds[i] = &operands[i];
+    rescan_persistent_reusable_cache(*p_cache);
+    n_internal_opnds = 10;
+    internal_opnd_array = opnds;  /*lint !e733 !e789*/
+    save_expr_stack(&saved_expr_stack);
+    push_expr_stack(ek_normal, &expr_stack_entry,
+                    /*force_object_lifetime=*/FALSE,
+                    /*suppress_object_lifetime=*/FALSE);
+    expr_stack->suppress_diagnostics = TRUE;
+    add_stop_token(tok_semicolon);
+    scan_expr(&operand, PREC_QUEST_MARK, EOPT_DISALLOW_COMMA_OPERATOR);
+    remove_stop_token(tok_semicolon);
+    if (!expr_stack->any_suppressed_error && !is_error_operand(&operand)) {
+      result = wrap_up_full_expression(make_node_from_operand(&operand));
+      set_expr_result_not_used(result);
+    }  /* if */
+    pop_expr_stack();
+    restore_expr_stack(saved_expr_stack);
+    /* Discard what remains of the cached tokens, through the ";". */
+    while (curr_token != tok_semicolon && curr_token != tok_end_of_source) {
+      (void)get_token();
+    }  /* while */
+    if (curr_token == tok_semicolon) (void)get_token();
+    internal_opnd_array = saved_internal_opnd_array;
+    n_internal_opnds = saved_n_internal_opnds;
+  }  /* if */
+  release_local_constant(&label_con);
+  return result;
+}  /* contract_label_violation_call */
+
+
 static void add_template_arg_to_decorated_name(
                                     a_template_arg_ptr                 tap,
                                     a_template_param_ptr               tpp,
@@ -56457,6 +56583,11 @@ ignore and quick_enforce).
   if (!in_ce) {
     allowed &= (1u << 1) | (1u << 4);
   }  /* if */
+  if (!in_ce) {
+    /* And the noexcept semantics, which let no exception escape a check
+       either. */
+    allowed |= supported & ((1u << 6) | (1u << 7));
+  }  /* if */
 #endif /* BACK_END_IS_C_GEN_BE */
   v = noexcept_best_fit_label_semantic(contract_semantic_value(semantic),
                                        allowed);
@@ -61839,6 +61970,8 @@ Do one-time initialization of variables related to expression processing.
   }
   contract_label_group_buffer = NULL;
   contract_label_group_chars = NULL;
+  contract_label_violation_cache = NULL;
+  contract_label_violation_no_message_cache = NULL;
 }  /* expr_one_time_init */
 
 
