@@ -3685,5 +3685,6 @@ ec_array_comparison_not_allowed;;"comparison between two arrays is not allowed"
 ec_array_comparison_compares_addresses;;"comparison between two arrays compares their addresses"
 ec_constexpr_destroying_outside_lifetime;;"attempt to destroy an object outside its lifetime"
 ec_constexpr_modifying_outside_lifetime;;"attempt to modify an object outside its lifetime"
+ec_constexpr_member_before_construction;;"attempt to refer to a member of an object whose construction has not begun"
  ###############################################################################
 
