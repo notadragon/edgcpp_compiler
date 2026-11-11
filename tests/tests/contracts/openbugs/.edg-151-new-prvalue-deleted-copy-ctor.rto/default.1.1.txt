@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
+"Test_name.c", line 16: error: function "T::T(const T &)" (declared at line 13) cannot be referenced -- it is a deleted function
+  T *a = new T(T());
+              ^
+
+"Test_name.c", line 17: error: function "T::T(const T &)" (declared at line 13) cannot be referenced -- it is a deleted function
+  T *b = new T(make());
+              ^
+
+2 errors detected in the compilation of "Test_name.c".
