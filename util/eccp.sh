@@ -936,6 +936,7 @@ check_abbreviation()
 --contracts_p4283
 --contracts_p4298
 --contracts_p4299
+--contracts_p4301
 --contracts_p4405
 --contracts_prove_callee_premises
 --contracts_prove_fold
@@ -1124,6 +1125,7 @@ check_abbreviation()
 --no_contracts_p4283
 --no_contracts_p4298
 --no_contracts_p4299
+--no_contracts_p4301
 --no_contracts_p4405
 --no_contracts_prove_callee_premises
 --no_contracts_prove_fold
@@ -1977,6 +1979,8 @@ process_option()
          --no_contracts_p4298 | \
          --contracts_p4299 | \
          --no_contracts_p4299 | \
+         --contracts_p4301 | \
+         --no_contracts_p4301 | \
          --contracts_p4405 | \
          --no_contracts_p4405 | \
          --contracts_prove_fold | \
