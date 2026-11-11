@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3099 Test_name.c
+"Test_name.c", line 17: error: mismatched contract diagnostic message in declaration (previous contract specifier declared at line 16)
+  void f(int x) pre(x > 0, "different message"); // expected-error {{differs in contract specifier sequence}} expected-note {{in contract specified here}}
+                ^
+
+"Test_name.c", line 23: error: mismatched contract diagnostic message in declaration (previous contract specifier declared at line 22)
+  void h(int x) pre(x > 0); // expected-error {{differs in contract specifier sequence}} expected-note {{in contract specified here}}
+                ^
+
+2 errors detected in the compilation of "Test_name.c".

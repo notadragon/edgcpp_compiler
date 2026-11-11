@@ -1,0 +1,12 @@
+Matches for "line 11: error: mismatched contract diagnostic message in declaration":
+  <-----------------------------------------------------------------------------
+  line 11: error: mismatched contract diagnostic message in declaration
+  ----------------------------------------------------------------------------->
+Matches for "line 14: error: mismatched contract diagnostic message in declaration":
+  <-----------------------------------------------------------------------------
+  line 14: error: mismatched contract diagnostic message in declaration
+  ----------------------------------------------------------------------------->
+Matches for "line 17: error: mismatched contract diagnostic message in declaration":
+  <-----------------------------------------------------------------------------
+  line 17: error: mismatched contract diagnostic message in declaration
+  ----------------------------------------------------------------------------->

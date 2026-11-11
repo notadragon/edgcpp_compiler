@@ -4274,6 +4274,7 @@ handle_class_type_supplement_for_class:
       /* So are the parameter proxies. */
       walk_list(eptr->param_proxies, a_variable_ptr, iek_variable);
       walk_string_ptr(eptr->comment, iek_other_text, 0);
+      walk_string_ptr(eptr->message, iek_other_text, 0);
       /* The token cache pointer is for front end use only. */
       conditionally_clear_fe_pointer(eptr->token_cache);
 #undef eptr
