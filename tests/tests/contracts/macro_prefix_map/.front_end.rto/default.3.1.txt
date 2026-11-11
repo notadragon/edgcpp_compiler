@@ -1,0 +1,1 @@
+eccp -DTEST_NUMBER=3 --c++26 --macro_prefix_map nomatch=MAPPED/ Test_name.c

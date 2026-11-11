@@ -1316,6 +1316,28 @@ set_working_directory.
 }  /* get_working_directory */
 
 
+a_const_char *canonical_file_name(a_const_char *file_name)
+/*
+Return file_name as an absolute path with every symbolic link, "." and ".."
+resolved, in general memory, or file_name itself if that cannot be done (as
+GCC's lrealpath does, for --canon_prefix_map).
+*/
+{
+  a_const_char  *result = file_name;
+#if !__MICROSOFT_OS__
+  char          *real = realpath(file_name, (char *)NULL);
+
+  if (real != NULL) {
+    char  *copy = (char *)alloc_general((sizeof_t)(strlen(real) + 1));
+    (void)strcpy(copy, real);
+    free(real);
+    result = copy;
+  }  /* if */
+#endif /* !__MICROSOFT_OS__ */
+  return result;
+}  /* canonical_file_name */
+
+
 static a_const_char* resolve_file_name(a_const_char *file_name,
                                        a_const_char *dir_name = NULL);
 

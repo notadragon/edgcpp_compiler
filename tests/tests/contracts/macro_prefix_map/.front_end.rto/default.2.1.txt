@@ -1,0 +1,1 @@
+eccp -DTEST_NUMBER=2 --c++26 --macro_prefix_map =FIRST/ --macro_prefix_map =SECOND/ Test_name.c

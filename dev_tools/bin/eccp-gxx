@@ -23,6 +23,14 @@
 #   --c++NN                      -> -std=c++NN (front end and g++)
 #   --[no_]exceptions, --[no_]rtti, --no_warnings
 #                                -> the g++ spellings (front end and g++)
+#   -f[no-]canon-prefix-map     -> unchanged (edg_gxx.sh gives the prefix
+#                                   maps to the front end too, for __FILE__)
+#   --macro_prefix_map=X, --macro_prefix_map X
+#                                -> -fmacro-prefix-map=X (front end and g++)
+#   --[no_]canon_prefix_map      -> the g++ spelling (front end and g++)
+#   -f[no-]sanitize=X, -f[no-]sanitize-...
+#                                -> unchanged: g++'s (edg_gxx.sh gives them
+#                                   to g++)
 #   -D, -U, -I, -l, -L, -Wl,...  -> unchanged (edg_gxx.sh routes them)
 #   -O..., -W... (not -Wl,)      -> unchanged: g++'s optimization and warning
 #                                   options (edg_gxx.sh gives them to g++)
@@ -91,6 +99,18 @@ while [ $# -gt 0 ] ; do
       ;;
     --pch_test_mode)
       pch_test_mode=1 ;;
+    -fcanon-prefix-map|-fno-canon-prefix-map)
+      args+=("$arg") ;;
+    --macro_prefix_map=*)
+      args+=("-fmacro-prefix-map=${arg#*=}") ;;
+    --macro_prefix_map)
+      args+=("-fmacro-prefix-map=$1"); shift ;;
+    --canon_prefix_map)
+      args+=(-fcanon-prefix-map) ;;
+    --no_canon_prefix_map)
+      args+=(-fno-canon-prefix-map) ;;
+    -fsanitize=*|-fno-sanitize=*|-fsanitize-*|-fno-sanitize-*)
+      args+=("$arg") ;;
     -D*|-U*|-I*|-l*|-L*|-Wl,*)
       args+=("$arg") ;;
     -O*|-W*)
