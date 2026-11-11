@@ -1,0 +1,8 @@
+eccp -DTEST_NUMBER=1 --c++26 --contracts_p3400 --contracts_p4298 --contract_evaluation_semantic=ignore --contract_group_evaluation_semantic=safety:noexcept_observe Test_name.c
+Test_name.c: In function 'void f(int)':
+Test_name.c:81:15: warning: 'nonconst_t' does not provide the 'group_names' facet because that member is not 'const' [-Wcontract-invalid-label-facet]
+   81 | void f(int x) pre<nonconst_t{}>(x > 0) { }
+      |               ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:69:13: note: declared here
+   69 |   const char *group_names[1] = { "safety" };
+      |             ^~~~~~~~~~~

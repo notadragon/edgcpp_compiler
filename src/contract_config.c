@@ -1453,6 +1453,55 @@ if in_ce is TRUE.
       entry->constexpr_eval != (in_ce ? 1 : 0)) {
     return FALSE;
   }  /* if */
+  if (entry->group != NULL) {
+    /* P3400: a group of the contract assertion's label (see
+       a_contract_specifier::label_groups) that is the entry's, or of which
+       it is a prefix ending before a ".", as in GCC and Clang, comparing
+       every byte of the label's group name (NUL bytes included,
+       notadragon_wg21 DECISIONS.md E192 (2)).  A P3100 group named as one
+       whose leaves are not within its name also selects a group within
+       each leaf, as in GCC and Clang (DECISIONS.md E125 (a)). */
+    static a_const_char  *combined_groups[][3] = {
+      { "ub:conv.lval.valid.representation.bool.enum",
+        "ub:conv.lval.valid.representation.bool",
+        "ub:conv.lval.valid.representation.enum" }
+    };
+    a_const_char  *selectors[3];
+    size_t        num_selectors = 1, c, sel;
+    a_const_char  *name = csp->label_groups;
+    a_boolean     found = FALSE;
+    selectors[0] = entry->group;
+    for (c = 0; c < sizeof(combined_groups) / sizeof(combined_groups[0]);
+         c++) {
+      if (strcmp(entry->group, combined_groups[c][0]) == 0) {
+        selectors[1] = combined_groups[c][1];
+        selectors[2] = combined_groups[c][2];
+        num_selectors = 3;
+        break;
+      }  /* if */
+    }  /* for */
+    while (!found && name != NULL && *name != '\0') {
+      /* Compare the name, decoding the bytes stored as the byte 1 and a
+         letter, with each selector. */
+      a_const_char  *end = strchr(name, '\n');
+      for (sel = 0; !found && sel < num_selectors; sel++) {
+        a_const_char  *g = selectors[sel];
+        a_const_char  *q = name;
+        while (*g != '\0' && q != end) {
+          char  ch = *q++;
+          if (ch == '\1') {
+            ch = *q++;
+            ch = ch == '0' ? '\0' : ch == 'n' ? '\n' : '\1';
+          }  /* if */
+          if (ch != *g) break;
+          g++;
+        }  /* while */
+        found = *g == '\0' && (q == end || *q == '.');
+      }  /* for */
+      name = end + 1;
+    }  /* while */
+    if (!found) return FALSE;
+  }  /* if */
   if (entry->ns != NULL &&
       !namespace_matches(entry->ns, routine != NULL
                                       ? routine_namespace(routine) : "")) {

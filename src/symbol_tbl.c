@@ -8756,6 +8756,128 @@ Don't put its symbol into the symbol table yet.
 
 #endif /* IA64_ABI */
 
+void enter_contract_label_group_reader(void)
+/*
+Define the function template with which the front end reads the group names
+of a P3400 label (see resolve_contract_label_groups), as GCC does:
+__edg_contract_label_group<S, W, N>(label, count) walks the label's
+group_names once, as a range-based for walks it (an array, begin and end as
+members, or found by argument-dependent lookup), and yields, for W 0, the
+number of its elements, counting no further than N; for W 1, an array of
+the lengths of its first N elements converted to S (std::string_view, or
+const char * if <string_view> has not declared it); for W 2, an array of
+the N characters of its first count elements so converted, one after
+another.  Each element is converted and read within the full-expression
+that dereferences the iterator, so an iterator may return its names by
+value.  group_names must be const and a range whose elements convert
+implicitly to S; otherwise the result is 0 (or zeros).  Every requirement
+is tested (with if constexpr) before it is relied on, so that no label
+makes an instance ill-formed.  Set contract_label_group_reader_entered if
+it is defined.
+*/
+{
+  scan_top_level_generated_code(
+    "template <class _T> struct __edg_contract_is_const {"
+    "  static constexpr bool value = false; };"
+    "template <class _T> struct __edg_contract_is_const<const _T> {"
+    "  static constexpr bool value = true; };"
+    "template <class _T> struct __edg_contract_is_array {"
+    "  static constexpr bool value = false; };"
+    "template <class _T, decltype(sizeof 0) _N> "
+    "struct __edg_contract_is_array<_T[_N]> {"
+    "  static constexpr bool value = true; };"
+    "template <class _S> void __edg_contract_convert_to(_S) noexcept;"
+    "template <class _T, unsigned long _N> struct __edg_contract_gn_array {"
+    "  _T v[_N]; };"
+    "template <int _W, unsigned long _N> struct __edg_contract_gn_result {"
+    "  using type = unsigned long; };"
+    "template <unsigned long _N> struct __edg_contract_gn_result<1, _N> {"
+    "  using type = __edg_contract_gn_array<unsigned long, _N>; };"
+    "template <unsigned long _N> struct __edg_contract_gn_result<2, _N> {"
+    "  using type = __edg_contract_gn_array<unsigned char, _N>; };"
+    "template <class _D> [[maybe_unused]] static constexpr auto "
+    "__edg_contract_gn_begin(const _D &r) {"
+    "  if constexpr (__edg_contract_is_array<_D>::value) {"
+    "    return r + 0;"
+    "  } else if constexpr (requires { r.begin(); r.end(); }) {"
+    "    return r.begin();"
+    "  } else {"
+    "    return begin(r);"
+    "  }"
+    "}"
+    "template <class _D> [[maybe_unused]] static constexpr auto "
+    "__edg_contract_gn_end(const _D &r) {"
+    "  if constexpr (__edg_contract_is_array<_D>::value) {"
+    "    return r + sizeof r / sizeof *r;"
+    "  } else if constexpr (requires { r.begin(); r.end(); }) {"
+    "    return r.end();"
+    "  } else {"
+    "    return end(r);"
+    "  }"
+    "}"
+    "template <class _S> [[maybe_unused]] static constexpr unsigned long "
+    "__edg_contract_gn_length(_S s) {"
+    "  if constexpr (requires { s.size(); }) {"
+    "    return s.size();"
+    "  } else {"
+    "    unsigned long n = 0;"
+    "    while (s[n] != 0) ++n;"
+    "    return n;"
+    "  }"
+    "}"
+    "template <class _S> [[maybe_unused]] static constexpr unsigned long "
+    "__edg_contract_gn_copy(_S s, unsigned char *p, unsigned long k, "
+    "unsigned long m) {"
+    "  unsigned long n = __edg_contract_gn_length<_S>(s);"
+    "  for (unsigned long j = 0; j != n && k != m; ++j) {"
+    "    p[k] = (unsigned char)s[j];"
+    "    ++k;"
+    "  }"
+    "  return k;"
+    "}"
+    "template <class _S, int _W, unsigned long _N, class _L> "
+    "[[maybe_unused]] static constexpr "
+    "typename __edg_contract_gn_result<_W, _N>::type "
+    "__edg_contract_label_group(const _L &label, unsigned long count) {"
+    "  typename __edg_contract_gn_result<_W, _N>::type res{};"
+    "  if constexpr (requires { label.group_names; }) {"
+    "    using _D = decltype(label.group_names);"
+    "    const _D &r = label.group_names;"
+    "    if constexpr (!__edg_contract_is_const<_D>::value) {"
+    "    } else if constexpr (__edg_contract_is_array<_D>::value"
+    "                         ? requires { __edg_contract_convert_to<_S>(*r); }"
+    "                         : requires { r.begin(); r.end(); }"
+    "                         ? requires { __edg_contract_convert_to<_S>("
+    "*r.begin()); }"
+    "                         : requires { begin(r); end(r); "
+    "__edg_contract_convert_to<_S>(*begin(r)); }) {"
+    "      auto b = __edg_contract_gn_begin(r);"
+    "      auto e = __edg_contract_gn_end(r);"
+    "      unsigned long i = 0, k = 0;"
+    "      if constexpr (_W != 2) count = _N;"
+    "      while (i != count) {"
+    "        if (b != e) {} else break;"
+    "        if constexpr (_W == 1) {"
+    "          res.v[i] = __edg_contract_gn_length<_S>(*b);"
+    "        } else if constexpr (_W == 2) {"
+    "          k = __edg_contract_gn_copy<_S>(*b, res.v, k, _N);"
+    "        }"
+    "        ++b;"
+    "        ++i;"
+    "      }"
+    "      if constexpr (_W == 0) res = i;"
+    "    }"
+    "  }"
+    "  return res;"
+    "}",
+    (an_assembly_index)0, /*is_metadata=*/FALSE);
+  contract_label_group_reader_entered =
+    look_up_name_string_in_namespace("__edg_contract_label_group",
+                                     (a_namespace_ptr)NULL,
+                                     IDL_DIRECT_NAMESPACE_MEMBERS_ONLY) != NULL;
+}  /* enter_contract_label_group_reader */
+
+
 a_symbol_ptr look_up_name_string_in_namespace(
                                         a_const_char             *symbol_name,
                                         a_namespace_ptr          ns_ptr,
@@ -12211,6 +12333,10 @@ from any configured semantic.
       sym->explicit_linkage_specifier = TRUE;
       contract_trap_routine = sym->variant.routine.ptr;
     }  /* if */
+  }  /* if */
+  if (contracts_p3400_enabled && concepts_enabled) {
+    /* What reads the group names of P3400 labels. */
+    enter_contract_label_group_reader();
   }  /* if */
 }  /* enter_contract_check_routines */
 
@@ -20327,6 +20453,7 @@ given translation unit.
   symbol_for_namespace_std_entered = FALSE;
   symbol_for_namespace_std_meta = NULL;
   symbol_for_namespace_std_meta_entered = FALSE;
+  contract_label_group_reader_entered = FALSE;
 #if MICROSOFT_EXTENSIONS_ALLOWED
   memzero((char *)cli_symbols, sizeof(cli_symbols));
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
