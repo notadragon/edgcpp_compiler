@@ -1,0 +1,19 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3097 --contracts_p4405 --contract_analysis_semantic=prove --contracts_prove_optimize=0 -fcontracts-prove-shadow -O2 Test_name.c
+"Test_name.c", line 43: warning: variable "d" was declared but never referenced
+  void use () { D d; }
+                  ^
+
+Test_name.c: In member function 'virtual int D::f(int)':
+Test_name.c:33:13: error: contract assertion cannot be proven for a call through 'virtual int B::f(int)'
+   33 |   int f (int x) override        // { dg-error "cannot be proven for a call through 'virtual int B::f\\(int\\)'" }
+      |             ^
+Test_name.c:26:43: note: the predicate of the contract assertion
+   26 |   virtual int f (int x) pre (x > 0) post (r: r > 0);    // { dg-message "the predicate of the contract assertion" }
+      |                                         ~~^~~
+Test_name.c: In function 'int k(int, int)':
+Test_name.c:49:1: error: contract assertion cannot be proven
+   49 |     contract_assert (i < n);    // { dg-error "contract assertion cannot be proven" }
+      | ^   ~~~~~~~~~~~
+Test_name.c:49:19: note: the predicate of the contract assertion
+   49 |     contract_assert (i < n);    // { dg-error "contract assertion cannot be proven" }
+      |                 ~~^~~

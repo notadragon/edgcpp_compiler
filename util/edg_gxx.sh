@@ -62,6 +62,9 @@
 # virtual functions are g++'s, which proves them with that strategy.
 # -f[no-]contracts-prove-callee-premises goes to both; the proof shadow that
 # takes a callee's observe and ignore evaluations as premises is g++'s.
+# -fcontracts-prove-optimize= goes to both; the proof optimization level
+# chooses g++'s strategies and how its proof shadows are optimized (the
+# front end's folding is on at every level).
 #
 # Prefix maps.  -fmacro-prefix-map= and -ffile-prefix-map= go to both: the
 # front end expands __FILE__, __FILE_NAME__ and __BASE_FILE__ (as
@@ -252,6 +255,9 @@ while [ $# -gt 0 ] ; do
       edg_args+=("--contracts_prove_callee_premises"); gxx_args+=("$arg") ;;
     -fno-contracts-prove-callee-premises)
       edg_args+=("--no_contracts_prove_callee_premises"); gxx_args+=("$arg") ;;
+    -fcontracts-prove-optimize=*)
+      edg_args+=("--contracts_prove_optimize=${arg#*=}")
+      gxx_args+=("$arg") ;;
     -fmacro-prefix-map=*|-ffile-prefix-map=*)
       # The front end tries the last map given first, and g++ tries every
       # -ffile-prefix-map= before any -fmacro-prefix-map=, so the macro maps

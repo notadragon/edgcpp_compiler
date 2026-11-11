@@ -1,0 +1,11 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p4405 -fno-contracts-prove-assume --contract_evaluation_semantic=prove --contracts_prove_optimize=0 Test_name.c
+Test_name.c: In function 'void f(int)':
+Test_name.c:21:1: error: contract predicate is always false
+   21 |   contract_assert (false);      // { dg-error "contract predicate is always false" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:22:1: error: contract assertion cannot be proven
+   22 |   contract_assert (x > 0);      // { dg-error "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:22:19: note: the predicate of the contract assertion
+   22 |   contract_assert (x > 0);      // { dg-error "contract assertion cannot be proven" }
+      |                 ~~^~~

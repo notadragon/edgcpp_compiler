@@ -1,0 +1,15 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p4405 --contract_evaluation_semantic=prove -O1 Test_name.c
+Test_name.c: In function 'int loop2()':
+Test_name.c:66:1: error: contract assertion cannot be proven
+   66 |   contract_assert (c <= 8);     // [loop2] { dg-error "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:66:19: note: the predicate of the contract assertion
+   66 |   contract_assert (c <= 8);     // [loop2] { dg-error "contract assertion cannot be proven" }
+      |                 ~~^~~~
+Test_name.c: In function 'int loop3()':
+Test_name.c:77:1: error: contract assertion cannot be proven
+   77 |   contract_assert (c <= 8);     // [loop3] { dg-error "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:77:19: note: the predicate of the contract assertion
+   77 |   contract_assert (c <= 8);     // [loop3] { dg-error "contract assertion cannot be proven" }
+      |                 ~~^~~~

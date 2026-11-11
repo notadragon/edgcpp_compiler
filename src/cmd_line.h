@@ -407,6 +407,7 @@ enum an_option_kind {
   optk_contract_analysis_skip_dead_calls,
   optk_contracts_prove_override,
   optk_contracts_prove_callee_premises,
+  optk_contracts_prove_optimize,
   optk_last		/* Must be last. */
 };
 
@@ -3151,6 +3152,17 @@ EXTERN_THREAD a_boolean
 			   enabled; implied by --contracts_p4405.  The front
 			   end has no proving strategy, so it does not consult
 			   it: the drivers pass it on to g++. */
+
+EXTERN_THREAD int
+		contracts_prove_optimize;
+			/* The proof optimization level of P4405
+			   (--contracts_prove_optimize=, as GCC's
+			   -fcontracts-prove-optimize=): 0 to 3, -1 for follow
+			   (the code-generation level), -2 when not given.
+			   The proving strategies are tied to it in g++; the
+			   front end's only strategy, folding, is on at every
+			   level, so it does not consult it: the drivers pass
+			   it on to g++. */
 
 EXTERN_THREAD a_boolean
 		contracts_p3290_enabled;

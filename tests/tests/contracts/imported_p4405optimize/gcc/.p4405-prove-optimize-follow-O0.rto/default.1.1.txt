@@ -1,0 +1,8 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p4405 --contracts_prove_optimize=follow --contract_evaluation_semantic=prove -O0 Test_name.c
+Test_name.c: In function 'int f(int, int)':
+Test_name.c:21:1: error: contract assertion cannot be proven
+   21 |     contract_assert (i < n);    // { dg-error "contract assertion cannot be proven" }
+      | ^   ~~~~~~~~~~~
+Test_name.c:21:19: note: the predicate of the contract assertion
+   21 |     contract_assert (i < n);    // { dg-error "contract assertion cannot be proven" }
+      |                 ~~^~~

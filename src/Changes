@@ -1,3 +1,14 @@
+11/9/26 []
+Contracts (P4405): --contracts_prove_optimize
+
+The new --contracts_prove_optimize=<0|1|2|3|follow> option is accepted for
+our GCC's proof optimization level, to which the drivers pass it on: it
+chooses g++'s proving strategies and how its proof shadows are optimized.
+The front end's only strategy, folding, is on at every level, so it
+changes nothing there.  Another value is an error.  Given without P4405
+it warns that it has no effect, whatever its value.
+
+
 11/7/26 []
 Contracts (P4405): --[no_]contracts_prove_callee_premises
 

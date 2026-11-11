@@ -1,0 +1,14 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 --contracts_prove_optimize=0 --contracts_prove_callee_premises --contract_evaluation_semantic=observe -O2 Test_name.c
+Test_name.c: In function 'void g()':
+Test_name.c:44:12: error: contract assertion cannot be proven
+   44 |       use (p.error ()); // { dg-error "contract assertion cannot be proven" }
+      |       ~~~~~^~
+Test_name.c:32:46: note: the predicate of the contract assertion
+   32 |   int error () const pre<prove> (index () == 1) { return d_error; }     // { dg-message "the predicate of the contract assertion" }
+      |                                ~~~~~~~~~~~~~~^~~~
+Test_name.c:48:12: error: contract assertion cannot be proven
+   48 |       use (p.value ()); // { dg-error "contract assertion cannot be proven" }
+      |       ~~~~~^~
+Test_name.c:33:46: note: the predicate of the contract assertion
+   33 |   int value () const pre<prove> (index () == 0) { return d_value; }     // { dg-message "the predicate of the contract assertion" }
+      |                                ~~~~~~~~~~~~~~^~~~

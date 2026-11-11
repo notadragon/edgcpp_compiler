@@ -1,0 +1,5 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contracts_p4405 --contracts_prove_optimize=4 Test_name.c
+Command-line error: unrecognized proof optimization level (must be 0, 1, 2, 3 or follow): 4
+
+1 catastrophic error detected in this compilation.
+Compilation terminated.

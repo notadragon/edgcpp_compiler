@@ -1,0 +1,3 @@
+fe_only -DTEST_NUMBER=9 --c++26 --contracts_p3850 --no_contracts_p4405 --contracts_prove_optimize=follow Test_name.c
+Command-line warning: --contracts_prove_optimize has no effect without --contracts_p4405
+

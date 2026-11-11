@@ -1,0 +1,5 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3097 --contracts_p4405 --contract_analysis_semantic=prove --contracts_prove_optimize=1 --contracts_prove_override -O2 Test_name.c
+"Test_name.c", line 38: warning: variable "d" was declared but never referenced
+  void use () { D d; }
+                  ^
+

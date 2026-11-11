@@ -1,0 +1,1 @@
+cpfe -DTEST_NUMBER=2 --c++26 --c++26 --contracts --contracts_p4405 -fcontracts-prove-assume --contract_evaluation_semantic=observe --contract_configuration_file=p4405-nested-conditional.json -O0 -O2 Test_name.c
