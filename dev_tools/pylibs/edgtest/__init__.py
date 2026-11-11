@@ -182,6 +182,31 @@ def _add_run_my_tests_env_vars(suite_env: Dict[str, str]) -> None:
   if 'CDISP' not in suite_env and 'CPFE' in suite_env:
     suite_env['CDISP'] = os.path.dirname(suite_env['CPFE'])
 
+def _read_suite_env_assignments(env_file: Path) -> Dict[str, str]:
+  '''Return the assignments of a suite's `.run_test_env`, read as data.
+
+  Only blank lines, `#` comments and `[export ]NAME=VALUE` lines are
+  accepted, VALUE taken literally (no quoting, expansion or substitution);
+  nothing in the file is executed.  Anything else is an error, so a file
+  written for the shell is not silently misread.
+  '''
+  assignments: Dict[str, str] = {}
+  pattern = re.compile(
+    r'(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)=([^\s$`"\'\\;&|<>()]*)'
+  )
+  with open(env_file, 'r') as file_handle:
+    for line_number, line in enumerate(file_handle, 1):
+      stripped_line = line.strip()
+      if len(stripped_line) == 0 or stripped_line.startswith('#'):
+        continue
+      match = pattern.fullmatch(stripped_line)
+      if match is None:
+        raise RuntimeError(
+          f"{env_file}:{line_number}: not a plain NAME=VALUE assignment"
+        )
+      assignments[match.group(1)] = match.group(2)
+  return assignments
+
 def load_test_suite_env(test_suite_dir: Path) -> Dict[str, str]:
   '''Return the environment tests in the given suite run with.
 
@@ -191,6 +216,13 @@ def load_test_suite_env(test_suite_dir: Path) -> Dict[str, str]:
   the environment is now always inherited.
   '''
   suite_env = os.environ.copy()
+
+  # A suite may still set variables (the contracts suite its default
+  # configuration, RUN_TEST_DEFAULT_CONFIG) in `.run_test_env`, read as plain
+  # assignments without running a shell; they override the inherited ones.
+  env_file = test_suite_dir / '.run_test_env'
+  if env_file.is_file():
+    suite_env.update(_read_suite_env_assignments(env_file))
 
   if 'RUN_TEST_DEFAULT_CONFIG' not in suite_env:
     suite_env['RUN_TEST_DEFAULT_CONFIG'] = runtest.get_default_config_name()
