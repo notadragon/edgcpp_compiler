@@ -1,0 +1,8 @@
+eccp -DTEST_NUMBER=1 --c++26 --contracts_p4283 --contracts_p3098 --contracts_p3400 --contract_evaluation_semantic=observe Test_name.c
+"Test_name.c", line 29: warning: attribute "maybe_unused" does not apply here
+    post <review> requires Small<T> [[maybe_unused]] [c = x] (r: r == c + 1)
+                                      ^
+
+Test_name.c:29:40: warning: attributes are ignored on function contract specifiers [-Wattributes]
+   29 |   post <review> requires Small<T> [[maybe_unused]] [c = x] (r: r == c + 1)
+      |                                        ^~~~~~~~~~~~~~~~~~~~
