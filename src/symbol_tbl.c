@@ -12316,6 +12316,7 @@ from any configured semantic.
 {
   if (CONTRACT_CHECKS_IN_FRONT_END &&
       (contract_semantic_possible(ces_quick_enforce) ||
+       contracts_p4451_enabled ||
        contracts_p3400_enabled)) {
     a_symbol_locator     loc;
     a_type_ptr           rout_type;

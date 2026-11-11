@@ -408,6 +408,12 @@ extern a_boolean curr_token_starts_labeled_contract_specifier(void);
 extern void cache_contract_label(a_contract_specifier_ptr  csp,
                                  a_boolean                 skip);
 extern void scan_cached_contract_label(a_contract_specifier_ptr  csp);
+extern a_boolean next_token_begins_terminating(void);
+extern void scan_terminating_contract_specifier(
+                                         a_contract_specifier_ptr  csp,
+                                         a_boolean                 skip);
+extern void mark_contract_terminating(a_contract_specifier_ptr  csp);
+extern void check_terminating_specifier(a_contract_specifier_ptr  csp);
 extern a_boolean contract_specifiers_are_cached(
                                          a_contract_specifier_ptr  csp);
 extern void scan_cached_contract_specifiers(

@@ -1,0 +1,8 @@
+Matches for "line 10: error: assertion-control specifier <terminating> requires --contracts_p4451":
+  <-----------------------------------------------------------------------------
+  line 10: error: assertion-control specifier <terminating> requires --contracts_p4451
+  ----------------------------------------------------------------------------->
+Matches for "line 12: error: assertion-control specifier <terminating> requires --contracts_p4451":
+  <-----------------------------------------------------------------------------
+  line 12: error: assertion-control specifier <terminating> requires --contracts_p4451
+  ----------------------------------------------------------------------------->

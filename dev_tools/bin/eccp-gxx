@@ -47,6 +47,7 @@
 #   --[no_]contracts_prove_callee_premises
 #                                -> the g++ spelling (front end and g++)
 #   --contracts_prove_optimize=X -> the g++ spelling (front end and g++)
+#   --[no_]contracts_p4451       -> the g++ spelling (front end and g++)
 #   -f[no-]canon-prefix-map     -> unchanged (edg_gxx.sh gives the prefix
 #                                   maps to the front end too, for __FILE__)
 #   --macro_prefix_map=X, --macro_prefix_map X
@@ -203,6 +204,10 @@ while [ $# -gt 0 ] ; do
       args+=(-fno-contracts-prove-callee-premises) ;;
     --contracts_prove_optimize=*)
       args+=("-fcontracts-prove-optimize=${arg#*=}") ;;
+    --contracts_p4451)
+      args+=(-fcontracts-p4451) ;;
+    --no_contracts_p4451)
+      args+=(-fno-contracts-p4451) ;;
     -fcanon-prefix-map|-fno-canon-prefix-map)
       args+=("$arg") ;;
     --macro_prefix_map=*)

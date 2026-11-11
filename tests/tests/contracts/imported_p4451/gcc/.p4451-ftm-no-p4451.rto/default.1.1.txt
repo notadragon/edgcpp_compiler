@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p4451 --no_contracts_p4451 Test_name.c
+"Test_name.c", line 20: error: assertion-control specifier <terminating> requires --contracts_p4451
+  void f (int x) pre<terminating> (x > 0);	// { dg-error "requires .-fcontracts-p4451." }
+                    ^
+
+1 error detected in the compilation of "Test_name.c".

@@ -1,0 +1,3 @@
+./a.out
+contract violation in function int g(int) at Test_name.c:11: (((int)((const int)x)) != 3)
+[assertion_kind: assert, semantic: enforce, mode: predicate_false, terminating: yes]

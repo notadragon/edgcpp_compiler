@@ -7252,6 +7252,13 @@ Nothing is chosen in a template-dependent context.
 {
   if (is_template_dependent_context()) return;
   for (; csp != NULL; csp = csp->next) {
+    if (csp->is_terminating) {
+      /* P4451: the semantics of P3400's labels::terminating. */
+      (void)contract_semantic_for(csp, current_routine_entry(),
+                                  /*in_constant_evaluation=*/FALSE);
+      (void)contract_semantic_for(csp, current_routine_entry(),
+                                  /*in_constant_evaluation=*/TRUE);
+    }  /* if */
     if (csp->label != NULL) {
       (void)contract_semantic_for(csp, current_routine_entry(),
                                   /*in_constant_evaluation=*/FALSE);
@@ -8200,9 +8207,17 @@ sequence.  The syntax is:
       /* The label, in the scope of the predicate. */
       scan_cached_contract_label(csp);
     }  /* if */
+    if (csp->is_terminating) {
+      /* P4451: the lookup checks of "<terminating>", likewise. */
+      check_terminating_specifier(csp);
+    }  /* if */
     csp->predicate = scan_contract_predicate(&csp->comment, &csp->message);
     if (csp->label != NULL) {
       apply_contract_label_message_facet(csp);
+      resolve_contract_semantics(csp);
+    }  /* if */
+    if (csp->is_terminating) {
+      /* P4451: as for a label. */
       resolve_contract_semantics(csp);
     }  /* if */
     (void)required_token(tok_rparen, ec_exp_rparen);

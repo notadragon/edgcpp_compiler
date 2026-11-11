@@ -18110,6 +18110,10 @@ angle bracket.
     gen_expression(csp->label);
     write_tok_str(")>");
   }  /* if */
+  if (csp->is_terminating) {
+    /* P4451's "<terminating>", which g++ gets with -fcontracts-p4451. */
+    write_tok_str("<terminating>");
+  }  /* if */
 }  /* gen_contract_label */
 
 

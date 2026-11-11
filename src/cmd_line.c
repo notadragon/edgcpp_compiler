@@ -1943,6 +1943,12 @@ Initialize the option information table.
                          "contracts_prove_optimize", '\0',
                          /*value=*/TRUE, /*arg_required=*/TRUE,
                          pchek_command_line);
+  add_option_description(optk_contracts_p4451, "contracts_p4451", '\0',
+                         /*value=*/TRUE, /*arg_required=*/FALSE,
+                         pchek_command_line);
+  add_option_description(optk_contracts_p4451, "no_contracts_p4451", '\0',
+                         /*value=*/FALSE, /*arg_required=*/FALSE,
+                         pchek_command_line);
 }  /* initialize_option_descriptions */
 
 
@@ -4159,6 +4165,9 @@ setting is used, and to set various unmentioned settings as needed.
   }  /* if */
   if (option_kind_used[(int)optk_contracts_prove_callee_premises] &&
       contracts_prove_callee_premises_enabled) {
+    command_line_error(ec_cl_contracts_option_only_in_cplusplus);
+  }  /* if */
+  if (option_kind_used[(int)optk_contracts_p4451] && contracts_p4451_enabled) {
     command_line_error(ec_cl_contracts_option_only_in_cplusplus);
   }  /* if */
   if (option_kind_used[(int)optk_array_new_and_delete]) {
@@ -12621,6 +12630,9 @@ enable_microsoft_mode:
                                  opt_arg);
         }  /* if */
         break;
+      case optk_contracts_p4451:
+        contracts_p4451_enabled = opt_value;
+        break;
      default:
         /* It should not be possible to get here. */
         unexpected_condition();
@@ -12695,6 +12707,18 @@ enable_microsoft_mode:
   }  /* if */
   if (contracts_p3400_enabled && !option_kind_used[(int)optk_contracts]) {
     /* So does --contracts_p3400 contracts. */
+    contracts_enabled = TRUE;
+  }  /* if */
+  if ((contracts_p3400_enabled || contracts_p3850_enabled) &&
+      !option_kind_used[(int)optk_contracts_p4451]) {
+    /* --contracts_p3850 and --contracts_p3400 enable P4451, whatever the
+       --no_ forms of the other (the options are additive, as in GCC),
+       unless --[no_]contracts_p4451 is given (see
+       check_contracts_option_rule). */
+    contracts_p4451_enabled = TRUE;
+  }  /* if */
+  if (contracts_p4451_enabled && !option_kind_used[(int)optk_contracts]) {
+    /* So does --contracts_p4451 contracts. */
     contracts_enabled = TRUE;
   }  /* if */
   if (contracts_p3850_enabled &&
@@ -14404,6 +14428,7 @@ variables declared in cmd_line.h.
   contracts_prove_override_enabled = FALSE;
   contracts_prove_callee_premises_enabled = FALSE;
   contracts_prove_optimize = -2;
+  contracts_p4451_enabled = FALSE;
   incognito = DEFAULT_INCOGNITO;
   keep_restrict_in_signatures = FALSE;
   attributes_on_using_declarations = FALSE;

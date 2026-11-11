@@ -1,0 +1,12 @@
+Matches for "line 9: error: unqualified lookup of "terminating" from this assertion-control specifier finds a declaration other than std::contracts::labels::terminating":
+  <-----------------------------------------------------------------------------
+  line 9: error: unqualified lookup of "terminating" from this assertion-control specifier finds a declaration other than std::contracts::labels::terminating
+  ----------------------------------------------------------------------------->
+Matches for "line 11: error: unqualified lookup of "terminating" from this assertion-control specifier finds a declaration other than std::contracts::labels::terminating":
+  <-----------------------------------------------------------------------------
+  line 11: error: unqualified lookup of "terminating" from this assertion-control specifier finds a declaration other than std::contracts::labels::terminating
+  ----------------------------------------------------------------------------->
+Matches for "line 18: error: unqualified lookup of "terminating" from this assertion-control specifier finds a declaration other than std::contracts::labels::terminating":
+  <-----------------------------------------------------------------------------
+  line 18: error: unqualified lookup of "terminating" from this assertion-control specifier finds a declaration other than std::contracts::labels::terminating
+  ----------------------------------------------------------------------------->

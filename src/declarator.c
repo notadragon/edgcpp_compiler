@@ -5706,6 +5706,14 @@ be taken for the start of a template-id.
 */
 {
   demote_p4299_contract_keyword();
+  if (contracts_p4451_enabled && !contracts_p3400_enabled) {
+    /* P4451 without P3400: "pre<" or "post<" can only begin
+       "<terminating>", which ends a trailing return type likewise. */
+    return contracts_enabled &&
+           (curr_token_is_identifier_string("pre") ||
+            curr_token_is_identifier_string("post")) &&
+           next_token() == tok_lt;
+  }  /* if */
   return contracts_enabled && contracts_p3400_enabled &&
          (curr_token_is_identifier_string("pre") ||
           curr_token_is_identifier_string("post")) &&
@@ -5731,6 +5739,12 @@ specifier (see in_assertion_control_expression).
   a_boolean          saved_in_assertion_control_expression =
                                              in_assertion_control_expression;
 
+  if (!contracts_p3400_enabled && (contracts_p4451_enabled ||
+                                   next_token_begins_terminating())) {
+    /* P4451's "<terminating>", or an error about it. */
+    scan_terminating_contract_specifier(csp, skip);
+    return;
+  }  /* if */
   if (!contracts_p3400_enabled) {
     pos_error(ec_contract_label_needs_option, &pos_curr_token);
     skip = TRUE;
@@ -6413,6 +6427,134 @@ Microsoft extended decl modifiers are also scanned, but they are ignored
   db_exit();
   return complete_type;
 }  /* pointer_declarator */
+
+
+a_boolean next_token_begins_terminating(void)
+/*
+The current token is a "<".  Return TRUE if "terminating >" follows it.
+*/
+{
+  a_boolean                    result;
+  a_tiny_scanning_token_cache  cache;
+
+  /* As next_two_tokens does: cache the "<", fetch the next token, and put
+     both back, the "<" to be fetched again. */
+  cache_curr_token(cache.ptr());
+  (void)get_token();
+  result = curr_token_is_identifier_string("terminating") &&
+           next_token() == tok_gt;
+  rescan_cached_tokens(cache.ptr());
+  return result;
+}  /* next_token_begins_terminating */
+
+
+void scan_terminating_contract_specifier(a_contract_specifier_ptr  csp,
+                                         a_boolean                 skip)
+/*
+The current token is the "<" that begins the assertion-control specifier of
+the contract assertion csp, and P3400, under which it is an ordinary label,
+is off.  With P4451 the only such specifier is "< terminating >", in which
+"terminating" is an identifier with special meaning, never scanned as an
+expression: if that is what follows, consume it and mark csp terminating
+(unless skip is TRUE; see mark_contract_terminating).  Otherwise issue an
+error -- with P4451 that only "<terminating>" is allowed, without it (for
+"<terminating>") that it requires P4451 -- and skip the specifier, as
+cache_contract_label does.
+*/
+{
+  a_source_position  pos = pos_curr_token;
+  a_token_set_array  stop_tokens;
+
+  (void)get_token();
+  if (contracts_p4451_enabled &&
+      curr_token_is_identifier_string("terminating") &&
+      next_token() == tok_gt) {
+    (void)get_token();
+    (void)get_token();
+    if (!skip) mark_contract_terminating(csp);
+    return;
+  }  /* if */
+  pos_error(contracts_p4451_enabled ? ec_contract_label_only_terminating
+                                    : ec_contract_terminating_needs_option,
+            &pos);
+  clear_token_set_array(stop_tokens);
+  incr_token_set_array_element(stop_tokens, tok_gt);
+  incr_token_set_array_element(stop_tokens, tok_semicolon);
+  cache_token_stream_coalesce_identifiers((a_token_cache *)NULL,
+                                          stop_tokens);
+  (void)required_token(tok_gt, ec_exp_gt);
+}  /* scan_terminating_contract_specifier */
+
+
+void mark_contract_terminating(a_contract_specifier_ptr  csp)
+/*
+Make the contract assertion csp a terminating contract assertion (P4451):
+the semantics it may use are exactly those P3400's
+std::contracts::labels::terminating allows -- enforce and quick_enforce,
+and with P4405 prove -- so that its semantic is chosen as for that label
+(see contract_semantic_for).  It has no label.
+*/
+{
+  csp->is_terminating = TRUE;
+  /* Bit 1 << v for each std::contracts::evaluation_semantic value v: 3
+     (enforce) and 4 (quick_enforce); prove (8) is bit 1 << (8 - 8) of the
+     proving set. */
+  csp->label_allowed_semantics = (a_byte)((1u << 3) | (1u << 4));
+  csp->label_allowed_proving_semantics =
+                                (a_byte)(contracts_p4405_enabled ? 1u : 0u);
+}  /* mark_contract_terminating */
+
+
+void check_terminating_specifier(a_contract_specifier_ptr  csp)
+/*
+P4451 [basic.contract.control]: check the assertion-control specifier
+"<terminating>" of the terminating contract assertion csp.  A declaration
+of std::contracts::labels::terminating shall precede it (ordinary
+visibility: qualified lookup finds only what is declared before this
+point), and unqualified lookup of "terminating" from it shall find nothing
+or only that entity, which is whatever qualified lookup finds (under P4451
+alone, the standard library declares it in an inline namespace).  Called
+where a label would be scanned (see scan_cached_contract_label), so that a
+member function's class is complete and a function's parameters are in
+scope.
+*/
+{
+  a_symbol_ptr      ns_sym, entity = NULL, found;
+  a_symbol_locator  loc;
+
+  ns_sym = look_up_name_string_in_std("contracts");
+  if (ns_sym != NULL && ns_sym->kind == (a_symbol_kind)sk_namespace) {
+    ns_sym = look_up_name_string_in_namespace(
+                             "labels", ns_sym->variant.namespace_info.ptr,
+                             IDL_MUST_BE_NAMESPACE);
+    if (ns_sym != NULL && ns_sym->kind == (a_symbol_kind)sk_namespace) {
+      entity = look_up_name_string_in_namespace(
+                             "terminating", ns_sym->variant.namespace_info.ptr,
+                             IDL_NO_OPTIONS);
+      if (entity != NULL) entity = fundamental_symbol_of(entity);
+    }  /* if */
+  }  /* if */
+  if (entity == NULL || entity->kind != (a_symbol_kind)sk_variable) {
+    pos_error(ec_contract_terminating_not_declared, &csp->position);
+    return;
+  }  /* if */
+  clear_locator(&loc, &csp->position);
+  (void)find_symbol("terminating", (sizeof_t)11, &loc);
+  found = normal_id_lookup(&loc, IDL_NO_OPTIONS);
+  if (found != NULL && loc.specific_symbol != NULL &&
+      loc.specific_symbol->ambiguous &&
+      f_check_for_ambiguity(&loc, /*is_templ_context=*/FALSE,
+                            /*is_qualifier=*/FALSE,
+                            /*diagnostic_should_be_issued=*/FALSE)) {
+    /* An ambiguous lookup finds more than that entity. */
+    pos_error(ec_contract_terminating_lookup, &csp->position);
+    return;
+  }  /* if */
+  if (found != NULL) found = fundamental_symbol_of(found);
+  if (found != NULL && found != entity) {
+    pos_error(ec_contract_terminating_lookup, &csp->position);
+  }  /* if */
+}  /* check_terminating_specifier */
 
 
 static a_boolean is_microsoft_static_operator(
@@ -9439,6 +9581,10 @@ name), or NULL if there is none (see remove_contract_operand_symbols).
     /* The label (P3400), in the scope of the operand. */
     scan_cached_contract_label(csp);
   }  /* if */
+  if (csp->is_terminating) {
+    /* P4451: the lookup checks of "<terminating>", likewise. */
+    check_terminating_specifier(csp);
+  }  /* if */
   if (capture_cache != NULL) {
     first_sym = scan_postcondition_captures(csp, capture_cache);
   }  /* if */
@@ -10030,6 +10176,10 @@ the symbols prototype_scope_symbols, is the top scope.
     /* The label (P3400) is scanned with the operand, from the template's
        tokens. */
     csp->label_token_cache = templ_csp->label_token_cache;
+    if (templ_csp->is_terminating) {
+      /* P4451. */
+      mark_contract_terminating(csp);
+    }  /* if */
     if (templ_csp->result_name != NULL && dps.has_deducible_return_type) {
       /* The return type of the instance is not yet deduced, so neither is
          the type of the result name: the operand waits, in the template's
@@ -10920,6 +11070,13 @@ first difference.
     if (!equiv_postcondition_captures(prev->captures, curr->captures)) {
       /* P3098: the same captures as written, or none on both. */
       pos2_diagnostic(es_error, ec_contract_redecl_captures_mismatch,
+                      &curr->position, &prev->position);
+      return;
+    }  /* if */
+    if (prev->is_terminating != curr->is_terminating) {
+      /* P4451: both terminating, or neither (both have an
+         assertion-control specifier, or neither does). */
+      pos2_diagnostic(es_error, ec_contract_terminating_redecl_mismatch,
                       &curr->position, &prev->position);
       return;
     }  /* if */

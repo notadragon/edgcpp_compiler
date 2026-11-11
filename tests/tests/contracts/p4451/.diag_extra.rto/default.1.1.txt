@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 10: error: assertion-control specifier <terminating> requires --contracts_p4451
+  auto l = [](int x) pre<terminating>(x > 0) { return x; };
+                        ^
+
+"Test_name.c", line 12: error: assertion-control specifier <terminating> requires --contracts_p4451
+    void m(int x) pre<terminating>(x > 0);
+                     ^
+
+2 errors detected in the compilation of "Test_name.c".

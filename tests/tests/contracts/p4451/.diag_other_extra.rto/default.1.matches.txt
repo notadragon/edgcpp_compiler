@@ -1,0 +1,8 @@
+Matches for "line 11: error: only <terminating> is allowed as an assertion-control specifier without --contracts_p3400":
+  <-----------------------------------------------------------------------------
+  line 11: error: only <terminating> is allowed as an assertion-control specifier without --contracts_p3400
+  ----------------------------------------------------------------------------->
+Matches for "line 13: error: only <terminating> is allowed as an assertion-control specifier without --contracts_p3400":
+  <-----------------------------------------------------------------------------
+  line 13: error: only <terminating> is allowed as an assertion-control specifier without --contracts_p3400
+  ----------------------------------------------------------------------------->

@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts_p4451 --contract_evaluation_semantic=ignore Test_name.c
+"Test_name.c", line 16: error: contract predicate is false in constant expression
+  constexpr int l (int x) pre<terminating> (x != 1) { return x; }	// { dg-error "contract predicate is false" }
+                          ^
+
+"Test_name.c", line 17: warning: variable "i1" was declared but never referenced
+  const int i1 = l (1);
+            ^
+
+1 error detected in the compilation of "Test_name.c".

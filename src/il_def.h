@@ -12428,6 +12428,16 @@ typedef struct a_contract_specifier {
 			/* TRUE once an error about the semantic the label's
 			   facets give has been issued (see
 			   contract_semantic_for), so that it is issued once. */
+  a_bit_field	is_terminating:1;
+			/* TRUE for a terminating contract assertion (P4451):
+			   one with the assertion-control specifier
+			   "<terminating>" without P3400 (with P3400 that is
+			   an ordinary label).  It has no label;
+			   label_allowed_semantics and
+			   label_allowed_proving_semantics are those of
+			   P3400's std::contracts::labels::terminating
+			   (enforce, quick_enforce, and with P4405 prove), so
+			   its semantics are chosen as for that label. */
   a_bit_field	local_requires_clause:1;
 			/* TRUE if the specifier is in file-scope memory but
 			   the constraint of its requires-clause is in a

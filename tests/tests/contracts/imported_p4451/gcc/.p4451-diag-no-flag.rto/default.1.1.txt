@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 19: error: assertion-control specifier <terminating> requires --contracts_p4451
+  void f (int x) pre<terminating> (x > 0);	// { dg-error "assertion-control-specifier .<terminating>. requires .-fcontracts-p4451." }
+                    ^
+
+"Test_name.c", line 20: error: assertion-control specifiers require --contracts_p3400
+  void g (int x) pre<other> (x > 0);	// { dg-error "assertion-control labels require .-fcontracts-p3400." }
+                    ^
+
+"Test_name.c", line 21: error: assertion-control specifier <terminating> requires --contracts_p4451
+  void h (int x) { contract_assert<terminating> (x > 0); }	// { dg-error "requires .-fcontracts-p4451." }
+                                  ^
+
+"Test_name.c", line 23: error: name followed by "::" must be a class or namespace name
+  auto t = std::contracts::labels::terminating;	// { dg-error "labels" }
+                           ^
+
+4 errors detected in the compilation of "Test_name.c".

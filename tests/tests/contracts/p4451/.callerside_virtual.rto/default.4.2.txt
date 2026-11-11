@@ -1,0 +1,6 @@
+./a.out
+1
+D::f
+3
+contract violation in function virtual void B::f() at Test_name.c:26: check(3)
+[assertion_kind: post, semantic: enforce, mode: predicate_false, terminating: yes]
