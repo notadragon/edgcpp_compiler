@@ -1,0 +1,6 @@
+cpfe -DTEST_NUMBER=30 --c++26 --c++26 --contracts --contract_evaluation_semantic=prove -w Test_name.c
+"Test_name.c", line 30: error: identifier "undeclared_name" is undefined
+  int g() { return undeclared_name; }
+                   ^
+
+1 error detected in the compilation of "Test_name.c".

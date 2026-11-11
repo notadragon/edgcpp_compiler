@@ -1,0 +1,2 @@
+cpfe -DTEST_NUMBER=7 --c++26 --c++26 --contracts --contract_analysis_semantic=prove Test_name.c
+EDG_GXX_TMP/Test_name.cpp: warning: '-fcontract-analysis-semantic=prove' requires '-fcontracts-p4405'; 'ignore' is used instead

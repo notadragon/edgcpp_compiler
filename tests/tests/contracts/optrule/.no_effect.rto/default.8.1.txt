@@ -1,0 +1,7 @@
+fe_only -DTEST_NUMBER=8 --c++26 --c++26 --contracts_allow_assume --no_contracts --contract_evaluation_semantic=quick_enforce --contract_group_evaluation_semantic=g:quick_enforce Test_name.c
+Command-line warning: --contracts_allow_assume has no effect without --contracts
+
+Command-line warning: --contract_evaluation_semantic has no effect without --contracts
+
+Command-line warning: contract configuration options have no effect when contracts are not enabled
+

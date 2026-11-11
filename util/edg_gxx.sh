@@ -380,6 +380,64 @@ edg_common=(
   "${sys_includes[@]}"
 )
 
+# The contracts option rule.  g++ warns that a contract option has no effect
+# as the front end does, so when g++ runs the front end leaves those warnings
+# to it (each is given once); an error stops at the front end, before g++
+# runs (see front_end_failed below).  The same holds for the other warnings about the contract options
+# that g++ gives with the same meaning: that the configuration options have
+# no effect without contracts, that an evaluation or analysis semantic needs
+# --contracts_p4298 or --contracts_p4405 (the tags are the error codes'), and
+# those about the configuration (-Wcontract-configuration).  Under -E and
+# -fsyntax-only the front end gives them all.  g++ also warns that
+# -fcontract-comment-from-expression (passed below) has no effect when
+# contracts are off, so it is passed only when g++, given the language
+# standard and the contract options, neither rejects it nor says so.
+{ probe_args=()
+  for arg in "${gxx_args[@]}" ; do
+    case $arg in
+      -std=*|-f*contract*) probe_args+=("$arg") ;;
+    esac
+  done
+}
+[ $stop_after_edg = 1 ] \
+  || edg_common+=(--diag_suppress=contract_option_no_effect
+                  --diag_suppress=cl_contract_configuration_without_contracts
+                  --diag_suppress=cl_noexcept_observe_needs_p4298
+                  --diag_suppress=cl_noexcept_enforce_needs_p4298
+                  --diag_suppress=cl_prove_needs_p4405
+                  --diag_suppress=cl_diagnose_needs_p4405
+                  --diag_suppress=cl_analysis_prove_needs_p4405
+                  --diag_suppress=cl_analysis_diagnose_needs_p4405
+                  --diag_suppress=contract_configuration)
+
+# When the front end stops with an error, g++ does not run, so the warnings
+# left to it would be lost.  g++ is then run on an empty file of the name it
+# would have compiled, with the language standard, the contract options and
+# the options that control warnings and diagnostics, so that it gives them
+# (once: the front end has suppressed them); none of them depends on the
+# source.  If g++ rejects those options, the front end has already stopped
+# on the same command-line error, before giving any warning, and g++ adds
+# nothing.  The exit status is the front end's.
+{ front_end_failed() {
+    local status=$1 empty=$2 arg
+    local diag_args=()
+    for arg in "${gxx_args[@]}" ; do
+      case $arg in
+        -Wl,*|-Wa,*|-Wp,*) ;;
+        -w|-W*|-pedantic*|-fdiagnostics-*|-fno-diagnostics-*|-fmax-errors=*)
+          diag_args+=("$arg") ;;
+      esac
+    done
+    : > "$empty"
+    if "$GXX" "${probe_args[@]}" -w -fsyntax-only -x c++ "$empty" \
+         > /dev/null 2>&1 ; then
+      run "$GXX" "${probe_args[@]}" "${diag_args[@]}" -fsyntax-only \
+          -x c++ "$empty"
+    fi
+    exit "$status"
+  }
+}
+
 if [ ${#sources[@]} -eq 0 ] ; then
   [ $stop_after_edg = 0 ] || die "no input files"
   # Link-only (or query-only) invocation: nothing for the front end to do.

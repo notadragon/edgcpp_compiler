@@ -1,0 +1,5 @@
+fe_only -DTEST_NUMBER=25 --c++26 --c++23 --contracts_p3850 --contracts_p3400 --no_contracts_p4451 Test_name.c
+Command-line error: --no_contracts_p4451 cannot be combined with --contracts_p3400, which subsumes P4451
+
+1 catastrophic error detected in this compilation.
+Compilation terminated.
