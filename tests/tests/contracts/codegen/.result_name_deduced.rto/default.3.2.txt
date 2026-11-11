@@ -1,0 +1,5 @@
+./a.out
+start
+a
+b
+c

@@ -1,3 +1,42 @@
+codegen/check_unlikely.sft.cpp:cp:-DTEST_NUMBER=1 --contract_evaluation_semantic=quick_enforce --keep_gen_c:PASS:
+codegen/check_unlikely.sft.cpp:cp:-DTEST_NUMBER=2 --contracts_p4298 --contract_evaluation_semantic=noexcept_observe --keep_gen_c:PASS:
+codegen/check_unlikely.sft.cpp:cp:-DTEST_NUMBER=3 --contracts_p4298 --contract_evaluation_semantic=noexcept_enforce --keep_gen_c:PASS:
+codegen/ctor_dtor_order.sft.cpp:rn:-DTEST_NUMBER=1 -DVIOLATE=1:PASS:
+codegen/ctor_dtor_order.sft.cpp:rn:-DTEST_NUMBER=2 -DVIOLATE=2:PASS:
+codegen/enforce.sft.cpp:rn:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: a violation under enforce terminates the program
+codegen/enforce.sft.cpp:rn:-DTEST_NUMBER=2:REQUIREMENTS NOT MET:contracts: a violation under enforce terminates the program
+codegen/enforce.sft.cpp:rn:-DTEST_NUMBER=3:REQUIREMENTS NOT MET:contracts: a violation under enforce terminates the program
+codegen/explicit_specialization_in_class.sft.cpp:rn:-DTEST_NUMBER=2 -DVIOLATE=1:PASS:
+codegen/explicit_specialization_in_class.sft.cpp:rn:-DTEST_NUMBER=3 -DVIOLATE=2:PASS:
+codegen/explicit_specialization_in_class.sft.cpp:rp:-DTEST_NUMBER=1 -DVIOLATE=0:PASS:
+codegen/explicit_specialization_member.sft.cpp:rn:-DTEST_NUMBER=2 -DVIOLATE=1:REQUIREMENTS NOT MET:contracts: checks of the contract assertions of explicit specializations of member templates under quick_enforce
+codegen/explicit_specialization_member.sft.cpp:rn:-DTEST_NUMBER=3 -DVIOLATE=2:REQUIREMENTS NOT MET:contracts: checks of the contract assertions of explicit specializations of member templates under quick_enforce
+codegen/explicit_specialization_member.sft.cpp:rp:-DTEST_NUMBER=1 -DVIOLATE=0:REQUIREMENTS NOT MET:contracts: checks of the contract assertions of explicit specializations of member templates under quick_enforce
+codegen/generic_lambda_own_contracts.sft.cpp:rn:-DTEST_NUMBER=2 -DVIOLATE=1:PASS:
+codegen/generic_lambda_own_contracts.sft.cpp:rn:-DTEST_NUMBER=3 -DVIOLATE=2:PASS:
+codegen/generic_lambda_own_contracts.sft.cpp:rn:-DTEST_NUMBER=4 -DVIOLATE=3:PASS:
+codegen/generic_lambda_own_contracts.sft.cpp:rn:-DTEST_NUMBER=5 -DVIOLATE=4:PASS:
+codegen/generic_lambda_own_contracts.sft.cpp:rp:-DTEST_NUMBER=1 -DVIOLATE=0:PASS:
+codegen/handler.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: a user-defined violation handler sees the violation's properties
+codegen/il_display.sft.cpp:fp:-DTEST_NUMBER=1:PASS:
+codegen/members.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: checks of the contract assertions of member functions under observe
+codegen/observe.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: checks of preconditions, postconditions and contract_assert under observe
+codegen/pass_through.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: the C++-generating back end puts contract assertions out as written
+codegen/postcondition_returns.sft.cpp:rn:-DTEST_NUMBER=2 -DARG=1:PASS:
+codegen/postcondition_returns.sft.cpp:rn:-DTEST_NUMBER=3 -DARG=2:PASS:
+codegen/postcondition_returns.sft.cpp:rp:-DTEST_NUMBER=1 -DARG=0:PASS:
+codegen/predicate_parentheses.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: cpfe-cp parenthesizes a comma or assignment predicate
+codegen/quick_enforce_throwing_predicate_uninit.sft.cpp:cp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: a potentially-throwing predicate under quick_enforce draws no "may be used uninitialized" warning from g++
+codegen/repeated_contract_location.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: the location of a violated contract repeated on a later declaration (EDG-130)
+codegen/result_object.sft.cpp:rn:-DTEST_NUMBER=2 -DBAD=1:PASS:
+codegen/result_object.sft.cpp:rn:-DTEST_NUMBER=3 -DBAD=2:PASS:
+codegen/result_object.sft.cpp:rn:-DTEST_NUMBER=4 -DBAD=3:PASS:
+codegen/result_object.sft.cpp:rn:-DTEST_NUMBER=5 -DBAD=4:PASS:
+codegen/result_object.sft.cpp:rp:-DTEST_NUMBER=1 -DBAD=0:PASS:
+codegen/statement_expression_ignored.sft.cpp:fp:-DTEST_NUMBER=1:PASS:
+codegen/statement_expression_lambda.sft.cpp:rn:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: a statement expression in a lambda's precondition or postcondition is checked
+codegen/statement_expression_lambda.sft.cpp:rn:-DTEST_NUMBER=2:REQUIREMENTS NOT MET:contracts: a statement expression in a lambda's precondition or postcondition is checked
+codegen/statement_expression_unsupported.sft.cpp:fn:-DTEST_NUMBER=1:PASS:
 constexpr/explicit_specialization_in_class.sft.cpp:fn:-DTEST_NUMBER=1:PASS:
 constexpr/not_manifest.sft.cpp:rp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: an evaluation that is not manifestly constant-evaluated and meets a violation is not constant
 constexpr/observe.sft.cpp:fp:-DTEST_NUMBER=1:REQUIREMENTS NOT MET:contracts: a violation in constant evaluation is a warning under observe, and the value stands

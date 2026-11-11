@@ -1,0 +1,4 @@
+./a.out
+start
+contract violation in function int main() at Test_name.c:17: (3 < 3)
+[assertion_kind: assert, semantic: enforce, mode: predicate_false, terminating: yes]
