@@ -1,0 +1,40 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3850 --contract_evaluation_semantic=observe Test_name.c
+"Test_name.c", line 17: warning: contract predicate is false in constant expression
+    contract_assert (x > 0); // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 20: warning: contract predicate is false in constant expression
+    contract_assert (x > 1); // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 21: warning: contract predicate is false in constant expression
+    contract_assert (x > 2); // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 22: warning: contract predicate is false in constant expression
+    contract_assert (x > 3); // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 23: warning: contract predicate is false in constant expression
+    contract_assert (x > 4); // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 24: warning: contract predicate is false in constant expression
+    contract_assert (x > 5); // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 25: warning: contract predicate is false in constant expression
+    contract_assert (x > 6); // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 26: warning: contract predicate is false in constant expression
+    contract_assert (x > 7); // { dg-warning "contract predicate is false in constant expression" }
+    ^
+"Test_name.c", line 26: note: and 1 more contract violation not shown
+    contract_assert (x > 7); // { dg-warning "contract predicate is false in constant expression" }
+    ^
+
+"Test_name.c", line 31: warning: variable "bad" was declared but never referenced
+  constexpr int bad = f (-1);
+                ^
+
