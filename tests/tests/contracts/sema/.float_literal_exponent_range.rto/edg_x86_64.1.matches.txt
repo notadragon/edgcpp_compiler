@@ -1,0 +1,12 @@
+Matches for "line 18: error: floating constant is out of range":
+  <-----------------------------------------------------------------------------
+  line 18: error: floating constant is out of range
+  ----------------------------------------------------------------------------->
+Matches for "line 19: error: floating constant is out of range":
+  <-----------------------------------------------------------------------------
+  line 19: error: floating constant is out of range
+  ----------------------------------------------------------------------------->
+Matches for "line 20: error: floating constant is out of range":
+  <-----------------------------------------------------------------------------
+  line 20: error: floating constant is out of range
+  ----------------------------------------------------------------------------->
