@@ -1,6 +1,6 @@
 //type:fp
 //options_all:--c++11 --il_display
-//filter:grep initializer_range -A4 | normalize_test_output
+//filter:grep initializer_range -A4 | edg-normalize-test-output
 
 int foo();
 
