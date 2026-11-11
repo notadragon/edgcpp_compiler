@@ -256,10 +256,12 @@ extern void process_deferred_class_fixups_and_instantiations(
 extern void set_mixed_static_nonstatic_flag(a_symbol_ptr  overload_sym);
 
 extern
-void add_routine_fixup_for_specialization(a_type_ptr		class_type,
-					  a_symbol_ptr		symbol,
-					  a_func_info_block	*func_info,
-					  a_token_cache_ptr	body_cache);
+void add_routine_fixup_for_specialization(
+                                 a_type_ptr                class_type,
+                                 a_symbol_ptr              symbol,
+                                 a_func_info_block         *func_info,
+                                 a_token_cache_ptr         body_cache,
+                                 a_contract_specifier_ptr  redecl_csps);
 
 extern void add_routine_fixup_for_template_decl(
 		a_symbol_ptr			symbol,
