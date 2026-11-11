@@ -1,3 +1,15 @@
+11/7/26 []
+Contracts (P4405): --[no_]contracts_prove_callee_premises
+
+The new --[no_]contracts_prove_callee_premises option (implied by
+--contracts_p4405) is accepted for our GCC's callee-premises proving
+strategy, to which the drivers pass it on: an observe or ignore evaluation
+in a callee that g++'s proof shadow inlines is a premise of a conditional
+proof.  The front end proves nothing, so it changes nothing there.  Given
+positively without P4405 it warns that it has no effect, as the other
+P4405 strategies do.
+
+
 11/5/26 []
 Prefix maps: --macro_prefix_map
 

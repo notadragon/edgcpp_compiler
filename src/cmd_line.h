@@ -406,6 +406,7 @@ enum an_option_kind {
   optk_contracts_prove_fold,
   optk_contract_analysis_skip_dead_calls,
   optk_contracts_prove_override,
+  optk_contracts_prove_callee_premises,
   optk_last		/* Must be last. */
 };
 
@@ -3139,6 +3140,17 @@ EXTERN_THREAD a_boolean
 			   strategy, so it does not consult it (see
 			   note_contract_override_obligations): the drivers
 			   pass it on to g++. */
+
+EXTERN_THREAD a_boolean
+		contracts_prove_callee_premises_enabled;
+			/* TRUE if the callee-premises proving strategy of
+			   P4405 (--contracts_prove_callee_premises, as GCC's
+			   -fcontracts-prove-callee-premises: an observe or
+			   ignore evaluation in a callee the proof shadow
+			   inlines is a premise of a conditional proof) is
+			   enabled; implied by --contracts_p4405.  The front
+			   end has no proving strategy, so it does not consult
+			   it: the drivers pass it on to g++. */
 
 EXTERN_THREAD a_boolean
 		contracts_p3290_enabled;
