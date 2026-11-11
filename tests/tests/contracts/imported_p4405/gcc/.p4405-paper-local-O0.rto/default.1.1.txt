@@ -1,0 +1,34 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 -O0 --contracts_prove_optimize=0 Test_name.c
+Test_name.c: In function 'void pre_example::g(int)':
+Test_name.c:30:2: error: contract assertion cannot be proven
+   30 |   f(y);         // { dg-error "contract assertion cannot be proven" }
+      |  ^~~
+Test_name.c:25:37: note: the predicate of the contract assertion
+   25 | void f(int x) pre<always_prove>(x > 0); // { dg-message "the predicate of the contract assertion" }
+      |                                   ~~^~~
+Test_name.c:32:2: error: contract assertion cannot be proven
+   32 |     f(y);       // { dg-error "contract assertion cannot be proven" }
+      |  ^  
+Test_name.c:25:37: note: the predicate of the contract assertion
+   25 | void f(int x) pre<always_prove>(x > 0); // { dg-message "the predicate of the contract assertion" }
+      |                                   ~~^~~
+Test_name.c: In function 'void assert_example::f(int)':
+Test_name.c:40:1: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   40 |   contract_assert<always_diagnose>(x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:40:38: note: the predicate of the contract assertion
+   40 |   contract_assert<always_diagnose>(x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      |                                    ~~^~~
+Test_name.c:42:1: error: contract assertion cannot be proven
+   42 |     contract_assert<always_prove>(x > 0);       // { dg-error "contract assertion cannot be proven" }
+      | ^   ~~~~~~~~~~~
+Test_name.c:42:35: note: the predicate of the contract assertion
+   42 |     contract_assert<always_prove>(x > 0);       // { dg-error "contract assertion cannot be proven" }
+      |                                 ~~^~~
+Test_name.c: In function 'int post_example::g(bool)':
+Test_name.c:49:2: error: contract assertion cannot be proven
+   49 |   post<always_prove>(r : r > 0) // { dg-error "contract assertion cannot be proven" }
+      |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:49:28: note: the predicate of the contract assertion
+   49 |   post<always_prove>(r : r > 0) // { dg-error "contract assertion cannot be proven" }
+      |                          ~~^~~

@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contract_evaluation_semantic=observe Test_name.c
+"Test_name.c", line 34: error: contract predicate is false in constant expression
+  constexpr T e (T x) pre<my_enforce> (x > 0) { return x; }	// { dg-error "contract predicate is false" }
+                      ^
+
+"Test_name.c", line 39: error: contract predicate is false in constant expression
+    contract_assert<my_enforce> (x != 2);	// { dg-error "contract predicate is false" }
+    ^
+
+"Test_name.c", line 37: error: contract predicate is false in constant expression
+  constexpr T t (T x) pre<std::contracts::labels::terminating> (x > 0)	// { dg-error "contract predicate is false" }
+                      ^
+
+"Test_name.c", line 46: warning: variable "a" was declared but never referenced
+  constexpr int a = e (1);
+                ^
+
+"Test_name.c", line 47: warning: variable "b" was declared but never referenced
+  constexpr int b = e (-1);
+                ^
+
+"Test_name.c", line 48: warning: variable "c" was declared but never referenced
+  constexpr int c = t (2);
+                ^
+
+"Test_name.c", line 49: warning: variable "f" was declared but never referenced
+  constexpr int f = t (-1);
+                ^
+
+3 errors detected in the compilation of "Test_name.c".

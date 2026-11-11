@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 --contract_evaluation_semantic=prove Test_name.c
+"Test_name.c", line 33: error: contract predicate is false in constant expression
+  constexpr int t (int x) pre<L::terminating> (x > 0) { return x; }	// { dg-error "contract predicate is false in constant expression" }
+                          ^
+
+"Test_name.c", line 34: warning: variable "good" was declared but never referenced
+  constexpr int good = t (1);
+                ^
+
+"Test_name.c", line 35: warning: variable "bad" was declared but never referenced
+  constexpr int bad = t (-1);	// { dg-bogus "always false|cannot be proven" }
+                ^
+
+1 error detected in the compilation of "Test_name.c".

@@ -1,0 +1,9 @@
+eccp -DTEST_NUMBER=1 --c++26 --contracts_p3400 --contracts_p4405 --contract_evaluation_semantic=ignore Test_name.c
+"Test_name.c", line 26: warning: contract assertion cannot be proven
+    g(argc - 2);
+     ^
+
+"Test_name.c", line 29: warning: contract assertion cannot be proven
+    f(argc - 2);
+     ^
+

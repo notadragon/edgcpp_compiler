@@ -1,0 +1,33 @@
+fe_only -DTEST_NUMBER=2 --c++26 --contracts_p4405 --contracts_p3097 --contract_evaluation_semantic=diagnose Test_name.c
+"Test_name.c", line 17: warning: contract assertion cannot be proven
+    post (r: r > 0)                // Diagnosed.
+    ^
+
+"Test_name.c", line 19: warning: contract assertion cannot be proven
+    contract_assert(x != 3);       // Diagnosed.
+    ^
+
+"Test_name.c", line 22: warning: contract assertion cannot be proven
+  int use_f(int y) { return f(y); }   // f's precondition.
+                             ^
+
+"Test_name.c", line 32: warning: contract assertion cannot be proven
+  int use_t() { return t(1) + (int)t(2L); }   // Each instance's, once.
+                        ^
+
+"Test_name.c", line 32: warning: contract assertion cannot be proven
+  int use_t() { return t(1) + (int)t(2L); }   // Each instance's, once.
+                                    ^
+
+"Test_name.c", line 38: warning: contract assertion cannot be proven
+    ~S() { contract_assert(v > 0); }  // Diagnosed once.
+           ^
+
+"Test_name.c", line 40: warning: contract assertion cannot be proven
+  S s(1);                          // The constructor's precondition.
+    ^
+
+"Test_name.c", line 45: warning: contract assertion cannot be proven
+  int call(B &b) { return b.h(1); }   // h's precondition, not again in
+                             ^
+

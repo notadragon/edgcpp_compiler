@@ -1,0 +1,106 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3097 --contracts_p3400 --contracts_p4405 Test_name.c
+"Test_name.c", line 56: warning: variable "p1" was set but never used
+    void (*p1) (int) = fp;			// { dg-error "cannot be proven for a call through the address" }
+           ^
+
+"Test_name.c", line 57: warning: variable "p2" was set but never used
+    void (*p2) (int) = &fp;			// { dg-error "cannot be proven for a call through the address" }
+           ^
+
+"Test_name.c", line 59: warning: variable "p3" was set but never used
+    void (*p3) (int) = fd;			// { dg-warning "contract assertion cannot be proven for a call through the address of 'void fd\\(int\\)' \\\[-Wcontract-unproven\\\]" }
+           ^
+
+"Test_name.c", line 60: warning: variable "p4" was set but never used
+    void (*p4) (int) = fn;			// { dg-bogus "address" }
+           ^
+
+"Test_name.c", line 61: warning: variable "p5" was set but never used
+    void (*p5) (int) = fo;			// { dg-bogus "address" }
+           ^
+
+"Test_name.c", line 62: warning: variable "p6" was set but never used
+    void (*p6) (double) = fo;			// { dg-error "cannot be proven for a call through the address" }
+           ^
+
+"Test_name.c", line 63: warning: variable "pm" was set but never used
+    auto pm = &S::mp;				// { dg-error "cannot be proven for a call through the address" }
+         ^
+
+"Test_name.c", line 64: warning: variable "ps" was set but never used
+    void (*ps) (int) = &S::sd;			// { dg-warning "cannot be proven for a call through the address" }
+           ^
+
+"Test_name.c", line 65: warning: variable "pv" was set but never used
+    auto pv = &S::vd;				// { dg-warning "cannot be proven for a call through the address" }
+         ^
+
+"Test_name.c", line 66: warning: variable "pt" was set but never used
+    void (*pt) (int) = tp<int>;			// { dg-error "cannot be proven for a call through the address" }
+           ^
+
+"Test_name.c", line 67: warning: variable "q" was set but never used
+    decltype (&fp) q = nullptr;			// { dg-bogus "address" }
+                   ^
+
+Test_name.c:52:19: error: contract assertion cannot be proven for a call through the address of 'void fp(int)'
+   52 | void (*gp) (int) = fp;                          // { dg-error "contract assertion cannot be proven for a call through the address of 'void fp\\(int\\)'" }
+      |                   ^~
+Test_name.c:37:16: note: precondition here
+   37 | void fp (int x) pre<always_prove> (x > 0);      // { dg-message "precondition here" }
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c: In function 'void use()':
+Test_name.c:56:19: error: contract assertion cannot be proven for a call through the address of 'void fp(int)'
+   56 |   void (*p1) (int) = fp;                        // { dg-error "cannot be proven for a call through the address" }
+      |                   ^~
+Test_name.c:37:16: note: precondition here
+   37 | void fp (int x) pre<always_prove> (x > 0);      // { dg-message "precondition here" }
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:57:21: error: contract assertion cannot be proven for a call through the address of 'void fp(int)'
+   57 |   void (*p2) (int) = &fp;                       // { dg-error "cannot be proven for a call through the address" }
+      |                     ^~
+Test_name.c:37:16: note: precondition here
+   37 | void fp (int x) pre<always_prove> (x > 0);      // { dg-message "precondition here" }
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:58:20: error: contract assertion cannot be proven for a call through the address of 'void fp(int)'
+   58 |   void (&r1) (int) = fp;                        // { dg-error "cannot be proven for a call through the address" }
+      |                   ~^~~
+Test_name.c:37:16: note: precondition here
+   37 | void fp (int x) pre<always_prove> (x > 0);      // { dg-message "precondition here" }
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:59:19: warning: contract assertion cannot be proven for a call through the address of 'void fd(int)' [-Wcontract-unproven]
+   59 |   void (*p3) (int) = fd;                        // { dg-warning "contract assertion cannot be proven for a call through the address of 'void fd\\(int\\)' \\\[-Wcontract-unproven\\\]" }
+      |                   ^~
+Test_name.c:38:16: note: precondition here
+   38 | void fd (int x) pre<always_diagnose> (x > 0);   // { dg-message "precondition here" }
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:62:22: error: contract assertion cannot be proven for a call through the address of 'void fo(double)'
+   62 |   void (*p6) (double) = fo;                     // { dg-error "cannot be proven for a call through the address" }
+      |                      ^~
+Test_name.c:41:19: note: precondition here
+   41 | void fo (double x) pre<always_prove> (x > 0);
+      |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+Test_name.c:63:16: error: contract assertion cannot be proven for a call through the address of 'void S::mp(int)'
+   63 |   auto pm = &S::mp;                             // { dg-error "cannot be proven for a call through the address" }
+      |             ~~~^~
+Test_name.c:44:16: note: precondition here
+   44 |   void mp (int x) pre<always_prove> (x > 0);    // { dg-message "precondition here" }
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:64:24: warning: contract assertion cannot be proven for a call through the address of 'static void S::sd(int)' [-Wcontract-unproven]
+   64 |   void (*ps) (int) = &S::sd;                    // { dg-warning "cannot be proven for a call through the address" }
+      |                        ^~
+Test_name.c:45:23: note: precondition here
+   45 |   static void sd (int x) pre<always_diagnose> (x > 0);  // { dg-message "precondition here" }
+      |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:65:16: warning: contract assertion cannot be proven for a call through the address of 'virtual void S::vd(int)' [-Wcontract-unproven]
+   65 |   auto pv = &S::vd;                             // { dg-warning "cannot be proven for a call through the address" }
+      |             ~~~^~
+Test_name.c:46:24: note: precondition here
+   46 |   virtual void vd (int x) pre<always_diagnose> (x > 0); // { dg-message "precondition here" }
+      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:66:19: error: contract assertion cannot be proven for a call through the address of 'void tp(T) [with T = int]'
+   66 |   void (*pt) (int) = tp<int>;                   // { dg-error "cannot be proven for a call through the address" }
+      |                   ^~~~~~~~
+Test_name.c:50:17: note: precondition here
+   50 | void tp (T x) pre<always_prove> (x > 0);        // { dg-message "precondition here" }
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

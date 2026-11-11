@@ -1,0 +1,5 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p4405 --contract_configuration_file=p4405-constexpr.json Test_name.c
+Command-line error: invalid contract configuration (p4405-constexpr.json:2:72): the "semantic" of an entry matching "constexpr" cannot be "prove" or "diagnose"
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation terminated.

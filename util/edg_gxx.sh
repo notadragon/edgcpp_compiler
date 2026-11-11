@@ -48,6 +48,16 @@
 # -f[no-]contracts-p3400 goes to both.
 # -f[no-]contracts-p4283 goes to both.
 # -f[no-]contracts-p4298 goes to both.
+# -f[no-]contracts-p4405 goes to both.  The prove and diagnose evaluation
+# semantics are diagnosed by g++ alone, where it would emit the check (the
+# front end diagnoses them only where it generates the checks, for the
+# C-generating back end), so each evaluation is diagnosed once, and
+# -W[no-]contract-unproven and -Werror=contract-unproven are g++'s.
+# -fcontract-analysis-semantic= goes to both; the analysis evaluations, and
+# the address-of rule (-W[no-]contract-unproven), are g++'s too.
+# -f[no-]contracts-prove-fold goes to both; g++ folds what it diagnoses.
+# -f[no-]contract-analysis-skip-dead-calls goes to both; g++ decides which
+# calls are never evaluated.
 #
 # Prefix maps.  -fmacro-prefix-map= and -ffile-prefix-map= go to both: the
 # front end expands __FILE__, __FILE_NAME__ and __BASE_FILE__ (as
@@ -215,6 +225,21 @@ while [ $# -gt 0 ] ; do
       edg_args+=("--contracts_p4298"); gxx_args+=("$arg") ;;
     -fno-contracts-p4298)
       edg_args+=("--no_contracts_p4298"); gxx_args+=("$arg") ;;
+    -fcontracts-p4405)
+      edg_args+=("--contracts_p4405"); gxx_args+=("$arg") ;;
+    -fno-contracts-p4405)
+      edg_args+=("--no_contracts_p4405"); gxx_args+=("$arg") ;;
+    -fcontract-analysis-semantic=*)
+      edg_args+=("--contract_analysis_semantic=${arg#*=}")
+      gxx_args+=("$arg") ;;
+    -fcontracts-prove-fold)
+      edg_args+=("--contracts_prove_fold"); gxx_args+=("$arg") ;;
+    -fno-contracts-prove-fold)
+      edg_args+=("--no_contracts_prove_fold"); gxx_args+=("$arg") ;;
+    -fcontract-analysis-skip-dead-calls)
+      edg_args+=("--contract_analysis_skip_dead_calls"); gxx_args+=("$arg") ;;
+    -fno-contract-analysis-skip-dead-calls)
+      edg_args+=("--no_contract_analysis_skip_dead_calls"); gxx_args+=("$arg") ;;
     -fmacro-prefix-map=*|-ffile-prefix-map=*)
       # The front end tries the last map given first, and g++ tries every
       # -ffile-prefix-map= before any -fmacro-prefix-map=, so the macro maps

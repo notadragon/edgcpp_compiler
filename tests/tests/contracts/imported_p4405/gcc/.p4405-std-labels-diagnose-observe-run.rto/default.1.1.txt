@@ -1,0 +1,22 @@
+eccp -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 --contract_evaluation_semantic=observe Test_name.c
+Test_name.c: In function 'int post_d(int)':
+Test_name.c:43:34: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   43 | [[gnu::noipa]] int post_d (int x) post<diagnose> (r: r > 0) { return x; }       // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      |                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:43:56: note: the predicate of the contract assertion
+   43 | [[gnu::noipa]] int post_d (int x) post<diagnose> (r: r > 0) { return x; }       // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      |                                                      ~~^~~
+Test_name.c: In function 'void assert_d(int)':
+Test_name.c:46:1: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   46 |   contract_assert<diagnose> (x > 0);    // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:46:31: note: the predicate of the contract assertion
+   46 |   contract_assert<diagnose> (x > 0);    // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      |                             ~~^~~
+Test_name.c: In function 'int main(int, char**)':
+Test_name.c:53:6: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   53 |   pre_d (n);    // { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      |   ~~~^~~
+Test_name.c:42:52: note: the predicate of the contract assertion
+   42 | [[gnu::noipa]] void pre_d (int x) pre<diagnose> (x > 0) {}
+      |                                                  ~~^~~

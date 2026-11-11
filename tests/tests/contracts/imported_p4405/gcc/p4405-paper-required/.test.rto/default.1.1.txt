@@ -1,0 +1,8 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 --contract_configuration_file=p4405-paper-required.json -O2 Test_name.c
+Test_name.c: In function 'void g()':
+Test_name.c:29:2: error: contract predicate is always false
+   29 |   f(0);  // Error if the `"required"` group has the *prove* semantic    { dg-error "contract predicate is always false" }
+      |  ^~~
+Test_name.c:24:42: note: the predicate of the contract assertion
+   24 | void f(int x) pre<"required"group>(x > 0);      // { dg-message "the predicate of the contract assertion" }
+      |                                        ~~^~~~~~~~

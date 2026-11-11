@@ -1,0 +1,74 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contracts_p3400 --contracts_p4405 --contract_evaluation_semantic=ignore --contract_analysis_semantic=prove Test_name.c
+"Test_name.c", line 34: error: contract assertion cannot be proven for a call through the address of "void a2(int)"
+            the precondition at line 24
+            precondition of a call in the predicate is always false at line 19
+    void (*p2)(int) = &a2;
+                    ^
+
+"Test_name.c", line 35: error: contract assertion cannot be proven for a call through the address of "void a3(int)"
+            the precondition at line 25
+            precondition of a call in the predicate cannot be proven at line 19
+    void (*p3)(int) = &a3;
+                    ^
+
+"Test_name.c", line 28: warning: contract assertion cannot be proven
+  void a6(int x) pre<always_prove>(gd(x) == 1);     // gd's warned.
+                                     ^
+
+"Test_name.c", line 38: error: contract assertion cannot be proven for a call through the address of "void a6(int)"
+            the precondition at line 28
+    void (*p6)(int) = &a6;
+                    ^
+
+"Test_name.c", line 28: warning: contract assertion cannot be proven
+  void a6(int x) pre<always_prove>(gd(x) == 1);     // gd's warned.
+                                     ^
+
+"Test_name.c", line 39: error: contract assertion cannot be proven for a call through the address of "void a6(int)"
+            the precondition at line 28
+    void (*p7)(int) = &a6;         // gd's warned again.
+                    ^
+
+"Test_name.c", line 40: error: contract assertion cannot be proven for a call through the address of "void a7(int)"
+            the precondition at line 29
+            precondition of a call in the predicate cannot be proven at line 20
+    void (*p8)(int) = &a7;
+                    ^
+
+"Test_name.c", line 33: warning: variable "p1" was set but never used
+    void (*p1)(int) = &a1;
+           ^
+
+"Test_name.c", line 34: warning: variable "p2" was set but never used
+    void (*p2)(int) = &a2;
+           ^
+
+"Test_name.c", line 35: warning: variable "p3" was set but never used
+    void (*p3)(int) = &a3;
+           ^
+
+"Test_name.c", line 36: warning: variable "p4" was set but never used
+    void (*p4)(int) = &a4;
+           ^
+
+"Test_name.c", line 37: warning: variable "p5" was set but never used
+    void (*p5)(int) = &a5;
+           ^
+
+"Test_name.c", line 38: warning: variable "p6" was set but never used
+    void (*p6)(int) = &a6;
+           ^
+
+"Test_name.c", line 39: warning: variable "p7" was set but never used
+    void (*p7)(int) = &a6;         // gd's warned again.
+           ^
+
+"Test_name.c", line 40: warning: variable "p8" was set but never used
+    void (*p8)(int) = &a7;
+           ^
+
+"Test_name.c", line 41: warning: variable "p9" was set but never used
+    void (*p9)(int) = &a8;
+           ^
+
+5 errors detected in the compilation of "Test_name.c".

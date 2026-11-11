@@ -1,0 +1,122 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 --no_contract_analysis_skip_dead_calls -O2 Test_name.c
+Test_name.c: In function 'void l1(int)':
+Test_name.c:52:52: error: contract predicate is always false
+   52 | void l1 (int c) { if (c) goto L; if (0) { L: g (0); } } // { dg-error "contract predicate is always false" }
+      |                                                   ~^~~
+Test_name.c:49:37: note: the predicate of the contract assertion
+   49 | void g (int x) pre<always_prove> (x != 0);
+      |                                   ~~^~~~
+Test_name.c: In function 'void l2(int)':
+Test_name.c:53:61: error: contract predicate is always false
+   53 | void l2 (int c) { if (c) goto L; if (1) {} else { L: g (0); } } // { dg-error "contract predicate is always false" }
+      |                                                            ~^~~
+Test_name.c:49:37: note: the predicate of the contract assertion
+   49 | void g (int x) pre<always_prove> (x != 0);
+      |                                   ~~^~~~
+Test_name.c: In function 'void l3(int)':
+Test_name.c:54:59: error: contract predicate is always false
+   54 | void l3 (int c) { switch (c) { case 0: if (0) { case 1: g (0); } } }    // { dg-error "contract predicate is always false" }
+      |                                                          ~^~~
+Test_name.c:49:37: note: the predicate of the contract assertion
+   49 | void g (int x) pre<always_prove> (x != 0);
+      |                                   ~~^~~~
+Test_name.c: In function 'void l4(int)':
+Test_name.c:55:60: error: contract predicate is always false
+   55 | void l4 (int c) { switch (c) { case 0: if (0) { default: g (0); } } }   // { dg-error "contract predicate is always false" }
+      |                                                           ~^~~
+Test_name.c:49:37: note: the predicate of the contract assertion
+   49 | void g (int x) pre<always_prove> (x != 0);
+      |                                   ~~^~~~
+Test_name.c: In function 'void l6(int)':
+Test_name.c:64:2: error: contract predicate is always false
+   64 |       g (0);    // { dg-error "contract predicate is always false" }
+      |  ^  
+Test_name.c:49:37: note: the predicate of the contract assertion
+   49 | void g (int x) pre<always_prove> (x != 0);
+      |                                   ~~^~~~
+Test_name.c: In function 'void l7(int)':
+Test_name.c:67:64: error: contract predicate is always false
+   67 | void l7 (int c) { if (c) goto L; if (0) { while (c) { L: g (0); } } }   // { dg-error "contract predicate is always false" }
+      |                                                               ~^~~
+Test_name.c:49:37: note: the predicate of the contract assertion
+   49 | void g (int x) pre<always_prove> (x != 0);
+      |                                   ~~^~~~
+Test_name.c: In function 'void l7b(int)':
+Test_name.c:68:76: error: contract predicate is always false
+   68 | void l7b (int c) { if (c) goto L; if (0) { while (c-- > 1) { L:; } g (0); } }   // { dg-error "contract predicate is always false" }
+      |                                                                           ~^~~~~
+Test_name.c:49:37: note: the predicate of the contract assertion
+   49 | void g (int x) pre<always_prove> (x != 0);
+      |                                   ~~^~~~
+Test_name.c: In function 'void l7c(int)':
+Test_name.c:69:58: error: contract predicate is always false
+   69 | void l7c (int c) { if (c) goto L; if (0) { do { L: g (0); } while (0); } }      // { dg-error "contract predicate is always false" }
+      |                                                         ~^~~
+Test_name.c:49:37: note: the predicate of the contract assertion
+   49 | void g (int x) pre<always_prove> (x != 0);
+      |                                   ~~^~~~
+Test_name.c: In function 'void b1(int)':
+Test_name.c:86:76: error: contract predicate is always false
+   86 | void b1 (int c) { if (c) goto L; if (1) return; else { L:; } g (0); }   // { dg-error "contract predicate is always false" }
+      |                                                                           ~^~~
+Test_name.c:49:37: note: the predicate of the contract assertion
+   49 | void g (int x) pre<always_prove> (x != 0);
+      |                                   ~~^~~~
+Test_name.c: In function 'void b2(int)':
+Test_name.c:87:76: error: contract predicate is always false
+   87 | void b2 (int c) { if (c) goto L; if (0) { L:; } else return; g (0); }   // { dg-error "contract predicate is always false" }
+      |                                                                           ~^~~
+Test_name.c:49:37: note: the predicate of the contract assertion
+   49 | void g (int x) pre<always_prove> (x != 0);
+      |                                   ~~^~~~
+Test_name.c: In function 'void b3(int)':
+Test_name.c:88:81: error: contract predicate is always false
+   88 | void b3 (int c) { switch (c) { case 0: if (1) return; else { case 1:; } g (0); } }      // { dg-error "contract predicate is always false" }
+      |                                                                                ~^~~~~~~~
+Test_name.c:49:37: note: the predicate of the contract assertion
+   49 | void g (int x) pre<always_prove> (x != 0);
+      |                                   ~~^~~~
+Test_name.c: In function 'void b4(int)':
+Test_name.c:89:93: error: contract predicate is always false
+   89 | void b4 (int c) { if (c) goto L; if (1) { if (1) return; else { L:; } } g (0); }        // { dg-error "contract predicate is always false" }
+      |                                                                                            ~^~~
+Test_name.c:49:37: note: the predicate of the contract assertion
+   49 | void g (int x) pre<always_prove> (x != 0);
+      |                                   ~~^~~~
+Test_name.c: In function 'void b5(int)':
+Test_name.c:90:76: error: contract predicate is always false
+   90 | void b5 (int c) { if (c) goto L; if (0) { L:; } else throw 1; g (0); }  // { dg-error "contract predicate is always false" }
+      |                                                                           ~^~~
+Test_name.c:49:37: note: the predicate of the contract assertion
+   49 | void g (int x) pre<always_prove> (x != 0);
+      |                                   ~~^~~~
+Test_name.c: In instantiation of 'void l8(int) [with int N = 0]':
+Test_name.c:81:26:   required from here
+   81 | template void l8<0> (int);
+      |                          ^
+Test_name.c:78:9: error: contract predicate is always false
+   78 |       g (0);    // { dg-error "contract predicate is always false" }
+      |       ~~^~~~~~~~
+Test_name.c:49:37: note: the predicate of the contract assertion
+   49 | void g (int x) pre<always_prove> (x != 0);
+      |                                   ~~^~~~
+Test_name.c: In instantiation of 'void l9(int) [with int N = 0]':
+Test_name.c:83:26:   required from here
+   83 | template void l9<0> (int);
+      |                          ^
+Test_name.c:82:89: error: contract predicate is always false
+   82 | template <int N> void l9 (int c) { if (c) goto L; if (N) { while (c) { L: g (0); } } }  // { dg-error "contract predicate is always false" }
+      |                                                                                      ~~~^~~~~
+Test_name.c:49:37: note: the predicate of the contract assertion
+   49 | void g (int x) pre<always_prove> (x != 0);
+      |                                   ~~^~~~
+Test_name.c: In instantiation of 'void b6(int) [with int N = 1]':
+Test_name.c:92:26:   required from here
+   92 | template void b6<1> (int);
+      |                          ^
+Test_name.c:91:91: error: contract predicate is always false
+   91 | template <int N> void b6 (int c) { if (c) goto L; if (N) return; else { L:; } g (0); }  // { dg-error "contract predicate is always false" }
+      |                                                                                         ~~^~~~~
+Test_name.c:49:37: note: the predicate of the contract assertion
+   49 | void g (int x) pre<always_prove> (x != 0);
+      |                                   ~~^~~~

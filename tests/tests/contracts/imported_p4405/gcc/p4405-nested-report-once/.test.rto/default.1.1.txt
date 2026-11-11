@@ -1,0 +1,62 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p4405 --contract_configuration_file=p4405-nested-report-once.json --contract_analysis_semantic=prove -O2 Test_name.c
+Test_name.c: In function 'int single(int)':
+Test_name.c:47:34: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   47 |   contract_assert (             // { dg-bogus "cannot be proven" }
+      |                 ~~~~~~~~~~~~~~~~~^~~
+Test_name.c:39:21: note: the predicate of the contract assertion
+   39 | int g5 (int x) pre (x != 0);    // { dg-message "the predicate of the contract assertion" }
+      |                   ~~^~~~
+Test_name.c: In function 'int two(int)':
+Test_name.c:57:34: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   57 |   contract_assert (             // { dg-bogus "cannot be proven" }
+      |                 ~~~~~~~~~~~~~~~~~^~~
+Test_name.c:39:21: note: the predicate of the contract assertion
+   39 | int g5 (int x) pre (x != 0);    // { dg-message "the predicate of the contract assertion" }
+      |                   ~~^~~~
+Test_name.c:59:34: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   59 |   contract_assert (             // { dg-bogus "cannot be proven" }
+      |                 ~~~~~~~~~~~~~~~~~^~~~~~~
+Test_name.c:39:21: note: the predicate of the contract assertion
+   39 | int g5 (int x) pre (x != 0);    // { dg-message "the predicate of the contract assertion" }
+      |                   ~~^~~~
+Test_name.c: In function 'int p(int)':
+Test_name.c:69:35: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   69 |   post (r:                      // { dg-bogus "cannot be proven" }
+      |          ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+Test_name.c:39:21: note: the predicate of the contract assertion
+   39 | int g5 (int x) pre (x != 0);    // { dg-message "the predicate of the contract assertion" }
+      |                   ~~^~~~
+Test_name.c: In function 'int c1(int)':
+Test_name.c:79:12: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   79 |   pre (dd::g5 (y) == 1);
+      |      ~~~~~~^~~
+Test_name.c:39:21: note: the predicate of the contract assertion
+   39 | int g5 (int x) pre (x != 0);    // { dg-message "the predicate of the contract assertion" }
+      |                   ~~^~~~
+Test_name.c: In function 'int c2(int)':
+Test_name.c:79:12: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   79 |   pre (dd::g5 (y) == 1);
+      |      ~~~~~~^~~
+Test_name.c:39:21: note: the predicate of the contract assertion
+   39 | int g5 (int x) pre (x != 0);    // { dg-message "the predicate of the contract assertion" }
+      |                   ~~^~~~
+Test_name.c:79:12: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   79 |   pre (dd::g5 (y) == 1);
+      |      ~~~~~~^~~
+Test_name.c:39:21: note: the predicate of the contract assertion
+   39 | int g5 (int x) pre (x != 0);    // { dg-message "the predicate of the contract assertion" }
+      |                   ~~^~~~
+Test_name.c: In function 'int pinned::f2(int)':
+Test_name.c:99:12: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   99 |   pre (dd::g5 (y) == 1);
+      |      ~~~~~~^~~
+Test_name.c:39:21: note: the predicate of the contract assertion
+   39 | int g5 (int x) pre (x != 0);    // { dg-message "the predicate of the contract assertion" }
+      |                   ~~^~~~
+Test_name.c: In function 'int c3(int)':
+Test_name.c:99:12: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   99 |   pre (dd::g5 (y) == 1);
+      |      ~~~~~~^~~
+Test_name.c:39:21: note: the predicate of the contract assertion
+   39 | int g5 (int x) pre (x != 0);    // { dg-message "the predicate of the contract assertion" }
+      |                   ~~^~~~

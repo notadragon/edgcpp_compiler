@@ -1,0 +1,106 @@
+fe_only -DTEST_NUMBER=3 --c++26 --contracts_p4405 --contract_evaluation_semantic=ignore --contract_analysis_semantic=prove --contract_configuration=[{"match":{"analysis":true,"namespace":"dd"},"output":{"semantic":"diagnose"}}] Test_name.c
+"Test_name.c", line 47: error: contract assertion cannot be proven
+            precondition of a call in the predicate cannot be proven at line 26
+  int unprovable(int y) { contract_assert(g1(y) == 1); return y; }
+                          ^
+
+"Test_name.c", line 48: error: contract assertion cannot be proven
+            precondition of a call in the predicate is always false at line 28
+  int always_false(int y) { contract_assert(g3(0) != 7); return y; }
+                            ^
+
+"Test_name.c", line 49: error: contract assertion cannot be proven
+  int provable(int y) { contract_assert(g4(5) == 1); return y; }
+                        ^
+
+"Test_name.c", line 52: error: contract assertion cannot be proven
+            precondition of a call in the predicate is always false at line 32
+  int folded_call(int y) { contract_assert(c(0) == 1); return y; }
+                           ^
+
+"Test_name.c", line 53: error: contract assertion cannot be proven
+  int folded_ok(int y) { contract_assert(c(1) == 1); return y; }
+                         ^
+
+"Test_name.c", line 54: error: contract assertion cannot be proven
+            precondition of a call in the predicate cannot be proven at line 26
+  int folded_true(int y) { contract_assert((g1(y), true)); return y; }
+                           ^
+
+"Test_name.c", line 55: error: contract assertion cannot be proven
+  int short_circuit(int y) { contract_assert(true || g1(0) == 1); return y; }
+                             ^
+
+"Test_name.c", line 61: error: contract assertion cannot be proven
+    contract_assert((1 ? g4(1) : g3(0)) == 1);
+    ^
+
+"Test_name.c", line 65: error: contract assertion cannot be proven
+    contract_assert(sizeof(g1(0)) == sizeof(int));
+    ^
+
+"Test_name.c", line 70: error: contract assertion cannot be proven
+    contract_assert([] { return g4(2); }() == 1);
+                                  ^
+
+"Test_name.c", line 70: error: contract assertion cannot be proven
+    contract_assert([] { return g4(2); }() == 1);
+    ^
+
+"Test_name.c", line 73: error: contract assertion cannot be proven
+            precondition of a call in the predicate is always false at line 44
+  int member(const S &s, int y) { contract_assert(s.m(0) == 1); return y; }
+                                  ^
+
+"Test_name.c", line 74: error: contract assertion cannot be proven
+            precondition of a call in the predicate is always false at line 43
+  int constructor(int y) { contract_assert((S(0), true)); return y; }
+                           ^
+
+"Test_name.c", line 75: error: contract assertion cannot be proven
+            precondition of a call in the predicate cannot be proven at line 33
+            precondition of a call in the predicate cannot be proven at line 35
+  int recursive(int y) { contract_assert(g(y) == 1); return y; }
+                         ^
+
+"Test_name.c", line 76: error: contract assertion cannot be proven
+            precondition of a call in the predicate cannot be proven at line 37
+  int self(int y) { contract_assert(p(y)); return y; }
+                    ^
+
+"Test_name.c", line 77: error: contract assertion cannot be proven
+            precondition of a call in the predicate cannot be proven at line 26
+  int post_nested(int y) post(r: g1(r) == 1) { return y; }
+                         ^
+
+"Test_name.c", line 82: error: contract assertion cannot be proven
+            precondition of a call in the predicate cannot be proven at line 26
+  int caller(int y) { return f(y); }      // g1's noted.
+                              ^
+
+"Test_name.c", line 83: error: contract assertion cannot be proven
+            precondition of a call in the predicate is always false at line 26
+  int caller_zero() { return f(0); }      // g1's always false.
+                              ^
+
+"Test_name.c", line 84: error: contract assertion cannot be proven
+  int caller_one() { return f(1); }       // g1's proven.
+                             ^
+
+"Test_name.c", line 88: warning: contract assertion cannot be proven
+  int report_once(int y) { contract_assert(dd::gd(y) == 1); return y; }
+                                                 ^
+
+"Test_name.c", line 88: error: contract assertion cannot be proven
+  int report_once(int y) { contract_assert(dd::gd(y) == 1); return y; }
+                           ^
+
+"Test_name.c", line 89: warning: contract predicate is always false
+  int report_zero(int y) { contract_assert(dd::gd(0) == 1); return y; }
+                                                 ^
+
+"Test_name.c", line 89: error: contract assertion cannot be proven
+  int report_zero(int y) { contract_assert(dd::gd(0) == 1); return y; }
+                           ^
+
+21 errors detected in the compilation of "Test_name.c".

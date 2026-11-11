@@ -1,0 +1,159 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 Test_name.c
+"Test_name.c", line 104: warning: variable "c1" was declared but never referenced
+  constexpr DC c1;
+               ^
+
+"Test_name.c", line 106: warning: variable "m1" was declared but never referenced
+  constexpr DM m1;
+               ^
+
+"Test_name.c", line 109: warning: variable "ce1" was declared but never referenced
+  constexpr DE ce1;
+               ^
+
+Test_name.c:92:4: error: contract assertion cannot be proven for a call through the address of 'DP::~DP()'
+   92 | DP p1;  // { dg-error "contract assertion cannot be proven for a call through the address of 'DP::~DP\\(\\)'" }
+      |    ^~
+Test_name.c:92:4: note: 'p1', of static storage duration, is destroyed by a call through the address of its destructor
+Test_name.c:70:7: note: precondition here
+   70 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "precondition here" }
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:94:4: warning: contract assertion cannot be proven for a call through the address of 'DD::~DD()' [-Wcontract-unproven]
+   94 | DD d1;  // { dg-warning "contract assertion cannot be proven for a call through the address of 'DD::~DD\\(\\)'" }
+      |    ^~
+Test_name.c:94:4: note: 'd1', of static storage duration, is destroyed by a call through the address of its destructor
+Test_name.c:73:7: note: precondition here
+   73 |   ~DD () pre<always_diagnose> (g > 0);  // { dg-message "precondition here" }
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:97:4: error: contract assertion cannot be proven for a call through the address of 'DP::~DP()'
+   97 | DP pa[2];       // { dg-error "contract assertion cannot be proven for a call through the address of 'DP::~DP\\(\\)'" }
+      |    ^~
+Test_name.c:97:4: note: 'pa', of static storage duration, is destroyed by a call through the address of its destructor
+Test_name.c:70:7: note: precondition here
+   70 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "precondition here" }
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:99:17: error: contract assertion cannot be proven for a call through the address of 'DP::~DP()'
+   99 | thread_local DP t1;     // { dg-error "contract assertion cannot be proven for a call through the address of 'DP::~DP\\(\\)'" }
+      |                 ^~
+Test_name.c:99:17: note: 't1', of thread storage duration, is destroyed by a call through the address of its destructor
+Test_name.c:70:7: note: precondition here
+   70 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "precondition here" }
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:101:17: warning: contract assertion cannot be proven for a call through the address of 'DD::~DD()' [-Wcontract-unproven]
+  101 | thread_local DD t2;     // { dg-warning "contract assertion cannot be proven for a call through the address of 'DD::~DD\\(\\)'" }
+      |                 ^~
+Test_name.c:101:17: note: 't2', of thread storage duration, is destroyed by a call through the address of its destructor
+Test_name.c:73:7: note: precondition here
+   73 |   ~DD () pre<always_diagnose> (g > 0);  // { dg-message "precondition here" }
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:107:4: error: contract assertion cannot be proven for a call through the address of 'constexpr DM::~DM()'
+  107 | DM m2;  // { dg-error "contract assertion cannot be proven for a call through the address of 'constexpr DM::~DM\\(\\)'" }
+      |    ^~
+Test_name.c:107:4: note: 'm2', of static storage duration, is destroyed by a call through the address of its destructor
+Test_name.c:83:17: note: precondition here
+   83 |   constexpr ~DM () pre<always_prove> (v > 0) {} // { dg-message "precondition here" }
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:110:4: error: contract assertion cannot be proven for a call through the address of 'constexpr DE::~DE()'
+  110 | DE ce2; // { dg-error "contract assertion cannot be proven for a call through the address of 'constexpr DE::~DE\\(\\)'" }
+      |    ^~~
+Test_name.c:110:4: note: 'ce2', of static storage duration, is destroyed by a call through the address of its destructor
+Test_name.c:86:17: note: precondition here
+   86 |   constexpr ~DE () pre<always_prove> (__builtin_is_constant_evaluated () || g > 0) {}   // { dg-message "precondition here" }
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:112:4: error: contract assertion cannot be proven for a call through the address of 'constexpr DG::~DG()'
+  112 | DG g1;  // { dg-error "contract assertion cannot be proven for a call through the address of 'constexpr DG::~DG\\(\\)'" }
+      |    ^~
+Test_name.c:112:4: note: 'g1', of static storage duration, is destroyed by a call through the address of its destructor
+Test_name.c:89:17: note: precondition here
+   89 |   constexpr ~DG () pre<always_prove> (g > 0) {} // { dg-message "precondition here" }
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:117:18: error: contract assertion cannot be proven for a call through the address of 'DP::~DP()'
+  117 |   static inline DP s2;  // { dg-error "contract assertion cannot be proven for a call through the address of 'DP::~DP\\(\\)'" }
+      |                  ^~
+Test_name.c:117:18: note: 'S::s2', of static storage duration, is destroyed by a call through the address of its destructor
+Test_name.c:70:7: note: precondition here
+   70 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "precondition here" }
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:120:4: error: contract assertion cannot be proven for a call through the address of 'DP::~DP()'
+  120 | DP S::s1;       // { dg-error "contract assertion cannot be proven for a call through the address of 'DP::~DP\\(\\)'" }
+      |    ^
+Test_name.c:120:4: note: 'S::s1', of static storage duration, is destroyed by a call through the address of its destructor
+Test_name.c:70:7: note: precondition here
+   70 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "precondition here" }
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c: In function 'void f()':
+Test_name.c:126:11: error: contract assertion cannot be proven for a call through the address of 'DP::~DP()'
+  126 |   static DP sl; // { dg-error "contract assertion cannot be proven for a call through the address of 'DP::~DP\\(\\)'" }
+      |           ^~
+Test_name.c:126:11: note: 'sl', of static storage duration, is destroyed by a call through the address of its destructor
+Test_name.c:70:7: note: precondition here
+   70 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "precondition here" }
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:128:17: error: contract assertion cannot be proven for a call through the address of 'DP::~DP()'
+  128 |   thread_local DP tl;   // { dg-error "contract assertion cannot be proven for a call through the address of 'DP::~DP\\(\\)'" }
+      |                 ^~
+Test_name.c:128:17: note: 'tl', of thread storage duration, is destroyed by a call through the address of its destructor
+Test_name.c:70:7: note: precondition here
+   70 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "precondition here" }
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c: In instantiation of 'DP TS<int>::si':
+Test_name.c:156:20:   required from here
+  156 |   (void) &TS<int>::si;
+      |                    ^~
+Test_name.c:144:20: error: contract assertion cannot be proven for a call through the address of 'DP::~DP()'
+  144 |   static inline DP si;  // { dg-error "contract assertion cannot be proven for a call through the address of 'DP::~DP\\(\\)'" }
+      |                    ^~
+Test_name.c:144:20: note: 'TS<int>::si', of static storage duration, is destroyed by a call through the address of its destructor
+Test_name.c:70:7: note: precondition here
+   70 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "precondition here" }
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c: In instantiation of 'DP vt<int>':
+Test_name.c:157:9:   required from here
+  157 |   (void) &vt<int>;
+      |         ^~~~~~~~
+Test_name.c:148:25: error: contract assertion cannot be proven for a call through the address of 'DP::~DP()'
+  148 | template <class T> DP vt;       // { dg-error "contract assertion cannot be proven for a call through the address of 'DP::~DP\\(\\)'" }
+      |                         ^~~~~~~~
+Test_name.c:148:25: note: 'vt<int>', of static storage duration, is destroyed by a call through the address of its destructor
+Test_name.c:70:7: note: precondition here
+   70 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "precondition here" }
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c: In instantiation of 'void tf() [with T = int]':
+Test_name.c:154:10:   required from here
+  154 |   tf<int> ();
+      |   ~~~~~~~^~
+Test_name.c:138:13: error: contract assertion cannot be proven for a call through the address of 'DP::~DP()'
+  138 |   static DP st; // { dg-error "contract assertion cannot be proven for a call through the address of 'DP::~DP\\(\\)'" }
+      |             ^~
+Test_name.c:138:13: note: 'st', of static storage duration, is destroyed by a call through the address of its destructor
+Test_name.c:70:7: note: precondition here
+   70 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "precondition here" }
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c: At global scope:
+Test_name.c:97:8: error: contract assertion cannot be proven
+   97 | DP pa[2];       // { dg-error "contract assertion cannot be proven for a call through the address of 'DP::~DP\\(\\)'" }
+      |        ^
+Test_name.c:70:29: note: the predicate of the contract assertion
+   70 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "precondition here" }
+      |                           ~~^~~
+Test_name.c: In function 'void f()':
+Test_name.c:130:4: error: contract assertion cannot be proven
+  130 |   DP a;
+      |    ^
+Test_name.c:70:29: note: the predicate of the contract assertion
+   70 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "precondition here" }
+      |                           ~~^~~
+Test_name.c: In function 'void __static_initialization_and_destruction_0()':
+Test_name.c:97:4: error: contract assertion cannot be proven
+   97 | DP pa[2];       // { dg-error "contract assertion cannot be proven for a call through the address of 'DP::~DP\\(\\)'" }
+      |    ^~
+Test_name.c:70:29: note: the predicate of the contract assertion
+   70 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "precondition here" }
+      |                           ~~^~~
+Test_name.c: In function 'void __tcfpa(void*)':
+Test_name.c:97:4: error: contract assertion cannot be proven
+   97 | DP pa[2];       // { dg-error "contract assertion cannot be proven for a call through the address of 'DP::~DP\\(\\)'" }
+      |    ^~
+Test_name.c:70:29: note: the predicate of the contract assertion
+   70 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "precondition here" }
+      |                           ~~^~~

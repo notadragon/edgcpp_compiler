@@ -1,0 +1,5 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 -O2 Test_name.c
+Test_name.c: In function 'void x4(int*)':
+Test_name.c:52:1: error: contract predicate is always false
+   52 |   contract_assert<always_prove> (c);    // { dg-error "always false" }
+      | ^ ~~~~~~~~~~~~~

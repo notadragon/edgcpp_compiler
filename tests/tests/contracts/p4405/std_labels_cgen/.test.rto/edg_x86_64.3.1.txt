@@ -1,0 +1,86 @@
+fe_only -DTEST_NUMBER=3 --c++26 --contracts_p3400 --contract_evaluation_semantic=ignore Test_name.c
+"Test_name.c", line 33: error: identifier "prove" is undefined
+  void pp(int x) pre<prove>(x > 0);
+                     ^
+
+"Test_name.c", line 34: error: identifier "diagnose" is undefined
+  void pd(int x) pre<diagnose>(x > 0);
+                     ^
+
+"Test_name.c", line 35: error: identifier "always_prove" is undefined
+  void pap(int x) pre<always_prove>(x > 0);
+                      ^
+
+"Test_name.c", line 36: error: identifier "always_diagnose" is undefined
+  void pad(int x) pre<always_diagnose>(x > 0);
+                      ^
+
+"Test_name.c", line 37: error: identifier "prove" is undefined
+  void ppd(int x) pre<prove | diagnose>(x > 0);
+                      ^
+
+"Test_name.c", line 37: error: identifier "diagnose" is undefined
+  void ppd(int x) pre<prove | diagnose>(x > 0);
+                              ^
+
+"Test_name.c", line 38: error: namespace "std::contracts::labels" has no member "diagnose"
+  void pdq(int x) pre<L::diagnose>(x > 0);
+                         ^
+
+"Test_name.c", line 49: error: identifier "prove" is undefined
+  int qp(int x) post<prove>(r: r > 0) { return x; }
+                     ^
+
+"Test_name.c", line 50: error: identifier "diagnose" is undefined
+  int qd(int x) post<diagnose>(r: r > 0) { return x; }
+                     ^
+
+"Test_name.c", line 51: error: identifier "always_prove" is undefined
+  int qap(int x) post<always_prove>(r: r > 0) { return x; }
+                      ^
+
+"Test_name.c", line 52: error: identifier "always_diagnose" is undefined
+  int qad(int x) post<always_diagnose>(r: r > 0) { return x; }
+                      ^
+
+"Test_name.c", line 55: error: identifier "prove" is undefined
+    contract_assert<prove>(x > 0);
+                    ^
+
+"Test_name.c", line 56: error: identifier "diagnose" is undefined
+    contract_assert<diagnose>(x > 0);
+                    ^
+
+"Test_name.c", line 57: error: identifier "always_prove" is undefined
+    contract_assert<always_prove>(x > 0);
+                    ^
+
+"Test_name.c", line 58: error: identifier "always_diagnose" is undefined
+    contract_assert<always_diagnose>(x > 0);
+                    ^
+
+"Test_name.c", line 63: error: identifier "prove" is undefined
+    contract_assert<prove>(sizeof(x) == sizeof(int));
+                    ^
+
+"Test_name.c", line 64: error: identifier "always_prove" is undefined
+    contract_assert<always_prove>(true);
+                    ^
+
+"Test_name.c", line 65: error: identifier "diagnose" is undefined
+    contract_assert<diagnose>(1 + 1 == 2);
+                    ^
+
+"Test_name.c", line 69: error: identifier "diagnose" is undefined
+  void ae(int x) pre<diagnose | always_qe>(x > 0);
+                     ^
+
+"Test_name.c", line 70: error: identifier "diagnose" is undefined
+  void at(int x) pre<diagnose | terminating_>(x > 0);
+                     ^
+
+"Test_name.c", line 75: error: identifier "diagnose" is undefined
+    contract_assert<diagnose | always_qe>(y > 0);
+                    ^
+
+21 errors detected in the compilation of "Test_name.c".

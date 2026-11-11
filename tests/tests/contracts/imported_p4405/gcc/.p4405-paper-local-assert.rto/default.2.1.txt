@@ -1,0 +1,8 @@
+eccp -DTEST_NUMBER=2 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 -O2 -O0 Test_name.c
+Test_name.c: In function 'void f(int)':
+Test_name.c:24:1: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   24 |   contract_assert<always_diagnose>(x > 0);  // OK, warns: cannot be proven      { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:24:38: note: the predicate of the contract assertion
+   24 |   contract_assert<always_diagnose>(x > 0);  // OK, warns: cannot be proven      { dg-warning "contract assertion cannot be proven \\\[-Wcontract-unproven\\\]" }
+      |                                    ~~^~~

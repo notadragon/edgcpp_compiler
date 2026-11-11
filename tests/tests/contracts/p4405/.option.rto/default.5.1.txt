@@ -1,0 +1,3 @@
+fe_only -DTEST_NUMBER=5 --c++26 --contracts --contract_evaluation_semantic=prove -DWANT=0 Test_name.c
+Command-line warning: --contract_evaluation_semantic=prove requires --contracts_p4405; ignore is used instead
+

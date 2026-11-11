@@ -1,0 +1,5 @@
+fe_only -DTEST_NUMBER=8 --c++26 --contracts_p4405 --contract_analysis_semantic=enforce Test_name.c
+Command-line error: unrecognized contract analysis semantic (must be one of ignore, diagnose, prove): enforce
+
+1 catastrophic error detected in this compilation.
+Compilation terminated.

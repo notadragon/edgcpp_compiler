@@ -1,0 +1,4 @@
+[
+  {"match": {"kind": "pre"}, "output": {"semantic": "ignore"}},
+  {"output": {"semantic": "enforce"}}
+]

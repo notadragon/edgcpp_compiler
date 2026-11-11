@@ -1,0 +1,103 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contracts_p4405 --contract_analysis_semantic=prove --contract_configuration=[{"match":{"analysis":true,"namespace":"dd"},"output":{"semantic":"diagnose"}},{"match":{"kind":"pre","namespace":"pinned"},"output":{"semantic":"quick_enforce"}},{"match":{"kind":"pre"},"output":{"semantic":"ignore"}},{"output":{"semantic":"quick_enforce"}}] Test_name.c
+"Test_name.c", line 23: warning: contract assertion cannot be proven
+    contract_assert(dd::g5(y) == 1);
+                          ^
+
+"Test_name.c", line 23: error: contract assertion cannot be proven
+    contract_assert(dd::g5(y) == 1);
+    ^
+
+"Test_name.c", line 29: warning: contract assertion cannot be proven
+    contract_assert(dd::g5(y) == 1);
+                          ^
+
+"Test_name.c", line 29: error: contract assertion cannot be proven
+    contract_assert(dd::g5(y) == 1);
+    ^
+
+"Test_name.c", line 30: warning: contract assertion cannot be proven
+    contract_assert(dd::g5(y + 1) == 1);
+                          ^
+
+"Test_name.c", line 30: error: contract assertion cannot be proven
+    contract_assert(dd::g5(y + 1) == 1);
+    ^
+
+"Test_name.c", line 35: warning: contract assertion cannot be proven
+  int p(int y) post(r: dd::g5(r) == 1) { return y; }
+                             ^
+
+"Test_name.c", line 35: error: contract assertion cannot be proven
+  int p(int y) post(r: dd::g5(r) == 1) { return y; }
+               ^
+
+"Test_name.c", line 39: warning: contract assertion cannot be proven
+  int f(int y) pre(dd::g5(y) == 1);
+                         ^
+
+"Test_name.c", line 41: error: contract assertion cannot be proven
+  int c1(int y) { return f(y); }
+                          ^
+
+"Test_name.c", line 39: warning: contract assertion cannot be proven
+  int f(int y) pre(dd::g5(y) == 1);
+                         ^
+
+"Test_name.c", line 42: error: contract assertion cannot be proven
+  int c2(int y) { return f(y) + f(y + 1); }
+                          ^
+
+"Test_name.c", line 39: warning: contract assertion cannot be proven
+  int f(int y) pre(dd::g5(y) == 1);
+                         ^
+
+"Test_name.c", line 42: error: contract assertion cannot be proven
+  int c2(int y) { return f(y) + f(y + 1); }
+                                 ^
+
+"Test_name.c", line 39: warning: contract assertion cannot be proven
+  int f(int y) pre(dd::g5(y) == 1);
+                         ^
+
+"Test_name.c", line 53: error: contract assertion cannot be proven
+            precondition of a call in the predicate cannot be proven at line 39
+    contract_assert(f(y) == 1);
+    ^
+
+"Test_name.c", line 53: error: contract assertion cannot be proven
+    contract_assert(f(y) == 1);
+                     ^
+
+"Test_name.c", line 60: warning: contract assertion cannot be proven
+  int f2(int y) pre(dd::g5(y) == 1);
+                          ^
+
+"Test_name.c", line 60: warning: contract assertion cannot be proven
+  int f2(int y) pre(dd::g5(y) == 1);
+                          ^
+
+"Test_name.c", line 63: error: contract assertion cannot be proven
+  int c3(int y) { return pinned::f2(y); }
+                                   ^
+
+"Test_name.c", line 39: warning: contract assertion cannot be proven
+  int f(int y) pre(dd::g5(y) == 1);
+                         ^
+          detected during instantiation of "int t(T) [with T=int]" at line 46
+
+"Test_name.c", line 45: error: contract assertion cannot be proven
+  template <typename T> int t(T y) { return f(y); }
+                                             ^
+          detected during instantiation of "int t(T) [with T=int]" at line 46
+
+"Test_name.c", line 39: warning: contract assertion cannot be proven
+  int f(int y) pre(dd::g5(y) == 1);
+                         ^
+          detected during instantiation of "int t(T) [with T=long]" at line 47
+
+"Test_name.c", line 45: error: contract assertion cannot be proven
+  template <typename T> int t(T y) { return f(y); }
+                                             ^
+          detected during instantiation of "int t(T) [with T=long]" at line 47
+
+12 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,92 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 Test_name.c
+Test_name.c:48:27: error: contract assertion cannot be proven for a call through the address of 'void fp(int)'
+   48 | void a (void (*p) (int) = &fp); // { dg-error "contract assertion cannot be proven for a call through the address of 'void fp\\(int\\)'" }
+      |                           ^~
+Test_name.c:45:16: note: precondition here
+   45 | void fp (int x) pre<always_prove> (x > 0);
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:49:28: error: contract assertion cannot be proven for a call through the address of 'void fp(int)'
+   49 | void b (void (*p) (int) = fp);  // { dg-error "contract assertion cannot be proven for a call through the address of 'void fp\\(int\\)'" }
+      |                            ^
+Test_name.c:45:16: note: precondition here
+   45 | void fp (int x) pre<always_prove> (x > 0);
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:50:28: warning: contract assertion cannot be proven for a call through the address of 'void fd(int)' [-Wcontract-unproven]
+   50 | void c (void (*p) (int) = fd);  // { dg-warning "contract assertion cannot be proven for a call through the address of 'void fd\\(int\\)'" }
+      |                            ^
+Test_name.c:46:16: note: precondition here
+   46 | void fd (int x) pre<always_diagnose> (x > 0);
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:51:28: error: contract assertion cannot be proven for a call through the address of 'void fp(int)'
+   51 | void d (void (&r) (int) = fp);  // { dg-error "contract assertion cannot be proven for a call through the address of 'void fp\\(int\\)'" }
+      |                            ^
+Test_name.c:45:16: note: precondition here
+   45 | void fp (int x) pre<always_prove> (x > 0);
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:52:32: warning: contract assertion cannot be proven for a call through the address of 'void fd(int)' [-Wcontract-unproven]
+   52 | void unused (void (*p) (int) = &fd);    // { dg-warning "contract assertion cannot be proven for a call through the address of 'void fd\\(int\\)'" }
+      |                                ^~
+Test_name.c:46:16: note: precondition here
+   46 | void fd (int x) pre<always_diagnose> (x > 0);
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:53:34: warning: contract assertion cannot be proven for a call through the address of 'void fd(int)' [-Wcontract-unproven]
+   53 | void unused2 (void (*p) (int) = fd);    // { dg-warning "contract assertion cannot be proven for a call through the address of 'void fd\\(int\\)'" }
+      |                                  ^
+Test_name.c:46:16: note: precondition here
+   46 | void fd (int x) pre<always_diagnose> (x > 0);
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:57:27: error: contract assertion cannot be proven for a call through the address of 'void fp(int)'
+   57 |   void m (void (*p) (int) = &fp);       // { dg-error "contract assertion cannot be proven for a call through the address of 'void fp\\(int\\)'" }
+      |                           ^~
+Test_name.c:45:16: note: precondition here
+   45 | void fp (int x) pre<always_prove> (x > 0);
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:58:27: error: contract assertion cannot be proven for a call through the address of 'void fp(int)'
+   58 |   void m2 (void (*p) (int) = fp);       // { dg-error "contract assertion cannot be proven for a call through the address of 'void fp\\(int\\)'" }
+      |                           ^~
+Test_name.c:45:16: note: precondition here
+   45 | void fp (int x) pre<always_prove> (x > 0);
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c: In function 'void t(void (*)(int)) [with T = int]':
+Test_name.c:61:62: error: contract assertion cannot be proven for a call through the address of 'void fp(int)'
+   61 | template<class T> void t (void (*p) (int) = &fp);       // { dg-error "contract assertion cannot be proven for a call through the address of 'void fp\\(int\\)'" }
+      |                                                              ^~
+Test_name.c:45:16: note: precondition here
+   45 | void fp (int x) pre<always_prove> (x > 0);
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:82:9: note:   when instantiating default argument for call to 'void t(void (*)(int)) [with T = int]'
+   82 |   t<int> ();
+      |   ~~~~~~^~
+Test_name.c: In function 'void t2(void (*)(int)) [with T = int]':
+Test_name.c:84:10: error: contract assertion cannot be proven for a call through the address of 'void fp(int)'
+   84 |   t2<int> ();                   // { dg-error "contract assertion cannot be proven for a call through the address of 'void fp\\(int\\)'" }
+      |   ~~~~~~~^~
+Test_name.c:45:16: note: precondition here
+   45 | void fp (int x) pre<always_prove> (x > 0);
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:84:10: note:   when instantiating default argument for call to 'void t2(void (*)(int)) [with T = int]'
+   84 |   t2<int> ();                   // { dg-error "contract assertion cannot be proven for a call through the address of 'void fp\\(int\\)'" }
+      |   ~~~~~~~^~
+Test_name.c: In member function 'void U<T>::m(void (*)(int)) [with T = int]':
+Test_name.c:67:43: error: contract assertion cannot be proven for a call through the address of 'void fp(int)'
+   67 |   void m (void (*p) (int) = &fp);       // { dg-error "contract assertion cannot be proven for a call through the address of 'void fp\\(int\\)'" }
+      |                                           ^~
+Test_name.c:45:16: note: precondition here
+   45 | void fp (int x) pre<always_prove> (x > 0);
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:86:4: note:   when instantiating default argument for call to 'void U<T>::m(void (*)(int)) [with T = int]'
+   86 |   u.m ();
+      |   ~^~
+Test_name.c: In function 'void use(S&, U<int>&)':
+Test_name.c:87:31: error: contract assertion cannot be proven for a call through the address of 'void fp(int)'
+   87 |   auto l = [] (void (*p) (int) = &fp) {};       // { dg-error "contract assertion cannot be proven for a call through the address of 'void fp\\(int\\)'" }
+      |                               ^~
+Test_name.c:45:16: note: precondition here
+   45 | void fp (int x) pre<always_prove> (x > 0);
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:89:33: error: contract assertion cannot be proven for a call through the address of 'void fp(int)'
+   89 |   auto l2 = [] (void (*p) (int) = fp) {};       // { dg-error "contract assertion cannot be proven for a call through the address of 'void fp\\(int\\)'" }
+      |                                 ^
+Test_name.c:45:16: note: precondition here
+   45 | void fp (int x) pre<always_prove> (x > 0);
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~

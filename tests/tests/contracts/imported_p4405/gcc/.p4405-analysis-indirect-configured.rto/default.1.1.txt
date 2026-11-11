@@ -1,0 +1,1 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p4405 --contract_analysis_semantic=prove -O2 Test_name.c

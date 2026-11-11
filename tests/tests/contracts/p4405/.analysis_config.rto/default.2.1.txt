@@ -1,0 +1,5 @@
+fe_only -DTEST_NUMBER=2 --c++26 --contracts_p4405 --contract_configuration=[{"match":{"analysis":true,"caller":false},"output":{"semantic":"prove"}}] Test_name.c
+Command-line error: invalid contract configuration (<command-line>:1:23): "analysis" and "caller" cannot both appear in "match"
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation terminated.

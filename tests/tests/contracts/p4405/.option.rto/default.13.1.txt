@@ -1,0 +1,1 @@
+fe_only -DTEST_NUMBER=13 --c++26 --no_contract_analysis_skip_dead_calls --contracts_p3850 -DWANT=1 Test_name.c

@@ -1,0 +1,21 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p4405 --contract_evaluation_semantic=ignore --contract_analysis_semantic=prove -O2 Test_name.c
+Test_name.c: In function 'int unprovable(int)':
+Test_name.c:35:1: error: contract assertion cannot be proven
+   35 |   contract_assert (g (y) == 1); // { dg-error "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:35:22: note: the predicate of the contract assertion
+   35 |   contract_assert (g (y) == 1); // { dg-error "contract assertion cannot be proven" }
+      |                 ~~~~~^~~~
+Test_name.c:25:20: note: precondition of a call in the predicate cannot be proven
+   25 | int k (int x) pre (x > 0);      // { dg-message "precondition of a call in the predicate cannot be proven" }
+      |                  ~~^~~
+Test_name.c: In function 'int self(int)':
+Test_name.c:51:1: error: contract assertion cannot be proven
+   51 |   contract_assert (p (y));      // { dg-error "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:51:18: note: the predicate of the contract assertion
+   51 |   contract_assert (p (y));      // { dg-error "contract assertion cannot be proven" }
+      |                 ~^~~
+Test_name.c:30:26: note: precondition of a call in the predicate cannot be proven
+   30 | bool p (int x) pre (x == 0 || p (x - 1));
+      |                   ~~~~~~~^~~~~~~~~~~

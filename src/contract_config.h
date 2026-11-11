@@ -51,6 +51,24 @@ extern a_contract_evaluation_semantic apply_contract_label_facets(
                               a_contract_specifier_ptr        csp,
                               a_contract_evaluation_semantic  semantic,
                               a_boolean                       in_ce);
+/* In statements.c, with the walk for P4405's analysis evaluations. */
+extern a_contract_evaluation_semantic contract_analysis_semantic_for(
+                                        a_contract_specifier_ptr  csp,
+                                        a_routine_ptr             routine);
+extern a_contract_evaluation_semantic contract_analysis_stronger(
+                                         a_contract_evaluation_semantic  a,
+                                         a_contract_evaluation_semantic  b);
+extern void diagnose_contract_analyses_at_call(a_routine_ptr      rp,
+                                               a_source_position  *pos);
+extern void diagnose_contract_address_taken(a_routine_ptr      rp,
+                                            a_source_position  *pos);
+extern void note_contract_static_destruction(a_dynamic_init_ptr  dip);
+extern a_contract_evaluation_semantic apply_contract_label_facets_analysis(
+                              a_contract_specifier_ptr        csp,
+                              a_contract_evaluation_semantic  semantic,
+                              a_contract_evaluation_semantic  *p_analysis,
+                              a_boolean                       in_ce);
+
 /* Conditionally close the "edg" namespace. */
 END_EDG_NAMESPACE
 

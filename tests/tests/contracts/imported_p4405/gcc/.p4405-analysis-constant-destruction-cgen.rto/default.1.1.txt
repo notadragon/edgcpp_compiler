@@ -1,0 +1,61 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 Test_name.c
+"Test_name.c", line 79: warning: variable "a" was declared but never referenced
+    constexpr DE a;
+                 ^
+
+"Test_name.c", line 80: warning: variable "b" was declared but never referenced
+    constexpr DE b{};
+                 ^
+
+"Test_name.c", line 81: warning: variable "c" was declared but never referenced
+    constexpr DE c[2];
+                 ^
+
+"Test_name.c", line 82: warning: variable "s" was declared but never referenced
+    static constexpr DE s;
+                        ^
+
+"Test_name.c", line 52: warning: variable "ce2" was declared but never referenced
+  constexpr DE ce2{};
+               ^
+
+"Test_name.c", line 53: warning: variable "ce3" was declared but never referenced
+  constexpr DE ce3 = DE ();
+               ^
+
+"Test_name.c", line 54: warning: variable "ca" was declared but never referenced
+  constexpr DE ca[2];
+               ^
+
+"Test_name.c", line 55: warning: variable "ch" was declared but never referenced
+  constexpr H ch;
+              ^
+
+Test_name.c:58:14: error: contract assertion cannot be proven for a call through the address of 'constexpr DE::~DE()'
+   58 | constinit DE ci;        // { dg-error "contract assertion cannot be proven for a call through the address of 'constexpr DE::~DE\\(\\)'" }
+      |              ^~
+Test_name.c:58:14: note: 'ci', of static storage duration, is destroyed by a call through the address of its destructor
+Test_name.c:45:17: note: precondition here
+   45 |   constexpr ~DE () pre<always_prove> (__builtin_is_constant_evaluated () || g > 0) {}   // { dg-message "precondition here" }
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:60:4: error: contract assertion cannot be proven for a call through the address of 'constexpr DE::~DE()'
+   60 | DE e1;  // { dg-error "contract assertion cannot be proven for a call through the address of 'constexpr DE::~DE\\(\\)'" }
+      |    ^~
+Test_name.c:60:4: note: 'e1', of static storage duration, is destroyed by a call through the address of its destructor
+Test_name.c:45:17: note: precondition here
+   45 |   constexpr ~DE () pre<always_prove> (__builtin_is_constant_evaluated () || g > 0) {}   // { dg-message "precondition here" }
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c: In destructor 'constexpr H::~H()':
+Test_name.c:47:8: error: contract assertion cannot be proven
+   47 | struct H {      // { dg-error "contract assertion cannot be proven" }
+      |        ^
+Test_name.c:45:71: note: the predicate of the contract assertion
+   45 |   constexpr ~DE () pre<always_prove> (__builtin_is_constant_evaluated () || g > 0) {}   // { dg-message "precondition here" }
+      |                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~
+Test_name.c: In function 'void h()':
+Test_name.c:91:4: error: contract assertion cannot be proven
+   91 |   DE d; // { dg-error "contract assertion cannot be proven" }
+      |    ^
+Test_name.c:45:71: note: the predicate of the contract assertion
+   45 |   constexpr ~DE () pre<always_prove> (__builtin_is_constant_evaluated () || g > 0) {}   // { dg-message "precondition here" }
+      |                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~
