@@ -1,0 +1,8 @@
+./a.out
+kind 1 semantic 6 file [] function [] line 0 column 0 comment []
+kind 2 semantic 6 file [] function [] line 0 column 0 comment []
+kind 3 semantic 6 file [] function [] line 0 column 0 comment []
+kind 1 semantic 6 file [] function [] line 0 column 0 comment []
+kind 2 semantic 6 file [] function [] line 0 column 0 comment []
+kind 3 semantic 6 file [] function [] line 0 column 0 comment []
+end

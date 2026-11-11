@@ -70,6 +70,10 @@
 # -fcontracts-prove-optimize= goes to both; the proof optimization level
 # chooses g++'s strategies and how its proof shadows are optimized (the
 # front end's folding is on at every level).
+# -fcontract-violation-information= goes to both: g++ builds the records of
+# the checks, and the front end, which preprocesses, predefines
+# __gcc_contracts_violation_information_none under =none for libstdc++'s
+# <cassert>, <contracts> and <contracts.h>.
 # -f[no-]contracts-p4451 goes to both; g++ gets the "<terminating>" the
 # front end puts out for a terminating contract assertion.
 #
@@ -280,6 +284,9 @@ while [ $# -gt 0 ] ; do
       edg_args+=("--no_contracts_prove_callee_premises"); gxx_args+=("$arg") ;;
     -fcontracts-prove-optimize=*)
       edg_args+=("--contracts_prove_optimize=${arg#*=}")
+      gxx_args+=("$arg") ;;
+    -fcontract-violation-information=*)
+      edg_args+=("--contract_violation_information=${arg#*=}")
       gxx_args+=("$arg") ;;
     -fcontracts-p4451)
       edg_args+=("--contracts_p4451"); gxx_args+=("$arg") ;;

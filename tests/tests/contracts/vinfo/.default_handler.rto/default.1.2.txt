@@ -1,0 +1,9 @@
+./a.out
+contract violation
+[assertion_kind: pre, semantic: observe, mode: predicate_false, terminating: no]
+contract violation
+[assertion_kind: pre, semantic: observe, mode: predicate_false, terminating: no]
+contract violation
+[assertion_kind: assert, semantic: observe, mode: predicate_false, terminating: no]
+contract violation
+[assertion_kind: manual, semantic: observe, mode: unspecified, terminating: no]

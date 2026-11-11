@@ -1,0 +1,4 @@
+Matches for "unrecognized contract violation information \(must be full or none\): some":
+  <-----------------------------------------------------------------------------
+  unrecognized contract violation information (must be full or none): some
+  ----------------------------------------------------------------------------->

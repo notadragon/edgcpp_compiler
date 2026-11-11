@@ -412,6 +412,7 @@ enum an_option_kind {
   optk_contracts_prove_override,
   optk_contracts_prove_callee_premises,
   optk_contracts_prove_optimize,
+  optk_contract_violation_information,
   optk_contracts_p4451,
   optk_last		/* Must be last. */
 };
@@ -3199,6 +3200,19 @@ EXTERN_THREAD int
 			   front end's only strategy, folding, is on at every
 			   level, so it does not consult it: the drivers pass
 			   it on to g++. */
+
+EXTERN_THREAD a_boolean
+		contract_violation_information_none;
+			/* TRUE under --contract_violation_information=none
+			   (as GCC's -fcontract-violation-information=none;
+			   DECISIONS.md E170 in notadragon_wg21): every
+			   contract-violation record the front end builds for
+			   a run-time check has an empty file name, function
+			   name and comment and line 0, and in GNU and Clang
+			   modes the emulated compiler's
+			   __gcc_contracts_violation_information_none (or
+			   __clang_contracts_violation_information_none) is
+			   predefined.  FALSE (the default) under =full. */
 
 EXTERN_THREAD a_boolean
 		contracts_p4451_enabled;

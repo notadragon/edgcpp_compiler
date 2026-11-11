@@ -1,0 +1,2 @@
+cpfe -DTEST_NUMBER=1 --c++26 --contracts_p3850 --contract_evaluation_semantic=observe --contract_group_evaluation_semantic=ub:expr.mul.div.by.zero:observe --contract_violation_information=none Test_name.c
+done

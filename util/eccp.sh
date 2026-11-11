@@ -926,6 +926,7 @@ check_abbreviation()
 --contract_configuration_file
 --contract_evaluation_semantic
 --contract_group_evaluation_semantic
+--contract_violation_information
 --contracts
 --contracts_allow_assume
 --contracts_p3097
@@ -2171,6 +2172,7 @@ process_option()
          --contract_configuration | \
          --contract_configuration_file | \
          --contract_group_evaluation_semantic | \
+         --contract_violation_information | \
          --contracts_prove_optimize | \
          --wdir)
       used_two_params=1
@@ -2306,6 +2308,7 @@ process_option()
           --contract_configuration=* | \
           --contract_configuration_file=* | \
           --contract_group_evaluation_semantic=* | \
+          --contract_violation_information=* | \
           --contracts_prove_optimize=* | \
           --wdir=* | \
           --create_header_unit=* | \

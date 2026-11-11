@@ -1,0 +1,13 @@
+cpfe -DTEST_NUMBER=1 --c++26 --contracts_p3850 --contract_evaluation_semantic=observe --contract_group_evaluation_semantic=ub:expr.mul.div.by.zero:observe --contract_violation_information=full Test_name.c
+d vi_assert_function_token
+d vi_label_function_token
+integer division by zero
+t vi_div_function_token
+t vi_pre_function_token
+vi_assert_token
+vi_computed_comment_token
+vi_computed_message_token
+vi_file_name_token
+vi_message_token
+vi_pre_token
+done

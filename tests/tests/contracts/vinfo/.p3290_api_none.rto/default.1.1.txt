@@ -1,0 +1,1 @@
+eccp -DTEST_NUMBER=1 --c++26 --contracts_p3290 --contract_evaluation_semantic=observe --contract_violation_information=none Test_name.c
