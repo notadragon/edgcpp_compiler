@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contracts_p4299 Test_name.c
+"Test_name.c", line 9: error: expected an identifier
+  int _ContractAssert = 1;   // Error
+      ^
+
+"Test_name.c", line 10: error: expected an identifier
+  int _Pre = 1;              // Error
+      ^
+
+"Test_name.c", line 11: error: expected an identifier
+  int _Post = 1;             // Error
+      ^
+
+"Test_name.c", line 12: error: expected an expression
+  int g() { return _Pre; }   // Error
+                   ^
+
+4 errors detected in the compilation of "Test_name.c".
