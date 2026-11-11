@@ -1,0 +1,40 @@
+Matches for "^file-scope contract-specifier@X+\nnext:\s+file-scope contract-specifier@X+\nkind:\s+ctk_pre":
+  <-----------------------------------------------------------------------------
+  file-scope contract-specifier@XXXXXXXX
+  next:                    file-scope contract-specifier@XXXXXXXX
+  kind:                    ctk_pre
+  ----------------------------------------------------------------------------->
+Matches for "^file-scope contract-specifier@X+\nnext:\s+NULL\nkind:\s+ctk_post\npredicate:\s+file-scope expr-node@X+\nresult_name:\s+file-scope variable@X+: r":
+  <-----------------------------------------------------------------------------
+  file-scope contract-specifier@XXXXXXXX
+  next:                    NULL
+  kind:                    ctk_post
+  predicate:               file-scope expr-node@XXXXXXXX
+  result_name:             file-scope variable@XXXXXXXX: r
+  ----------------------------------------------------------------------------->
+Matches for "^kind:\s+enk_param_ref\nparam_ref.param_num:\s+1":
+  <-----------------------------------------------------------------------------
+  kind:                    enk_param_ref
+  param_ref.param_num:     1
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  kind:                    enk_param_ref
+  param_ref.param_num:     1
+  ----------------------------------------------------------------------------->
+Matches for "^contract_specifiers:\s+file-scope contract-specifier@X+":
+  <-----------------------------------------------------------------------------
+  contract_specifiers:     file-scope contract-specifier@XXXXXXXX
+  ----------------------------------------------------------------------------->
+Matches for "^kind:\s+stmk_contract_assert\ncontract_assert:\s+\S+ contract-specifier@X+":
+  <-----------------------------------------------------------------------------
+  kind:                    stmk_contract_assert
+  contract_assert:         func-scope contract-specifier@XXXXXXXX
+  ----------------------------------------------------------------------------->
+Matches for "^kind:\s+ctk_assert":
+  <-----------------------------------------------------------------------------
+  kind:                    ctk_assert
+  ----------------------------------------------------------------------------->
+Matches for "^comment:\s+\S+ other-text@X+: "r > x"":
+  <-----------------------------------------------------------------------------
+  comment:                 file-scope other-text@XXXXXXXX: "r > x"
+  ----------------------------------------------------------------------------->

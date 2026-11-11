@@ -1,0 +1,1 @@
+fe_only -DTEST_NUMBER=2 --c++26 --contract_evaluation_semantic=observe Test_name.c
