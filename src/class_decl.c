@@ -126,6 +126,15 @@ typedef struct a_routine_fixup {
   a_bit_field	deferred:1;
 			/* TRUE if this is a fixup for a friend function
 			   defined in a class template. */
+  a_contract_specifier_ptr
+		redecl_contract_specifiers;
+			/* For a friend declaration that redeclares a function
+			   whose contract specifiers it repeats, the specifiers
+			   of this declaration, whose operands are cached: they
+			   are scanned and matched against the function's when
+			   the class is complete (see
+			   defer_contract_redeclaration_match).  NULL
+			   otherwise. */
 } a_routine_fixup;
 
 
@@ -273,9 +282,46 @@ initialize it.
   rfp->inheriting_ctor = FALSE;
   rfp->inh_copy_move_ctor = FALSE;
   rfp->deferred = FALSE;
+  rfp->redecl_contract_specifiers = NULL;
   clear_func_info(&rfp->func_info);
   return rfp;
 }  /* alloc_routine_fixup */
+
+
+void defer_contract_redeclaration_match(a_contract_specifier_ptr  csps)
+/*
+csps are the function contract specifiers, with cached operands, of a friend
+declared in a class definition that redeclares a function with contract
+specifiers.  Record in the current routine fixup entry that they are to be
+scanned when the class is complete, in the function parameter scope of this
+declaration, and matched against those of the function then (see
+scan_contracts_for_routine_fixup).
+*/
+{
+  check_assertion(curr_routine_fixup != NULL);
+  curr_routine_fixup->redecl_contract_specifiers = csps;
+  curr_routine_fixup->process_contracts = TRUE;
+}  /* defer_contract_redeclaration_match */
+
+
+static void match_redeclared_contract_specifiers(a_routine_fixup_ptr  rfp)
+/*
+If the declaration of routine fixup entry rfp is a friend redeclaration whose
+function contract specifiers are to be matched when the class is complete
+(see defer_contract_redeclaration_match), scan them, in the reactivated
+function parameter scope of the declaration, and match them against the
+function's.
+*/
+{
+  a_routine_ptr  rp = rfp->symbol->variant.routine.ptr;
+
+  if (rfp->redecl_contract_specifiers == NULL) return;
+  scan_cached_contract_specifiers(rp, rfp->redecl_contract_specifiers,
+                                  rfp->func_info.prototype_scope_symbols,
+                                  /*keep_tokens=*/FALSE);
+  match_contract_specifiers(rp, rfp->redecl_contract_specifiers);
+  rfp->redecl_contract_specifiers = NULL;
+}  /* match_redeclared_contract_specifiers */
 
 
 static void free_routine_fixup(a_routine_fixup_ptr  rfp)
@@ -763,6 +809,15 @@ in class contexts.
   rfp->func_info = *func_info;
   rfp->function_body_token_cache = *body_cache;
   rfp->is_specialization = TRUE;
+  if (is_simple_function_symbol(symbol) &&
+      contract_specifiers_are_cached(
+                         symbol->variant.routine.ptr->contract_specifiers)) {
+    rfp->process_contracts = TRUE;
+  }  /* if */
+  if (redecl_csps != NULL) {
+    rfp->redecl_contract_specifiers = redecl_csps;
+    rfp->process_contracts = TRUE;
+  }  /* if */
 #if GENERATE_SOURCE_SEQUENCE_LISTS
 #if TEMPLATE_INSTANTIATIONS_IN_SOURCE_SEQUENCE_LISTS
 #if FRIEND_AND_MEMBER_DEFINITIONS_MAY_BE_MOVED_OUT_OF_CLASS
@@ -12763,6 +12818,10 @@ possibility.
           record_pending_exception_check(
              sym, (a_symbol*)NULL, function_type, &func_info->throw_position);
           attach_decl_attributes(state, /*is_primary_decl=*/FALSE);
+          /* The friend declaration redeclares the member: Its function
+             contract specifiers, if any, must match the member's (P2900
+             [dcl.contract.func]). */
+          attach_contract_specifiers(rp, state, /*is_redeclaration=*/TRUE);
         }  /* if */
       }  /* if */
     }  /* if */
@@ -15152,6 +15211,23 @@ IL entry accordingly.  def_pos is the position of the "= default;" or
       err_code = ec_invalid_function_to_be_defaulted;
     }  /* if */
   }  /* if */
+  if (err_code == ec_no_error && func_info->is_deleted &&
+      is_handle_contract_violation(rp)) {
+    /* P2900 [except.terminate]: The replaceable contract-violation handler
+       cannot be deleted. */
+    pos_error(ec_hcv_deleted, def_pos);
+  }  /* if */
+  if (err_code == ec_no_error && dps->first_decl &&
+      rp->contract_specifiers != NULL &&
+      (func_info->is_deleted || func_info->is_defaulted)) {
+    /* P2900 [dcl.contract.func]: A function that is deleted, or defaulted on
+       its first declaration, cannot have function contract specifiers.
+       Drop them. */
+    pos_sy_error(func_info->is_deleted ? ec_contract_on_deleted_func :
+                                         ec_contract_on_defaulted_func,
+                 &rp->contract_specifiers->position, sym);
+    rp->contract_specifiers = NULL;
+  }  /* if */
   if (err_code != ec_no_error) {
     pos_error(err_code, diag_pos);
     /* Discard the definition (and make the routine non-inline). */
@@ -17217,6 +17293,14 @@ implicitly declared member functions.
       if (rtn->is_virtual && rtn->trailing_requires_clause != NULL) {
         pos_error(ec_trailing_requires_on_virtual_func,
                   &rtn->trailing_requires_clause->requires_pos);
+      }  /* if */
+      if (rtn->is_virtual && rtn->contract_specifiers != NULL &&
+          !contracts_p3097_enabled) {
+        /* P2900 [dcl.contract.func]: A virtual function cannot have
+           function contract specifiers (P3097 lifts that).  Drop them. */
+        pos_error(ec_contract_on_virtual_func,
+                  &rtn->contract_specifiers->position);
+        rtn->contract_specifiers = NULL;
       }  /* if */
     }  /* if */
 #if BACK_END_IS_CP_GEN_BE

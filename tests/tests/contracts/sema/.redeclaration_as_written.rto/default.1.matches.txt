@@ -1,0 +1,20 @@
+Matches for "line 14: error: mismatched contract condition in declaration":
+  <-----------------------------------------------------------------------------
+  line 14: error: mismatched contract condition in declaration
+  ----------------------------------------------------------------------------->
+Matches for "line 16: error: mismatched contract condition in declaration":
+  <-----------------------------------------------------------------------------
+  line 16: error: mismatched contract condition in declaration
+  ----------------------------------------------------------------------------->
+Matches for "line 18: error: mismatched contract condition in declaration":
+  <-----------------------------------------------------------------------------
+  line 18: error: mismatched contract condition in declaration
+  ----------------------------------------------------------------------------->
+Matches for "line 27: error: mismatched contract condition in declaration":
+  <-----------------------------------------------------------------------------
+  line 27: error: mismatched contract condition in declaration
+  ----------------------------------------------------------------------------->
+Matches for "line 35: error: mismatched contract condition in declaration":
+  <-----------------------------------------------------------------------------
+  line 35: error: mismatched contract condition in declaration
+  ----------------------------------------------------------------------------->

@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=4 --c++26 Test_name.c
+"Test_name.c", line 13: error: ::handle_contract_violation must have a single parameter of type const std::contracts::contract_violation &
+  void handle_contract_violation(cv &);                  // Error, not const
+       ^
+
+1 error detected in the compilation of "Test_name.c".
