@@ -391,6 +391,24 @@ extern a_boolean check_return_type(a_type_ptr          type,
 extern void resolve_pending_mapped_exc_spec(a_symbol_ptr                sym,
                                             an_exception_specification  *esp);
 
+extern void scan_contract_assertion_attributes(void);
+extern a_boolean contract_specifiers_are_cached(
+                                         a_contract_specifier_ptr  csp);
+extern void scan_cached_contract_specifiers(
+                             a_routine_ptr             rp,
+                             a_contract_specifier_ptr  csps,
+                             a_symbol_ptr              prototype_scope_symbols,
+                             a_boolean                 keep_tokens);
+extern a_boolean contract_specifiers_await_deduction(a_routine_ptr  rp);
+extern void scan_postconditions_awaiting_deduction(
+                                              a_routine_ptr   rp,
+                                              a_param_id_ptr  param_id_list);
+extern void scan_lambda_contract_operands(a_routine_ptr      rp,
+                                          a_func_info_block  *func_info);
+extern void instantiate_contract_specifiers(
+                           a_routine_ptr             rp,
+                           a_contract_specifier_ptr  templ_specifiers,
+                           a_symbol_ptr              prototype_scope_symbols);
 extern void delayed_scan_of_exception_spec(
                                        a_routine_ptr              rp,
                                        a_reusable_token_cache     tokens,

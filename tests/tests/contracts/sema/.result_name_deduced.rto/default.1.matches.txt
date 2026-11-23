@@ -1,0 +1,20 @@
+Matches for "line 18: error: contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  line 18: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+Matches for "line 20: error: contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  line 20: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+Matches for "line 23: error: contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  line 23: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+Matches for "line 33: error: a result name cannot be introduced in a postcondition of a function returning void":
+  <-----------------------------------------------------------------------------
+  line 33: error: a result name cannot be introduced in a postcondition of a function returning void
+  ----------------------------------------------------------------------------->
+Matches for "line 35: error: contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  line 35: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->

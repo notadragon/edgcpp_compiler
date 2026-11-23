@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
+"Test_name.c", line 8: error: identifier "z" is undefined
+    int f(int x) pre(y > z);      // Error, z undeclared (y is a member)
+                         ^
+
+1 error detected in the compilation of "Test_name.c".
