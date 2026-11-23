@@ -1,0 +1,37 @@
+cpfe -DTEST_NUMBER=2 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 --contract_analysis_semantic=prove -O2 -O0 Test_name.c
+"Test_name.c", line 48: warning: variable "p1" was declared but never referenced
+    void (*p1)(int) = &f1;  // OK, proven tautological	{ dg-bogus "address" }
+           ^
+
+"Test_name.c", line 49: warning: variable "p2" was declared but never referenced
+    void (*p2)(int) = &f2;  // Error, cannot be proven through `p2`	{ dg-error "contract assertion cannot be proven for a call through the address of 'void f2\\(int\\)'" }
+           ^
+
+"Test_name.c", line 50: warning: variable "p3" was declared but never referenced
+    void (*p3)(int) = &f3;  // OK, warns: cannot be proven through `p3`	{ dg-warning "contract assertion cannot be proven for a call through the address of 'void f3\\(int\\)' \\\[-Wcontract-unproven\\\]" }
+           ^
+
+"Test_name.c", line 51: warning: variable "p4" was declared but never referenced
+    void (*p4)(int) = &f4;  // OK, calls through `p4` are not analyzed	{ dg-bogus "address" }
+           ^
+
+Test_name.c:43:3: error: contract assertion cannot be proven for a call through the address of 'S::~S()'
+   43 | S s;  // Error, cannot be proven for the call at exit   { dg-error "contract assertion cannot be proven for a call through the address of 'S::~S\\(\\)'" }
+      |   ^
+Test_name.c:43:3: note: 's', of static storage duration, is destroyed by a call through the address of its destructor
+Test_name.c:40:6: note: precondition here
+   40 |   ~S() pre<always_prove>(n > 0);        // { dg-message "precondition here" }
+      |      ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c: In function 'void g()':
+Test_name.c:49:21: error: contract assertion cannot be proven for a call through the address of 'void f2(int)'
+   49 |   void (*p2)(int) = &f2;  // Error, cannot be proven through `p2`       { dg-error "contract assertion cannot be proven for a call through the address of 'void f2\\(int\\)'" }
+      |                     ^~
+Test_name.c:33:16: note: precondition here
+   33 | void f2(int x) pre<always_prove>(x > 0);        // { dg-message "precondition here" }
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:50:21: warning: contract assertion cannot be proven for a call through the address of 'void f3(int)' [-Wcontract-unproven]
+   50 |   void (*p3)(int) = &f3;  // OK, warns: cannot be proven through `p3`   { dg-warning "contract assertion cannot be proven for a call through the address of 'void f3\\(int\\)' \\\[-Wcontract-unproven\\\]" }
+      |                     ^~
+Test_name.c:34:16: note: precondition here
+   34 | void f3(int x) pre<always_diagnose>(x > 0);     // { dg-message "precondition here" }
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

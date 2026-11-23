@@ -1,0 +1,4 @@
+Matches for "^(Command-line (error|warning): .*)$":
+  <-----------------------------------------------------------------------------
+  Command-line error: invalid contract configuration (<command-line>:1:23): "analysis" and "caller" cannot both appear in "match"
+  ----------------------------------------------------------------------------->

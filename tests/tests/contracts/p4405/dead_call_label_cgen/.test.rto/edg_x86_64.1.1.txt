@@ -1,0 +1,72 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contracts_p3400 --contracts_p4405 --contract_evaluation_semantic=ignore Test_name.c
+"Test_name.c", line 23: error: contract assertion cannot be proven
+  void live(int c) { if (c) g(0); }
+                             ^
+
+"Test_name.c", line 24: error: contract assertion cannot be proven
+  void l1(int c) { if (c) goto L; if (0) { L: g(0); } }
+                                               ^
+
+"Test_name.c", line 25: error: contract assertion cannot be proven
+  void l2(int c) { if (c) goto L; if (1) {} else { L: g(0); } }
+                                                       ^
+
+"Test_name.c", line 26: error: contract assertion cannot be proven
+  void l3(int c) { switch (c) { case 0: if (0) { case 1: g(0); } } }
+                                                          ^
+
+"Test_name.c", line 27: error: contract assertion cannot be proven
+  void l4(int c) { switch (c) { case 0: if (0) { default: g(0); } } }
+                                                           ^
+
+"Test_name.c", line 30: error: contract assertion cannot be proven
+  void l6(int c) { if (c) goto L; if (0) { g(0); L: g(0); } }
+                                            ^
+
+"Test_name.c", line 30: error: contract assertion cannot be proven
+  void l6(int c) { if (c) goto L; if (0) { g(0); L: g(0); } }
+                                                     ^
+
+"Test_name.c", line 31: error: contract assertion cannot be proven
+  void l7(int c) { if (c) goto L; if (0) { while (c) { L: g(0); } } }
+                                                           ^
+
+"Test_name.c", line 44: error: contract assertion cannot be proven
+  void b1(int c) { if (c) goto L; if (1) return; else { L:; } g(0); }
+                                                               ^
+
+"Test_name.c", line 45: error: contract assertion cannot be proven
+  void b2(int c) { if (c) goto L; if (0) { L:; } else return; g(0); }
+                                                               ^
+
+"Test_name.c", line 46: error: contract assertion cannot be proven
+  void b3(int c) { switch (c) { case 0: if (1) return; else { case 1:; } g(0); } }
+                                                                          ^
+
+"Test_name.c", line 47: error: contract assertion cannot be proven
+  void b4(int c) { if (c) goto L; if (1) { if (1) return; else { L:; } } g(0); }
+                                                                          ^
+
+"Test_name.c", line 48: error: contract assertion cannot be proven
+  void b5(int c) { if (c) goto L; if (0) { L:; } else throw 1; g(0); }
+                                                                ^
+
+"Test_name.c", line 51: error: contract assertion cannot be proven
+  void s5(int c) { if (1) return; else { switch (c) { case 1:; } } g(0); }
+                                                                    ^
+
+"Test_name.c", line 52: error: contract assertion cannot be proven
+  void s6(int c) { if (1) return; else {} g(0); }
+                                           ^
+
+"Test_name.c", line 28: error: contract assertion cannot be proven
+  template <int N> void l5(int c) { if (c) goto L; if (N) { L: g(0); } }
+                                                                ^
+          detected during instantiation of "void l5<N>(int) [with N=0]" at line 29
+
+"Test_name.c", line 49: error: contract assertion cannot be proven
+  template <int N> void b6(int c) { if (c) goto L; if (N) return; else { L:; } g(0); }
+                                                                                ^
+          detected during instantiation of "void b6<N>(int) [with N=1]" at line 50
+
+17 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,1 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p4405 --contract_evaluation_semantic=diagnose -Wno-contract-unproven Test_name.c

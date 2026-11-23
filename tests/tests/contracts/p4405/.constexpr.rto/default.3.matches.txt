@@ -1,0 +1,10 @@
+Matches for "line ([0-9]+): (error|warning): (contract predicate is false in constant expression|static assertion failed|expression must have a constant value)":
+  <-----------------------------------------------------------------------------
+  line 11: warning: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  line 12: warning: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  line 11: warning: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->

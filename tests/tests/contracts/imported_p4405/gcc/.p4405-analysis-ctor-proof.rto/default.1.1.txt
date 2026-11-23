@@ -1,0 +1,32 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 -O2 Test_name.c
+Test_name.c: In function 'int unguarded(int, int, int, int, int, int)':
+Test_name.c:82:6: error: contract assertion cannot be proven
+   82 |   T t (a);                                      // { dg-error "contract assertion cannot be proven" }
+      |      ^
+Test_name.c:35:32: note: the predicate of the contract assertion
+   35 |   T (int x) pre<always_prove> (x > 0) : v (x) {}        // { dg-message "the predicate of the contract assertion" }
+      |                              ~~^~~
+Test_name.c:83:9: error: contract assertion cannot be proven
+   83 |   T u (b, c);                                   // { dg-error "contract assertion cannot be proven" }
+      |         ^
+Test_name.c:36:46: note: the predicate of the contract assertion
+   36 |   T (int x, const int &y) pre<always_prove> (x > y) : v (x - y) {}      // { dg-message "the predicate of the contract assertion" }
+      |                                            ~~^~~
+Test_name.c:84:9: error: contract assertion cannot be proven
+   84 |   R r = mk (d);                                 // { dg-error "contract assertion cannot be proven" }
+      |       ~~^~~
+Test_name.c:46:35: note: the predicate of the contract assertion
+   46 | R mk (int x) pre<always_prove> (x > 0); // { dg-message "the predicate of the contract assertion" }
+      |                                 ~~^~~
+Test_name.c:85:6: error: contract assertion cannot be proven
+   85 |   V w (e);                                      // { dg-error "contract assertion cannot be proven" }
+      |      ^
+Test_name.c:42:32: note: the predicate of the contract assertion
+   42 |   V (int x) pre<always_prove> (x > 1) : T (x) {}        // { dg-message "the predicate of the contract assertion" }
+      |                              ~~^~~
+Test_name.c:86:57: error: contract assertion cannot be proven
+   86 |   return t.v + u.v + r.v + w.v + T (1).scaled (f).v;    // { dg-error "contract assertion cannot be proven" }
+      |                                       ~~~~~~~~~~~~~~~~~~^~~
+Test_name.c:38:45: note: the predicate of the contract assertion
+   38 |   T scaled (int k) const pre<always_prove> (k > 0) { T r = *this; r.v *= k; return r; } // { dg-message "the predicate of the contract assertion" }
+      |                                           ~~^~~

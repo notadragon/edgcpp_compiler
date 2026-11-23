@@ -1,0 +1,8 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts_p3850 --contract_evaluation_semantic=prove Test_name.c
+Test_name.c: In function 'int g(int)':
+Test_name.c:25:24: error: contract assertion cannot be proven
+   25 | int g (int y) { return f (y); }         // { dg-error "contract assertion cannot be proven" }
+      |                       ~^~~
+Test_name.c:24:20: note: the predicate of the contract assertion
+   24 | int f (int x) pre (x > 0) { return x; } // { dg-message "the predicate of the contract assertion" }
+      |                  ~~^~~

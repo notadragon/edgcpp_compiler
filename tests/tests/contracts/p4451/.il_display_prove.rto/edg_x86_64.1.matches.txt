@@ -1,0 +1,8 @@
+Matches for "^is_terminating:\s+TRUE\nlabel_allowed_semantics:\s+24\nlabel_allowed_proving_semantics:\s+1\n":
+  <-----------------------------------------------------------------------------
+  is_terminating:          TRUE
+  label_allowed_semantics: 24
+  label_allowed_proving_semantics:
+                           1
+  
+  ----------------------------------------------------------------------------->

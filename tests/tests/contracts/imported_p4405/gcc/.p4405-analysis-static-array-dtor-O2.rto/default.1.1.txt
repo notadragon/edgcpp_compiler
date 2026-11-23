@@ -1,0 +1,130 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 --contract_analysis_semantic=prove -O2 Test_name.c
+Test_name.c:62:4: warning: contract assertion cannot be proven for a call through the address of 'DD::~DD()' [-Wcontract-unproven]
+   62 | DD da[2];       // { dg-warning "contract assertion cannot be proven for a call through the address of 'DD::~DD\\(\\)'" }
+      |    ^~
+Test_name.c:62:4: note: 'da', of static storage duration, is destroyed by a call through the address of its destructor
+Test_name.c:56:7: note: precondition here
+   56 |   ~DD () pre<always_diagnose> (g > 0);  // { dg-message "precondition here" }
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c: In function 'void f()':
+Test_name.c:85:11: warning: contract assertion cannot be proven for a call through the address of 'DD::~DD()' [-Wcontract-unproven]
+   85 |   static DD sd[3];      // { dg-warning "contract assertion cannot be proven for a call through the address of 'DD::~DD\\(\\)'" }
+      |           ^~
+Test_name.c:85:11: note: 'sd', of static storage duration, is destroyed by a call through the address of its destructor
+Test_name.c:56:7: note: precondition here
+   56 |   ~DD () pre<always_diagnose> (g > 0);  // { dg-message "precondition here" }
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c: At global scope:
+Test_name.c:60:8: error: contract assertion cannot be proven
+   60 | DI ia[2];       // { dg-bogus "address" }
+      |        ^
+Test_name.c:52:13: note: the predicate of the contract assertion
+   52 |   ~DI () pre (g > 0);   // { dg-message "the predicate of the contract assertion" }
+      |           ~~^~~
+Test_name.c:62:8: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   62 | DD da[2];       // { dg-warning "contract assertion cannot be proven for a call through the address of 'DD::~DD\\(\\)'" }
+      |        ^
+Test_name.c:56:32: note: the predicate of the contract assertion
+   56 |   ~DD () pre<always_diagnose> (g > 0);  // { dg-message "precondition here" }
+      |                              ~~^~~
+Test_name.c:65:21: error: contract assertion cannot be proven
+   65 | thread_local DI ta[2];  // { dg-bogus "address" }
+      |                     ^
+Test_name.c:52:13: note: the predicate of the contract assertion
+   52 |   ~DI () pre (g > 0);   // { dg-message "the predicate of the contract assertion" }
+      |           ~~^~~
+Test_name.c:67:11: error: contract assertion cannot be proven
+   67 | DI ma[2][3];    // { dg-bogus "address" }
+      |           ^
+Test_name.c:52:13: note: the predicate of the contract assertion
+   52 |   ~DI () pre (g > 0);   // { dg-message "the predicate of the contract assertion" }
+      |           ~~^~~
+Test_name.c:67:11: error: contract assertion cannot be proven
+   67 | DI ma[2][3];    // { dg-bogus "address" }
+      |           ^
+Test_name.c:52:13: note: the predicate of the contract assertion
+   52 |   ~DI () pre (g > 0);   // { dg-message "the predicate of the contract assertion" }
+      |           ~~^~~
+Test_name.c:77:11: error: contract assertion cannot be proven
+   77 | DI S::sa[2];    // { dg-bogus "address" }
+      |           ^
+Test_name.c:52:13: note: the predicate of the contract assertion
+   52 |   ~DI () pre (g > 0);   // { dg-message "the predicate of the contract assertion" }
+      |           ~~^~~
+Test_name.c: In function 'void f()':
+Test_name.c:83:15: error: contract assertion cannot be proven
+   83 |   static DI sl[2];      // { dg-bogus "address" }
+      |               ^
+Test_name.c:52:13: note: the predicate of the contract assertion
+   52 |   ~DI () pre (g > 0);   // { dg-message "the predicate of the contract assertion" }
+      |           ~~^~~
+Test_name.c: In function 'void __tcf_ZZ1fvE2sl(void*)':
+Test_name.c:83:15: error: contract assertion cannot be proven
+   83 |   static DI sl[2];      // { dg-bogus "address" }
+      |               ^
+Test_name.c:52:13: note: the predicate of the contract assertion
+   52 |   ~DI () pre (g > 0);   // { dg-message "the predicate of the contract assertion" }
+      |           ~~^~~
+Test_name.c: In function 'void f()':
+Test_name.c:85:15: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   85 |   static DD sd[3];      // { dg-warning "contract assertion cannot be proven for a call through the address of 'DD::~DD\\(\\)'" }
+      |               ^
+Test_name.c:56:32: note: the predicate of the contract assertion
+   56 |   ~DD () pre<always_diagnose> (g > 0);  // { dg-message "precondition here" }
+      |                              ~~^~~
+Test_name.c: In function 'void __tcf_ZZ1fvE2sd(void*)':
+Test_name.c:85:15: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   85 |   static DD sd[3];      // { dg-warning "contract assertion cannot be proven for a call through the address of 'DD::~DD\\(\\)'" }
+      |               ^
+Test_name.c:56:32: note: the predicate of the contract assertion
+   56 |   ~DD () pre<always_diagnose> (g > 0);  // { dg-message "precondition here" }
+      |                              ~~^~~
+Test_name.c: In function 'void __tcfia(void*)':
+Test_name.c:60:4: error: contract assertion cannot be proven
+   60 | DI ia[2];       // { dg-bogus "address" }
+      |    ^~
+Test_name.c:52:13: note: the predicate of the contract assertion
+   52 |   ~DI () pre (g > 0);   // { dg-message "the predicate of the contract assertion" }
+      |           ~~^~~
+Test_name.c: In function 'void __tcfda(void*)':
+Test_name.c:62:4: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   62 | DD da[2];       // { dg-warning "contract assertion cannot be proven for a call through the address of 'DD::~DD\\(\\)'" }
+      |    ^~
+Test_name.c:56:32: note: the predicate of the contract assertion
+   56 |   ~DD () pre<always_diagnose> (g > 0);  // { dg-message "precondition here" }
+      |                              ~~^~~
+Test_name.c: In function 'void __tcfma(void*)':
+Test_name.c:67:4: error: contract assertion cannot be proven
+   67 | DI ma[2][3];    // { dg-bogus "address" }
+      |    ^~
+Test_name.c:52:13: note: the predicate of the contract assertion
+   52 |   ~DI () pre (g > 0);   // { dg-message "the predicate of the contract assertion" }
+      |           ~~^~~
+Test_name.c: In function 'void __tcf_ZN1S2saE(void*)':
+Test_name.c:77:4: error: contract assertion cannot be proven
+   77 | DI S::sa[2];    // { dg-bogus "address" }
+      |    ^
+Test_name.c:52:13: note: the predicate of the contract assertion
+   52 |   ~DI () pre (g > 0);   // { dg-message "the predicate of the contract assertion" }
+      |           ~~^~~
+Test_name.c: In function 'void __tcf_ZGR2ra_(void*)':
+Test_name.c:92:32: error: contract assertion cannot be proven
+   92 | const DI (&ra)[2] = {DI (), DI ()};     // { dg-bogus "address" }
+      |                                ^
+Test_name.c:52:13: note: the predicate of the contract assertion
+   52 |   ~DI () pre (g > 0);   // { dg-message "the predicate of the contract assertion" }
+      |           ~~^~~
+Test_name.c: In function 'void __tcf_ZGR2il_(void*)':
+Test_name.c:94:45: error: contract assertion cannot be proven
+   94 | std::initializer_list<DI> il = {DI (), DI ()};  // { dg-bogus "address" }
+      |                                             ^
+Test_name.c:52:13: note: the predicate of the contract assertion
+   52 |   ~DI () pre (g > 0);   // { dg-message "the predicate of the contract assertion" }
+      |           ~~^~~
+Test_name.c: In function 'void __tcfta(void*)':
+Test_name.c:65:17: error: contract assertion cannot be proven
+   65 | thread_local DI ta[2];  // { dg-bogus "address" }
+      |                 ^~
+Test_name.c:52:13: note: the predicate of the contract assertion
+   52 |   ~DI () pre (g > 0);   // { dg-message "the predicate of the contract assertion" }
+      |           ~~^~~

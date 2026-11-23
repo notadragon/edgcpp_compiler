@@ -1,0 +1,65 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p4405 --contract_configuration_file=p4405-nested-checked.json --contract_analysis_semantic=prove -O0 --contracts_prove_optimize=0 Test_name.c
+Test_name.c: In function 'int unguarded(int)':
+Test_name.c:45:1: error: contract assertion cannot be proven
+   45 |   contract_assert (             // { dg-error "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:45:34: note: the predicate of the contract assertion
+   45 |   contract_assert (             // { dg-error "contract assertion cannot be proven" }
+      |                 ~~~~~~~~~~~~~~~~~^~~~
+Test_name.c:33:21: note: precondition of a call in the predicate cannot be proven
+   33 | int g1 (int x) pre (x != 0);    // { dg-message "precondition of a call in the predicate cannot be proven" }
+      |                   ~~^~~~
+Test_name.c:45:19: error: contract assertion cannot be proven
+   45 |   contract_assert (             // { dg-error "contract assertion cannot be proven" }
+      |                 ~~^~~~~~~~~~~~~~
+Test_name.c:33:21: note: the predicate of the contract assertion
+   33 | int g1 (int x) pre (x != 0);    // { dg-message "precondition of a call in the predicate cannot be proven" }
+      |                   ~~^~~~
+Test_name.c: In function 'int guarded(int)':
+Test_name.c:55:1: error: contract assertion cannot be proven
+   55 |   contract_assert (             // { dg-error "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:55:34: note: the predicate of the contract assertion
+   55 |   contract_assert (             // { dg-error "contract assertion cannot be proven" }
+      |                 ~~~~~~~~~~~~~~~~~^~~~
+Test_name.c:35:21: note: precondition of a call in the predicate cannot be proven
+   35 | int g2 (int x) pre (x != 0);    // { dg-message "precondition of a call in the predicate cannot be proven" }
+      |                   ~~^~~~
+Test_name.c:55:19: error: contract assertion cannot be proven
+   55 |   contract_assert (             // { dg-error "contract assertion cannot be proven" }
+      |                 ~~^~~~~~~~~~~~~~
+Test_name.c:35:21: note: the predicate of the contract assertion
+   35 | int g2 (int x) pre (x != 0);    // { dg-message "precondition of a call in the predicate cannot be proven" }
+      |                   ~~^~~~
+Test_name.c: In function 'int always_false(int)':
+Test_name.c:63:1: error: contract assertion cannot be proven
+   63 |   contract_assert (             // { dg-error "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:63:34: note: the predicate of the contract assertion
+   63 |   contract_assert (             // { dg-error "contract assertion cannot be proven" }
+      |                 ~~~~~~~~~~~~~~~~~^~~~
+Test_name.c:37:21: note: precondition of a call in the predicate is always false
+   37 | int g3 (int x) pre (x != 0);    // { dg-message "precondition of a call in the predicate is always false" }
+      |                   ~~^~~~
+Test_name.c:63:19: error: contract predicate is always false
+   63 |   contract_assert (             // { dg-error "contract assertion cannot be proven" }
+      |                 ~~^~~~~~~~~~~~~~
+Test_name.c:37:21: note: the predicate of the contract assertion
+   37 | int g3 (int x) pre (x != 0);    // { dg-message "precondition of a call in the predicate is always false" }
+      |                   ~~^~~~
+Test_name.c: In function 'int guarded_outer_unprovable(int)':
+Test_name.c:73:1: error: contract assertion cannot be proven
+   73 |   contract_assert (             // { dg-error "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:73:34: note: the predicate of the contract assertion
+   73 |   contract_assert (             // { dg-error "contract assertion cannot be proven" }
+      |                 ~~~~~~~~~~~~~~~~~^~~~
+Test_name.c:39:21: note: precondition of a call in the predicate cannot be proven
+   39 | int g4 (int x) pre (x != 0);    // { dg-message "precondition of a call in the predicate cannot be proven" }
+      |                   ~~^~~~
+Test_name.c:73:19: error: contract assertion cannot be proven
+   73 |   contract_assert (             // { dg-error "contract assertion cannot be proven" }
+      |                 ~~^~~~~~~~~~~~~~
+Test_name.c:39:21: note: the predicate of the contract assertion
+   39 | int g4 (int x) pre (x != 0);    // { dg-message "precondition of a call in the predicate cannot be proven" }
+      |                   ~~^~~~

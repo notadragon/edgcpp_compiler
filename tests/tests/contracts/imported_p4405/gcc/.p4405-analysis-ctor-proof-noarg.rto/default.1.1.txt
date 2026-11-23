@@ -1,0 +1,82 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 -O2 Test_name.c
+"Test_name.c", line 122: warning: ignoring return value from routine declared with "nodiscard" attribute
+      nd ();					// { dg-warning "ignoring return value" }
+         ^
+
+Test_name.c: In function 'int use(M&, R, R)':
+Test_name.c:122:3: warning: ignoring return value of 'R nd()', declared with attribute 'nodiscard' [-Wunused-result]
+  122 |     nd ();                                      // { dg-warning "ignoring return value" }
+      |   ^ 
+Test_name.c:59:17: note: declared here
+   59 | [[nodiscard]] R nd () pre<always_prove> (g > 0);
+      |                 ^~
+Test_name.c: In constructor 'H::H(int)':
+Test_name.c:69:10: error: contract assertion cannot be proven
+   69 |   H (int) : t () {}                             // { dg-error "contract assertion cannot be proven" }
+      |          ^~~
+Test_name.c:46:27: note: the predicate of the contract assertion
+   46 |   T () pre<always_prove> (g > 0);               // { dg-message "the predicate of the contract assertion" }
+      |                         ~~^~~
+Test_name.c: In function 'void u1()':
+Test_name.c:126:15: error: contract assertion cannot be proven
+  126 | void u1 () { T t; }                             // { dg-error "contract assertion cannot be proven" }
+      |               ^
+Test_name.c:46:27: note: the predicate of the contract assertion
+   46 |   T () pre<always_prove> (g > 0);               // { dg-message "the predicate of the contract assertion" }
+      |                         ~~^~~
+Test_name.c: In function 'void u2()':
+Test_name.c:127:15: error: contract assertion cannot be proven
+  127 | void u2 () { D d; }                             // { dg-error "contract assertion cannot be proven" }
+      |               ^
+Test_name.c:50:28: note: the predicate of the contract assertion
+   50 |   ~D () pre<always_prove> (g > 0);              // { dg-message "the predicate of the contract assertion" }
+      |                          ~~^~~
+Test_name.c: In function 'int u3()':
+Test_name.c:128:21: error: contract assertion cannot be proven
+  128 | int u3 () { return mk ().v; }                   // { dg-error "contract assertion cannot be proven" }
+      |                   ~~^~
+Test_name.c:53:30: note: the predicate of the contract assertion
+   53 | R mk () pre<always_prove> (g > 0);              // { dg-message "the predicate of the contract assertion" }
+      |                            ~~^~~
+Test_name.c: In function 'int u4()':
+Test_name.c:129:21: error: contract assertion cannot be proven
+  129 | int u4 () { return T ().v; }                    // { dg-error "contract assertion cannot be proven" }
+      |                     ^
+Test_name.c:46:27: note: the predicate of the contract assertion
+   46 |   T () pre<always_prove> (g > 0);               // { dg-message "the predicate of the contract assertion" }
+      |                         ~~^~~
+Test_name.c: In function 'int u5(M&)':
+Test_name.c:130:28: error: contract assertion cannot be proven
+  130 | int u5 (M &m) { return m.get ().v; }            // { dg-error "contract assertion cannot be proven" }
+      |                       ~~~~~^~
+Test_name.c:56:37: note: the predicate of the contract assertion
+   56 |   R get () const pre<always_prove> (g > 0);     // { dg-message "the predicate of the contract assertion" }
+      |                                   ~~^~~
+Test_name.c: In function 'int u6(R, R)':
+Test_name.c:131:32: error: contract assertion cannot be proven
+  131 | int u6 (R a, R b) { return (a + b).v; }         // { dg-error "contract assertion cannot be proven" }
+      |                                ^
+Test_name.c:58:41: note: the predicate of the contract assertion
+   58 | R operator+ (R, R) pre<always_prove> (g > 0);   // { dg-message "the predicate of the contract assertion" }
+      |                                       ~~^~~
+Test_name.c: In function 'int u7()':
+Test_name.c:132:21: error: contract assertion cannot be proven
+  132 | int u7 () { return mi (); }                     // { dg-error "contract assertion cannot be proven" }
+      |                   ~~^~
+Test_name.c:54:32: note: the predicate of the contract assertion
+   54 | int mi () pre<always_prove> (g > 0);            // { dg-message "the predicate of the contract assertion" }
+      |                              ~~^~~
+Test_name.c: In function 'int u8()':
+Test_name.c:133:24: error: contract assertion cannot be proven
+  133 | int u8 () { return (new TK)->v; }               // { dg-error "contract assertion cannot be proven" }
+      |                        ^~
+Test_name.c:61:28: note: the predicate of the contract assertion
+   61 |   TK () pre<always_prove> (k > 0);              // { dg-message "the predicate of the contract assertion" }
+      |                          ~~^~~
+Test_name.c: In function 'void u9()':
+Test_name.c:134:27: error: contract assertion cannot be proven
+  134 | void u9 () { delete new DK; }                   // { dg-error "contract assertion cannot be proven" }
+      |                           ^
+Test_name.c:65:29: note: the predicate of the contract assertion
+   65 |   ~DK () pre<always_prove> (k > 0);             // { dg-message "the predicate of the contract assertion" }
+      |                           ~~^~~

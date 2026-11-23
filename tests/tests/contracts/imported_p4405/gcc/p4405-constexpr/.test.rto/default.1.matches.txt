@@ -1,0 +1,4 @@
+Matches for "^(Command-line error: invalid contract configuration .*)$":
+  <-----------------------------------------------------------------------------
+  Command-line error: invalid contract configuration (p4405-constexpr.json:2:72): the "semantic" of an entry matching "constexpr" cannot be "prove" or "diagnose"
+  ----------------------------------------------------------------------------->

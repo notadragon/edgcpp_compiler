@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=2 --c++26 --contracts_p3400 --contracts_p4405 --contract_evaluation_semantic=quick_enforce Test_name.c
+"Test_name.c", line 56: warning: contract assertion cannot be proven
+    int r = a(y);
+             ^
+
+"Test_name.c", line 57: error: contract assertion cannot be proven
+    r += b(y);
+          ^
+
+"Test_name.c", line 58: warning: contract assertion cannot be proven
+    r += c(y);
+          ^
+
+"Test_name.c", line 62: error: contract assertion cannot be proven
+    r += g(y);
+          ^
+
+2 errors detected in the compilation of "Test_name.c".

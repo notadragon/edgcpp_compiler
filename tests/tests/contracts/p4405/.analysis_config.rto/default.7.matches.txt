@@ -1,0 +1,4 @@
+Matches for "^(Command-line (error|warning): .*)$":
+  <-----------------------------------------------------------------------------
+  Command-line error: invalid contract configuration (<command-line>:1:51): the "semantic" of an entry matching "constexpr" cannot be "prove" or "diagnose"
+  ----------------------------------------------------------------------------->

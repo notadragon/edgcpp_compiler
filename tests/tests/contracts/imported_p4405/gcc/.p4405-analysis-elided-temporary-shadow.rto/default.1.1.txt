@@ -1,0 +1,78 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 -O2 Test_name.c
+Test_name.c:48:4: error: contract assertion cannot be proven for a call through the address of 'DP::~DP()'
+   48 | DP x =  // { dg-error "for a call through the address of 'DP::~DP\\(\\)'" }
+      |    ^
+Test_name.c:48:4: note: 'x', of static storage duration, is destroyed by a call through the address of its destructor
+Test_name.c:42:7: note: precondition here
+   42 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "precondition here" }
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:51:4: error: contract assertion cannot be proven for a call through the address of 'DP::~DP()'
+   51 | DP y =  // { dg-error "for a call through the address of 'DP::~DP\\(\\)'" }
+      |    ^
+Test_name.c:51:4: note: 'y', of static storage duration, is destroyed by a call through the address of its destructor
+Test_name.c:42:7: note: precondition here
+   42 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "precondition here" }
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:54:4: error: contract assertion cannot be proven for a call through the address of 'DP::~DP()'
+   54 | DP w =  // { dg-error "for a call through the address of 'DP::~DP\\(\\)'" }
+      |    ^
+Test_name.c:54:4: note: 'w', of static storage duration, is destroyed by a call through the address of its destructor
+Test_name.c:42:7: note: precondition here
+   42 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "precondition here" }
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c: In function 'void f()':
+Test_name.c:88:15: error: contract assertion cannot be proven
+   88 |   int a = (DP (), 1);   // { dg-error "contract assertion cannot be proven" }
+      |               ^
+Test_name.c:42:29: note: the predicate of the contract assertion
+   42 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "precondition here" }
+      |                           ~~^~~
+Test_name.c:89:9: error: contract assertion cannot be proven
+   89 |   take (DP ()); // { dg-error "contract assertion cannot be proven" }
+      |         ^
+Test_name.c:42:29: note: the predicate of the contract assertion
+   42 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "precondition here" }
+      |                           ~~^~~
+Test_name.c:90:10: error: contract assertion cannot be proven
+   90 |   take (make ());       // { dg-error "contract assertion cannot be proven" }
+      |      ~~~~^~
+Test_name.c:42:29: note: the predicate of the contract assertion
+   42 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "precondition here" }
+      |                           ~~^~~
+Test_name.c: In function 'int unused_kept()':
+Test_name.c:103:12: error: contract assertion cannot be proven
+  103 |   return (DP (), 1);    // { dg-error "contract assertion cannot be proven" }
+      |            ^
+Test_name.c:42:29: note: the predicate of the contract assertion
+   42 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "precondition here" }
+      |                           ~~^~~
+Test_name.c: In function 'void h()':
+Test_name.c:124:29: error: contract assertion cannot be proven
+  124 |   delete new DP (tret<DP> ());  // { dg-error "contract assertion cannot be proven" }
+      |                             ^
+Test_name.c:42:29: note: the predicate of the contract assertion
+   42 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "precondition here" }
+      |                           ~~^~~
+Test_name.c: In instantiation of 'int tkept() [with T = DP]':
+Test_name.c:125:12:   required from here
+  125 |   tkept<DP> ();
+      |   ~~~~~~~~~^~
+Test_name.c:118:12: error: contract assertion cannot be proven
+  118 |   return (T (), 1);     // { dg-error "contract assertion cannot be proven" }
+      |            ^~~~~
+Test_name.c:42:29: note: the predicate of the contract assertion
+   42 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "precondition here" }
+      |                           ~~^~~
+Test_name.c: At global scope:
+Test_name.c:59:15: error: contract assertion cannot be proven
+   59 | int z =
+      |               ^
+Test_name.c:42:29: note: the predicate of the contract assertion
+   42 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "precondition here" }
+      |                           ~~^~~
+Test_name.c:61:19: error: contract assertion cannot be proven
+   61 | int t =
+      |                   ^
+Test_name.c:42:29: note: the predicate of the contract assertion
+   42 |   ~DP () pre<always_prove> (g > 0);     // { dg-message "precondition here" }
+      |                           ~~^~~

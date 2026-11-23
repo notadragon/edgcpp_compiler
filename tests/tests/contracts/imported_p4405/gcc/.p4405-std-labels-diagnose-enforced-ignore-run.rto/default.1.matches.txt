@@ -1,0 +1,8 @@
+Matches for "^violation: .*, enforce$":
+  <-----------------------------------------------------------------------------
+  violation: (((int)((const int)x)) > 0), enforce
+  ----------------------------------------------------------------------------->
+Matches for "Test_name.c:53:[0-9]+: warning: contract assertion cannot be proven \[-Wcontract-unproven\]":
+  <-----------------------------------------------------------------------------
+  Test_name.c:53:2: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  ----------------------------------------------------------------------------->

@@ -1,0 +1,11 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p4405 --contract_configuration_file=p4405-shadow-caller-side.json -O0 Test_name.c
+Test_name.c: In function 'void use(int)':
+Test_name.c:30:2: error: contract assertion cannot be proven
+   30 |   g (v);                        // { dg-error "contract assertion cannot be proven" }
+      |  ^~~
+Test_name.c:25:11: note: the predicate of the contract assertion
+   25 |   pre (check (v))               // { dg-message "the predicate of the contract assertion" }
+      |      ~~~~~^~~
+Test_name.c:21:8: note: precondition of a call in the predicate cannot be proven
+   21 |   pre (v > 0);                  // { dg-message "precondition of a call in the predicate cannot be proven" }
+      |      ~~^~~

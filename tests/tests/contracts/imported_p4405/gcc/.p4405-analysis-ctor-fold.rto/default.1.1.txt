@@ -1,0 +1,15 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p4405 --contract_analysis_semantic=prove --contract_evaluation_semantic=ignore -O2 Test_name.c
+Test_name.c: In function 'int h()':
+Test_name.c:33:16: error: contract assertion cannot be proven
+   33 | int h () { T t (1); return t.v; }               // { dg-error "contract assertion cannot be proven" }
+      |                ^
+Test_name.c:24:26: note: the predicate of the contract assertion
+   24 |   constexpr T (int y) pre (g > 0) : v (y) {}    // { dg-message "the predicate of the contract assertion" }
+      |                        ~~^~~
+Test_name.c: In function 'int hu()':
+Test_name.c:34:14: error: contract assertion cannot be proven
+   34 | int hu () { U u; return u.v; }                  // { dg-error "contract assertion cannot be proven" }
+      |              ^
+Test_name.c:29:21: note: the predicate of the contract assertion
+   29 |   constexpr U () pre (g > 0) : v (1) {} // { dg-message "the predicate of the contract assertion" }
+      |                   ~~^~~

@@ -6514,6 +6514,9 @@ so that its semantic is chosen as for that label.)
      std::contracts::evaluation_semantic value v, 3 (enforce) and 4
      (quick_enforce). */
   csp->label_allowed_semantics = (a_byte)((1u << 3) | (1u << 4));
+  /* With P4405, prove (8) too: bit 1 << (8 - 8) of the proving set. */
+  csp->label_allowed_proving_semantics =
+                                (a_byte)(contracts_p4405_enabled ? 1u : 0u);
 }  /* mark_contract_terminating */
 
 

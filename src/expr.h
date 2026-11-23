@@ -834,6 +834,10 @@ extern an_init_component_ptr scan_full_initializer_expr_as_component(
                                      a_decl_parse_state *dps,
                                      a_boolean          parenthesized,
                                      a_boolean          allow_empty_expansion);
+extern void resolve_contract_label_proving_facets(
+                              a_contract_specifier_ptr        csp,
+                              a_constant_ptr                  label_con,
+                              a_boolean                       analysis);
 
 extern
 void convert_initializer(an_init_component_ptr icp,

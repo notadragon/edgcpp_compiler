@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 --contract_evaluation_semantic=enforce Test_name.c
+"Test_name.c", line 55: error: compute_semantic result is not in the allowed evaluation semantics
+  int c (int x) pre<to_prove_excluded> (x > 0) { return x; }	// { dg-error "not in the allowed evaluation semantics" }
+                ^
+
+"Test_name.c", line 56: error: compute_semantic result is not in the allowed evaluation semantics
+  int d (int x) pre<to_diagnose_excluded> (x > 0) { return x; }	// { dg-error "not in the allowed evaluation semantics" }
+                ^
+
+"Test_name.c", line 57: error: compute_semantic result is not in the allowed evaluation semantics
+  int e (int x) pre<to_unknown> (x > 0) { return x; }	// { dg-error "not in the allowed evaluation semantics" }
+                ^
+
+"Test_name.c", line 58: error: compute_semantic result is not in the allowed evaluation semantics
+  int f (int x) pre<to_unspecified> (x > 0) { return x; }	// { dg-error "not in the allowed evaluation semantics" }
+                ^
+
+4 errors detected in the compilation of "Test_name.c".

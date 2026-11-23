@@ -1,0 +1,1 @@
+eccp -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contract_configuration_file=p4405-json-without-flag.json --no_warnings Test_name.c

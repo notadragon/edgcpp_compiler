@@ -1,0 +1,4 @@
+Matches for "^(Command-line (error|warning): .*)$":
+  <-----------------------------------------------------------------------------
+  Command-line warning: --contract_analysis_semantic=prove requires --contracts_p4405; ignore is used instead
+  ----------------------------------------------------------------------------->

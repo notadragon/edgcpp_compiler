@@ -1,0 +1,95 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 Test_name.c
+"Test_name.c", line 30: warning: contract predicate is false in constant expression
+  constexpr int h (int x) pre<always_diagnose> (x > 0) { return x; }	// { dg-warning "contract predicate is false in constant expression" }
+                          ^
+
+"Test_name.c", line 30: warning: contract predicate is false in constant expression
+  constexpr int h (int x) pre<always_diagnose> (x > 0) { return x; }	// { dg-warning "contract predicate is false in constant expression" }
+                          ^
+
+"Test_name.c", line 30: warning: contract predicate is false in constant expression
+  constexpr int h (int x) pre<always_diagnose> (x > 0) { return x; }	// { dg-warning "contract predicate is false in constant expression" }
+                          ^
+
+"Test_name.c", line 30: warning: contract predicate is false in constant expression
+  constexpr int h (int x) pre<always_diagnose> (x > 0) { return x; }	// { dg-warning "contract predicate is false in constant expression" }
+                          ^
+
+"Test_name.c", line 30: warning: contract predicate is false in constant expression
+  constexpr int h (int x) pre<always_diagnose> (x > 0) { return x; }	// { dg-warning "contract predicate is false in constant expression" }
+                          ^
+
+"Test_name.c", line 30: warning: contract predicate is false in constant expression
+  constexpr int h (int x) pre<always_diagnose> (x > 0) { return x; }	// { dg-warning "contract predicate is false in constant expression" }
+                          ^
+
+"Test_name.c", line 30: warning: contract predicate is false in constant expression
+  constexpr int h (int x) pre<always_diagnose> (x > 0) { return x; }	// { dg-warning "contract predicate is false in constant expression" }
+                          ^
+
+"Test_name.c", line 30: warning: contract predicate is false in constant expression
+  constexpr int h (int x) pre<always_diagnose> (x > 0) { return x; }	// { dg-warning "contract predicate is false in constant expression" }
+                          ^
+
+"Test_name.c", line 30: warning: contract predicate is false in constant expression
+  constexpr int h (int x) pre<always_diagnose> (x > 0) { return x; }	// { dg-warning "contract predicate is false in constant expression" }
+                          ^
+
+"Test_name.c", line 30: warning: contract predicate is false in constant expression
+  constexpr int h (int x) pre<always_diagnose> (x > 0) { return x; }	// { dg-warning "contract predicate is false in constant expression" }
+                          ^
+
+"Test_name.c", line 30: warning: contract predicate is false in constant expression
+  constexpr int h (int x) pre<always_diagnose> (x > 0) { return x; }	// { dg-warning "contract predicate is false in constant expression" }
+                          ^
+
+"Test_name.c", line 30: warning: contract predicate is false in constant expression
+  constexpr int h (int x) pre<always_diagnose> (x > 0) { return x; }	// { dg-warning "contract predicate is false in constant expression" }
+                          ^
+
+"Test_name.c", line 35: warning: variable "v1" was declared but never referenced
+  constexpr int v1 = h (-1);			// { dg-bogus "always false|cannot be proven" }
+                ^
+
+Test_name.c:30:24: warning: contract predicate is false in constant expression
+   30 | constexpr int h (int x) pre<always_diagnose> (x > 0) { return x; }      // { dg-warning "contract predicate is false in constant expression" }
+      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:30:24: warning: contract predicate is false in constant expression
+Test_name.c:30:24: warning: contract predicate is false in constant expression
+Test_name.c:30:24: warning: contract predicate is false in constant expression
+Test_name.c:30:24: warning: contract predicate is false in constant expression
+Test_name.c:30:24: warning: contract predicate is false in constant expression
+Test_name.c:30:24: warning: contract predicate is false in constant expression
+Test_name.c: In function 'int f(int)':
+Test_name.c:30:24: warning: contract predicate is false in constant expression
+Test_name.c:30:24: warning: contract predicate is false in constant expression
+Test_name.c:30:24: warning: contract predicate is false in constant expression
+Test_name.c:30:24: warning: contract predicate is false in constant expression
+Test_name.c: In function 'int g(T)':
+Test_name.c:30:24: warning: contract predicate is false in constant expression
+Test_name.c:30:24: warning: contract predicate is false in constant expression
+Test_name.c:30:24: warning: contract predicate is false in constant expression
+Test_name.c: In lambda function:
+Test_name.c:74:42: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   74 |   constexpr auto lam = [] (int z) { return h (z); };    // { dg-warning "contract assertion cannot be proven" }
+      |                                         ~^~~
+Test_name.c:30:49: note: the predicate of the contract assertion
+   30 | constexpr int h (int x) pre<always_diagnose> (x > 0) { return x; }      // { dg-warning "contract predicate is false in constant expression" }
+      |                                               ~~^~~
+Test_name.c: In function 'int f(int)':
+Test_name.c:76:13: warning: contract predicate is always false [-Wcontract-unproven]
+   76 |   return y + h (-1);                            // { dg-warning "contract predicate is always false" }
+      |            ~^~~~
+Test_name.c:30:49: note: the predicate of the contract assertion
+   30 | constexpr int h (int x) pre<always_diagnose> (x > 0) { return x; }      // { dg-warning "contract predicate is false in constant expression" }
+      |                                               ~~^~~
+Test_name.c: In instantiation of 'int g(T) [with T = int]':
+Test_name.c:90:11:   required from here
+   90 | int gi = g (1);
+      |          ~^~~
+Test_name.c:87:21: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   87 |   return y + l2 + h (y);                        // { dg-warning "contract assertion cannot be proven" }
+      |                   ~~^~~~~~~~~~~~
+Test_name.c:30:49: note: the predicate of the contract assertion
+   30 | constexpr int h (int x) pre<always_diagnose> (x > 0) { return x; }      // { dg-warning "contract predicate is false in constant expression" }
+      |                                               ~~^~~

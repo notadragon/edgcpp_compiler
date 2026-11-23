@@ -1,0 +1,2 @@
+./a.out
+violation: (((int)((const int)x)) > 0)

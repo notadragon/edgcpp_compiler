@@ -1,0 +1,18 @@
+eccp -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p4405 --contract_analysis_semantic=diagnose --contract_evaluation_semantic=observe -O2 Test_name.c
+Test_name.c: In function 'int live1()':
+Test_name.c:41:34: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   41 | int live1 () { return 0 ? 2 : g3 (zero ()); }   // { dg-warning "cannot be proven" }
+      |                                ~~^~~~~~~~
+Test_name.c:30:21: note: the predicate of the contract assertion
+   30 | int g3 (int x) pre (x != 0);    // { dg-message "the predicate of the contract assertion" }
+      |                   ~~^~~~
+Test_name.c: In instantiation of 'int tn1() [with int N = 0]':
+Test_name.c:53:9:   required from here
+   53 |   tn1<0> ();
+      |   ~~~~~~^~
+Test_name.c:42:52: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   42 | template <int N> int tn1 () { return N ? 1 : g3 (zero ()); }    // { dg-warning "cannot be proven" }
+      |                                                 ~~~^~~~~~~~~~~~~~~
+Test_name.c:30:21: note: the predicate of the contract assertion
+   30 | int g3 (int x) pre (x != 0);    // { dg-message "the predicate of the contract assertion" }
+      |                   ~~^~~~

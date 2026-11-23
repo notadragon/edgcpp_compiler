@@ -1,0 +1,1 @@
+eccp -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 --contract_analysis_semantic=diagnose --contract_evaluation_semantic=enforce -O2 -Wno-contract-unproven Test_name.c

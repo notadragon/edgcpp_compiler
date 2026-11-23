@@ -1,0 +1,11 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p4405 --contract_analysis_semantic=prove Test_name.c
+"Test_name.c", line 18: error: value parameter "x" used in a postcondition must be declared const
+  int f (int x)			// { dg-message "parameter declared here" }
+             ^
+
+"Test_name.c", line 25: error: value parameter "x" used in a postcondition must be declared const
+  T h (T x)			// { dg-error "value parameter 'x' used in a postcondition must be const" }
+         ^
+          detected during instantiation of "T h(T) [with T=int]" at line 34
+
+2 errors detected in the compilation of "Test_name.c".

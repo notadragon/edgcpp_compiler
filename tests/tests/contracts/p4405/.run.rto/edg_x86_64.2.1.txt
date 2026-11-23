@@ -1,0 +1,13 @@
+eccp -DTEST_NUMBER=2 --c++26 --contracts_p4405 --contract_configuration=[{"output":{"semantic":"diagnose"}}] Test_name.c
+"Test_name.c", line 10: warning: contract assertion cannot be proven
+  int f(int x) pre (check(x > 0)) post (r: check(r > 0)) {
+                                  ^
+
+"Test_name.c", line 11: warning: contract assertion cannot be proven
+    contract_assert(check(x > 1));
+    ^
+
+"Test_name.c", line 15: warning: contract assertion cannot be proven
+    printf("f %d\n", f(0));
+                      ^
+

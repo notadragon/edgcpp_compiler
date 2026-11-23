@@ -1,0 +1,11 @@
+Matches for "p4405-analysis-system-header\.h:20:[0-9]+: warning: contract assertion cannot be proven \[-Wcontract-unproven\]":
+  <-----------------------------------------------------------------------------
+  p4405-analysis-system-header.h:20:5: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  ----------------------------------------------------------------------------->
+  <-----------------------------------------------------------------------------
+  p4405-analysis-system-header.h:20:5: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  ----------------------------------------------------------------------------->
+Matches for "p4405-analysis-system-header\.h:32:[0-9]+: warning: contract assertion cannot be proven \[-Wcontract-unproven\]":
+  <-----------------------------------------------------------------------------
+  p4405-analysis-system-header.h:32:14: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  ----------------------------------------------------------------------------->

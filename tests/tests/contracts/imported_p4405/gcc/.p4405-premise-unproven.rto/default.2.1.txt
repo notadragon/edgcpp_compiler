@@ -1,0 +1,19 @@
+cpfe -DTEST_NUMBER=2 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 --contract_evaluation_semantic=ignore -O2 -O0 Test_name.c
+Test_name.c: In function 'void g1(int)':
+Test_name.c:38:2: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   38 |   f (y);
+      |  ^~~
+Test_name.c:34:33: note: the predicate of the contract assertion
+   34 | void f (int x) pre<diagnose> (x > 3) pre<diagnose> (x > 2) pre<diagnose> (x > 1);
+      |                               ~~^~~
+Test_name.c: In function 'int g2(int)':
+Test_name.c:45:1: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   45 |   contract_assert<diagnose> (y > 3);    // { dg-warning "cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:45:31: note: the predicate of the contract assertion
+   45 |   contract_assert<diagnose> (y > 3);    // { dg-warning "cannot be proven" }
+      |                             ~~^~~
+Test_name.c: In function 'int g3(int)':
+Test_name.c:54:1: warning: contract predicate is always false [-Wcontract-unproven]
+   54 |   contract_assert<diagnose> (k == 0);   // { dg-warning "always false" }
+      | ^ ~~~~~~~~~~~~~

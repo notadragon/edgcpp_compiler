@@ -1,0 +1,2 @@
+./a.out
+violation: ((((int)((const int)p)) >= 0) && (((int)((const int)p)) <= 100))

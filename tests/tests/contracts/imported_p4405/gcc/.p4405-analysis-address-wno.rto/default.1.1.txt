@@ -1,0 +1,7 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 --contract_analysis_semantic=prove -Wno-contract-unproven Test_name.c
+Test_name.c:27:17: error: contract assertion cannot be proven for a call through the address of 'int fp(int)'
+   27 | int (*q) (int) = fp;                            // { dg-error "contract assertion cannot be proven for a call through the address of 'int fp\\(int\\)'" }
+      |                 ^~
+Test_name.c:23:15: note: precondition here
+   23 | int fp (int x) pre<always_prove> (x > 0);       // { dg-message "precondition here" }
+      |               ^~~~~~~~~~~~~~~~~~~~~~~~~~

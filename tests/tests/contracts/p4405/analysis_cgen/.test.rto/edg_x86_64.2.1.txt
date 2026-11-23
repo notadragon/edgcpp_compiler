@@ -1,0 +1,90 @@
+fe_only -DTEST_NUMBER=2 --c++26 --contracts_p3097 --contracts_p4405 --contract_evaluation_semantic=ignore --contract_analysis_semantic=prove Test_name.c
+"Test_name.c", line 15: error: contract assertion cannot be proven
+    post (r: r > 0)                // Here.
+    ^
+
+"Test_name.c", line 17: error: contract assertion cannot be proven
+    contract_assert(x != 3);       // Here.
+    ^
+
+"Test_name.c", line 39: error: contract assertion cannot be proven
+    r += [](int z) { return f(z); }(y);   // In the lambda's body.
+                             ^
+
+"Test_name.c", line 33: error: contract assertion cannot be proven
+    int r = f(y);                  // f's precondition.
+             ^
+
+"Test_name.c", line 35: error: contract assertion cannot be proven
+    s.m(y);                        // m's.
+       ^
+
+"Test_name.c", line 36: error: contract assertion cannot be proven
+    S a(y);                        // The constructor's and the destructor's.
+      ^
+
+"Test_name.c", line 36: error: contract assertion cannot be proven
+    S a(y);                        // The constructor's and the destructor's.
+      ^
+
+"Test_name.c", line 37: error: contract assertion cannot be proven
+    r += S(y).v;                   // Likewise, for a temporary.
+         ^
+
+"Test_name.c", line 37: error: contract assertion cannot be proven
+    r += S(y).v;                   // Likewise, for a temporary.
+         ^
+
+"Test_name.c", line 38: error: contract assertion cannot be proven
+    r += t(y) + (int)t(2L);        // Each instance's.
+          ^
+
+"Test_name.c", line 38: error: contract assertion cannot be proven
+    r += t(y) + (int)t(2L);        // Each instance's.
+                      ^
+
+"Test_name.c", line 40: error: contract assertion cannot be proven
+    r += s.h(y);                   // The virtual function's.
+            ^
+
+"Test_name.c", line 46: error: contract assertion cannot be proven
+    if consteval { return f(y); } else { return f(y + 1); }   // The else.
+                                                 ^
+
+"Test_name.c", line 59: error: contract assertion cannot be proven
+  S gs(1);                         // The constructor's (the destructor's
+    ^
+
+"Test_name.c", line 62: error: contract assertion cannot be proven
+    static S ls(y);                // Likewise.
+             ^
+
+"Test_name.c", line 63: error: contract assertion cannot be proven
+    thread_local S tl(y);          // Likewise (destroyed at thread exit).
+                   ^
+
+"Test_name.c", line 64: error: contract assertion cannot be proven
+    static const S &sr = S(y);     // Likewise, for an extended temporary.
+                         ^
+
+"Test_name.c", line 67: error: contract assertion cannot be proven
+  S arr[2] = {S(1), S(2)};         // Two constructors', the destructor's calls
+    ^
+
+"Test_name.c", line 67: error: contract assertion cannot be proven
+  S arr[2] = {S(1), S(2)};         // Two constructors', the destructor's calls
+    ^
+
+"Test_name.c", line 67: error: contract assertion cannot be proven
+  S arr[2] = {S(1), S(2)};         // Two constructors', the destructor's calls
+                ^
+
+"Test_name.c", line 67: error: contract assertion cannot be proven
+  S arr[2] = {S(1), S(2)};         // Two constructors', the destructor's calls
+    ^
+
+"Test_name.c", line 71: error: contract assertion cannot be proven
+      return f(y);                 // The then.
+              ^
+
+22 errors detected in the compilation of "Test_name.c".

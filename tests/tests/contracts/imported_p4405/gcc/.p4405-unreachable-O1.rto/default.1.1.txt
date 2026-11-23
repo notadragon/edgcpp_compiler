@@ -1,0 +1,66 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 -O1 Test_name.c
+"Test_name.c", line 41: warning: statement is unreachable
+    contract_assert<always_prove> (i < 6);	// S1 { dg-bogus "(cannot be proven|always false)" }
+    ^
+
+"Test_name.c", line 91: warning: statement is unreachable
+    contract_assert<always_prove> (tga[2] == 1);			// S7a { dg-bogus "(cannot be proven|always false)" }
+    ^
+
+"Test_name.c", line 103: warning: statement is unreachable
+    contract_assert<always_prove> (index < c.size ());	// S8 { dg-bogus "(cannot be proven|always false)" }
+    ^
+
+"Test_name.c", line 111: warning: statement is unreachable
+    contract_assert<always_prove> (false);	// S9 { dg-bogus "(cannot be proven|always false)" }
+    ^
+
+"Test_name.c", line 175: warning: statement is unreachable
+        contract_assert<always_prove> (false);	// S12 { dg-bogus "(cannot be proven|always false)" }
+        ^
+
+"Test_name.c", line 127: warning: statement is unreachable
+    contract_assert<always_prove> (N > 0);	// S11a { dg-bogus "(cannot be proven|always false)" }
+    ^
+          detected during instantiation of "void s11<N>() [with N=1]" at line 131
+
+Test_name.c: In function 'void n1()':
+Test_name.c:144:1: error: contract predicate is always false
+  144 |   contract_assert<always_prove> (i < 6);        // N1 { dg-error "contract predicate is always false" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c: In function 'void n2(int)':
+Test_name.c:151:1: error: contract predicate is always false
+  151 |   contract_assert<always_prove> (i < 6);        // N2 { dg-error "contract predicate is always false" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c: In function 'void n3(int)':
+Test_name.c:156:2: error: contract predicate is always false
+  156 |     g (0);      // N3 { dg-error "contract predicate is always false" }
+      |  ^  
+Test_name.c:31:37: note: the predicate of the contract assertion
+   31 | void g (int x) pre<always_prove> (x != 0);
+      |                                   ~~^~~~
+Test_name.c: In function 'void n4(int)':
+Test_name.c:166:2: error: contract predicate is always false
+  166 |       g (0);    // N4 { dg-error "contract predicate is always false" }
+      |  ^  
+Test_name.c:31:37: note: the predicate of the contract assertion
+   31 | void g (int x) pre<always_prove> (x != 0);
+      |                                   ~~^~~~
+Test_name.c: In function 'void n5(int)':
+Test_name.c:177:1: error: contract predicate is always false
+  177 |       contract_assert<always_prove> (false);    // N5 { dg-error "contract predicate is always false" }
+      | ^     ~~~~~~~~~
+Test_name.c: In function 'void n6(int)':
+Test_name.c:186:1: error: contract predicate is always false
+  186 |   contract_assert<always_prove> (false);        // N6 { dg-error "contract predicate is always false" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c: In instantiation of 'void n7(int) [with int N = 0]':
+Test_name.c:198:26:   required from here
+  198 | template void n7<0> (int);
+      |                          ^
+Test_name.c:195:9: error: contract predicate is always false
+  195 |       g (0);    // N7 { dg-error "contract predicate is always false" }
+      |       ~~^~~~~~~~
+Test_name.c:31:37: note: the predicate of the contract assertion
+   31 | void g (int x) pre<always_prove> (x != 0);
+      |                                   ~~^~~~

@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p4405 --contract_configuration_file=p4405-analysis-json-runtime.json Test_name.c
+"Test_name.c", line 15: error: contract predicate is false in constant expression
+  constexpr int f (int x) pre (x > 0) { return x; }	// { dg-error "contract predicate is false in constant expression" }
+                          ^
+
+"Test_name.c", line 17: warning: variable "good" was declared but never referenced
+  constexpr int good = f (1);
+                ^
+
+"Test_name.c", line 18: warning: variable "bad" was declared but never referenced
+  constexpr int bad = f (-1);
+                ^
+
+1 error detected in the compilation of "Test_name.c".

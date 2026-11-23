@@ -1,0 +1,5 @@
+./a.out
+violation: (((int)((const int)x)) > 0), observe
+violation: (((int)((const int)r)) > 0), observe
+violation: (((int)((const int)x)) > 0), observe
+after: 3

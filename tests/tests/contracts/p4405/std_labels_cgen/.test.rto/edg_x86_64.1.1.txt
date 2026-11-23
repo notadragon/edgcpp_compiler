@@ -1,0 +1,70 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contracts_p3400 --contracts_p4405 --contract_evaluation_semantic=quick_enforce Test_name.c
+"Test_name.c", line 41: error: contract assertion cannot be proven
+    pp(y);
+      ^
+
+"Test_name.c", line 42: warning: contract assertion cannot be proven
+    pd(y);
+      ^
+
+"Test_name.c", line 43: error: contract assertion cannot be proven
+    pap(y);
+       ^
+
+"Test_name.c", line 44: warning: contract assertion cannot be proven
+    pad(y);
+       ^
+
+"Test_name.c", line 45: error: contract assertion cannot be proven
+    ppd(y);
+       ^
+
+"Test_name.c", line 46: warning: contract assertion cannot be proven
+    pdq(y);
+       ^
+
+"Test_name.c", line 49: error: contract assertion cannot be proven
+  int qp(int x) post<prove>(r: r > 0) { return x; }
+                ^
+
+"Test_name.c", line 50: warning: contract assertion cannot be proven
+  int qd(int x) post<diagnose>(r: r > 0) { return x; }
+                ^
+
+"Test_name.c", line 51: error: contract assertion cannot be proven
+  int qap(int x) post<always_prove>(r: r > 0) { return x; }
+                 ^
+
+"Test_name.c", line 52: warning: contract assertion cannot be proven
+  int qad(int x) post<always_diagnose>(r: r > 0) { return x; }
+                 ^
+
+"Test_name.c", line 55: error: contract assertion cannot be proven
+    contract_assert<prove>(x > 0);
+    ^
+
+"Test_name.c", line 56: warning: contract assertion cannot be proven
+    contract_assert<diagnose>(x > 0);
+    ^
+
+"Test_name.c", line 57: error: contract assertion cannot be proven
+    contract_assert<always_prove>(x > 0);
+    ^
+
+"Test_name.c", line 58: warning: contract assertion cannot be proven
+    contract_assert<always_diagnose>(x > 0);
+    ^
+
+"Test_name.c", line 63: error: contract assertion cannot be proven
+    contract_assert<prove>(sizeof(x) == sizeof(int));
+    ^
+
+"Test_name.c", line 64: error: contract assertion cannot be proven
+    contract_assert<always_prove>(true);
+    ^
+
+"Test_name.c", line 65: warning: contract assertion cannot be proven
+    contract_assert<diagnose>(1 + 1 == 2);
+    ^
+
+9 errors detected in the compilation of "Test_name.c".

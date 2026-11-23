@@ -1,0 +1,31 @@
+cpfe -DTEST_NUMBER=2 --c++26 --c++26 --contracts --contracts_p4405 --contract_evaluation_semantic=ignore --contract_analysis_semantic=prove -O2 -O0 Test_name.c
+Test_name.c: In function 'int unprovable(int)':
+Test_name.c:47:1: error: contract assertion cannot be proven
+   47 |   contract_assert (g1 (y) == 1);        // { dg-error "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:47:23: note: the predicate of the contract assertion
+   47 |   contract_assert (g1 (y) == 1);        // { dg-error "contract assertion cannot be proven" }
+      |                 ~~~~~~^~~~
+Test_name.c:33:21: note: precondition of a call in the predicate cannot be proven
+   33 | int g1 (int x) pre (x != 0);    // { dg-message "precondition of a call in the predicate cannot be proven" }
+      |                   ~~^~~~
+Test_name.c: In function 'int always_false(int)':
+Test_name.c:63:1: error: contract assertion cannot be proven
+   63 |   contract_assert (g3 (0) != 7);        // { dg-error "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:63:23: note: the predicate of the contract assertion
+   63 |   contract_assert (g3 (0) != 7);        // { dg-error "contract assertion cannot be proven" }
+      |                 ~~~~~~^~~~
+Test_name.c:37:21: note: precondition of a call in the predicate is always false
+   37 | int g3 (int x) pre (x != 0);    // { dg-message "precondition of a call in the predicate is always false" }
+      |                   ~~^~~~
+Test_name.c: In function 'int guarded_zero(int)':
+Test_name.c:72:1: error: contract assertion cannot be proven
+   72 |   contract_assert (g5 (y) != 7);        // { dg-error "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:72:23: note: the predicate of the contract assertion
+   72 |   contract_assert (g5 (y) != 7);        // { dg-error "contract assertion cannot be proven" }
+      |                 ~~~~~~^~~~
+Test_name.c:41:21: note: precondition of a call in the predicate cannot be proven
+   41 | int g5 (int x) pre (x != 0);    // { dg-message "precondition of a call in the predicate cannot be proven" }
+      |                   ~~^~~~
