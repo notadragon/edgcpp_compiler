@@ -2,6 +2,7 @@
 //options:--c++17 --clang_version 230000:--c++17 --gnu_version 150000
 //options_all:--il_display
 //require:RECORD_UNRECOGNIZED_ATTRIBUTES 1
+//require:NEED_IL_DISPLAY 1
 //script:./first_stage_il
 //filter:awk '/^file-scope attribute@/{f=1}/^$/{if (f) print $0; f=0}f' | grep -E -e '^(name|is_pack_expansion):' -e '^$' | sed -e 's/@[0-9a-f]*//'
 //remark:Unrecognized attribute with a pack expansion in its arguments
