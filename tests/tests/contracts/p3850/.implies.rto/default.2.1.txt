@@ -1,0 +1,5 @@
+fe_only -DTEST_NUMBER=2 --c++26 --c++23 --contracts_p3850 --no_contracts Test_name.c
+Command-line error: --contracts_p3850 cannot be combined with --no_contracts
+
+1 catastrophic error detected in this compilation.
+Compilation terminated.

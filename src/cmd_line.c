@@ -1837,6 +1837,12 @@ Initialize the option information table.
                          "contract_group_evaluation_semantic", '\0',
                          /*value=*/TRUE, /*arg_required=*/TRUE,
                          pchek_command_line);
+  add_option_description(optk_contracts_p3850, "contracts_p3850", '\0',
+                         /*value=*/TRUE, /*arg_required=*/FALSE,
+                         pchek_command_line);
+  add_option_description(optk_contracts_p3850, "no_contracts_p3850", '\0',
+                         /*value=*/FALSE, /*arg_required=*/FALSE,
+                         pchek_command_line);
   add_option_description(optk_contracts_p4451, "contracts_p4451", '\0',
                          /*value=*/TRUE, /*arg_required=*/FALSE,
                          pchek_command_line);
@@ -4006,6 +4012,9 @@ setting is used, and to set various unmentioned settings as needed.
   }  /* if */
   if (option_kind_used[(int)optk_rtti]) {
     command_line_error(ec_cl_rtti_option_only_in_cplusplus);
+  }  /* if */
+  if (option_kind_used[(int)optk_contracts_p3850] && contracts_p3850_enabled) {
+    command_line_error(ec_cl_contracts_option_only_in_cplusplus);
   }  /* if */
   if (option_kind_used[(int)optk_contracts] && contracts_enabled) {
     command_line_error(ec_cl_contracts_option_only_in_cplusplus);
@@ -12386,6 +12395,9 @@ enable_microsoft_mode:
       case optk_contract_group_evaluation_semantic:
         add_contract_config_source(ccsk_group_semantic, opt_arg);
         break;
+      case optk_contracts_p3850:
+        contracts_p3850_enabled = opt_value;
+        break;
       case optk_contracts_p4451:
         contracts_p4451_enabled = opt_value;
         break;
@@ -12403,6 +12415,18 @@ enable_microsoft_mode:
     }  /* if */
   }  /* if */
 #endif /* !USE_MMAP_FOR_MEMORY_REGIONS */
+  if (contracts_p3850_enabled && !option_kind_used[(int)optk_contracts]) {
+    /* --contracts_p3850 enables contracts, unless --[no_]contracts is
+       given. */
+    contracts_enabled = TRUE;
+  }  /* if */
+  if (!option_kind_used[(int)optk_contracts_p4451] &&
+      contracts_p3850_enabled) {
+    /* --contracts_p3850 enables P4451, unless --[no_]contracts_p4451 is
+       given, whatever the --no_ form of --contracts_p3400 (the options are
+       additive, as in GCC; see check_contracts_option_rule). */
+    contracts_p4451_enabled = TRUE;
+  }  /* if */
 #if IA64_ABI
   if (emulate_unsafe_gnu_abi_bugs) {
     /* A request to emulate the unsafe GNU ABI bugs is also a request to
@@ -14003,6 +14027,7 @@ variables declared in cmd_line.h.
   output_mode = DEFAULT_OUTPUT_MODE;
   contracts_enabled = FALSE;
   contract_evaluation_semantic = DEFAULT_CONTRACT_EVALUATION_SEMANTIC;
+  contracts_p3850_enabled = FALSE;
   contracts_p4451_enabled = FALSE;
   incognito = DEFAULT_INCOGNITO;
   keep_restrict_in_signatures = FALSE;

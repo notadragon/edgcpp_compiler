@@ -1,0 +1,42 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3850 Test_name.c
+"Test_name.c", line 33: error: a function contract specifier can appear only on the declarator of a function declaration
+  int gv pre(1); // expected-error {{'pre' can only appear on a function declaration}}
+         ^
+
+"Test_name.c", line 35: error: a function contract specifier can appear only on the declarator of a function declaration
+  int gv_post post(r : 1); // expected-error {{'post' can only appear on a function declaration}}
+              ^
+
+"Test_name.c", line 39: error: a function contract specifier can appear only on the declarator of a function declaration
+  int (*gfp)() pre(1); // expected-error {{'pre' can only appear on a function declaration}}
+               ^
+
+"Test_name.c", line 42: error: a function contract specifier can appear only on the declarator of a function declaration
+    int m pre(1); // expected-error {{'pre' can only appear on a function declaration}}
+          ^
+
+"Test_name.c", line 43: error: a function contract specifier can appear only on the declarator of a function declaration
+    static int sm pre(1); // expected-error {{'pre' can only appear on a function declaration}}
+                  ^
+
+"Test_name.c", line 44: error: expected a ";"
+    int bf : 3 pre(1); // expected-error {{'pre' can only appear on a function declaration}}
+               ^
+
+"Test_name.c", line 45: error: a function contract specifier can appear only on the declarator of a function declaration
+    int (*mfp)() pre(1); // expected-error {{'pre' can only appear on a function declaration}}
+                 ^
+
+"Test_name.c", line 52: error: a function contract specifier can appear only on the declarator of a function declaration
+  int gv_nested pre(nested(1, (2 + 3)) > 0); // expected-error {{'pre' can only appear on a function declaration}}
+                ^
+
+"Test_name.c", line 58: error: a function contract specifier can appear only on the declarator of a function declaration
+    int a, b pre(1); // expected-error {{'pre' can only appear on a function declaration}}
+             ^
+
+"Test_name.c", line 68: error: member function with the same name as its class must be a constructor
+    V V() pre(1); // expected-error {{constructor cannot have a return type}} expected-error {{'pre' cannot appear on an invalid declaration}}
+      ^
+
+10 errors detected in the compilation of "Test_name.c".

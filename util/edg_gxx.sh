@@ -38,6 +38,9 @@
 # declaration with the name of a "C++" dynamic selector but not its type is
 # warned about by g++ alone, on the generated C++, so -fsyntax-only (which
 # stops after cpfe-cp) does not give that warning.
+# -f[no-]contracts-p3850 (every extension paper) goes to both; g++ gets it
+# unchanged, so it enables there even the papers the front end does not
+# implement yet.
 # -f[no-]contracts-p4451 goes to both; g++ gets the specifier the front
 # end puts out for a terminating contract assertion, the qualified name.
 #
@@ -175,6 +178,10 @@ while [ $# -gt 0 ] ; do
     -Wno-contract-configuration)
       edg_args+=("--diag_suppress=contract_configuration")
       gxx_args+=("$arg") ;;
+    -fcontracts-p3850)
+      edg_args+=("--contracts_p3850"); gxx_args+=("$arg") ;;
+    -fno-contracts-p3850)
+      edg_args+=("--no_contracts_p3850"); gxx_args+=("$arg") ;;
     -fcontracts-p4451)
       edg_args+=("--contracts_p4451"); gxx_args+=("$arg") ;;
     -fno-contracts-p4451)
