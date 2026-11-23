@@ -1,0 +1,12 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3097 --contracts_p4405 --contract_analysis_semantic=prove -O2 Test_name.c
+"Test_name.c", line 32: warning: variable "d" was declared but never referenced
+  void use () { D d; }
+                  ^
+
+Test_name.c: In member function 'virtual constexpr int D::f(int) const':
+Test_name.c:22:23: error: contract assertion cannot be proven for a call through 'virtual constexpr int B::f(int) const'
+   22 |   constexpr int f (int x) const override        // { dg-error "cannot be proven for a call through '.*int B::f.int. const'" }
+      |                       ^
+Test_name.c:23:8: note: the predicate of the contract assertion
+   23 |     pre (x > 10)                                // { dg-message "the predicate of the contract assertion" }
+      |      ~~^~~~

@@ -1,0 +1,56 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contracts_p3097 --contracts_p4405 --contract_evaluation_semantic=ignore --contract_analysis_semantic=prove Test_name.c
+"Test_name.c", line 11: error: identifier "undeclared" is undefined
+  int bad = undeclared;
+            ^
+
+"Test_name.c", line 21: error: contract assertion cannot be proven for a call through "B::f"
+            the predicate of the contract assertion at line 22
+    int f(int x) override
+        ^
+
+"Test_name.c", line 21: error: contract assertion cannot be proven for a call through "B::f"
+            the predicate of the contract assertion at line 16
+    int f(int x) override
+        ^
+
+"Test_name.c", line 30: error: contract assertion cannot be proven for a call through "B::f"
+            the predicate of the contract assertion at line 31
+    int f(int x) override
+        ^
+
+"Test_name.c", line 30: error: contract assertion cannot be proven for a call through "B::f"
+            the predicate of the contract assertion at line 16
+    int f(int x) override
+        ^
+
+"Test_name.c", line 51: error: contract assertion cannot be proven for a call through "B::f"
+            the predicate of the contract assertion at line 51
+    int f(int x) override pre (x > 1) { return 1; }
+        ^
+
+"Test_name.c", line 51: error: contract assertion cannot be proven for a call through "B::f"
+            the predicate of the contract assertion at line 16
+    int f(int x) override pre (x > 1) { return 1; }
+        ^
+
+"Test_name.c", line 60: error: contract assertion cannot be proven for a call through "B::f"
+            the predicate of the contract assertion at line 58
+  int OutOfLine::f(int x) { return x; }
+                 ^
+
+"Test_name.c", line 60: error: contract assertion cannot be proven for a call through "B::f"
+            the predicate of the contract assertion at line 16
+  int OutOfLine::f(int x) { return x; }
+                 ^
+
+"Test_name.c", line 69: error: contract assertion cannot be proven for a call through "B::f"
+            the predicate of the contract assertion at line 69
+    int f(int x) override pre (x > 4) { return x; }
+        ^
+
+"Test_name.c", line 69: error: contract assertion cannot be proven for a call through "B::f"
+            the predicate of the contract assertion at line 16
+    int f(int x) override pre (x > 4) { return x; }
+        ^
+
+11 errors detected in the compilation of "Test_name.c".

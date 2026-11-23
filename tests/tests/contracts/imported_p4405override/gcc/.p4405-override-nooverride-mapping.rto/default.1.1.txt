@@ -1,0 +1,15 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3097 --contracts_p4405 --no_contracts_prove_override --contract_analysis_semantic=prove -O2 Test_name.c
+Test_name.c: In member function 'virtual E* E::self()':
+Test_name.c:46:12: error: contract assertion cannot be proven for a call through 'virtual B* B::self()'
+   46 |   E *self () override           // { dg-error "cannot be proven for a call through 'virtual B\\* B::self\\(\\)'" }
+      |            ^~~~
+Test_name.c:29:29: note: the predicate of the contract assertion
+   29 |   virtual B *self () post (r: r == this);       // { dg-message "the predicate of the contract assertion" }
+      |                           ~~^~~~~~~
+Test_name.c: In member function 'virtual int E::get(int)':
+Test_name.c:48:13: error: contract assertion cannot be proven for a call through 'virtual int B::get(int)'
+   48 |   int get (int x) override      // { dg-error "cannot be proven for a call through 'virtual int B::get\\(int\\)'" }
+      |             ^~~
+Test_name.c:30:40: note: the predicate of the contract assertion
+   30 |   virtual int get (const int x) post (r: r == x);       // { dg-message "the predicate of the contract assertion" }
+      |                                      ~~^~~~

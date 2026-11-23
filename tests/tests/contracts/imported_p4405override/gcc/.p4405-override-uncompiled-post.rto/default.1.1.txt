@@ -1,0 +1,22 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3097 --contracts_p4405 --contract_analysis_semantic=prove -O2 Test_name.c
+Test_name.c: In member function 'virtual int Here::f(int)':
+Test_name.c:39:13: error: contract assertion cannot be proven for a call through 'virtual int B::f(int)'
+   39 |   int f (int x) override        // { dg-error "cannot be proven for a call through 'virtual int B::f\\(int\\)'" }
+      |             ^
+Test_name.c:25:32: note: the predicate of the contract assertion
+   25 |   virtual int f (int x) post (r: r > 0);        // { dg-message "the predicate of the contract assertion" }
+      |                              ~~^~~
+Test_name.c: In destructor 'virtual Here::~Here()':
+Test_name.c:41:9: error: contract assertion cannot be proven for a call through 'virtual B::~B()'
+   41 |   ~Here () override             // { dg-error "cannot be proven for a call through 'virtual B::~B\\(\\)'" }
+      |         ^
+Test_name.c:26:21: note: the predicate of the contract assertion
+   26 |   virtual ~B () post (g == 1);                  // { dg-message "the predicate of the contract assertion" }
+      |                   ~~^~~~
+Test_name.c: In destructor 'virtual ImplicitHere::~ImplicitHere()':
+Test_name.c:55:8: error: contract assertion cannot be proven for a call through 'virtual B::~B()'
+   55 | struct ImplicitHere : B {       // { dg-error "cannot be proven for a call through 'virtual B::~B\\(\\)'" }
+      |        ^~~~~~~~~~~~
+Test_name.c:26:21: note: the predicate of the contract assertion
+   26 |   virtual ~B () post (g == 1);                  // { dg-message "the predicate of the contract assertion" }
+      |                   ~~^~~~

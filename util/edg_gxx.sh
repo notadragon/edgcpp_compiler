@@ -58,6 +58,8 @@
 # -f[no-]contracts-prove-fold goes to both; g++ folds what it diagnoses.
 # -f[no-]contract-analysis-skip-dead-calls goes to both; g++ decides which
 # calls are never evaluated.
+# -f[no-]contracts-prove-override goes to both; the override obligations of
+# virtual functions are g++'s, which proves them with that strategy.
 # -f[no-]contracts-p4451 goes to both; g++ gets the specifier the front
 # end puts out for a terminating contract assertion, the qualified name.
 #
@@ -242,6 +244,10 @@ while [ $# -gt 0 ] ; do
       edg_args+=("--contract_analysis_skip_dead_calls"); gxx_args+=("$arg") ;;
     -fno-contract-analysis-skip-dead-calls)
       edg_args+=("--no_contract_analysis_skip_dead_calls"); gxx_args+=("$arg") ;;
+    -fcontracts-prove-override)
+      edg_args+=("--contracts_prove_override"); gxx_args+=("$arg") ;;
+    -fno-contracts-prove-override)
+      edg_args+=("--no_contracts_prove_override"); gxx_args+=("$arg") ;;
     -fcontracts-p4451)
       edg_args+=("--contracts_p4451"); gxx_args+=("$arg") ;;
     -fno-contracts-p4451)

@@ -46,6 +46,8 @@ fe_wrapup.c - End of front end processing.
 #include "preproc.h"
 #include "statements.h"
 #endif /* DEBUG */
+/* For diagnose_contract_override_obligations. */
+#include "statements.h"
 #if MAINTAIN_NEEDED_FLAGS || DO_IL_LOWERING
 #include "il_walk.h"
 #endif /* MAINTAIN_NEEDED_FLAGS || DO_IL_LOWERING */
@@ -565,6 +567,9 @@ already been copied over.
        was done in part 2. */
     file_scope_il_wrapup_needed_flag_processing();
     file_scope_il_wrapup_keep_in_il_processing();
+    /* With the needed flags set, the override obligations of the virtual
+       functions that are put out (P4405). */
+    diagnose_contract_override_obligations();
 #if MANGLE_ALL_NAMES
     if (name_mangling_needed()) {
       /* Do final name mangling, which can make names that can no longer
