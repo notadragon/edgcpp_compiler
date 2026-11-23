@@ -1,0 +1,62 @@
+fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
+"Test_name.c", line 20: error: expression must have a constant value
+  static_assert(destroy_then_delete());           // Error
+                ^
+"Test_name.c", line 19: note: attempt to destroy an object outside its lifetime
+  constexpr bool destroy_then_delete() { S *p = new S; p->~S(); delete p; return true; }
+                                                                ^
+
+"Test_name.c", line 25: error: expression must have a constant value
+  static_assert(write_after_destroy());           // Error
+                ^
+"Test_name.c", line 22: note: attempt to modify an object outside its lifetime
+    S *p = new S; p->~S(); p->f = 1; delete p;
+                                ^
+
+"Test_name.c", line 27: error: expression must have a constant value
+  static_assert(local_twice());                   // Error
+                ^
+"Test_name.c", line 26: note: attempt to destroy an object outside its lifetime
+  constexpr bool local_twice() { S s; s.~S(); return true; }
+                                   ^
+
+"Test_name.c", line 29: warning: variable "t" was set but never used
+  constexpr bool trivial_twice() { T t; t.~T(); t.~T(); return true; }
+                                     ^
+
+"Test_name.c", line 30: error: expression must have a constant value
+  static_assert(trivial_twice());                 // Error
+                ^
+"Test_name.c", line 29: note: attempt to destroy an object outside its lifetime
+  constexpr bool trivial_twice() { T t; t.~T(); t.~T(); return true; }
+                                                    ^
+
+"Test_name.c", line 35: error: expression must have a constant value
+  static_assert(assign_after_destroy());          // Error
+                ^
+"Test_name.c", line 32: note: attempt to modify an object outside its lifetime
+    T *p = new T; p->~T(); *p = T{}; delete p;
+                              ^
+
+"Test_name.c", line 39: error: expression must have a constant value
+  static_assert(explicit_twice());                // Error
+                ^
+"Test_name.c", line 37: note: attempt to destroy an object outside its lifetime
+    S *p = new S; p->~S(); p->~S(); return true;
+                                ^
+
+"Test_name.c", line 43: error: expression must have a constant value
+  static_assert(write_after_local_destroy());     // Error
+                ^
+"Test_name.c", line 41: note: attempt to modify an object outside its lifetime
+    S s; s.~S(); s.f = 1; return true;
+                     ^
+
+"Test_name.c", line 110: error: expression must have a constant value
+  static_assert(range_for_destroyed_in_body());   // Error
+                ^
+"Test_name.c", line 107: note: attempt to destroy an object outside its lifetime
+    for (R r : a) r.~R();
+    ^
+
+8 errors detected in the compilation of "Test_name.c".

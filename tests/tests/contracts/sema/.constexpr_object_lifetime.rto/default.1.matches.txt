@@ -1,0 +1,32 @@
+Matches for "line 20: error: expression must have a constant value":
+  <-----------------------------------------------------------------------------
+  line 20: error: expression must have a constant value
+  ----------------------------------------------------------------------------->
+Matches for "line 25: error: expression must have a constant value":
+  <-----------------------------------------------------------------------------
+  line 25: error: expression must have a constant value
+  ----------------------------------------------------------------------------->
+Matches for "line 27: error: expression must have a constant value":
+  <-----------------------------------------------------------------------------
+  line 27: error: expression must have a constant value
+  ----------------------------------------------------------------------------->
+Matches for "line 30: error: expression must have a constant value":
+  <-----------------------------------------------------------------------------
+  line 30: error: expression must have a constant value
+  ----------------------------------------------------------------------------->
+Matches for "line 35: error: expression must have a constant value":
+  <-----------------------------------------------------------------------------
+  line 35: error: expression must have a constant value
+  ----------------------------------------------------------------------------->
+Matches for "line 39: error: expression must have a constant value":
+  <-----------------------------------------------------------------------------
+  line 39: error: expression must have a constant value
+  ----------------------------------------------------------------------------->
+Matches for "line 43: error: expression must have a constant value":
+  <-----------------------------------------------------------------------------
+  line 43: error: expression must have a constant value
+  ----------------------------------------------------------------------------->
+Matches for "line 110: error: expression must have a constant value":
+  <-----------------------------------------------------------------------------
+  line 110: error: expression must have a constant value
+  ----------------------------------------------------------------------------->
