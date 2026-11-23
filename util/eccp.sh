@@ -920,6 +920,8 @@ check_abbreviation()
 --constexpr_diag_suppress
 --constexpr_diag_warning
 --context_limit
+--contract_evaluation_semantic
+--contracts
 --cpfe_only
 --cppcli
 --cppcx
@@ -1093,6 +1095,7 @@ check_abbreviation()
 --no_compound_literals
 --no_concepts
 --no_const_string_literals
+--no_contracts
 --no_cppcli
 --no_cppcx
 --no_defer_parse_function_templates
@@ -1921,6 +1924,8 @@ process_option()
          --no_keep_restrict_in_signatures | \
          --concepts | \
          --no_concepts | \
+         --contracts | \
+         --no_contracts | \
          --bit_precise_integers | \
          --no_bit_precise_integers | \
          --force_vtbl | \
@@ -2084,6 +2089,7 @@ process_option()
          --create_module_interface | \
          --create_module_internal_partition | \
          --output_mode | \
+         --contract_evaluation_semantic | \
          --wdir)
       used_two_params=1
 #     See if an instantiation mode was specified
@@ -2213,6 +2219,7 @@ process_option()
           --dump_legacy_as_target=* | \
           --target=* | \
           --output_mode=* | \
+          --contract_evaluation_semantic=* | \
           --wdir=* | \
           --create_header_unit=* | \
           --create_module_interface=* | \

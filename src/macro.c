@@ -4756,6 +4756,14 @@ STATIC_THREAD a_feature_support feature_support_list[] = {
     "201907L" },
   { "",
     0,
+    &contracts_enabled,
+    "__cpp_contracts",
+    NULL,		/* __cpp_contracts must be handled specially, as
+			   the papers that extend contracts change its
+			   value. */
+    199711 },
+  { "",
+    0,
     &class_template_arg_deduction_enabled,
     NULL,		/* __cpp_deduction_guides must be handled specially,
 			   as the macro name takes on different values
@@ -12114,6 +12122,18 @@ command line -D options.
           }  /* if */
         }  /* if */
       }  /* for */
+      if (contracts_enabled) {
+        /* g++ defines __cpp_contracts whenever contracts are enabled, which
+           --contracts can do in any C++ mode, with the greatest value any
+           enabled paper gives it: P2900's 202502L when none raises it. */
+        a_host_large_integer  contracts_value = 202502L;
+        char                  contracts_buffer[50];
+        (void)signed_to_string_buf(contracts_value, contracts_buffer);
+        (void)strcat(contracts_buffer, "L");
+        (void)enter_predef_macro(contracts_buffer, "__cpp_contracts",
+                                 /*cannot_be_redefined=*/TRUE,
+                                 /*ref_suppresses_pch_file=*/FALSE);
+      }  /* if */
       /* __cpp_constexpr must be handled specially, as it will have different
          values depending on whether C++11, C++14, C++17, C++20, or C++23
          constexpr features are supported. */
