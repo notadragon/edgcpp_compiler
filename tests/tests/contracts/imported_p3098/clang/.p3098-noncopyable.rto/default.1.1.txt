@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3098 Test_name.c
+"Test_name.c", line 14: error: function "NoCopy::NoCopy(const NoCopy &)" (declared at line 10) cannot be referenced -- it is a deleted function
+    post [nc] (true); // expected-error {{call to deleted constructor}}
+          ^
+
+1 error detected in the compilation of "Test_name.c".

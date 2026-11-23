@@ -1,0 +1,12 @@
+Matches for "line 13: error: a pack init-capture is written "...y =", not "y... ="":
+  <-----------------------------------------------------------------------------
+  line 13: error: a pack init-capture is written "...y =", not "y... ="
+  ----------------------------------------------------------------------------->
+Matches for "line 15: error: a pack init-capture is written "...y =", not "y... ="":
+  <-----------------------------------------------------------------------------
+  line 15: error: a pack init-capture is written "...y =", not "y... ="
+  ----------------------------------------------------------------------------->
+Matches for "line 17: error: a pack init-capture is written "...y =", not "y... ="":
+  <-----------------------------------------------------------------------------
+  line 17: error: a pack init-capture is written "...y =", not "y... ="
+  ----------------------------------------------------------------------------->

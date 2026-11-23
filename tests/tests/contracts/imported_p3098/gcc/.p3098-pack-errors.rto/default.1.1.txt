@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3098 Test_name.c
+"Test_name.c", line 13: error: pack expansion does not make use of any argument packs
+    post [i...] (true);  // { dg-error "pack expansion.*non-pack" }
+           ^
+
+"Test_name.c", line 17: error: pack expansion does not make use of any argument packs
+    post [...old = i] (true);  // { dg-error "no parameter packs" }
+          ^
+
+2 errors detected in the compilation of "Test_name.c".

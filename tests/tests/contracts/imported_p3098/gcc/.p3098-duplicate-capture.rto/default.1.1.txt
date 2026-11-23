@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3098 --contract_evaluation_semantic=enforce Test_name.c
+"Test_name.c", line 16: error: "y" is captured more than once in the postcondition
+  int p7 (int x) post [y = x, y = x] (true) { return 0; }  // { dg-error "conflicts with a previous declaration|redeclaration" }
+                              ^
+
+"Test_name.c", line 17: error: "x" is captured more than once in the postcondition
+  int p8 (int x) post [x, x] (true) { return 0; }  // { dg-error "conflicts with a previous declaration|redeclaration" }
+                          ^
+
+"Test_name.c", line 20: error: "y" is captured more than once in the postcondition
+  int p6 (T... xs) post [...y = xs, ...y = xs] (true) { return 0; }  // { dg-error "conflicts with a previous declaration|redeclaration" }
+                                       ^
+
+3 errors detected in the compilation of "Test_name.c".

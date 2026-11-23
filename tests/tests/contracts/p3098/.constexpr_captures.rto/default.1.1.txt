@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contracts_p3098 --contract_evaluation_semantic=quick_enforce Test_name.c
+"Test_name.c", line 18: warning: variable "a" was declared but never referenced
+    int a = twice(3);  // the capture keeps 3, not the later 0
+        ^
+
+"Test_name.c", line 22: error: contract predicate is false in constant expression
+  constexpr int bad(int x) post [y = x] (r: r == y) { return x + 1; }
+                           ^
+
+"Test_name.c", line 26: error: contract predicate is false in constant expression
+  constexpr int seen(int x) post [a = x, b = x + 1] (a + 1 == b && a != 7) {
+                            ^
+
+2 errors detected in the compilation of "Test_name.c".

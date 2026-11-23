@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3098 Test_name.c
+"Test_name.c", line 11: error: value parameter "x" used in a postcondition must be declared const
+  int g(int x) post (r: r > x); // expected-error {{function redeclaration differs}} expected-note {{in contract specified here}}
+            ^
+
+"Test_name.c", line 11: error: mismatched postcondition captures in declaration (previous contract specifier declared at line 10)
+  int g(int x) post (r: r > x); // expected-error {{function redeclaration differs}} expected-note {{in contract specified here}}
+               ^
+
+"Test_name.c", line 15: error: mismatched postcondition captures in declaration (previous contract specifier declared at line 14)
+  int h(int x, int y) post [y] (r: r > y); // expected-error {{function redeclaration differs}} expected-note {{in contract specified here}}
+                      ^
+
+3 errors detected in the compilation of "Test_name.c".

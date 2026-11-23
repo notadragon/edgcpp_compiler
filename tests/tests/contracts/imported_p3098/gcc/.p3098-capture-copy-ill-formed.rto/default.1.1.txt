@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3098 Test_name.c
+"Test_name.c", line 38: error: function "Deleted::Deleted(const Deleted &)" (declared at line 22) cannot be referenced -- it is a deleted function
+  void deleted_param (Deleted p) post [p] (ok (p.v)) { }	    // { dg-error "deleted|use of deleted" }
+                                       ^
+
+"Test_name.c", line 39: error: function "Deleted::Deleted(const Deleted &)" (declared at line 22) cannot be referenced -- it is a deleted function
+  void deleted_init (Deleted p) post [q = p] (ok (q.v)) { }   // { dg-error "deleted|use of deleted" }
+                                          ^
+
+"Test_name.c", line 41: error: "Private::Private(const Private &)" (declared at line 29) is inaccessible
+  void private_param (Private p) post [p] (ok (p.v)) { }	    // { dg-error "private" }
+                                       ^
+
+"Test_name.c", line 43: error: class "Explicit" has no suitable copy constructor
+  void explicit_param (Explicit p) post [p] (ok (p.v)) { }    // { dg-error "explicit|no matching function" }
+                                         ^
+
+4 errors detected in the compilation of "Test_name.c".

@@ -328,8 +328,10 @@ enum a_pack_reference_kind {
   prk_binding,		/* An argument pack represented by a structured
 			   binding. */
   prk_init_capture,	/* An init-capture that is a pack. */
-  prk_bases		/* A generated pack that represents a g++ __bases
+  prk_bases,		/* A generated pack that represents a g++ __bases
 			   or __direct_bases trait. */
+  prk_post_capture	/* A postcondition capture that is a pack
+			   (P3098). */
 };
 
 
@@ -373,7 +375,8 @@ typedef struct a_pack_reference {
 			   entry refers. */
   a_symbol_ptr	primary_pack_symbol;
 			/* When kind == prk_variable, prk_binding,
-			   prk_parameter, or prk_init_capture in an actual
+			   prk_parameter, prk_init_capture or
+			   prk_post_capture in an actual
 			   instantiation, this points to the variable,
 			   parameter, or field symbol that is found by name
 			   lookup. */
@@ -402,9 +405,9 @@ typedef struct a_pack_reference {
   union {
     a_variable_ptr
 		variable;
-			/* When kind == prk_variable or prk_binding, this
-			   points to the variable to be used for the current
-			   expansion. */
+			/* When kind == prk_variable, prk_binding or
+			   prk_post_capture, this points to the variable to
+			   be used for the current expansion. */
     a_param_type_ptr
 		param_type;
 			/* When kind == prk_parameter and this is a rescan

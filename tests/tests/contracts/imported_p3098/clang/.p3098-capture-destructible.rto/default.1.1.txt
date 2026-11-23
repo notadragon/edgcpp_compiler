@@ -1,0 +1,34 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3098 Test_name.c
+"Test_name.c", line 39: warning: "PrivateDtor::~PrivateDtor() noexcept" (declared at line 35) is inaccessible
+      post [p] (ok(p.v)) // expected-error {{variable of type 'PrivateDtor' has private destructor}}
+            ^
+
+"Test_name.c", line 39: error: "PrivateDtor::~PrivateDtor() noexcept" (declared at line 35) is inaccessible
+      post [p] (ok(p.v)) // expected-error {{variable of type 'PrivateDtor' has private destructor}}
+            ^
+
+"Test_name.c", line 43: warning: "PrivateDtor::~PrivateDtor() noexcept" (declared at line 35) is inaccessible
+      post [q = p] (ok(q.v)) // expected-error {{variable of type 'PrivateDtor' has private destructor}}
+                ^
+
+"Test_name.c", line 43: error: "PrivateDtor::~PrivateDtor() noexcept" (declared at line 35) is inaccessible
+      post [q = p] (ok(q.v)) // expected-error {{variable of type 'PrivateDtor' has private destructor}}
+                ^
+
+"Test_name.c", line 56: error: function "DeletedDtor::~DeletedDtor() noexcept" (declared at line 52) cannot be referenced -- it is a deleted function
+      post [p] (ok(p.v)) // expected-error {{attempt to use a deleted function}}
+            ^
+
+"Test_name.c", line 56: error: function "DeletedDtor::~DeletedDtor() noexcept" (declared at line 52) cannot be referenced -- it is a deleted function
+      post [p] (ok(p.v)) // expected-error {{attempt to use a deleted function}}
+            ^
+
+"Test_name.c", line 68: error: function "NoCopy::NoCopy(const NoCopy &)" (declared at line 64) cannot be referenced -- it is a deleted function
+      post [p] (ok(p.v)) // expected-error {{call to deleted constructor of 'NoCopy'}}
+            ^
+
+"Test_name.c", line 82: error: class "ExplicitCopy" has no suitable copy constructor
+      post [p] (ok(p.v)) // expected-error {{no matching constructor for initialization of 'ExplicitCopy'}}
+            ^
+
+6 errors detected in the compilation of "Test_name.c".

@@ -1,0 +1,1 @@
+eccp -DTEST_NUMBER=3 --c++26 --contracts_p3098 --contract_evaluation_semantic=quick_enforce -DBAD=2 Test_name.c

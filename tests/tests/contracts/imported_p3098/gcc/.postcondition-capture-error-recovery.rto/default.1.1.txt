@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3098 Test_name.c
+"Test_name.c", line 15: error: expected an identifier in a postcondition capture
+  int k (int x) post[1] (x > 0); // { dg-error "expected identifier in postcondition capture" }
+                     ^
+
+"Test_name.c", line 15: error: value parameter "x" used in a postcondition must be declared const
+  int k (int x) post[1] (x > 0); // { dg-error "expected identifier in postcondition capture" }
+             ^
+
+2 errors detected in the compilation of "Test_name.c".

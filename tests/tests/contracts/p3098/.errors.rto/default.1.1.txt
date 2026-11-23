@@ -1,0 +1,54 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contracts_p3098 Test_name.c
+"Test_name.c", line 24: error: a capture list is allowed only on a postcondition
+    void f(int x) pre [x] (true);
+                      ^
+
+"Test_name.c", line 19: error: "this" cannot be captured in a postcondition
+    void a(int x) post [this] (true);
+                        ^
+
+"Test_name.c", line 20: error: a capture default is not allowed in a postcondition
+    void b(int x) post [=] (true);
+                        ^
+
+"Test_name.c", line 21: error: capture by reference is not allowed in a postcondition
+    void c(int x) post [&x] (true);
+                        ^
+
+"Test_name.c", line 22: error: only a function parameter can be captured without an initializer in a postcondition
+    void d(int x) post [g] (true);
+                        ^
+
+"Test_name.c", line 23: error: "x" is captured more than once in the postcondition
+    void e(int x) post [x, x = 1] (true);
+                           ^
+
+"Test_name.c", line 26: error: a capture list is allowed only on a postcondition
+  void h(int x) { contract_assert [x] (true); }
+                                  ^
+
+"Test_name.c", line 27: error: pack expansion does not make use of any argument packs
+  void p1(int i) post [i...] (true);
+                        ^
+
+"Test_name.c", line 28: error: pack expansion does not make use of any argument packs
+  void p2(int i) post [...y = i] (true);
+                       ^
+
+"Test_name.c", line 29: error: parameter pack "xs" was referenced but not expanded
+  template<class... T> void p3(T... xs) post [xs] (true);
+                                              ^
+
+"Test_name.c", line 30: error: pack expansion does not make use of any argument packs
+  template<class... T> void p4(int n, T... xs) post [...y = n] (true);
+                                                     ^
+
+"Test_name.c", line 31: error: parameter pack "y" was referenced but not expanded
+  template<class... T> void p5(T... xs) post [...y = xs] (y > 0);
+                                                          ^
+
+"Test_name.c", line 32: error: "y" is captured more than once in the postcondition
+  template<class... T> void p6(T... xs) post [...y = xs, ...y = xs] (true);
+                                                            ^
+
+13 errors detected in the compilation of "Test_name.c".

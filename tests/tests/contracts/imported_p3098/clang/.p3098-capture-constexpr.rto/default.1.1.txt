@@ -1,0 +1,5 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contract_evaluation_semantic=enforce --c++26 --contracts --contracts_p3098 Test_name.c
+"Test_name.c", line 18: warning: variable "a" was declared but never referenced
+  constexpr int a = good(5);
+                ^
+
