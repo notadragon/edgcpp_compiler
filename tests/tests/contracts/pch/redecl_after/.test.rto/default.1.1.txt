@@ -1,0 +1,51 @@
+fe_only -DTEST_NUMBER=1 --c++26 --pch --pch_test_mode --contract_evaluation_semantic=quick_enforce Test_name.c
+"Test_name.c": using precompiled header file "Test_name.pch"
+"Test_name.c", line 25: error: mismatched contract condition in declaration (previous contract specifier declared at line 3 of "header.h")
+  int mf0(int x) pre(x > 1);       // Error, different contracts
+                 ^
+
+"Test_name.c", line 27: error: mismatched contract condition in declaration (previous contract specifier declared at line 6 of "header.h")
+  int mf1(int x) pre(x > 2);       // Error, different contracts
+                 ^
+
+"Test_name.c", line 29: error: mismatched contract condition in declaration (previous contract specifier declared at line 9 of "header.h")
+  int mf2(int x) pre(x > 3);       // Error, different contracts
+                 ^
+
+"Test_name.c", line 31: error: mismatched contract condition in declaration (previous contract specifier declared at line 12 of "header.h")
+  int mf3(int x) pre(x > 4);       // Error, different contracts
+                 ^
+
+"Test_name.c", line 33: error: mismatched contract condition in declaration (previous contract specifier declared at line 15 of "header.h")
+  int mf4(int x) pre(x > 5);       // Error, different contracts
+                 ^
+
+"Test_name.c", line 35: error: mismatched contract condition in declaration (previous contract specifier declared at line 18 of "header.h")
+  int mf5(int x) pre(x > 6);       // Error, different contracts
+                 ^
+
+"Test_name.c", line 37: error: mismatched contract condition in declaration (previous contract specifier declared at line 21 of "header.h")
+  int mf6(int x) pre(x > 7);       // Error, different contracts
+                 ^
+
+"Test_name.c", line 39: error: mismatched contract condition in declaration (previous contract specifier declared at line 24 of "header.h")
+  int mf7(int x) pre(x > 8);       // Error, different contracts
+                 ^
+
+"Test_name.c", line 41: error: mismatched contract condition in declaration (previous contract specifier declared at line 27 of "header.h")
+  int mf8(int x) pre(x > 9);       // Error, different contracts
+                 ^
+
+"Test_name.c", line 43: error: mismatched contract condition in declaration (previous contract specifier declared at line 30 of "header.h")
+  int mf9(int x) pre(x > 10);       // Error, different contracts
+                 ^
+
+"Test_name.c", line 45: error: mismatched contract condition in declaration (previous contract specifier declared at line 33 of "header.h")
+  int mf10(int x) pre(x > 11);       // Error, different contracts
+                  ^
+
+"Test_name.c", line 47: error: mismatched contract condition in declaration (previous contract specifier declared at line 36 of "header.h")
+  int mf11(int x) pre(x > 12);       // Error, different contracts
+                  ^
+
+12 errors detected in the compilation of "Test_name.c".
