@@ -395,6 +395,7 @@ enum an_option_kind {
   optk_contract_group_evaluation_semantic,
   optk_contracts_p3850,
   optk_contracts_p3097,
+  optk_contracts_p3290,
   optk_contracts_p4451,
   optk_last		/* Must be last. */
 };
@@ -3054,6 +3055,13 @@ EXTERN_THREAD a_boolean
 			   predefines the vendor macro by which the standard
 			   library declares std::contracts::controls::
 			   enforced. */
+
+EXTERN_THREAD a_boolean
+		contracts_p3290_enabled;
+			/* TRUE if P3290 (integrating existing assertions)
+			   is enabled: with contracts, it predefines the
+			   macro our GCC (or Clang) does, which the standard
+			   library's <cassert> and <contracts> test. */
 
 EXTERN_THREAD a_boolean
 		incognito;

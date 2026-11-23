@@ -1,0 +1,1 @@
+eccp -DTEST_NUMBER=1 --c++26 --c++26 --contracts_p3290 -D__STDC_WANT_ASSERT_USES_CONTRACTS__ Test_name.c

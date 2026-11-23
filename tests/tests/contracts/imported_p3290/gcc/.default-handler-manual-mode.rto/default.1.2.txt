@@ -1,0 +1,3 @@
+./a.out
+contract violation in function int main() at Test_name.c:22: manual check
+[assertion_kind: manual, semantic: observe, mode: unspecified, terminating: no]
