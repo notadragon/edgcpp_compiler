@@ -1,0 +1,29 @@
+fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
+"Test_name.c", line 16: error: expression must have a constant value
+  static_assert((f(), true));                     // Error
+                ^
+"Test_name.c", line 14: note: attempt to refer to a member of an object whose construction has not begun
+  struct Y { int *p; Z z; constexpr Y() : p(&z.k) { } };
+                                              ^
+"Test_name.c", line 15: note: called from:
+  constexpr int f() { Y y; return y.p != nullptr; }
+                        ^
+
+"Test_name.c", line 19: error: expression must have a constant value
+  static_assert((f2(), true));                    // Error
+                ^
+"Test_name.c", line 17: note: attempt to refer to a member of an object whose construction has not begun
+  struct Y2 { int q; Z z; constexpr Y2() : q(z.k) { } };
+                                              ^
+"Test_name.c", line 18: note: called from:
+  constexpr int f2() { Y2 y; return y.q; }
+                          ^
+
+"Test_name.c", line 21: error: expression must have a constant value
+  static_assert((Y3(), true));                    // Error
+                ^
+"Test_name.c", line 20: note: attempt to refer to a member of an object whose construction has not begun
+  struct Y3 { Z *p; int *r; Z z; constexpr Y3() : p(&z), r(&p->k) { } };
+                                                             ^
+
+3 errors detected in the compilation of "Test_name.c".
