@@ -1,0 +1,4 @@
+Matches for "line 6: error: a virtual function cannot have a function contract specifier":
+  <-----------------------------------------------------------------------------
+  line 6: error: a virtual function cannot have a function contract specifier
+  ----------------------------------------------------------------------------->

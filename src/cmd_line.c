@@ -1843,6 +1843,12 @@ Initialize the option information table.
   add_option_description(optk_contracts_p3850, "no_contracts_p3850", '\0',
                          /*value=*/FALSE, /*arg_required=*/FALSE,
                          pchek_command_line);
+  add_option_description(optk_contracts_p3097, "contracts_p3097", '\0',
+                         /*value=*/TRUE, /*arg_required=*/FALSE,
+                         pchek_command_line);
+  add_option_description(optk_contracts_p3097, "no_contracts_p3097", '\0',
+                         /*value=*/FALSE, /*arg_required=*/FALSE,
+                         pchek_command_line);
   add_option_description(optk_contracts_p4451, "contracts_p4451", '\0',
                          /*value=*/TRUE, /*arg_required=*/FALSE,
                          pchek_command_line);
@@ -4020,6 +4026,9 @@ setting is used, and to set various unmentioned settings as needed.
     command_line_error(ec_cl_contracts_option_only_in_cplusplus);
   }  /* if */
   contracts_enabled = FALSE;
+  if (option_kind_used[(int)optk_contracts_p3097] && contracts_p3097_enabled) {
+    command_line_error(ec_cl_contracts_option_only_in_cplusplus);
+  }  /* if */
   if (option_kind_used[(int)optk_contracts_p4451] && contracts_p4451_enabled) {
     command_line_error(ec_cl_contracts_option_only_in_cplusplus);
   }  /* if */
@@ -12398,6 +12407,9 @@ enable_microsoft_mode:
       case optk_contracts_p3850:
         contracts_p3850_enabled = opt_value;
         break;
+      case optk_contracts_p3097:
+        contracts_p3097_enabled = opt_value;
+        break;
       case optk_contracts_p4451:
         contracts_p4451_enabled = opt_value;
         break;
@@ -12434,6 +12446,16 @@ enable_microsoft_mode:
     emulate_gnu_abi_bugs = TRUE;
   }  /* if */
 #endif /* IA64_ABI */
+  if (contracts_p3850_enabled &&
+      !option_kind_used[(int)optk_contracts_p3097]) {
+    /* --contracts_p3850 enables P3097, unless --[no_]contracts_p3097 is
+       given. */
+    contracts_p3097_enabled = TRUE;
+  }  /* if */
+  if (contracts_p3097_enabled && !option_kind_used[(int)optk_contracts]) {
+    /* So does --contracts_p3097 contracts. */
+    contracts_enabled = TRUE;
+  }  /* if */
   if (contracts_p4451_enabled && !option_kind_used[(int)optk_contracts]) {
     /* --contracts_p4451 enables contracts, unless --[no_]contracts is
        given. */
@@ -14028,6 +14050,7 @@ variables declared in cmd_line.h.
   contracts_enabled = FALSE;
   contract_evaluation_semantic = DEFAULT_CONTRACT_EVALUATION_SEMANTIC;
   contracts_p3850_enabled = FALSE;
+  contracts_p3097_enabled = FALSE;
   contracts_p4451_enabled = FALSE;
   incognito = DEFAULT_INCOGNITO;
   keep_restrict_in_signatures = FALSE;

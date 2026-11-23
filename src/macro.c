@@ -12134,6 +12134,12 @@ command line -D options.
              as is. */
           if (contracts_value < 202611L) contracts_value = 202611L;
         }  /* if */
+        if (contracts_p3097_enabled) {
+          /* P3097 (contracts for virtual functions) has no macro of its
+             own; as GCC, it raises the value to the fixed 202612L, above
+             P4451's, which clients test with >= 202612L. */
+          if (contracts_value < 202612L) contracts_value = 202612L;
+        }  /* if */
         (void)signed_to_string_buf(contracts_value, contracts_buffer);
         (void)strcat(contracts_buffer, "L");
         (void)enter_predef_macro(contracts_buffer, "__cpp_contracts",

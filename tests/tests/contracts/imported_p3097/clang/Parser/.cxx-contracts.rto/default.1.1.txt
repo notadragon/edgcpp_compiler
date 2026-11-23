@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3097 Test_name.c
+"Test_name.c", line 60: error: expected a "{"
+  void e1(int x) pre(x > 0) const; // expected-error {{expected ';' after top level declarator}} \
+                            ^
+
+"Test_name.c", line 64: warning: parsing restarts here after previous syntax error
+  void e5(int x) { pre(x > 0); } // expected-error {{use of undeclared identifier 'pre'}}
+                 ^
+
+"Test_name.c", line 64: error: identifier "pre" is undefined
+  void e5(int x) { pre(x > 0); } // expected-error {{use of undeclared identifier 'pre'}}
+                   ^
+
+"Test_name.c", line 65: error: expected an expression
+  void e6(int x) { int y = contract_assert(x); } // expected-error {{expected expression}}
+                           ^
+
+3 errors detected in the compilation of "Test_name.c".

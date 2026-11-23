@@ -1,0 +1,8 @@
+./a.out
+capture copied
+capture destroyed
+capture copied
+capture destroyed
+caught
+capture destroyed
+end
