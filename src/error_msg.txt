@@ -3686,5 +3686,6 @@ ec_array_comparison_compares_addresses;;"comparison between two arrays compares 
 ec_constexpr_destroying_outside_lifetime;;"attempt to destroy an object outside its lifetime"
 ec_constexpr_modifying_outside_lifetime;;"attempt to modify an object outside its lifetime"
 ec_constexpr_member_before_construction;;"attempt to refer to a member of an object whose construction has not begun"
+ec_lambda_pack_capture_ellipsis_before_name;;"a pack capture with no initializer is written \"%s...\", not \"...%s2\""
  ###############################################################################
 

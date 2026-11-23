@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
+"Test_name.c", line 8: error: a pack capture with no initializer is written "xs...", not "...xs"
+    return [...xs] { return (xs + ... + 0); }();      // Error
+            ^
+
+"Test_name.c", line 12: error: a pack capture with no initializer is written "xs...", not "...xs"
+    return [&...xs] { return (xs + ... + 0); }();     // Error
+             ^
+
+"Test_name.c", line 16: error: a pack capture with no initializer is written "xs...", not "...xs"
+    return [...xs...] { return (xs + ... + 0); }();   // Error, once
+            ^
+
+"Test_name.c", line 20: error: a pack capture with no initializer is written "xs...", not "...xs"
+    return [...xs] { return sizeof...(xs); }();       // Error
+            ^
+
+4 errors detected in the compilation of "Test_name.c".

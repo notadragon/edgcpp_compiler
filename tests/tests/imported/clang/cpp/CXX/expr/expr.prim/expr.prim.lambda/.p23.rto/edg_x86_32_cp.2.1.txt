@@ -59,6 +59,10 @@ fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     [...&as(args)]{} (); // expected-error {{ellipsis in pack init-capture must appear before the name of the capture}}
      ^
 
+"Test_name.c", line 80: error: a pack capture with no initializer is written "args...", not "...args"
+    [...args] {} (); // expected-error {{ellipsis in pack capture must appear after the name of the capture}}
+     ^
+
 "Test_name.c", line 83: error: expected an identifier
     [...&args] {} (); // expected-error {{ellipsis in pack capture must appear after the name of the capture}}
         ^
@@ -66,6 +70,10 @@ fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
 "Test_name.c", line 83: error: pack expansion does not make use of any argument packs
     [...&args] {} (); // expected-error {{ellipsis in pack capture must appear after the name of the capture}}
      ^
+
+"Test_name.c", line 84: error: a pack capture with no initializer is written "args...", not "...args"
+    [&...args] {} (); // expected-error {{ellipsis in pack capture must appear after the name of the capture}}
+      ^
 
 "Test_name.c", line 89: error: this pack expansion produced an empty list of expressions, and an expression is needed here
     [as(args...)] {} (); // expected-error {{initializer missing for lambda capture 'as'}} expected-error {{multiple}}
@@ -77,4 +85,4 @@ fe_only -DTEST_NUMBER=2 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
         ^
           detected during instantiation of "void init_capture_pack_multi(Args...) [with Args=<int, int>]" at line 93
 
-18 errors detected in the compilation of "Test_name.c".
+20 errors detected in the compilation of "Test_name.c".
