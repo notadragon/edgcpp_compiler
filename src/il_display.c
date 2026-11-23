@@ -6081,6 +6081,9 @@ Display the indicated contract specifier entry.
   if (ptr->comment != NULL) {
     disp_string_ptr("comment", ptr->comment, iek_other_text, (sizeof_t)0);
   }  /* if */
+  if (ptr->message != NULL) {
+    disp_string_ptr("message", ptr->message, iek_other_text, (sizeof_t)0);
+  }  /* if */
   if (ptr->is_terminating) {
     disp_boolean("is_terminating", TRUE);
   }  /* if */

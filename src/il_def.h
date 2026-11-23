@@ -12305,6 +12305,10 @@ typedef struct a_contract_specifier {
 			   its tokens, on one line), passed to the violation
 			   handler as the comment of a violation.  NULL if
 			   the predicate was not scanned. */
+  a_const_char	*message;
+			/* The text of the diagnostic message following the
+			   predicate (P3099), passed to the violation handler
+			   as its message; NULL if there is none. */
   struct a_token_cache
 		*label_token_cache;
 			/* An opaque pointer to the token cache holding what
