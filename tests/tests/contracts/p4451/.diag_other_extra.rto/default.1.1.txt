@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts_p4451 Test_name.c
+"Test_name.c", line 11: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+  auto l = [](int x) pre<other>(x > 0) { return x; };
+                     ^
+
+"Test_name.c", line 13: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+    void m(int x) pre<other>(x > 0);
+                  ^
+
+2 errors detected in the compilation of "Test_name.c".

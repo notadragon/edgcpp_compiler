@@ -1,0 +1,150 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts_p4451 --contract_evaluation_semantic=ignore Test_name.c
+"Test_name.c", line 43: error: contract predicate is false in constant expression
+  constexpr int r1_pre (int x) pre<std::contracts::controls::enforced> (x > 0) { return x; }	// { dg-error "contract predicate is false" }
+                               ^
+
+"Test_name.c", line 44: error: contract predicate is false in constant expression
+  constexpr int r1_post (int x) post<std::contracts::controls::enforced> (r : r > 0) { return x; }	// { dg-error "contract predicate is false" }
+                                ^
+
+"Test_name.c", line 47: error: contract predicate is false in constant expression
+    contract_assert<std::contracts::controls::enforced> (x > 0);	// { dg-error "contract predicate is false" }
+    ^
+
+"Test_name.c", line 52: error: contract predicate is false in constant expression
+  constexpr int r2 (int x) pre<::std::contracts::controls::enforced> (x > 0) { return x; }	// { dg-error "contract predicate is false" }
+                           ^
+
+"Test_name.c", line 55: error: contract predicate is false in constant expression
+  constexpr int r3 (int x) pre<scl::enforced> (x > 0) { return x; }	// { dg-error "contract predicate is false" }
+                           ^
+
+"Test_name.c", line 61: error: contract predicate is false in constant expression
+    constexpr int f (int x) pre<enforced> (x > 0) { return x; }	// { dg-error "contract predicate is false" }
+                            ^
+
+"Test_name.c", line 64: error: contract predicate is false in constant expression
+      constexpr int g (int x) pre<enforced> (x > 0) { return x; }	// { dg-error "contract predicate is false" }
+                              ^
+
+"Test_name.c", line 70: error: contract predicate is false in constant expression
+    contract_assert<enforced> (x > 0);	// { dg-error "contract predicate is false" }
+    ^
+
+"Test_name.c", line 76: error: contract predicate is false in constant expression
+    constexpr int f (int x) pre<controls::enforced> (x > 0) { return x; }	// { dg-error "contract predicate is false" }
+                            ^
+
+"Test_name.c", line 83: error: contract predicate is false in constant expression
+    constexpr int f (int x) post<enforced> (r : r > 0) { return x; }	// { dg-error "contract predicate is false" }
+                            ^
+
+"Test_name.c", line 88: error: contract predicate is false in constant expression
+    contract_assert<enforced> (x > 0);	// { dg-error "contract predicate is false" }
+    ^
+
+"Test_name.c", line 96: error: contract predicate is false in constant expression
+    static constexpr int f (int x) pre<std::contracts::controls::enforced> (x > 0) { return x; }	// { dg-error "contract predicate is false" }
+                                   ^
+
+"Test_name.c", line 97: error: contract predicate is false in constant expression
+    static constexpr int g (int x) pre<scl::enforced> (x > 0) { return x; }	// { dg-error "contract predicate is false" }
+                                   ^
+
+"Test_name.c", line 103: error: contract predicate is false in constant expression
+  constexpr T r8_f (T x) pre<std::contracts::controls::enforced> (x > 0) { return x; }	// { dg-error "contract predicate is false" }
+                         ^
+
+"Test_name.c", line 108: error: contract predicate is false in constant expression
+    contract_assert<enforced> (x > 0);	// { dg-error "contract predicate is false" }
+    ^
+
+"Test_name.c", line 114: error: contract predicate is false in constant expression
+    static constexpr T f (T x) pre<scl::enforced> (x > 0) { return x; }	// { dg-error "contract predicate is false" }
+                               ^
+
+"Test_name.c", line 117: error: contract predicate is false in constant expression
+  constexpr auto r8_lambda = [] (int x) pre<scl::enforced> (x > 0) { return x; };	// { dg-error "contract predicate is false" }
+                                        ^
+
+"Test_name.c", line 118: error: contract predicate is false in constant expression
+  constexpr auto r8_generic = [] (auto x) pre<std::contracts::controls::enforced> (x > 0) { return x; };	// { dg-error "contract predicate is false" }
+                                          ^
+
+"Test_name.c", line 120: warning: variable "ok" was declared but never referenced
+  constexpr int ok = r1_pre (1) + r3 (1) + R7::f (1) + r8_f (1) + R8<int>::f (1);
+                ^
+
+"Test_name.c", line 121: warning: variable "a1" was declared but never referenced
+  constexpr int a1 = r1_pre (-1);
+                ^
+
+"Test_name.c", line 122: warning: variable "a2" was declared but never referenced
+  constexpr int a2 = r1_post (-1);
+                ^
+
+"Test_name.c", line 123: warning: variable "a3" was declared but never referenced
+  constexpr int a3 = r1_assert (-1);
+                ^
+
+"Test_name.c", line 124: warning: variable "a4" was declared but never referenced
+  constexpr int a4 = r2 (-1);
+                ^
+
+"Test_name.c", line 125: warning: variable "a5" was declared but never referenced
+  constexpr int a5 = r3 (-1);
+                ^
+
+"Test_name.c", line 126: warning: variable "a6" was declared but never referenced
+  constexpr int a6 = r4ns::f (-1);
+                ^
+
+"Test_name.c", line 127: warning: variable "a7" was declared but never referenced
+  constexpr int a7 = r4ns::inner::g (-1);
+                ^
+
+"Test_name.c", line 128: warning: variable "a8" was declared but never referenced
+  constexpr int a8 = r4_block (-1);
+                ^
+
+"Test_name.c", line 129: warning: variable "a9" was declared but never referenced
+  constexpr int a9 = r4part::f (-1);
+                ^
+
+"Test_name.c", line 130: warning: variable "a10" was declared but never referenced
+  constexpr int a10 = r5ns::f (-1);
+                ^
+
+"Test_name.c", line 131: warning: variable "a11" was declared but never referenced
+  constexpr int a11 = r5_block (-1);
+                ^
+
+"Test_name.c", line 132: warning: variable "a12" was declared but never referenced
+  constexpr int a12 = R7::f (-1);
+                ^
+
+"Test_name.c", line 133: warning: variable "a13" was declared but never referenced
+  constexpr int a13 = R7::g (-1);
+                ^
+
+"Test_name.c", line 134: warning: variable "a14" was declared but never referenced
+  constexpr int a14 = r8_f (-1);
+                ^
+
+"Test_name.c", line 135: warning: variable "a15" was declared but never referenced
+  constexpr long a15 = r8_assert (-1L);
+                 ^
+
+"Test_name.c", line 136: warning: variable "a16" was declared but never referenced
+  constexpr int a16 = R8<int>::f (-1);
+                ^
+
+"Test_name.c", line 137: warning: variable "a17" was declared but never referenced
+  constexpr int a17 = r8_lambda (-1);
+                ^
+
+"Test_name.c", line 138: warning: variable "a18" was declared but never referenced
+  constexpr int a18 = r8_generic (-1);
+                ^
+
+18 errors detected in the compilation of "Test_name.c".

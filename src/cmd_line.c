@@ -1824,6 +1824,12 @@ Initialize the option information table.
                          "contract_evaluation_semantic", '\0',
                          /*value=*/TRUE, /*arg_required=*/TRUE,
                          pchek_command_line);
+  add_option_description(optk_contracts_p4451, "contracts_p4451", '\0',
+                         /*value=*/TRUE, /*arg_required=*/FALSE,
+                         pchek_command_line);
+  add_option_description(optk_contracts_p4451, "no_contracts_p4451", '\0',
+                         /*value=*/FALSE, /*arg_required=*/FALSE,
+                         pchek_command_line);
 }  /* initialize_option_descriptions */
 
 
@@ -3992,6 +3998,9 @@ setting is used, and to set various unmentioned settings as needed.
     command_line_error(ec_cl_contracts_option_only_in_cplusplus);
   }  /* if */
   contracts_enabled = FALSE;
+  if (option_kind_used[(int)optk_contracts_p4451] && contracts_p4451_enabled) {
+    command_line_error(ec_cl_contracts_option_only_in_cplusplus);
+  }  /* if */
   if (option_kind_used[(int)optk_array_new_and_delete]) {
     command_line_error(ec_cl_array_new_and_delete_option_only_in_cplusplus);
   }  /* if */
@@ -4477,6 +4486,13 @@ default mode (e.g., exception handling).
     pack_indexing_enabled = TRUE;
     if (!option_kind_used[(int)optk_contracts]) {
       contracts_enabled = TRUE;
+    }  /* if */
+    if (contracts_enabled &&
+        !option_kind_used[(int)optk_contracts_p4451]) {
+      /* P4451 is part of C++26, which enables it while contracts are on,
+         unless --[no_]contracts_p4451 is given, as in GCC.  Only the
+         language mode does this: before C++26 --contracts leaves it off. */
+      contracts_p4451_enabled = TRUE;
     }  /* if */
   }  /* if */
   /* Disable "false" as a null pointer constant in C++11 mode (as per Core
@@ -12339,6 +12355,9 @@ enable_microsoft_mode:
 #endif /* BACK_END_IS_C_GEN_BE */
         }
         break;
+      case optk_contracts_p4451:
+        contracts_p4451_enabled = opt_value;
+        break;
      default:
         /* It should not be possible to get here. */
         unexpected_condition();
@@ -12360,6 +12379,11 @@ enable_microsoft_mode:
     emulate_gnu_abi_bugs = TRUE;
   }  /* if */
 #endif /* IA64_ABI */
+  if (contracts_p4451_enabled && !option_kind_used[(int)optk_contracts]) {
+    /* --contracts_p4451 enables contracts, unless --[no_]contracts is
+       given. */
+    contracts_enabled = TRUE;
+  }  /* if */
   /* Check for consistent specification of dialects and language modes. */
   check_dialect_and_language_modes();
   /* Based on dialect and language mode settings, check for consistency of
@@ -13944,6 +13968,7 @@ variables declared in cmd_line.h.
   output_mode = DEFAULT_OUTPUT_MODE;
   contracts_enabled = FALSE;
   contract_evaluation_semantic = DEFAULT_CONTRACT_EVALUATION_SEMANTIC;
+  contracts_p4451_enabled = FALSE;
   incognito = DEFAULT_INCOGNITO;
   keep_restrict_in_signatures = FALSE;
   attributes_on_using_declarations = FALSE;

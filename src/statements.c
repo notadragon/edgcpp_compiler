@@ -7496,8 +7496,18 @@ sequence.  The syntax is:
   csp->position = pos_curr_token;
   /* Advance over the "contract_assert". */
   (void)get_token();
+  if (curr_token == tok_lt) {
+    /* An assertion-control specifier (P4451, P3400). */
+    scan_assertion_control_specifier(csp, /*skip=*/FALSE);
+  }  /* if */
   scan_contract_assertion_attributes();
   if (required_token(tok_lparen, ec_exp_lparen)) {
+    if (csp->is_terminating) {
+      /* P4451: the check of its specifier, in the scope of the predicate.
+         Its tokens are not a label's. */
+      check_terminating_specifier(csp);
+      csp->label_token_cache = NULL;
+    }  /* if */
     csp->predicate = scan_contract_predicate(&csp->comment, &csp->message);
     (void)required_token(tok_rparen, ec_exp_rparen);
   }  /* if */

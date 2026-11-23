@@ -3726,6 +3726,14 @@ ec_constexpr_member_before_construction;;"attempt to refer to a member of an obj
 ec_contract_result_name_shadows_init_capture;;"the result name of a postcondition cannot have the same name as an init-capture of the lambda"
 ec_lambda_pack_capture_ellipsis_before_name;;"a pack capture with no initializer is written \"%s...\", not \"...%s2\""
 ec_contract_post_unnamed_param_in_coroutine;;"an unnamed parameter of a coroutine cannot be odr-used in a postcondition"
+ec_contract_terminating_needs_option;;"an assertion-control specifier naming enforced requires --contracts_p4451"
+ec_contract_terminating_not_id_expression;;"assertion-control-specifier must name std::contracts::controls::enforced; it is not an id-expression naming a declaration"
+ec_contract_terminating_not_declared;;"assertion-control-specifier must name std::contracts::controls::enforced; no declaration of it precedes this point; <contracts> declares it"
+ec_contract_terminating_lookup;;"assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration"
+ec_contract_terminating_redecl_mismatch;;"mismatched assertion-control specifier in declaration (previous contract specifier declared %p)"
 ec_cl_invalid_macro_prefix_map;;"invalid argument to --macro_prefix_map (must be OLD=NEW): %s"
+ec_contract_terminating_dependent;;"assertion-control-specifier must name std::contracts::controls::enforced, not a dependent name"
+ec_contract_terminating_ambiguous;;"assertion-control-specifier must name std::contracts::controls::enforced; name lookup is ambiguous"
+ec_contract_terminating_not_found;;"assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds nothing"
  ###############################################################################
 

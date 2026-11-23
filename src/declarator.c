@@ -5833,6 +5833,9 @@ Microsoft extended decl modifiers are also scanned, but they are ignored
         report_gnu_cpp11_extension_if_needed(
                               &pos_curr_token, ec_rvalue_references_is_cpp11);
       }  /* if */
+    } else if (state->is_trailing_return_type &&
+               curr_token_starts_labeled_contract_specifier()) {
+      /* "pre<...>" (P4451, P3400) ends the trailing return type. */
     } else if (!C_mode() && is_ptr_to_member_declarator_start()) {
       /* A pointer-to-member "Name::*". */
       another_pointer_declarator = TRUE;
@@ -6323,6 +6326,226 @@ Microsoft extended decl modifiers are also scanned, but they are ignored
   db_exit();
   return complete_type;
 }  /* pointer_declarator */
+
+
+a_boolean curr_token_starts_labeled_contract_specifier(void)
+/*
+Return TRUE if the current token begins a function contract specifier with
+an assertion-control specifier (P4451): "pre" or "post" followed by "<".
+Such a specifier ends a trailing return type, where "pre<" would otherwise
+be taken for the start of a template-id.
+*/
+{
+  a_boolean  specifiers = contracts_p4451_enabled;
+
+  return contracts_enabled && specifiers &&
+         (curr_token_is_identifier_string("pre") ||
+          curr_token_is_identifier_string("post")) &&
+         next_token() == tok_lt;
+}  /* curr_token_starts_labeled_contract_specifier */
+
+
+a_boolean next_token_begins_terminating(void)
+/*
+The current token is a "<".  Return TRUE if what follows it is an
+id-expression naming "enforced" -- "enforced", possibly qualified by
+namespace names, as in "std::contracts::controls::enforced" -- and then
+">".
+*/
+{
+  a_boolean               result = FALSE;
+  a_scanning_token_cache  cache;
+
+  /* As next_two_tokens does: cache each token fetched, and put them all
+     back, the "<" to be fetched again. */
+  cache_curr_token(cache.ptr());
+  (void)get_token();
+  if (curr_token == tok_colon_colon) {
+    cache_curr_token(cache.ptr());
+    (void)get_token();
+  }  /* if */
+  while (curr_token == tok_identifier) {
+    if (next_token() != tok_colon_colon) {
+      result = curr_token_is_identifier_string("enforced") &&
+               next_token() == tok_gt;
+      break;
+    }  /* if */
+    cache_curr_token(cache.ptr());
+    (void)get_token();
+    cache_curr_token(cache.ptr());
+    (void)get_token();
+  }  /* while */
+  rescan_cached_tokens(cache.ptr());
+  return result;
+}  /* next_token_begins_terminating */
+
+
+void scan_assertion_control_specifier(a_contract_specifier_ptr  csp,
+                                      a_boolean                 skip)
+/*
+The current token is the "<" that begins the assertion-control specifier of
+the contract assertion csp.  With P4451 it holds an id-expression that shall
+name std::contracts::controls::enforced (P4451R2): mark csp terminating and
+cache the tokens between the angle brackets in csp->label_token_cache, to be
+checked by check_terminating_specifier where the predicate is scanned --
+unless skip is TRUE, when they are skipped.  Without P4451 issue an error
+that it requires P4451, and skip the specifier.  (Under P3400 the specifier
+is an ordinary label, as is one that does not name enforced with neither
+option; see cache_contract_label.)
+*/
+{
+  a_source_position  pos = pos_curr_token;
+  a_token_set_array  stop_tokens;
+
+  if (!contracts_p4451_enabled) {
+    pos_error(ec_contract_terminating_needs_option, &pos);
+    skip = TRUE;
+  }  /* if */
+  (void)get_token();
+  clear_token_set_array(stop_tokens);
+  incr_token_set_array_element(stop_tokens, tok_gt);
+  incr_token_set_array_element(stop_tokens, tok_semicolon);
+  if (skip) {
+    cache_token_stream_coalesce_identifiers((a_token_cache *)NULL,
+                                            stop_tokens);
+  } else {
+    mark_contract_terminating(csp);
+    csp->label_token_cache = new_fe<a_token_cache>(/*reusable=*/TRUE);
+    cache_token_stream_coalesce_identifiers(csp->label_token_cache,
+                                            stop_tokens);
+    terminate_token_cache(csp->label_token_cache);
+  }  /* if */
+  (void)required_token(tok_gt, ec_exp_gt);
+}  /* scan_assertion_control_specifier */
+
+
+void mark_contract_terminating(a_contract_specifier_ptr  csp)
+/*
+Make the contract assertion csp a terminating contract assertion (P4451),
+every evaluation of which uses a terminating semantic (see
+terminating_contract_semantic).  It has no label.  (With P3400's facets its
+allowed semantics are those of P3400's std::contracts::controls::enforced,
+so that its semantic is chosen as for that label.)
+*/
+{
+  csp->is_terminating = TRUE;
+}  /* mark_contract_terminating */
+
+
+a_contract_evaluation_semantic terminating_contract_semantic(
+                                       a_contract_evaluation_semantic  semantic)
+/*
+Return the semantic of a terminating contract assertion (P4451) that would
+otherwise have the evaluation semantic "semantic": a terminating semantic,
+enforce for ignore or observe (quick_enforce for a check the front end
+generates for the C-generating back end, the only terminating semantic
+there), and semantic itself otherwise.
+*/
+{
+  if (semantic == ces_ignore || semantic == ces_observe) {
+    semantic = CONTRACT_CHECKS_IN_FRONT_END ? ces_quick_enforce : ces_enforce;
+  }  /* if */
+  return semantic;
+}  /* terminating_contract_semantic */
+
+
+void check_terminating_specifier(a_contract_specifier_ptr  csp)
+/*
+P4451 [basic.contract.control] (P4451R2): check the assertion-control
+specifier of the terminating contract assertion csp, whose tokens are in
+csp->label_token_cache (see scan_assertion_control_specifier).  They
+shall be an id-expression that is neither type- nor value-dependent, and
+name lookup for it from the specifier shall find the standard library
+declaration of std::contracts::controls::enforced -- the one qualified
+lookup finds from std (under P4451 alone, <contracts> declares it in an
+inline namespace), never a hard-coded namespace.  Ordinary visibility
+applies: only declarations before this point are found.  Called where a
+label would be scanned (see scan_cached_contract_label), so that a member
+function's class is complete and a function's parameters are in scope.  One
+error per ill-formed specifier, saying why; the lookups themselves issue
+none.  A real instantiation is not checked again: the id-expression is not
+dependent, and the template's specifier was checked.
+*/
+{
+  a_symbol_ptr          ns_sym, entity = NULL, found = NULL;
+  a_symbol_locator      loc;
+  an_error_code         code = ec_contract_terminating_not_id_expression;
+  a_boolean             ok = FALSE;
+  a_diagnostic_counter  suppressed;
+  a_diagnostic_counter_set
+                        saved_counters;
+
+  if (csp->label_token_cache == NULL || is_nested_in_real_instantiation()) {
+    return;
+  }  /* if */
+  ns_sym = look_up_name_string_in_std("contracts");
+  if (ns_sym != NULL && ns_sym->kind == (a_symbol_kind)sk_namespace) {
+    ns_sym = look_up_name_string_in_namespace(
+                             "controls", ns_sym->variant.namespace_info.ptr,
+                             IDL_MUST_BE_NAMESPACE);
+    if (ns_sym != NULL && ns_sym->kind == (a_symbol_kind)sk_namespace) {
+      entity = look_up_name_string_in_namespace(
+                             "enforced", ns_sym->variant.namespace_info.ptr,
+                             IDL_NO_OPTIONS);
+      if (entity != NULL) entity = fundamental_symbol_of(entity);
+    }  /* if */
+  }  /* if */
+  if (entity != NULL && entity->kind != (a_symbol_kind)sk_variable) {
+    entity = NULL;
+  }  /* if */
+  rescan_reusable_cache(a_reusable_token_cache(csp->label_token_cache));
+  /* The lookups are tentative: what they would diagnose is not counted
+     either (the counters are restored below). */
+  saved_counters = diagnostic_counters;
+  { a_diagnostic_suppression  suppress(&suppressed,
+                                       /*suppress_diagnostics=*/TRUE);
+    if (entity == NULL) {
+      code = ec_contract_terminating_not_declared;
+    } else if (is_generalized_identifier_start(GID_NO_OPTIONS)) {
+      a_boolean  err = FALSE, dependent, ambiguous;
+      found = coalesce_and_lookup_generalized_identifier(GID_NO_OPTIONS,
+                                                         ilm_normal, &err);
+      loc = locator_for_curr_id;
+      dependent = loc.is_template_param ||
+                  (found != NULL &&
+                   (is_type_template_param_symbol(found) ||
+                    is_nontype_template_param_symbol(found))) ||
+                  (loc.is_qualified_name && loc.is_class_member &&
+                   loc.parent.class_type != NULL &&
+                   is_template_dependent_type(loc.parent.class_type));
+      ambiguous = !dependent && found != NULL &&
+                  loc.specific_symbol != NULL &&
+                  loc.specific_symbol->ambiguous &&
+                  f_check_for_ambiguity(&loc, /*is_templ_context=*/FALSE,
+                                        /*is_qualifier=*/FALSE,
+                                        /*diagnostic_should_be_issued=*/
+                                                                    FALSE);
+      (void)get_token();
+      if (curr_token != tok_end_of_source) {
+        /* More than an id-expression. */
+      } else if (dependent) {
+        code = ec_contract_terminating_dependent;
+      } else if (ambiguous) {
+        code = ec_contract_terminating_ambiguous;
+      } else if (found == NULL || is_error_locator(loc) ||
+                 found->kind == (a_symbol_kind)sk_undefined) {
+        /* Nothing found (a qualified name's failed lookup leaves an error
+           locator). */
+        code = ec_contract_terminating_not_found;
+      } else if (fundamental_symbol_of(found) != entity) {
+        code = ec_contract_terminating_lookup;
+      } else {
+        ok = TRUE;
+      }  /* if */
+    }  /* if */
+    while (curr_token != tok_end_of_source) (void)get_token();
+  }
+  diagnostic_counters.total = saved_counters.total;
+  diagnostic_counters.suppressed = saved_counters.suppressed;
+  /* Skip past the tok_end_of_source. */
+  (void)get_token();
+  if (!ok) pos_error(code, &csp->position);
+}  /* check_terminating_specifier */
 
 
 static a_boolean is_microsoft_static_operator(
@@ -7852,8 +8075,10 @@ etc.).
     }  /* if */
     /* An identifier is expected next, but is omitted in the 
        abstract declarator. */
-    is_name_start = (is_decl_qualified_name_start() ||
-                     curr_token == tok_operator || curr_token == tok_compl
+    is_name_start = (!(state->is_trailing_return_type &&
+                       curr_token_starts_labeled_contract_specifier()) &&
+                     is_decl_qualified_name_start()) ||
+                    (curr_token == tok_operator || curr_token == tok_compl
 #if MICROSOFT_EXTENSIONS_ALLOWED
                      || (cli_or_cx_enabled && curr_token == tok_not)
 #endif /* MICROSOFT_EXTENSIONS_ALLOWED */
@@ -8956,6 +9181,12 @@ name), or NULL if there is none (see remove_contract_operand_symbols).
   /* A lambda in a capture's initializer or in the predicate may name the
      parameters (see contract_param_proxy). */
   saved_proxy_owner = set_contract_param_proxy_owner(csp);
+  if (csp->is_terminating) {
+    /* P4451: the check of its specifier, in the scope of the operand.  Its
+       tokens are not a label's, and an instance needs no second check. */
+    check_terminating_specifier(csp);
+    csp->label_token_cache = NULL;
+  }  /* if */
   if (capture_cache != NULL) {
     first_sym = scan_postcondition_captures(csp, capture_cache);
   }  /* if */
@@ -9168,6 +9399,10 @@ a template-dependent context, and scanned in the body of its call operator
     switch_back_to_original_region(region_to_switch_back_to);
     csp->position = pos_curr_token;
     (void)get_token();
+    if (curr_token == tok_lt) {
+      /* An assertion-control specifier (P4451, P3400). */
+      scan_assertion_control_specifier(csp, skip);
+    }  /* if */
     scan_contract_assertion_attributes();
     if (!required_token(tok_lparen, ec_exp_lparen)) break;
     awaits_deduction = FALSE;
@@ -9505,6 +9740,10 @@ the symbols prototype_scope_symbols, is the top scope.
     }  /* if */
     csp = alloc_contract_specifier(templ_csp->kind);
     csp->position = templ_csp->position;
+    if (templ_csp->is_terminating) {
+      /* P4451. */
+      mark_contract_terminating(csp);
+    }  /* if */
     if (templ_csp->result_name != NULL && dps.has_deducible_return_type) {
       /* The return type of the instance is not yet deduced, so neither is
          the type of the result name: the operand waits, in the template's
@@ -10119,6 +10358,13 @@ first difference.
     }  /* if */
     if ((prev->result_name == NULL) != (curr->result_name == NULL)) {
       pos2_diagnostic(es_error, ec_contract_redecl_result_name_mismatch,
+                      &curr->position, &prev->position);
+      return;
+    }  /* if */
+    if (prev->is_terminating != curr->is_terminating) {
+      /* P4451: both terminating, or neither (both have an
+         assertion-control specifier, or neither does). */
+      pos2_diagnostic(es_error, ec_contract_terminating_redecl_mismatch,
                       &curr->position, &prev->position);
       return;
     }  /* if */

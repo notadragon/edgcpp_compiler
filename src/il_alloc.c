@@ -5066,6 +5066,8 @@ region, initialize its fields, and return a pointer to it.
   csp->param_proxies = NULL;
   csp->position = null_source_position;
   csp->comment = NULL;
+  csp->label_token_cache = NULL;
+  csp->is_terminating = FALSE;
   csp->local_predicate = FALSE;
   csp->predicate_sexpr = NULL;
   csp->operand_cached = FALSE;

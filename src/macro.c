@@ -12128,6 +12128,12 @@ command line -D options.
            enabled paper gives it: P2900's 202502L when none raises it. */
         a_host_large_integer  contracts_value = 202502L;
         char                  contracts_buffer[50];
+        if (contracts_p4451_enabled) {
+          /* P4451 (terminating contract assertions) has no macro of its
+             own: P4451R2's wording gives the value 202611L, which is used
+             as is. */
+          if (contracts_value < 202611L) contracts_value = 202611L;
+        }  /* if */
         (void)signed_to_string_buf(contracts_value, contracts_buffer);
         (void)strcat(contracts_buffer, "L");
         (void)enter_predef_macro(contracts_buffer, "__cpp_contracts",
@@ -12556,6 +12562,18 @@ command line -D options.
   }  /* if */
   /* In GNU C/C++ mode, enter the macros that GNU compilers define. */
   if (gnu_mode) init_gnu_predefined_macros();
+  if (contracts_enabled && contracts_p4451_enabled &&
+      (gnu_mode || clang_mode)) {
+    /* P4451 (terminating contract assertions) raises __cpp_contracts,
+       which the standard library cannot key on (other papers may raise it
+       too): the vendor macro of the compiler emulated, by which it declares
+       std::contracts::controls::enforced and raises __cpp_lib_contracts. */
+    (void)enter_predef_macro("202611L",
+                             clang_mode ? "__clang_contracts_p4451"
+                                        : "__gcc_contracts_p4451",
+                             /*cannot_be_redefined=*/TRUE,
+                             /*ref_suppresses_pch_file=*/FALSE);
+  }  /* if */
   if (building_runtime) {
     /* Define macros used to pass configuration information to the
        runtime library. */

@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --no_contracts_p4451 Test_name.c
+"Test_name.c", line 12: error: an assertion-control specifier naming enforced requires --contracts_p4451
+  auto l = [](int x) pre<enforced>(x > 0) { return x; };
+                        ^
+
+"Test_name.c", line 14: error: an assertion-control specifier naming enforced requires --contracts_p4451
+    void m(int x) pre<std::contracts::controls::enforced>(x > 0);
+                     ^
+
+"Test_name.c", line 15: error: an assertion-control specifier naming enforced requires --contracts_p4451
+    void n(int x) pre<::std::contracts::controls::enforced>(x > 0);
+                     ^
+
+"Test_name.c", line 17: error: an assertion-control specifier naming enforced requires --contracts_p4451
+  void g(int x) { contract_assert<std::contracts::controls::enforced>(x > 0); }
+                                 ^
+
+4 errors detected in the compilation of "Test_name.c".

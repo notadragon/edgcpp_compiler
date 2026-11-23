@@ -1,3 +1,17 @@
+11/23/26 []
+Contracts (P4451): C++26 enables --contracts_p4451
+
+P4451 is part of C++26, so the C++26 language mode enables
+--contracts_p4451 while contracts are on, unless --[no_]contracts_p4451 is
+given, as in our GCC: under plain --c++26 an assertion-control specifier
+naming std::contracts::controls::enforced makes a terminating contract
+assertion, __cpp_contracts is 202611L, and in GNU and Clang modes
+__gcc_contracts_p4451 (__clang_contracts_p4451) is predefined.  Only the
+language mode does this: before C++26, --contracts and the other contracts
+options leave it off.  --no_contracts_p4451 still turns it off (an error
+with P3400 on), and with --no_contracts it stays off, without an error.
+
+
 11/5/26 []
 Prefix maps: --macro_prefix_map
 
@@ -13,6 +27,25 @@ with ".", ".." and symbolic links resolved, as under GCC's
 precedence (every -ffile-prefix-map= first), with -fcanon-prefix-map as
 --canon_prefix_map, so that __FILE__ is remapped as g++ remaps the file
 names it records (macro prefix maps).
+
+
+11/3/26 []
+Contracts (P4451): terminating contract assertions
+
+The new --[no_]contracts_p4451 option (implied by --contracts_p3850 and
+--contracts_p3400 unless given, and enabling contracts; an error in C) is
+passed on to our GCC by the drivers, as -f[no-]contracts-p4451.  Without
+P3400 an assertion-control specifier holding an id-expression that names
+"std::contracts::controls::enforced" (P4451R2) makes the contract
+assertion a terminating one, whose semantics are chosen as for P3400's
+std::contracts::controls::enforced (enforce or quick_enforce, and prove
+with P4405; quick_enforce with the C-generating back end).  It must not
+be dependent, and name lookup must find that declaration, so a qualified
+name, an alias, or a name made visible by a using-directive or declaration
+(checked where the predicate is scanned, once each); the declarations of a
+function must agree on it.  __cpp_contracts is 202611L, and in GNU and
+Clang modes __gcc_contracts_p4451 (__clang_contracts_p4451) is predefined.
+cpfe-cp puts the specifier out qualified; with P3400 it is a P3400 label.
 
 
 10/1/26  []

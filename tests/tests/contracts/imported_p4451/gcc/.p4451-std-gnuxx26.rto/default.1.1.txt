@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contract_evaluation_semantic=ignore Test_name.c
+"Test_name.c", line 26: error: contract predicate is false in constant expression
+  constexpr int f (int x) pre<std::contracts::controls::enforced> (x > 0) { return x; }	// { dg-error "contract predicate is false in constant expression" }
+                          ^
+
+"Test_name.c", line 29: warning: variable "a" was declared but never referenced
+  constexpr int a = f (1);
+                ^
+
+"Test_name.c", line 30: warning: variable "b" was declared but never referenced
+  constexpr int b = f (-1);
+                ^
+
+"Test_name.c", line 31: warning: variable "c" was declared but never referenced
+  constexpr int c = g (-1);
+                ^
+
+1 error detected in the compilation of "Test_name.c".

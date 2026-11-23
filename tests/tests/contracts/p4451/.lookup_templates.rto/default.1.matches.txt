@@ -1,0 +1,32 @@
+Matches for "line 18: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration":
+  <-----------------------------------------------------------------------------
+  line 18: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+  ----------------------------------------------------------------------------->
+Matches for "line 20: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration":
+  <-----------------------------------------------------------------------------
+  line 20: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+  ----------------------------------------------------------------------------->
+Matches for "line 27: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration":
+  <-----------------------------------------------------------------------------
+  line 27: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+  ----------------------------------------------------------------------------->
+Matches for "line 31: error: assertion-control-specifier must name std::contracts::controls::enforced, not a dependent name":
+  <-----------------------------------------------------------------------------
+  line 31: error: assertion-control-specifier must name std::contracts::controls::enforced, not a dependent name
+  ----------------------------------------------------------------------------->
+Matches for "line 33: error: assertion-control-specifier must name std::contracts::controls::enforced, not a dependent name":
+  <-----------------------------------------------------------------------------
+  line 33: error: assertion-control-specifier must name std::contracts::controls::enforced, not a dependent name
+  ----------------------------------------------------------------------------->
+Matches for "line 34: error: assertion-control-specifier must name std::contracts::controls::enforced, not a dependent name":
+  <-----------------------------------------------------------------------------
+  line 34: error: assertion-control-specifier must name std::contracts::controls::enforced, not a dependent name
+  ----------------------------------------------------------------------------->
+Matches for "line 37: error: assertion-control-specifier must name std::contracts::controls::enforced, not a dependent name":
+  <-----------------------------------------------------------------------------
+  line 37: error: assertion-control-specifier must name std::contracts::controls::enforced, not a dependent name
+  ----------------------------------------------------------------------------->
+Matches for "line 39: error: assertion-control-specifier must name std::contracts::controls::enforced, not a dependent name":
+  <-----------------------------------------------------------------------------
+  line 39: error: assertion-control-specifier must name std::contracts::controls::enforced, not a dependent name
+  ----------------------------------------------------------------------------->

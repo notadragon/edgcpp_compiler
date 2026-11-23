@@ -30,6 +30,8 @@
 # contracts runtime, and makes a user-defined handle_contract_violation the
 # violation handler.  The comment of a violation is g++'s printing of the
 # predicate (-fcontract-comment-from-expression, when g++ has it).
+# -f[no-]contracts-p4451 goes to both; g++ gets the specifier the front
+# end puts out for a terminating contract assertion, the qualified name.
 #
 # Prefix maps.  -fmacro-prefix-map= and -ffile-prefix-map= go to both: the
 # front end expands __FILE__, __FILE_NAME__ and __BASE_FILE__ (as
@@ -153,6 +155,10 @@ while [ $# -gt 0 ] ; do
     -fcontract-evaluation-semantic=*)
       edg_args+=("--contract_evaluation_semantic=${arg#*=}")
       gxx_args+=("$arg") ;;
+    -fcontracts-p4451)
+      edg_args+=("--contracts_p4451"); gxx_args+=("$arg") ;;
+    -fno-contracts-p4451)
+      edg_args+=("--no_contracts_p4451"); gxx_args+=("$arg") ;;
     -fmacro-prefix-map=*|-ffile-prefix-map=*)
       # The front end tries the last map given first, and g++ tries every
       # -ffile-prefix-map= before any -fmacro-prefix-map=, so the macro maps

@@ -1,0 +1,35 @@
+//remark: imported from gcc:p4451-redecl.C
+//type: fn
+//require: BACK_END_IS_CP_GEN_BE 1
+//options: --c++26 --contracts_p4451
+//match_regex: ", line 21: (?:catastrophic )?error
+//match_regex: ", line 24: (?:catastrophic )?error
+//match_regex: ", line 34: (?:catastrophic )?error
+// P4451 [dcl.contract.func]: two function contract assertions are the same
+// only if both have an assertion-control-specifier or neither does; the
+// two need not spell it the same way.  Under
+// -fcontracts-p4451 alone.
+// { dg-do compile { target c++26 } }
+// { dg-additional-options "-fcontracts-p4451" }
+// { dg-skip-if "requires hosted libstdc++ for stdc++exp" { ! hostedlib } }
+
+#include <contracts>
+
+namespace scl = std::contracts::controls;
+
+void f (int x) pre<scl::enforced> (x > 0);
+void f (int x) pre (x > 0) { }	// { dg-error "mismatched assertion-control-specifier in declaration" }
+
+void g (int x) pre (x > 0);
+void g (int x) pre<std::contracts::controls::enforced> (x > 0) { }	// { dg-error "mismatched assertion-control-specifier in declaration" }
+
+void h (const int x) pre<scl::enforced> (x > 0) post<scl::enforced> (x > 0);
+void h (const int x) pre<std::contracts::controls::enforced> (x > 0) post<std::contracts::controls::enforced> (x > 0) { }
+
+struct S
+{
+  void m (int x) pre<scl::enforced> (x > 0);
+  void n (int x) pre<scl::enforced> (x > 0);
+};
+void S::m (int x) pre (x > 0) { }	// { dg-error "mismatched assertion-control-specifier in declaration" }
+void S::n (int x) pre<std::contracts::controls::enforced> (x > 0) { }

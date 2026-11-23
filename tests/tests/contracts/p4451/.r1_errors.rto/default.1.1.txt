@@ -1,0 +1,94 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts_p4451 Test_name.c
+"Test_name.c", line 29: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds nothing
+  void x1(int x) pre<enforced>(x > 0);
+                 ^
+
+"Test_name.c", line 32: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+  void f() pre<enforced>(true);
+           ^
+
+"Test_name.c", line 36: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+  void f() pre<enforced>(true);
+           ^
+
+"Test_name.c", line 40: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+  void f() pre<enforced>(true);
+           ^
+
+"Test_name.c", line 45: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+    void f() pre<enforced>(true);
+             ^
+
+"Test_name.c", line 57: error: assertion-control-specifier must name std::contracts::controls::enforced; it is not an id-expression naming a declaration
+  void x4(int x) pre<(std::contracts::controls::enforced)>(x > 0);
+                 ^
+
+"Test_name.c", line 58: error: assertion-control-specifier must name std::contracts::controls::enforced; it is not an id-expression naming a declaration
+  void x4e(int x) pre<>(x > 0);
+                  ^
+
+"Test_name.c", line 59: error: assertion-control-specifier must name std::contracts::controls::enforced; it is not an id-expression naming a declaration
+  void x4a(int x) { contract_assert<>(x > 0); }
+                    ^
+
+"Test_name.c", line 62: error: assertion-control-specifier must name std::contracts::controls::enforced; it is not an id-expression naming a declaration
+  void x4l(int x) pre<lbl | lbl>(x > 0);
+                  ^
+
+"Test_name.c", line 65: error: assertion-control-specifier must name std::contracts::controls::enforced; it is not an id-expression naming a declaration
+  void f() pre<enforced | enforced>(true);
+           ^
+
+"Test_name.c", line 66: error: assertion-control-specifier must name std::contracts::controls::enforced; it is not an id-expression naming a declaration
+  void g() pre<std::contracts::controls::enforced + 0>(true);
+           ^
+
+"Test_name.c", line 70: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+  void x5(int x) pre<t>(x > 0);
+                 ^
+
+"Test_name.c", line 74: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+  void x5q(int x) pre<Q::enforced>(x > 0);
+                  ^
+
+"Test_name.c", line 75: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+  void x5l(int x) pre<lbl>(x > 0);
+                  ^
+
+"Test_name.c", line 77: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds nothing
+  void x7(int x) pre<std::contracts::controls::enforce>(x > 0);
+                 ^
+
+"Test_name.c", line 83: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup is ambiguous
+    contract_assert<enforced>(x > 0);
+    ^
+
+"Test_name.c", line 89: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup is ambiguous
+  void f() pre<enforced>(true);
+           ^
+
+"Test_name.c", line 94: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+    void f() pre<enforced>(true);  // a private member: no access error
+             ^
+
+"Test_name.c", line 61: warning: variable "lbl" was declared but never referenced
+  constexpr L lbl{};
+              ^
+
+"Test_name.c", line 69: warning: variable "t" was declared but never referenced
+  constexpr auto t = std::contracts::controls::enforced;
+                 ^
+
+"Test_name.c", line 31: warning: variable "x2v::enforced" was declared but never referenced
+  constexpr int enforced = 0;
+                ^
+
+"Test_name.c", line 79: warning: variable "x8a::enforced" was declared but never referenced
+  namespace x8a { constexpr int enforced = 0; }
+                                ^
+
+"Test_name.c", line 85: warning: variable "x8b::enforced" was declared but never referenced
+  namespace x8b { constexpr int enforced = 0; }
+                                ^
+
+18 errors detected in the compilation of "Test_name.c".

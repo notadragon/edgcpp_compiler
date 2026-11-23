@@ -1,0 +1,16 @@
+Matches for "line 12: error: an assertion-control specifier naming enforced requires --contracts_p4451":
+  <-----------------------------------------------------------------------------
+  line 12: error: an assertion-control specifier naming enforced requires --contracts_p4451
+  ----------------------------------------------------------------------------->
+Matches for "line 14: error: an assertion-control specifier naming enforced requires --contracts_p4451":
+  <-----------------------------------------------------------------------------
+  line 14: error: an assertion-control specifier naming enforced requires --contracts_p4451
+  ----------------------------------------------------------------------------->
+Matches for "line 15: error: an assertion-control specifier naming enforced requires --contracts_p4451":
+  <-----------------------------------------------------------------------------
+  line 15: error: an assertion-control specifier naming enforced requires --contracts_p4451
+  ----------------------------------------------------------------------------->
+Matches for "line 17: error: an assertion-control specifier naming enforced requires --contracts_p4451":
+  <-----------------------------------------------------------------------------
+  line 17: error: an assertion-control specifier naming enforced requires --contracts_p4451
+  ----------------------------------------------------------------------------->

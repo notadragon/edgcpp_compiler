@@ -1,0 +1,72 @@
+Matches for "line 29: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds nothing":
+  <-----------------------------------------------------------------------------
+  line 29: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds nothing
+  ----------------------------------------------------------------------------->
+Matches for "line 32: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration":
+  <-----------------------------------------------------------------------------
+  line 32: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+  ----------------------------------------------------------------------------->
+Matches for "line 36: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration":
+  <-----------------------------------------------------------------------------
+  line 36: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+  ----------------------------------------------------------------------------->
+Matches for "line 40: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration":
+  <-----------------------------------------------------------------------------
+  line 40: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+  ----------------------------------------------------------------------------->
+Matches for "line 45: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration":
+  <-----------------------------------------------------------------------------
+  line 45: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+  ----------------------------------------------------------------------------->
+Matches for "line 57: error: assertion-control-specifier must name std::contracts::controls::enforced; it is not an id-expression naming a declaration":
+  <-----------------------------------------------------------------------------
+  line 57: error: assertion-control-specifier must name std::contracts::controls::enforced; it is not an id-expression naming a declaration
+  ----------------------------------------------------------------------------->
+Matches for "line 58: error: assertion-control-specifier must name std::contracts::controls::enforced; it is not an id-expression naming a declaration":
+  <-----------------------------------------------------------------------------
+  line 58: error: assertion-control-specifier must name std::contracts::controls::enforced; it is not an id-expression naming a declaration
+  ----------------------------------------------------------------------------->
+Matches for "line 59: error: assertion-control-specifier must name std::contracts::controls::enforced; it is not an id-expression naming a declaration":
+  <-----------------------------------------------------------------------------
+  line 59: error: assertion-control-specifier must name std::contracts::controls::enforced; it is not an id-expression naming a declaration
+  ----------------------------------------------------------------------------->
+Matches for "line 62: error: assertion-control-specifier must name std::contracts::controls::enforced; it is not an id-expression naming a declaration":
+  <-----------------------------------------------------------------------------
+  line 62: error: assertion-control-specifier must name std::contracts::controls::enforced; it is not an id-expression naming a declaration
+  ----------------------------------------------------------------------------->
+Matches for "line 65: error: assertion-control-specifier must name std::contracts::controls::enforced; it is not an id-expression naming a declaration":
+  <-----------------------------------------------------------------------------
+  line 65: error: assertion-control-specifier must name std::contracts::controls::enforced; it is not an id-expression naming a declaration
+  ----------------------------------------------------------------------------->
+Matches for "line 66: error: assertion-control-specifier must name std::contracts::controls::enforced; it is not an id-expression naming a declaration":
+  <-----------------------------------------------------------------------------
+  line 66: error: assertion-control-specifier must name std::contracts::controls::enforced; it is not an id-expression naming a declaration
+  ----------------------------------------------------------------------------->
+Matches for "line 70: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration":
+  <-----------------------------------------------------------------------------
+  line 70: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+  ----------------------------------------------------------------------------->
+Matches for "line 74: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration":
+  <-----------------------------------------------------------------------------
+  line 74: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+  ----------------------------------------------------------------------------->
+Matches for "line 75: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration":
+  <-----------------------------------------------------------------------------
+  line 75: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+  ----------------------------------------------------------------------------->
+Matches for "line 77: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds nothing":
+  <-----------------------------------------------------------------------------
+  line 77: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds nothing
+  ----------------------------------------------------------------------------->
+Matches for "line 83: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup is ambiguous":
+  <-----------------------------------------------------------------------------
+  line 83: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup is ambiguous
+  ----------------------------------------------------------------------------->
+Matches for "line 89: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup is ambiguous":
+  <-----------------------------------------------------------------------------
+  line 89: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup is ambiguous
+  ----------------------------------------------------------------------------->
+Matches for "line 94: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration":
+  <-----------------------------------------------------------------------------
+  line 94: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+  ----------------------------------------------------------------------------->

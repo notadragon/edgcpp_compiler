@@ -1,0 +1,82 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts_p4451 Test_name.c
+"Test_name.c", line 38: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds nothing
+    void f () pre<enforced> (true);	// { dg-error "assertion-control-specifier must name .std::contracts::controls::enforced." }
+              ^
+
+"Test_name.c", line 39: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds nothing
+    struct S { void m () pre<enforced> (true); };	// { dg-error "must name .std::contracts::controls::enforced." }
+                         ^
+
+"Test_name.c", line 40: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds nothing
+    void g () { contract_assert<enforced> (true); }	// { dg-error "must name .std::contracts::controls::enforced." }
+                ^
+
+"Test_name.c", line 41: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds nothing
+    auto l = [] () pre<enforced> (true) { };	// { dg-error "must name .std::contracts::controls::enforced." }
+                   ^
+
+"Test_name.c", line 46: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+    void f (int enforced) pre<enforced> (true);	// { dg-error "must name .std::contracts::controls::enforced." }
+                          ^
+
+"Test_name.c", line 53: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+      void f () pre<enforced> (true);	// { dg-error "must name .std::contracts::controls::enforced." }
+                ^
+
+"Test_name.c", line 63: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+      void f () pre<enforced> (true);	// { dg-error "must name .std::contracts::controls::enforced." }
+                ^
+
+"Test_name.c", line 72: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+    void f () pre<enforced> (true);	// { dg-error "must name .std::contracts::controls::enforced." }
+              ^
+
+"Test_name.c", line 78: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+    void f () pre<enforced> (true);	// { dg-error "must name .std::contracts::controls::enforced." }
+              ^
+
+"Test_name.c", line 84: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+    void f () pre<enforced> (true);	// { dg-error "must name .std::contracts::controls::enforced." }
+              ^
+
+"Test_name.c", line 90: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+    void f () pre<enforced> (true);	// { dg-error "must name .std::contracts::controls::enforced." }
+              ^
+
+"Test_name.c", line 111: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup is ambiguous
+    void f () pre<enforced> (true);	// { dg-error "must name .std::contracts::controls::enforced." }
+              ^
+
+"Test_name.c", line 119: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+    void f () pre<enforced> (true);	// { dg-error "must name .std::contracts::controls::enforced." }
+              ^
+
+"Test_name.c", line 128: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+      contract_assert<enforced> (x > 0);	// { dg-error "must name .std::contracts::controls::enforced." }
+      ^
+
+"Test_name.c", line 127: warning: variable "enforced" was declared but never referenced
+      int enforced = x;
+          ^
+
+"Test_name.c", line 130: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+    auto l = [] (int enforced) pre<enforced> (true) { };	// { dg-error "must name .std::contracts::controls::enforced." }
+                               ^
+
+"Test_name.c", line 77: warning: variable "n4::enforced" was declared but never referenced
+    constexpr int enforced = 0;
+                  ^
+
+"Test_name.c", line 107: warning: variable "n7::a::enforced" was declared but never referenced
+    namespace a { constexpr int enforced = 0; }
+                                ^
+
+"Test_name.c", line 108: warning: variable "n7::b::enforced" was declared but never referenced
+    namespace b { constexpr int enforced = 1; }
+                                ^
+
+"Test_name.c", line 116: warning: variable "n7s::a::enforced" was declared but never referenced
+    namespace a { constexpr int enforced = 0; }
+                                ^
+
+15 errors detected in the compilation of "Test_name.c".

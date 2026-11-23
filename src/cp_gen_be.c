@@ -18071,6 +18071,22 @@ characters in the string indicate new source lines.
 }  /* write_code_string */
 
 
+static void gen_contract_label(a_contract_specifier_ptr  csp)
+/*
+Generate the assertion-control specifier of the contract assertion csp, if
+it has one: P4451's, or a label (P3400), parenthesized so that a ">" in it
+is not the closing angle bracket.
+*/
+{
+  if (csp->is_terminating) {
+    /* P4451's specifier, which g++ gets with -fcontracts-p4451, naming the
+       label by its name qualified from the global namespace (so that no
+       member or local named std hides it), whatever the spelling written. */
+    write_tok_str("<::std::contracts::controls::enforced>");
+  }  /* if */
+}  /* gen_contract_label */
+
+
 static void gen_lambda_captures(a_lambda_ptr  lambda)
 /*
 Render the list of lambda captures, including the delimiting brackets.

@@ -390,6 +390,7 @@ enum an_option_kind {
   optk_incognito,
   optk_contracts,
   optk_contract_evaluation_semantic,
+  optk_contracts_p4451,
   optk_last		/* Must be last. */
 };
 
@@ -3021,6 +3022,20 @@ EXTERN_THREAD a_contract_evaluation_semantic
 		contract_evaluation_semantic;
 			/* The evaluation semantic of every contract
 			   assertion in the translation unit. */
+
+EXTERN_THREAD a_boolean
+		contracts_p4451_enabled;
+			/* TRUE if P4451 (terminating contract assertions)
+			   is enabled; implied by --contracts_p3850 and
+			   --contracts_p3400.  Without P3400 an
+			   assertion-control specifier names the label
+			   and marks a contract assertion terminating (see
+			   a_contract_specifier::is_terminating); with it,
+			   the specifier is an ordinary P3400 label.  With
+			   contracts, it raises __cpp_contracts and
+			   predefines the vendor macro by which the standard
+			   library declares std::contracts::controls::
+			   enforced. */
 
 EXTERN_THREAD a_boolean
 		incognito;

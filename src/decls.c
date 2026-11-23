@@ -13604,7 +13604,10 @@ common cases.
   }  /* if */
   (skip_typerefs(dps->type))->source_corresp.referenced = TRUE;
   /* Note -- the check for dangling_type_specifier is not relevant here. */
-  if (is_abstract_declarator_start()) {
+  if (dps->is_trailing_return_type &&
+      curr_token_starts_labeled_contract_specifier()) {
+    /* "pre<...>" (P4451, P3400) ends the trailing return type. */
+  } else if (is_abstract_declarator_start()) {
     /* A declarator follows the type specifiers. */
     di_flags = DI_ABSTRACT_DECLARATOR_ALLOWED | DI_QUALIFIED_NAME_ALLOWED;
     if (vla_enabled && depth_innermost_function_scope != NO_SCOPE_DEPTH &&

@@ -392,6 +392,15 @@ extern void resolve_pending_mapped_exc_spec(a_symbol_ptr                sym,
                                             an_exception_specification  *esp);
 
 extern void scan_contract_assertion_attributes(void);
+extern a_boolean curr_token_starts_labeled_contract_specifier(void);
+extern a_boolean next_token_begins_terminating(void);
+extern void scan_assertion_control_specifier(
+                                         a_contract_specifier_ptr  csp,
+                                         a_boolean                 skip);
+extern void mark_contract_terminating(a_contract_specifier_ptr  csp);
+extern a_contract_evaluation_semantic terminating_contract_semantic(
+                                     a_contract_evaluation_semantic  semantic);
+extern void check_terminating_specifier(a_contract_specifier_ptr  csp);
 extern a_boolean contract_specifiers_are_cached(
                                          a_contract_specifier_ptr  csp);
 extern void scan_cached_contract_specifiers(

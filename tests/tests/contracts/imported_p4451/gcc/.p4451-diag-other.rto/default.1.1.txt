@@ -1,0 +1,62 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts_p4451 Test_name.c
+"Test_name.c", line 38: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds nothing
+  void f (int x) pre<other> (x > 0);	// { dg-error "assertion-control-specifier must name .std::contracts::controls::enforced." }
+                 ^
+
+"Test_name.c", line 40: error: assertion-control-specifier must name std::contracts::controls::enforced; it is not an id-expression naming a declaration
+  void g (int x) pre<(std::contracts::controls::enforced)> (x > 0);	// { dg-error "must name .std::contracts::controls::enforced." }
+                 ^
+
+"Test_name.c", line 42: error: assertion-control-specifier must name std::contracts::controls::enforced; it is not an id-expression naming a declaration
+  void h (int x) { contract_assert<(enforced)> (x > 0); }	// { dg-error "must name .std::contracts::controls::enforced." }
+                   ^
+
+"Test_name.c", line 44: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+  void i (int x) pre<t> (x > 0);	// { dg-error "must name .std::contracts::controls::enforced." }
+                 ^
+
+"Test_name.c", line 45: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds nothing
+  void j (int x) pre<std::contracts::controls::enforce> (x > 0);	// { dg-error "must name .std::contracts::controls::enforced." }
+                 ^
+
+"Test_name.c", line 48: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+  void l (int x) pre<W<int>::enforced> (x > 0);	// { dg-error "must name .std::contracts::controls::enforced." }
+                 ^
+
+"Test_name.c", line 49: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+  void m (int x) pre<C::enforced> (x > 0);	// { dg-error "must name .std::contracts::controls::enforced." }
+                 ^
+
+"Test_name.c", line 50: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds nothing
+  void n (int x) pre<::enforced> (x > 0);	// { dg-error "must name .std::contracts::controls::enforced." }
+                 ^
+
+"Test_name.c", line 52: error: assertion-control-specifier must name std::contracts::controls::enforced; it is not an id-expression naming a declaration
+  void o (int x) pre<std::contracts::controls::enforced + 0> (x > 0);	// { dg-error "must name .std::contracts::controls::enforced." }
+                 ^
+
+"Test_name.c", line 53: error: assertion-control-specifier must name std::contracts::controls::enforced; it is not an id-expression naming a declaration
+  void p (int x) pre<std::contracts::controls::enforced()> (x > 0);	// { dg-error "must name .std::contracts::controls::enforced." }
+                 ^
+
+"Test_name.c", line 54: error: assertion-control-specifier must name std::contracts::controls::enforced; it is not an id-expression naming a declaration
+  void q (int x) pre<1> (x > 0);	// { dg-error "must name .std::contracts::controls::enforced." }
+                 ^
+
+"Test_name.c", line 55: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+  void r (int x) pre<C::enforced> (x > 0) pre<std::contracts::controls::enforced> (x > 1);	// { dg-error "must name .std::contracts::controls::enforced." }
+                 ^
+
+"Test_name.c", line 57: error: namespace "std::contracts::controls" has no member "empty_label"
+  auto e = std::contracts::controls::empty_label;	// { dg-error "empty_label" }
+                                     ^
+
+"Test_name.c", line 58: error: namespace "std::contracts::controls" has no member "always_enforce"
+  auto a = std::contracts::controls::always_enforce;	// { dg-error "always_enforce" }
+                                     ^
+
+"Test_name.c", line 34: warning: variable "t" was declared but never referenced
+  constexpr auto t = std::contracts::controls::enforced;	// { dg-message "lookup of .t. finds" }
+                 ^
+
+14 errors detected in the compilation of "Test_name.c".

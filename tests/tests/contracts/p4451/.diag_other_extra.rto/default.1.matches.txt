@@ -1,0 +1,8 @@
+Matches for "line 11: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration":
+  <-----------------------------------------------------------------------------
+  line 11: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+  ----------------------------------------------------------------------------->
+Matches for "line 13: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration":
+  <-----------------------------------------------------------------------------
+  line 13: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+  ----------------------------------------------------------------------------->

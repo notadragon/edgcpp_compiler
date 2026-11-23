@@ -1,0 +1,38 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contracts_p4451 Test_name.c
+"Test_name.c", line 18: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+  template <class T> void f(T enforced) pre<enforced>(true);
+                                        ^
+
+"Test_name.c", line 20: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+    void g() pre<enforced>(true);
+             ^
+
+"Test_name.c", line 27: error: assertion-control-specifier must name std::contracts::controls::enforced; name lookup finds another declaration
+    contract_assert<enforced>(x > 0);
+    ^
+
+"Test_name.c", line 26: warning: variable "enforced" was declared but never referenced
+    int enforced = 0;
+        ^
+
+"Test_name.c", line 31: error: assertion-control-specifier must name std::contracts::controls::enforced, not a dependent name
+  void x6a(T x) pre<T::enforced>(x > 0);
+                ^
+
+"Test_name.c", line 33: error: assertion-control-specifier must name std::contracts::controls::enforced, not a dependent name
+    void g() pre<T::N::enforced>(true);
+             ^
+
+"Test_name.c", line 34: error: assertion-control-specifier must name std::contracts::controls::enforced, not a dependent name
+    void h() { contract_assert<T::enforced>(true); }
+               ^
+
+"Test_name.c", line 37: error: assertion-control-specifier must name std::contracts::controls::enforced, not a dependent name
+  void x6n() pre<enforced>(true);
+             ^
+
+"Test_name.c", line 39: error: assertion-control-specifier must name std::contracts::controls::enforced, not a dependent name
+  auto x6p(T x) post<T::enforced>(r : r > 0) { return x; }
+                ^
+
+8 errors detected in the compilation of "Test_name.c".

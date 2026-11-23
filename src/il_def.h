@@ -12305,6 +12305,23 @@ typedef struct a_contract_specifier {
 			   its tokens, on one line), passed to the violation
 			   handler as the comment of a violation.  NULL if
 			   the predicate was not scanned. */
+  struct a_token_cache
+		*label_token_cache;
+			/* An opaque pointer to the token cache holding what
+			   is between the angle brackets of the
+			   assertion-control specifier, checked (P4451) or
+			   scanned as the label (P3400) with the operand
+			   (for an instance, from the template's).  For
+			   front-end use only. */
+  a_bit_field	is_terminating:1;
+			/* TRUE for a terminating contract assertion (P4451):
+			   one whose assertion-control specifier names
+			   std::contracts::controls::enforced without P3400
+			   (with P3400 that is a label).  It has no label,
+			   and every evaluation of it uses a terminating
+			   semantic (see mark_contract_terminating; with
+			   P3400's facets, its allowed semantics are those
+			   of P3400's controls::enforced). */
   a_bit_field	local_predicate:1;
 			/* TRUE if the specifier is in file-scope memory but
 			   its predicate is in a function's memory region, as
