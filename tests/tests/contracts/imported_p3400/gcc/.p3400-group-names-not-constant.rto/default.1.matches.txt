@@ -1,0 +1,8 @@
+Matches for "", line 74: error: the group_names facet of assertion-control object "":
+  <-----------------------------------------------------------------------------
+  ", line 74: error: the group_names facet of assertion-control object "
+  ----------------------------------------------------------------------------->
+Matches for "", line 75: error: the group_names facet of assertion-control object "":
+  <-----------------------------------------------------------------------------
+  ", line 75: error: the group_names facet of assertion-control object "
+  ----------------------------------------------------------------------------->

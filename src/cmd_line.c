@@ -1867,6 +1867,12 @@ Initialize the option information table.
   add_option_description(optk_contracts_p3290, "no_contracts_p3290", '\0',
                          /*value=*/FALSE, /*arg_required=*/FALSE,
                          pchek_command_line);
+  add_option_description(optk_contracts_p3400, "contracts_p3400", '\0',
+                         /*value=*/TRUE, /*arg_required=*/FALSE,
+                         pchek_command_line);
+  add_option_description(optk_contracts_p3400, "no_contracts_p3400", '\0',
+                         /*value=*/FALSE, /*arg_required=*/FALSE,
+                         pchek_command_line);
   add_option_description(optk_contracts_p4451, "contracts_p4451", '\0',
                          /*value=*/TRUE, /*arg_required=*/FALSE,
                          pchek_command_line);
@@ -4054,6 +4060,9 @@ setting is used, and to set various unmentioned settings as needed.
     command_line_error(ec_cl_contracts_option_only_in_cplusplus);
   }  /* if */
   if (option_kind_used[(int)optk_contracts_p3290] && contracts_p3290_enabled) {
+    command_line_error(ec_cl_contracts_option_only_in_cplusplus);
+  }  /* if */
+  if (option_kind_used[(int)optk_contracts_p3400] && contracts_p3400_enabled) {
     command_line_error(ec_cl_contracts_option_only_in_cplusplus);
   }  /* if */
   if (option_kind_used[(int)optk_contracts_p4451] && contracts_p4451_enabled) {
@@ -12446,6 +12455,9 @@ enable_microsoft_mode:
       case optk_contracts_p3290:
         contracts_p3290_enabled = opt_value;
         break;
+      case optk_contracts_p3400:
+        contracts_p3400_enabled = opt_value;
+        break;
       case optk_contracts_p4451:
         contracts_p4451_enabled = opt_value;
         break;
@@ -12521,6 +12533,24 @@ enable_microsoft_mode:
   if (contracts_p3290_enabled && !option_kind_used[(int)optk_contracts]) {
     /* So does --contracts_p3290 contracts. */
     contracts_enabled = TRUE;
+  }  /* if */
+  if (contracts_p3850_enabled &&
+      !option_kind_used[(int)optk_contracts_p3400]) {
+    /* --contracts_p3850 enables P3400, unless --[no_]contracts_p3400 is
+       given. */
+    contracts_p3400_enabled = TRUE;
+  }  /* if */
+  if (contracts_p3400_enabled && !option_kind_used[(int)optk_contracts]) {
+    /* So does --contracts_p3400 contracts. */
+    contracts_enabled = TRUE;
+  }  /* if */
+  if (contracts_p3400_enabled &&
+      !option_kind_used[(int)optk_contracts_p4451]) {
+    /* --contracts_p3400, which subsumes P4451, enables it too, whatever the
+       --no_ form of --contracts_p3850 (the options are additive, as in
+       GCC), unless --[no_]contracts_p4451 is given (see
+       check_contracts_option_rule). */
+    contracts_p4451_enabled = TRUE;
   }  /* if */
   if (contracts_p4451_enabled && !option_kind_used[(int)optk_contracts]) {
     /* --contracts_p4451 enables contracts, unless --[no_]contracts is
@@ -14120,6 +14150,7 @@ variables declared in cmd_line.h.
   contracts_p3099_enabled = FALSE;
   contracts_p3098_enabled = FALSE;
   contracts_p3290_enabled = FALSE;
+  contracts_p3400_enabled = FALSE;
   contracts_p4451_enabled = FALSE;
   incognito = DEFAULT_INCOGNITO;
   keep_restrict_in_signatures = FALSE;

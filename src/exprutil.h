@@ -2167,6 +2167,8 @@ extern void set_glvalue_operand_state(an_operand *operand);
 extern void make_constant_operand(a_constant *constant,
 			          an_operand *operand);
 
+extern void make_contract_control_object_operand(a_constant_ptr  cp,
+                                                an_operand      *operand);
 extern void make_sym_constant_operand(a_symbol_ptr sym,
                                       an_operand   *operand);
 

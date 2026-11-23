@@ -1606,6 +1606,13 @@ static void add_active_using_directive_to_scope(
 				a_scope_stack_entry_ptr	ssep,
 				a_decl_sequence_number	effective_decl_seq);
 
+/*
+TRUE while add_active_using_directive_to_scope adds the namespaces nominated
+transitively by a namespace that is itself visible only to assertion-control
+lookups (P3400), so that they are too.
+*/
+static a_boolean nominated_by_contract_control_directive = FALSE;
+
 static void add_active_using_directives_for_scope(
 				a_scope_ptr		scope,
 				a_scope_stack_entry_ptr	ssep,
@@ -1655,6 +1662,11 @@ using-directives specified after the point of definition of the template.
   a_symbol_ptr			 	ns_sym;
   a_scope_depth			 	new_depth;
   a_namespace_symbol_supplement_ptr	nssp;
+  a_boolean				contract_control_only =
+                                udp->is_contract_control ||
+                                nominated_by_contract_control_directive;
+  a_boolean				saved_nominated =
+                                nominated_by_contract_control_directive;
 
   check_assertion(udp->entity.kind == iek_namespace);
   /* Get a pointer to the namespace to be used. */
@@ -1678,6 +1690,7 @@ using-directives specified after the point of definition of the template.
     audp->next = ssep->active_using_directives;
     audp->scope_depth_at_which_using_directive_applies = new_depth;
     audp->effective_decl_seq = effective_decl_seq;
+    audp->contract_control_only = contract_control_only;
     ssep->active_using_directives = audp;
 #if DEBUG
     if (db_flag_is_set("using_dir")) {
@@ -1697,8 +1710,10 @@ using-directives specified after the point of definition of the template.
     scope_stack[new_depth].using_directives_that_apply_here = audp;
     /* Add active using directives for the namespaces that should be
        visible because of the transitivity of using directives. */
+    nominated_by_contract_control_directive = contract_control_only;
     add_active_using_directives_for_scope(nsp->variant.assoc_scope, ssep,
                                           effective_decl_seq);
+    nominated_by_contract_control_directive = saved_nominated;
     /* Now that a using directive is active, inactive symbols may be
        visible. */
     scope_stack[depth_scope_stack].inactive_symbols_may_be_visible = TRUE;
@@ -1710,8 +1725,20 @@ using-directives specified after the point of definition of the template.
       audp->effective_decl_seq = effective_decl_seq;
       /* Once again go through the using-directives that should be visible
          transitively and update their effective declaration sequence. */
+      nominated_by_contract_control_directive = audp->contract_control_only;
       add_active_using_directives_for_scope(nsp->variant.assoc_scope, ssep,
                                             effective_decl_seq);
+      nominated_by_contract_control_directive = saved_nominated;
+    }  /* if */
+    if (audp->contract_control_only && !contract_control_only) {
+      /* A namespace visible only to assertion-control lookups (P3400) is
+         now nominated by an ordinary using-directive: it, and what it
+         nominates transitively, become visible to all lookups. */
+      audp->contract_control_only = FALSE;
+      nominated_by_contract_control_directive = FALSE;
+      add_active_using_directives_for_scope(nsp->variant.assoc_scope, ssep,
+                                            audp->effective_decl_seq);
+      nominated_by_contract_control_directive = saved_nominated;
     }  /* if */
   }  /* if */
   /* Record the lowest declaration sequence number associated with
@@ -5976,6 +6003,11 @@ class to be defined.
     } /* if */
     /* Set the pushed scope to own the pushed module entity state. */
     ssep->owns_module_push = TRUE;
+    /* The lookups of the instantiation are not those of an
+       assertion-control specifier it may be instantiated from (P3400). */
+    ssep->saved_in_assertion_control_expression =
+                                              in_assertion_control_expression;
+    in_assertion_control_expression = FALSE;
   }  /* if */
   return scope_pushed;
 }  /* push_template_instantiation_scope */
@@ -6007,6 +6039,8 @@ push_template_instantiation_scope.
       /* Restore the original lexical state context. */
       pop_lexical_state_stack();
     }  /* if */
+    in_assertion_control_expression =
+       scope_stack[depth_scope_stack].saved_in_assertion_control_expression;
     /* Pop scopes until the depth of the scope stack is equal to orig_depth,
        which is the depth before any of the instantiation context scopes were
        pushed. */

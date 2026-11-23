@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contract_evaluation_semantic=enforce --contract_group_evaluation_semantic=safety:ignore Test_name.c
+"Test_name.c", line 30: warning: subscript out of range
+    { return names + (names[2] != nullptr); }
+                      ^
+
+"Test_name.c", line 74: error: the group_names facet of assertion-control object "ub_t" must be usable in a constant expression
+  void f1 (int x) pre<ub> (x > 0) {}		// { dg-error "'group_names' facet of assertion-control object 'ub_t' must be usable in a constant expression" }
+                  ^
+
+"Test_name.c", line 75: error: the group_names facet of assertion-control object "runtime_t" must be usable in a constant expression
+  void f2 (int x) pre<runtime_name> (x > 0) {}	// { dg-error "'group_names' facet of assertion-control object 'runtime_t' must be usable in a constant expression" }
+                  ^
+
+2 errors detected in the compilation of "Test_name.c".

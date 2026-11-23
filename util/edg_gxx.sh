@@ -45,6 +45,7 @@
 # -f[no-]contracts-p3099 goes to both.
 # -f[no-]contracts-p3098 goes to both.
 # -f[no-]contracts-p3290 goes to both.
+# -f[no-]contracts-p3400 goes to both.
 # -f[no-]contracts-p4451 goes to both; g++ gets the specifier the front
 # end puts out for a terminating contract assertion, the qualified name.
 #
@@ -202,6 +203,10 @@ while [ $# -gt 0 ] ; do
       edg_args+=("--contracts_p3290"); gxx_args+=("$arg") ;;
     -fno-contracts-p3290)
       edg_args+=("--no_contracts_p3290"); gxx_args+=("$arg") ;;
+    -fcontracts-p3400)
+      edg_args+=("--contracts_p3400"); gxx_args+=("$arg") ;;
+    -fno-contracts-p3400)
+      edg_args+=("--no_contracts_p3400"); gxx_args+=("$arg") ;;
     -fcontracts-p4451)
       edg_args+=("--contracts_p4451"); gxx_args+=("$arg") ;;
     -fno-contracts-p4451)

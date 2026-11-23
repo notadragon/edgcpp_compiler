@@ -15838,7 +15838,8 @@ void make_using_directive(a_namespace_ptr             nsp,
                           a_source_position           *pos,
                           a_boolean                   compiler_generated,
                           a_boolean                   inline_namespace,
-                          ARG_UNUSED an_attribute_ptr attributes)
+                          ARG_UNUSED an_attribute_ptr attributes,
+                          a_boolean                   is_contract_control)
 /*
 Create a using-decl entry for a using-directive that specifies the indicated
 namespace, add it to the list of using-decl entries for the scope specified
@@ -15850,7 +15851,8 @@ unnamed namespaces, and for certain using-directives created to emulate
 a Microsoft bug.  inline_namespace is TRUE if this using-directive is
 being created to indicate that the specified namespace is an inline namespace
 of the current namespace.  attributes is a list of attributes specified on
-this using-directive.
+this using-directive.  is_contract_control is TRUE for a P3400 directive
+"using contract_control namespace N".
 */
 {
   a_using_decl_ptr		udp;
@@ -15864,6 +15866,7 @@ this using-directive.
   udp->is_using_directive = TRUE;
   udp->compiler_generated = compiler_generated;
   udp->inline_namespace = inline_namespace;
+  udp->is_contract_control = is_contract_control;
   ssep = &scope_stack[decl_scope_level];
   if (inline_namespace) {
     /* For inline namespaces, add the using-directive to the inline namespace
@@ -16694,23 +16697,35 @@ static void using_directive(a_decl_parse_state  *dps,
 Scan a using directive.  Its syntax is:
 
   using namespace namespace-name
+  using contract_control namespace-opt namespace-name
 
 The caller has consumed the "using" token (whose position is given by
-using_pos): The current token is "namespace".  A using-directive entry is
-created and activated for the current scope.
+using_pos): The current token is "namespace", or "contract_control" (P3400:
+the names the directive makes visible are found only by the lookups within
+assertion-control specifiers and contract_control expressions, see
+in_assertion_control_expression).  A using-directive entry is created and
+activated for the current scope.
 */
 {
   a_symbol_ptr		sym;
   a_boolean		err = FALSE;
   an_attribute_ptr	attributes = dps->prefix_attributes;
+  a_boolean		is_contract_control = FALSE;
 
   db_enter(3, "using_directive");
   /* A using-directive is outside the "Embedded C++" subset. */
   feature_is_not_part_of_embedded_cplusplus_subset(
                                           &pos_curr_token,
                                           ec_namespaces_in_embedded_cplusplus);
-  /* Bypass "namespace". */
-  (void)get_token();
+  if (curr_token == tok_contract_control) {
+    is_contract_control = TRUE;
+    (void)get_token();
+    /* "namespace" is optional. */
+    if (curr_token == tok_namespace) (void)get_token();
+  } else {
+    /* Bypass "namespace". */
+    (void)get_token();
+  }  /* if */
   add_stop_token(tok_semicolon);
   if (!is_decl_qualified_name_start()) {
     syntax_error(ec_exp_identifier);
@@ -16749,7 +16764,8 @@ created and activated for the current scope.
          activate it. */
       make_using_directive(sym->variant.namespace_info.ptr, decl_scope_level,
                            using_pos, /*compiler_generated=*/FALSE,
-                           /*inline_namespace=*/FALSE, attributes);
+                           /*inline_namespace=*/FALSE, attributes,
+                           is_contract_control);
       if (scope_stack_top().exporting_decl) {
         a_boolean non_empty = FALSE, has_internal_linkage = FALSE;
         (void)namespace_is_exportable(sym->variant.namespace_info.ptr,
@@ -21423,7 +21439,7 @@ processing should proceed after the call.
 #endif /* EXTRA_SOURCE_POSITIONS_IN_IL */
       /* Skip over the "using" token. */
       (void)get_token();
-      if (curr_token == tok_namespace) {
+      if (curr_token == tok_namespace || curr_token == tok_contract_control) {
         if (gpp_mode && !clang_mode) {
           /* Attributes are allowed on using-directives, but g++ disallows. */
           disallow_attributes(&state->prefix_attributes, es_error);

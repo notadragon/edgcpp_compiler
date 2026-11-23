@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 Test_name.c
+"Test_name.c", line 28: error: compute_semantic result is not in the allowed evaluation semantics
+  void f (int x) pre<bad> (x > 0) {} // { dg-error "compute_semantic. result is not in the allowed evaluation semantics" }
+                 ^
+
+1 error detected in the compilation of "Test_name.c".

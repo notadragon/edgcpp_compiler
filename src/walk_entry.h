@@ -4279,6 +4279,8 @@ handle_class_type_supplement_for_class:
          the capture list's token cache is for front end use only. */
       walk_list(eptr->captures, a_variable_ptr, iek_variable);
       conditionally_clear_fe_pointer(eptr->capture_token_cache);
+      /* The label (P3400). */
+      walk_ptr(eptr->label, an_expr_node_ptr, iek_expr_node);
       /* The assertion-control specifier's token cache is for front end use
          only. */
       conditionally_clear_fe_pointer(eptr->label_token_cache);

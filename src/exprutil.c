@@ -8610,6 +8610,20 @@ object vp.
 }  /* make_template_param_object_variable_operand */
 
 
+void make_contract_control_object_operand(a_constant_ptr  cp,
+                                          an_operand      *operand)
+/*
+Make operand an lvalue expression operand for the object of a P3400
+contract_control expression whose value is the file-scope constant cp: a
+constexpr object of cp's type, one for each type and value, as a template
+parameter object is (and the same one).
+*/
+{
+  make_template_param_object_operand(cp, operand,
+                                     /*copy_constant=*/FALSE);
+}  /* make_contract_control_object_operand */
+
+
 void make_sym_constant_operand(a_symbol_ptr sym,
 			       an_operand   *operand)
 /*
@@ -22435,6 +22449,9 @@ it might produce an error).
             node->variant.variable.name_reference =
                                    orig_node->variant.variable.name_reference;
             orig_node->variant.variable.name_reference = NULL;
+            /* A P3400 contract_control operand is still put out as one. */
+            node->is_contract_control_operand =
+                                         orig_node->is_contract_control_operand;
           }  /* if */
         }  /* if */
       }  /* if */

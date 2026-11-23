@@ -7860,6 +7860,8 @@ sequence.  The syntax is:
   assertion-statement:
 		contract_assert attribute-specifier-seq opt
 						( conditional-expression ) ;
+  (P3400: an assertion-control specifier, "< constant-expression >", may
+  precede the attribute-specifier-seq.)
 */
 {
   a_statement_ptr           sp;
@@ -7897,6 +7899,10 @@ sequence.  The syntax is:
          Its tokens are not a label's. */
       check_terminating_specifier(csp);
       csp->label_token_cache = NULL;
+    }  /* if */
+    if (csp->label_token_cache != NULL) {
+      /* The label, in the scope of the predicate. */
+      scan_cached_contract_label(csp);
     }  /* if */
     csp->predicate = scan_contract_predicate(&csp->comment, &csp->message);
     (void)required_token(tok_rparen, ec_exp_rparen);

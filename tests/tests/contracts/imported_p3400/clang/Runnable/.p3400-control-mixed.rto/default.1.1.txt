@@ -1,0 +1,9 @@
+eccp -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contract_evaluation_semantic=observe Test_name.c
+"Test_name.c", line 46: warning: variable "copy_a" was declared but never referenced
+  constexpr auto copy_a = contract_control(label_a);
+                 ^
+
+"Test_name.c", line 47: warning: variable "copy_b" was declared but never referenced
+  constexpr auto copy_b = contract_control(label_b);
+                 ^
+

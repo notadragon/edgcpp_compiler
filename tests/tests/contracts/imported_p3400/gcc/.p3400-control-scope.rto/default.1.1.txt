@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts_p3400 Test_name.c
+"Test_name.c", line 25: error: identifier "value" is undefined
+  int y = value;  // { dg-error "not declared" }
+          ^
+
+"Test_name.c", line 26: error: identifier "my_label" is undefined
+  auto z = my_label;  // { dg-error "not declared" }
+           ^
+
+"Test_name.c", line 16: warning: variable "my_labels::value" was declared but never referenced
+    constexpr int value = 42;
+                  ^
+
+2 errors detected in the compilation of "Test_name.c".

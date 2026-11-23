@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++23 --contracts_p3400 --no_contracts_p3400 Test_name.c
+"Test_name.c", line 18: error: expected a "{"
+  int f (int x) pre (x > 0) { return x; } // { dg-error "expected initializer before .pre." }
+                ^
+
+1 error detected in the compilation of "Test_name.c".
