@@ -1,0 +1,28 @@
+Matches for "line 13: error: an unnamed value parameter used in a postcondition must be declared const":
+  <-----------------------------------------------------------------------------
+  line 13: error: an unnamed value parameter used in a postcondition must be declared const
+  ----------------------------------------------------------------------------->
+Matches for "line 17: error: an unnamed value parameter used in a postcondition must be declared const":
+  <-----------------------------------------------------------------------------
+  line 17: error: an unnamed value parameter used in a postcondition must be declared const
+  ----------------------------------------------------------------------------->
+Matches for "line 19: error: an unnamed value parameter used in a postcondition must be declared const":
+  <-----------------------------------------------------------------------------
+  line 19: error: an unnamed value parameter used in a postcondition must be declared const
+  ----------------------------------------------------------------------------->
+Matches for "line 21: error: an unnamed value parameter used in a postcondition must be declared const":
+  <-----------------------------------------------------------------------------
+  line 21: error: an unnamed value parameter used in a postcondition must be declared const
+  ----------------------------------------------------------------------------->
+Matches for "line 24: error: an unnamed value parameter used in a postcondition must be declared const":
+  <-----------------------------------------------------------------------------
+  line 24: error: an unnamed value parameter used in a postcondition must be declared const
+  ----------------------------------------------------------------------------->
+Matches for "line 29: error: an unnamed value parameter used in a postcondition must be declared const":
+  <-----------------------------------------------------------------------------
+  line 29: error: an unnamed value parameter used in a postcondition must be declared const
+  ----------------------------------------------------------------------------->
+Matches for "line 32: error: an unnamed value parameter used in a postcondition must be declared const":
+  <-----------------------------------------------------------------------------
+  line 32: error: an unnamed value parameter used in a postcondition must be declared const
+  ----------------------------------------------------------------------------->

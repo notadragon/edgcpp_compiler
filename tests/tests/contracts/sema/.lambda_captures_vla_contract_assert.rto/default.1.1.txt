@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
+"Test_name.c", line 13: warning: variable "a" is used before its value is set
+    auto l = [&] { contract_assert([&] { return a[0] == 0; }()); };  // Error
+                                                ^
+
+"Test_name.c", line 13: error: "a" (declared at line 12) cannot be implicitly captured only for contract assertions; capture it explicitly
+    auto l = [&] { contract_assert([&] { return a[0] == 0; }()); };  // Error
+                                                ^
+
+"Test_name.c", line 28: warning: variable "a" is used before its value is set
+    contract_assert([&] { return ++a[0] == 0; }());                // Error
+                                   ^
+
+"Test_name.c", line 28: error: expression must be a modifiable lvalue
+    contract_assert([&] { return ++a[0] == 0; }());                // Error
+                                   ^
+
+"Test_name.c", line 32: error: expression must be a modifiable lvalue
+    contract_assert([&] { return ++a[0] == 0; }());                // Error
+                                   ^
+
+3 errors detected in the compilation of "Test_name.c".

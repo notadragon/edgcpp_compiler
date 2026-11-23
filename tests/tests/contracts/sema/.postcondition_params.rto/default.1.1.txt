@@ -1,0 +1,28 @@
+fe_only -DTEST_NUMBER=1 --c++26 Test_name.c
+"Test_name.c", line 3: error: value parameter "x" used in a postcondition must be declared const
+  void e(int x) post(x > 0);                       // Error
+             ^
+
+"Test_name.c", line 8: error: value parameter "x" used in a postcondition must be declared const
+  int e5(int x) { return x; }                      // Error, on the definition
+             ^
+
+"Test_name.c", line 9: error: value parameter "x" used in a postcondition must be declared const
+  int e6(int x) post(r: r > x) { return x; }       // Error (once)
+             ^
+
+"Test_name.c", line 10: error: value parameter "y" used in a postcondition must be declared const
+  auto l = [](int y) post(y > 0) { return y; };    // Error, a lambda's too
+                  ^
+
+"Test_name.c", line 11: error: value parameter "x" used in a postcondition must be declared const
+  template <class T> T t(T x) post(x > 0) { return x; }
+                           ^
+          detected during instantiation of "T t(T) [with T=int]" at line 12
+
+"Test_name.c", line 15: error: value parameter "x" used in a postcondition must be declared const
+  template <class... T> void pk(T... x) post(((x > 0) && ...)) {}  // Error
+                                     ^
+          detected during instantiation of "void pk(T...) [with T=<int, int>]" at line 16
+
+6 errors detected in the compilation of "Test_name.c".
