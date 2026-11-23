@@ -1,0 +1,6 @@
+./a.out
+violation in 1
+violation in 2
+violation in 3
+violation in 4
+end

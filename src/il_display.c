@@ -6097,6 +6097,10 @@ Display the indicated contract specifier entry.
     disp_string_ptr("label_message", ptr->label_message, iek_other_text,
                     (sizeof_t)0);
   }  /* if */
+  if (ptr->label_groups != NULL) {
+    disp_string_ptr("label_groups", ptr->label_groups, iek_other_text,
+                    (sizeof_t)0);
+  }  /* if */
   if (ptr->is_terminating) {
     disp_boolean("is_terminating", TRUE);
   }  /* if */

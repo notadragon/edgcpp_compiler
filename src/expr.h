@@ -1048,6 +1048,8 @@ extern a_boolean in_lambda_in_cdtor_contract(void);
 extern an_expr_node_ptr scan_contract_label(void);
 extern void resolve_contract_label_facets(a_contract_specifier_ptr  csp);
 extern void apply_contract_label_message_facet(a_contract_specifier_ptr  csp);
+extern void resolve_contract_label_groups(a_contract_specifier_ptr  csp,
+                                          a_constant_ptr            label_con);
 
 extern a_boolean current_mode_allows_field_selection_folding(void);
 

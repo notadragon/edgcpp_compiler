@@ -42903,6 +42903,12 @@ diagnosed when that semantic is chosen, as GCC does).
         csp->label_computed_semantics[v] = 0xFE;
       }  /* if */
     }  /* for */
+    /* The group names (P3400). */
+    resolve_contract_label_groups(csp, label_con);
+  } else if (!contract_label_library_declared()) {
+    /* Without <contracts> a label has no other facets, but its group names
+       are read all the same (as GCC does). */
+    resolve_contract_label_groups(csp, (a_constant_ptr)NULL);
   }  /* if */
   release_local_constant(&value);
   release_local_constant(&label_con);
@@ -43273,6 +43279,293 @@ routine_case:
     (void)required_token(tok_rsplice, ec_exp_rbracket);
   }  /* if */
 }  /* scan_expr_splicer */
+
+
+/*
+The state with which the group names of P3400 labels are read (see
+resolve_contract_label_groups), through the function template
+__edg_contract_label_group (see enter_contract_label_group_reader), with
+the label as __edg_opnd__(0), the template argument N as __edg_opnd__(1) and
+the number of names as __edg_opnd__(2).
+*/
+#define CONTRACT_LABEL_GROUPS_MAX 4096
+			/* The most names a label's group_names may hold;
+			   one more is an error (notadragon_wg21 DECISIONS.md
+			   E187 (a), E190). */
+STATIC_THREAD a_text_buffer_ptr
+		contract_label_group_buffer;
+			/* The group names of a label, as they are read. */
+STATIC_THREAD a_text_buffer_ptr
+		contract_label_group_chars;
+			/* The characters of a label's group names, one name
+			   after another, as the third reading yields them. */
+STATIC_THREAD unsigned long
+		contract_label_group_lengths[CONTRACT_LABEL_GROUPS_MAX];
+			/* The lengths of a label's group names. */
+STATIC_THREAD a_token_cache_ptr
+		contract_label_group_caches[2][3];
+			/* The readings of the label's group names
+			   (a_contract_label_group_reading), the names read
+			   as const char * (when <string_view> has not declared
+			   std::string_view) and as std::string_view. */
+
+/* What a reading of a label's group_names yields. */
+typedef enum a_contract_label_group_reading {
+  clgr_count,	/* The number of names, counting no further than N. */
+  clgr_lengths,	/* An array of the lengths of the first N names. */
+  clgr_chars	/* An array of the N characters of the first
+		   __edg_opnd__(2) names, one name after another. */
+} a_contract_label_group_reading;
+
+#define CONTRACT_LABEL_GROUP_READ(name_type, what) \
+  "::__edg_contract_label_group<" name_type ", " what ", __edg_opnd__(1)>(" \
+  "__edg_opnd__(0), __edg_opnd__(2));"
+
+
+static a_boolean contract_label_string_view_declared(void)
+/*
+Return TRUE if std::string_view has been declared (by <string_view>): the
+group names of P3400 labels are then read as it, otherwise as const char *
+(see resolve_contract_label_groups), as GCC does.
+*/
+{
+  a_symbol_ptr  sym = look_up_name_string_in_namespace("std",
+                                                       (a_namespace_ptr)NULL,
+                                                       IDL_MUST_BE_NAMESPACE);
+  if (sym == NULL) return FALSE;
+  sym = fundamental_symbol_of(sym);
+  if (!symbol_is(sym, sk_namespace)) return FALSE;
+  return look_up_name_string_in_namespace("string_view",
+                                          sym->variant.namespace_info.ptr,
+                                          IDL_NO_OPTIONS) != NULL;
+}  /* contract_label_string_view_declared */
+
+
+static a_boolean read_contract_label_groups(
+                                a_contract_label_group_reading  what,
+                                a_boolean                       string_view,
+                                unsigned long                   n,
+                                unsigned long                   count,
+                                a_constant_ptr                  label_con,
+                                a_source_position               *pos,
+                                a_constant_ptr                  value,
+                                a_boolean                       *not_constant)
+/*
+Read the group_names of the P3400 label whose value is *label_con, as what
+says, with the names read as std::string_view if string_view is TRUE (else
+as const char *), N being n and count the number of names, by constant
+evaluation of __edg_contract_label_group (see
+enter_contract_label_group_reader).  The result is as for
+probe_contract_label_facet.
+*/
+{
+  static a_const_char  *texts[2][3] = {
+    { CONTRACT_LABEL_GROUP_READ("const char *", "0"),
+      CONTRACT_LABEL_GROUP_READ("const char *", "1"),
+      CONTRACT_LABEL_GROUP_READ("const char *", "2") },
+    { CONTRACT_LABEL_GROUP_READ("::std::string_view", "0"),
+      CONTRACT_LABEL_GROUP_READ("::std::string_view", "1"),
+      CONTRACT_LABEL_GROUP_READ("::std::string_view", "2") } };
+  int         sv = string_view ? 1 : 0;
+  an_operand  label_opnd, n_opnd, count_opnd;
+
+  make_constant_operand(label_con, &label_opnd);
+  make_integer_constant_operand(&n_opnd, (a_host_large_integer)n);
+  make_integer_constant_operand(&count_opnd, (a_host_large_integer)count);
+  return probe_contract_label_facet(&contract_label_group_caches[sv][what],
+                                    texts[sv][what], &label_opnd, &n_opnd,
+                                    &count_opnd, pos, value, not_constant);
+}  /* read_contract_label_groups */
+
+
+static a_boolean contract_label_group_values(a_constant_ptr     value,
+                                             unsigned long      n,
+                                             unsigned long      *lengths,
+                                             a_text_buffer_ptr  chars)
+/*
+Store the n integers of value, the constant value of a struct whose one
+member is an array of n integers (as __edg_contract_label_group yields),
+into lengths, or, if lengths is NULL, as characters into chars.  Return
+FALSE if value is not such a constant.
+*/
+{
+  a_constant_ptr  arr, cp;
+  unsigned long   k = 0;
+
+  if (!constant_is(value, ck_aggregate)) return FALSE;
+  arr = value->variant.aggregate.first_constant;
+  if (arr == NULL || !constant_is(arr, ck_aggregate)) return FALSE;
+  for (cp = arr->variant.aggregate.first_constant; cp != NULL;
+       cp = cp->next) {
+    /* A run of equal elements may be one ck_init_repeat. */
+    a_constant_ptr         ecp = cp;
+    a_targ_size_t          r = 1;
+    a_host_large_unsigned  v;
+    a_boolean              ovflo = FALSE;
+    if (constant_is(cp, ck_init_repeat)) {
+      ecp = cp->variant.init_repeat.constant;
+      r = cp->variant.init_repeat.count;
+    }  /* if */
+    if (ecp == NULL || !constant_is(ecp, ck_integer)) return FALSE;
+    v = unsigned_value_of_integer_constant(ecp, &ovflo);
+    if (ovflo || r > (a_targ_size_t)(n - k)) return FALSE;
+    for (; r != 0; r--, k++) {
+      if (lengths != NULL) {
+        lengths[k] = (unsigned long)v;
+      } else {
+        add_char_to_text_buffer(chars, (char)v);
+      }  /* if */
+    }  /* for */
+  }  /* for */
+  return k == n;
+}  /* contract_label_group_values */
+
+
+void resolve_contract_label_groups(a_contract_specifier_ptr  csp,
+                                   a_constant_ptr            label_con)
+/*
+Record, as csp->label_groups, the group names of the label of the contract
+assertion csp (P3400), whose value is *label_con (NULL if the other facets
+are not read, <contracts> not having been included: the label is then
+evaluated here).  As GCC does, its group_names member, which must be const,
+is read as a range-based for walks a range whose elements convert to
+std::string_view (or, if <string_view> has not declared it, to const char *),
+in three constant evaluations of __edg_contract_label_group (see
+enter_contract_label_group_reader), each walking the range once: the number
+of names, their lengths, and their characters.  Empty names are skipped.
+*/
+{
+  a_constant_ptr  value = local_constant();
+  a_constant_ptr  own_label_con = NULL;
+  a_boolean       not_constant;
+  a_boolean       string_view_declared;
+  a_text_buffer   *buffer = contract_label_group_buffer;
+  a_text_buffer   *chars = contract_label_group_chars;
+
+  if (buffer == NULL) {
+    buffer = contract_label_group_buffer = alloc_text_buffer((sizeof_t)64);
+  }  /* if */
+  if (chars == NULL) {
+    chars = contract_label_group_chars = alloc_text_buffer((sizeof_t)64);
+  }  /* if */
+  reset_text_buffer(buffer);
+  reset_text_buffer(chars);
+  csp->label_groups = NULL;
+  if (label_con == NULL) {
+    /* Evaluate the label, if it is not template-dependent. */
+    a_diag_list  diag_list = { NULL, NULL };
+    if (csp->label == NULL || is_error_node(csp->label) ||
+        is_template_dependent_context()) {
+      release_local_constant(&value);
+      return;
+    }  /* if */
+    own_label_con = local_constant();
+    if (is_constant_node(csp->label)) {
+      copy_constant(node_constant(csp->label), own_label_con);
+    } else if (!interpret_expr(csp->label, /*is_constant_evaluated=*/TRUE,
+                               /*force_prvalue=*/TRUE, own_label_con,
+                               &diag_list)) {
+      discard_more_info_list(&diag_list);
+      release_local_constant(&own_label_con);
+      release_local_constant(&value);
+      return;
+    }  /* if */
+    discard_more_info_list(&diag_list);
+    label_con = own_label_con;
+  }  /* if */
+  string_view_declared = contract_label_string_view_declared();
+  if (contract_label_group_reader_entered &&
+      read_contract_label_groups(clgr_count, string_view_declared,
+                                 (unsigned long)CONTRACT_LABEL_GROUPS_MAX + 1,
+                                 0, label_con, &csp->position, value,
+                                 &not_constant)) {
+    /* A group_names that is a range of names but whose reading is not a
+       constant expression (undefined behavior in its begin, a name that is
+       not a constant, the evaluation cost limit), or that holds more than
+       CONTRACT_LABEL_GROUPS_MAX names, is an error, as in GCC, rather than
+       a label silently in no group; one that is absent or not such a range
+       yields 0 and gives the label no groups, undiagnosed.  The count stops
+       one past the limit, before any name is read. */
+    a_type_ptr     label_type =
+                     make_unqualified_type(skip_typerefs(label_con->type));
+    a_boolean      ovflo = FALSE;
+    unsigned long  count = 0, total = 0, i, k;
+    if (!not_constant && constant_is(value, ck_integer)) {
+      a_host_large_unsigned  n = unsigned_value_of_integer_constant(value,
+                                                                   &ovflo);
+      if (!ovflo && n > CONTRACT_LABEL_GROUPS_MAX) ovflo = TRUE;
+      if (!ovflo) count = (unsigned long)n;
+    }  /* if */
+    if (not_constant) {
+      pos_ty_error(ec_contract_label_groups_not_constant, &csp->position,
+                   label_type);
+    } else if (ovflo) {
+      pos_ty_error(ec_contract_label_groups_too_many, &csp->position,
+                   label_type);
+    }  /* if */
+    if (count != 0) {
+      /* The lengths of the names, then their characters. */
+      a_boolean  ok = read_contract_label_groups(
+                              clgr_lengths, string_view_declared, count, count,
+                              label_con, &csp->position, value,
+                              &not_constant) &&
+                      !not_constant &&
+                      contract_label_group_values(value, count,
+                                                  contract_label_group_lengths,
+                                                  (a_text_buffer_ptr)NULL);
+      for (i = 0; ok && i < count; i++) {
+        /* (The characters are read as one array, whose size is an int.) */
+        if (contract_label_group_lengths[i] > 0x7FFFFFFFUL - total) {
+          ok = FALSE;
+        } else {
+          total += contract_label_group_lengths[i];
+        }  /* if */
+      }  /* for */
+      if (ok && total != 0) {
+        ok = read_contract_label_groups(clgr_chars, string_view_declared,
+                                        total, count, label_con,
+                                        &csp->position, value,
+                                        &not_constant) &&
+             !not_constant &&
+             contract_label_group_values(value, total, (unsigned long *)NULL,
+                                         chars);
+      }  /* if */
+      if (!ok) {
+        /* A name that is not a constant: no groups. */
+        pos_ty_error(ec_contract_label_groups_not_constant, &csp->position,
+                     label_type);
+      } else {
+        for (i = 0, k = 0; i < count; i++) {
+          /* A name is all its characters, NUL bytes included
+             (notadragon_wg21 DECISIONS.md E191 (a)), kept whole through
+             matching (E192 (2)).  The names are kept one per line, in a
+             string, so the bytes 0, newline and 1 inside a name are stored
+             as the byte 1 followed by '0', 'n' or '1' (see
+             a_contract_specifier::label_groups). */
+          unsigned long  len = contract_label_group_lengths[i], j;
+          for (j = 0; j < len; j++) {
+            char  c = chars->buffer[k + j];
+            if (c == '\0' || c == '\n' || c == '\1') {
+              add_char_to_text_buffer(buffer, '\1');
+              c = c == '\0' ? '0' : c == '\n' ? 'n' : '1';
+            }  /* if */
+            add_char_to_text_buffer(buffer, c);
+          }  /* for */
+          if (len != 0) add_char_to_text_buffer(buffer, '\n');
+          k += len;
+        }  /* for */
+      }  /* if */
+    }  /* if */
+  }  /* if */
+  if (buffer->size != 0) {
+    char  *text = (char*)alloc_il((sizeof_t)(buffer->size + 1));
+    (void)memcpy(text, buffer->buffer, (size_t)buffer->size);
+    text[buffer->size] = '\0';
+    csp->label_groups = text;
+  }  /* if */
+  if (own_label_con != NULL) release_local_constant(&own_label_con);
+  release_local_constant(&value);
+}  /* resolve_contract_label_groups */
 
 
 static void check_for_pcc_compound_assignment_operators(void)
@@ -61258,6 +61551,15 @@ Do one-time initialization of variables related to expression processing.
   contract_label_message_cache = NULL;
   contract_label_null_message_cache = NULL;
   contract_label_comment_cache = NULL;
+  { int  sv, what;
+    for (sv = 0; sv < 2; sv++) {
+      for (what = 0; what < 3; what++) {
+        contract_label_group_caches[sv][what] = NULL;
+      }  /* for */
+    }  /* for */
+  }
+  contract_label_group_buffer = NULL;
+  contract_label_group_chars = NULL;
 }  /* expr_one_time_init */
 
 

@@ -4285,6 +4285,7 @@ handle_class_type_supplement_for_class:
          only. */
       conditionally_clear_fe_pointer(eptr->label_token_cache);
       walk_string_ptr(eptr->label_message, iek_other_text, 0);
+      walk_string_ptr(eptr->label_groups, iek_other_text, 0);
       /* The token cache pointer is for front end use only. */
       conditionally_clear_fe_pointer(eptr->token_cache);
 #undef eptr
