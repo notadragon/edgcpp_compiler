@@ -43,9 +43,9 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     auto M<T>::f() -> M<decltype(a->n)> {}
                                          ^
 
-"Test_name.c", line 122: error: expression must be a modifiable lvalue
+"Test_name.c", line 122: warning: parameter "x" was set but never used
     void A<T>::f(int x) { x = 0; }
-                          ^
+                     ^
 
 "Test_name.c", line 126: error: expression must be a modifiable lvalue
       x = 0; // expected-error {{cannot assign to variable 'x'}}
@@ -63,4 +63,4 @@ fe_only -DTEST_NUMBER=1 --clang -tused -e 200 --no_wrap_diagnostics --clang_vers
     template<typename ...Ts> void h(S<Y<Ts, sizeof(Ts)>...>) {} // expected-error {{redefinition}}
                                   ^
 
-13 errors detected in the compilation of "Test_name.c".
+12 errors detected in the compilation of "Test_name.c".
