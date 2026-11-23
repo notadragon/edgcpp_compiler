@@ -1,0 +1,3 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contract_evaluation_semantic=noexcept_enforce -DWANT=0 Test_name.c
+Command-line warning: --contract_evaluation_semantic=noexcept_enforce requires --contracts_p4298; enforce is used instead
+

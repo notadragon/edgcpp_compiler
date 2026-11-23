@@ -1,0 +1,16 @@
+Matches for "line 38: (warning: contract predicate is false in constant expression|error: no valid evaluation semantic for contract assertion)":
+  <-----------------------------------------------------------------------------
+  line 38: warning: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+Matches for "line 39: (warning|error): contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  line 39: warning: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+Matches for "line 40: (error|warning): contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  line 40: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+Matches for "line 41: (warning|error): contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  line 41: warning: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
