@@ -1,0 +1,8 @@
+Matches for "line 13: error: an enclosing-function local variable cannot be referenced in a lambda body unless it is in the capture list":
+  <-----------------------------------------------------------------------------
+  line 13: error: an enclosing-function local variable cannot be referenced in a lambda body unless it is in the capture list
+  ----------------------------------------------------------------------------->
+Matches for "line 14: error: an enclosing-function local variable cannot be referenced in a lambda body unless it is in the capture list":
+  <-----------------------------------------------------------------------------
+  line 14: error: an enclosing-function local variable cannot be referenced in a lambda body unless it is in the capture list
+  ----------------------------------------------------------------------------->
