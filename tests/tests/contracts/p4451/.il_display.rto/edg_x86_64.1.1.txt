@@ -1,0 +1,4 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contracts_p4451 --no_il_lowering --il_display Test_name.c
+is_terminating:          TRUE
+label_allowed_semantics: 24
+

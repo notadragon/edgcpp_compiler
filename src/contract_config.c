@@ -1526,6 +1526,15 @@ of a label (P3400) adjust it (see apply_contract_label_facets).
   /* Otherwise the default: before the configuration is built, or without
      one. */
   if (csp->is_terminating) {
+    /* P4451: as for P3400's controls::enforced. */
+    semantic = apply_contract_label_facets(csp, semantic, in_ce);
+  } else
+  if (csp->label != NULL &&
+      (csp->label_allowed_semantics != 0 ||
+       csp->label_computed_semantics[1] != 0)) {
+    semantic = apply_contract_label_facets(csp, semantic, in_ce);
+  }  /* if */
+  if (csp->is_terminating) {
     /* P4451: a terminating semantic (which, with P3400's facets, its
        allowed set has already given it, above). */
     semantic = terminating_contract_semantic(semantic);
