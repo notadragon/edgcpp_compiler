@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 -DCASE=1 Test_name.c
+"Test_name.c", line 10: error: identifier "undeclared" is undefined
+    void f(T x) pre(undeclared > 0);  // Error, in the template
+                    ^
+
+1 error detected in the compilation of "Test_name.c".
