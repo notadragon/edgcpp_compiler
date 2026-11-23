@@ -1,0 +1,3 @@
+fe_only -DTEST_NUMBER=5 --c++26 --c++26 --contracts_prove_fold --contracts_p3850 --no_contracts_p4405 Test_name.c
+Command-line warning: --contracts_prove_fold has no effect without --contracts_p4405
+

@@ -1,0 +1,1 @@
+fe_only -DTEST_NUMBER=4 --c++26 --c++23 --contracts_allow_assume --no_contracts_allow_assume Test_name.c

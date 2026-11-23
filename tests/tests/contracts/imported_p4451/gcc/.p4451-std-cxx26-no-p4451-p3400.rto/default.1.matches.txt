@@ -1,0 +1,4 @@
+Matches for "^(Command-line error: --no_contracts_p4451 cannot be combined with --contracts_p3400, which subsumes P4451)$":
+  <-----------------------------------------------------------------------------
+  Command-line error: --no_contracts_p4451 cannot be combined with --contracts_p3400, which subsumes P4451
+  ----------------------------------------------------------------------------->

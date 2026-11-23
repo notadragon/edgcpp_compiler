@@ -1,0 +1,7 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++23 --contracts_allow_assume --contract_evaluation_semantic=quick_enforce --contract_analysis_semantic=ignore Test_name.c
+Command-line warning: --contracts_allow_assume has no effect without --contracts
+
+Command-line warning: --contract_evaluation_semantic has no effect without --contracts
+
+Command-line warning: --contract_analysis_semantic has no effect without --contracts
+

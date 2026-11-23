@@ -1,0 +1,1 @@
+fe_only -DTEST_NUMBER=2 --c++26 --c++23 --no_contracts_prove_fold --no_contract_analysis_skip_dead_calls --no_contracts_prove_override --no_contracts_prove_callee_premises Test_name.c

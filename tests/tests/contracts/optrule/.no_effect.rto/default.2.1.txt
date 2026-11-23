@@ -1,0 +1,1 @@
+fe_only -DTEST_NUMBER=2 --c++26 --c++23 --contracts --contracts_allow_assume --contract_evaluation_semantic=quick_enforce --contract_analysis_semantic=ignore Test_name.c

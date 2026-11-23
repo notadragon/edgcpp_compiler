@@ -1,0 +1,3 @@
+fe_only -DTEST_NUMBER=7 --c++26 --c++23 --no_contracts_allow_assume --contracts_allow_assume Test_name.c
+Command-line warning: --contracts_allow_assume has no effect without --contracts
+

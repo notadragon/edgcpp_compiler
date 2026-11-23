@@ -1,0 +1,3 @@
+fe_only -DTEST_NUMBER=11 --c++26 --c++23 --contract_evaluation_semantic=enforce Test_name.c
+Command-line warning: --contract_evaluation_semantic has no effect without --contracts
+

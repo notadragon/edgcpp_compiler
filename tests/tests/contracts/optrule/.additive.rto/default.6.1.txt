@@ -1,0 +1,1 @@
+fe_only -DTEST_NUMBER=6 --c++26 --c++23 --no_contracts_p3850 --contracts_p4451 Test_name.c

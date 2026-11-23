@@ -1,0 +1,2 @@
+cpfe -DTEST_NUMBER=2 --c++26 --c++23 --contract_evaluation_semantic=enforce Test_name.c
+cc1plus: warning: '-fcontract-evaluation-semantic=' has no effect without '-fcontracts'

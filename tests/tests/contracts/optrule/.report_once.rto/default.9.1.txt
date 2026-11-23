@@ -1,0 +1,5 @@
+cpfe -DTEST_NUMBER=9 --c++26 --c++26 --contracts --contract_configuration=[{"match":{"module":"m"},"output":{"semantic":"enforce"}},{"match":{"kind":"pre"},"output":{"semantic":"prove"}},{"output":{"semantic":"noexcept_enforce"}}] Test_name.c
+<command-line>: In JSON value '/0/match/module'
+<command-line>:1:21: warning: unknown key 'module' in 'match' object; the entry is skipped [-Wcontract-configuration]
+EDG_GXX_TMP/Test_name.cpp: warning: the contract configuration asks for 'noexcept_enforce', which requires '-fcontracts-p4298'; 'enforce' is used instead [-Wcontract-configuration]
+EDG_GXX_TMP/Test_name.cpp: warning: the contract configuration asks for 'prove', which requires '-fcontracts-p4405'; 'ignore' is used instead [-Wcontract-configuration]

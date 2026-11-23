@@ -1,0 +1,3 @@
+fe_only -DTEST_NUMBER=12 --c++26 --c++26 --contracts --contract_evaluation_semantic=noexcept_observe Test_name.c
+Command-line warning: --contract_evaluation_semantic=noexcept_observe requires --contracts_p4298; observe is used instead
+

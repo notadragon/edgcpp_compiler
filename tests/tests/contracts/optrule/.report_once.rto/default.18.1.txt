@@ -1,0 +1,7 @@
+fe_only -DTEST_NUMBER=18 --c++26 --c++26 --contracts --contract_configuration=[{"match":{"module":"m"},"output":{"semantic":"enforce"}},{"match":{"kind":"pre"},"output":{"semantic":"prove"}},{"output":{"semantic":"noexcept_enforce"}}] Test_name.c
+Command-line warning: contract configuration (<command-line>:1:21): unknown key "module" in "match" object; the entry is skipped
+
+Command-line warning: contract configuration (<command-line>:1:59): the configuration asks for "prove", which requires --contracts_p4405; "ignore" is used instead
+
+Command-line warning: contract configuration (<command-line>:1:114): the configuration asks for "noexcept_enforce", which requires --contracts_p4298; "enforce" is used instead
+
