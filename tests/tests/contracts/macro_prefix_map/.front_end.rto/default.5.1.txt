@@ -1,0 +1,5 @@
+fe_only -DTEST_NUMBER=5 --c++26 --macro_prefix_map nonsense Test_name.c
+Command-line error: invalid argument to --macro_prefix_map (must be OLD=NEW): nonsense
+
+1 catastrophic error detected in this compilation.
+Compilation terminated.

@@ -1,0 +1,3 @@
+./a.out
+__FILE__ is MACRO-PREFIX/Test_name.c
+0xADDR is located 0 bytes after global variable 'XXX' defined in 'MACRO-PREFIX/Test_name.c:18:6' (0xADDR) of size 10

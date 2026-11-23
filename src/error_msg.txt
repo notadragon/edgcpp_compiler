@@ -3687,5 +3687,6 @@ ec_constexpr_destroying_outside_lifetime;;"attempt to destroy an object outside 
 ec_constexpr_modifying_outside_lifetime;;"attempt to modify an object outside its lifetime"
 ec_constexpr_member_before_construction;;"attempt to refer to a member of an object whose construction has not begun"
 ec_lambda_pack_capture_ellipsis_before_name;;"a pack capture with no initializer is written \"%s...\", not \"...%s2\""
+ec_cl_invalid_macro_prefix_map;;"invalid argument to --macro_prefix_map (must be OLD=NEW): %s"
  ###############################################################################
 

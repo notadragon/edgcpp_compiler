@@ -896,6 +896,7 @@ check_abbreviation()
 --c++cx
 --c_to_obj_lib
 --c_to_obj_option
+--canon_prefix_map
 --cfront_2.1
 --cfront_3.0
 --char8_t
@@ -1009,6 +1010,7 @@ check_abbreviation()
 --long_long
 --long_preserving_rules
 --macro_positions_in_diagnostics
+--macro_prefix_map
 --max_cost_constexpr_call
 --max_depth_constexpr_call
 --microsoft
@@ -1080,6 +1082,7 @@ check_abbreviation()
 --no_c++11_sfinae_ignore_access
 --no_c++cli
 --no_c++cx
+--no_canon_prefix_map
 --no_char8_t
 --no_check_concatenations
 --no_check_unicode_security
@@ -2073,6 +2076,7 @@ process_option()
          --preusing | \
          --using_directory | \
          --vcmeta_directory | \
+         --macro_prefix_map | \
          --default_calling_convention | \
          --dump_legacy_as_target | \
          --target | \
@@ -2204,6 +2208,7 @@ process_option()
           --preusing=* | \
           --using_directory=* | \
           --vcmeta_directory=* | \
+          --macro_prefix_map=* | \
           --default_calling_convention=* | \
           --dump_legacy_as_target=* | \
           --target=* | \

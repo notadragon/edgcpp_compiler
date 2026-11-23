@@ -1,0 +1,3 @@
+./a.out
+Test_name.c
+/mapped/Test_name.c

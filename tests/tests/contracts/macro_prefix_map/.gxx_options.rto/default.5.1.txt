@@ -1,0 +1,1 @@
+eccp -DTEST_NUMBER=5 --c++26 -fcanon-prefix-map -fmacro-prefix-map=./=/mapped Test_name.c

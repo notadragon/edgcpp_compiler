@@ -1,0 +1,4 @@
+./a.out
+MAPPED/Test_name.c
+MAPPED/Test_name.c
+MAPPED/dir/renamed.cpp

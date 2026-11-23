@@ -1,0 +1,6 @@
+./a.out
+SECOND/Test_name.c
+SECOND/Test_name.c
+SECOND/Test_name.c
+SECOND/dir/renamed.cpp
+SECOND/renamed.cpp
