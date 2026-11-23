@@ -1,0 +1,1 @@
+cpfe -DTEST_NUMBER=3 --c++26 --c++26 --contracts --contracts_p4405 --contract_evaluation_semantic=diagnose -O0 -O1 Test_name.c

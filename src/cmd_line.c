@@ -1927,6 +1927,10 @@ Initialize the option information table.
                          "no_contracts_prove_callee_premises", '\0',
                          /*value=*/FALSE, /*arg_required=*/FALSE,
                          pchek_command_line);
+  add_option_description(optk_contracts_prove_optimize,
+                         "contracts_prove_optimize", '\0',
+                         /*value=*/TRUE, /*arg_required=*/TRUE,
+                         pchek_command_line);
   add_option_description(optk_contracts_p4451, "contracts_p4451", '\0',
                          /*value=*/TRUE, /*arg_required=*/FALSE,
                          pchek_command_line);
@@ -12595,6 +12599,19 @@ enable_microsoft_mode:
       case optk_contracts_prove_callee_premises:
         contracts_prove_callee_premises_enabled = opt_value;
         break;
+      case optk_contracts_prove_optimize:
+        /* P4405's proof optimization level, as GCC's
+           -fcontracts-prove-optimize=; the last one given wins. */
+        if (strcmp(opt_arg, "follow") == 0) {
+          contracts_prove_optimize = -1;
+        } else if (opt_arg[0] >= '0' && opt_arg[0] <= '3' &&
+                   opt_arg[1] == '\0') {
+          contracts_prove_optimize = opt_arg[0] - '0';
+        } else {
+          str_command_line_error(ec_cl_invalid_contracts_prove_optimize,
+                                 opt_arg);
+        }  /* if */
+        break;
       case optk_contracts_p4451:
         contracts_p4451_enabled = opt_value;
         break;
@@ -14388,6 +14405,7 @@ variables declared in cmd_line.h.
   contract_analysis_skip_dead_calls_enabled = FALSE;
   contracts_prove_override_enabled = FALSE;
   contracts_prove_callee_premises_enabled = FALSE;
+  contracts_prove_optimize = -2;
   contracts_p4451_enabled = FALSE;
   incognito = DEFAULT_INCOGNITO;
   keep_restrict_in_signatures = FALSE;

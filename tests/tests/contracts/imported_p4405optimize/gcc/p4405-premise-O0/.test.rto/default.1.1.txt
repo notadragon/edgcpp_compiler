@@ -1,0 +1,29 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p4405 --contracts_prove_optimize=0 --contract_configuration_file=p4405-premise-O0.json -O0 Test_name.c
+Test_name.c: In function 'int d_static_always(int)':
+Test_name.c:25:1: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   25 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:25:19: note: the predicate of the contract assertion
+   25 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      |                 ~~^~~
+Test_name.c: In function 'int d_static_auto(int)':
+Test_name.c:34:1: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   34 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:34:19: note: the predicate of the contract assertion
+   34 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      |                 ~~^~~
+Test_name.c: In function 'int d_inline_always(int)':
+Test_name.c:43:1: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   43 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:43:19: note: the predicate of the contract assertion
+   43 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      |                 ~~^~~
+Test_name.c: In function 'int d_inline_auto(int)':
+Test_name.c:52:1: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   52 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:52:19: note: the predicate of the contract assertion
+   52 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      |                 ~~^~~

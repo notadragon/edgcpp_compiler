@@ -1,0 +1,12 @@
+cpfe -DTEST_NUMBER=2 --c++26 --c++26 --contracts --contracts_p3097 --contracts_p4405 --contract_analysis_semantic=prove --contracts_prove_optimize=0 -fcontracts-prove-shadow --contracts_prove_override -fcontracts-prove-assume -O2 -O0 Test_name.c
+"Test_name.c", line 44: warning: variable "d" was declared but never referenced
+  void use () { D d; }
+                  ^
+
+Test_name.c: In function 'int k(int, int)':
+Test_name.c:50:1: error: contract assertion cannot be proven
+   50 |     contract_assert (i < n);    // { dg-error "contract assertion cannot be proven" }
+      | ^   ~~~~~~~~~~~
+Test_name.c:50:19: note: the predicate of the contract assertion
+   50 |     contract_assert (i < n);    // { dg-error "contract assertion cannot be proven" }
+      |                 ~~^~~

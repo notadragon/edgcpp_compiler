@@ -1,0 +1,21 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p4405 --contract_evaluation_semantic=prove --contracts_prove_optimize=0 Test_name.c
+Test_name.c: In function 'void use(double)':
+Test_name.c:48:2: error: contract predicate is always false
+   48 |   g ('c');                      // { dg-error "contract predicate is always false" "sizeof (char) is 1" }
+      |  ^~~~~
+Test_name.c:31:22: note: the predicate of the contract assertion
+   31 |   pre (sizeof (T) >= 4)         // { dg-message "the predicate of the contract assertion" }
+      |         ~~~~~~~~~~~~~^~~~~~~~~~~
+Test_name.c:50:2: error: contract assertion cannot be proven
+   50 |   g (d);                        // { dg-error "contract assertion cannot be proven" "a double may be a NaN" }
+      |  ^~~
+Test_name.c:32:11: note: the predicate of the contract assertion
+   32 |   pre (x == x)                  // { dg-message "the predicate of the contract assertion" }
+      |         ~~^~~~
+Test_name.c: In instantiation of 'void f() [with int N = 0]':
+Test_name.c:46:7:   required from here
+   46 |   f<0> ();                      // the "always false" above
+      |   ~~~~^~
+Test_name.c:26:3: error: contract predicate is always false
+   26 |   contract_assert (N > 0);      // { dg-error "contract predicate is always false" }
+      |   ^~~~~~~~~~~~~~~

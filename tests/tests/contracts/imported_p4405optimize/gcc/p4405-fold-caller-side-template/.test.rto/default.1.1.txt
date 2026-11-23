@@ -1,0 +1,110 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p4405 --contracts_p4283 --contracts_prove_optimize=0 --contract_configuration_file=p4405-fold-caller-side.json Test_name.c
+Test_name.c: In function 'void use(int, M*, CT<int>*)':
+Test_name.c:102:3: error: contract predicate is always false
+  102 |   hd (0);                       // { dg-error "contract predicate is always false" }
+      |   ^~~
+Test_name.c:49:25: note: the predicate of the contract assertion
+   49 | void hd (U u) pre (u > 0) {}    // { dg-message "the predicate of the contract assertion" }
+      |                       ~~^~~
+Test_name.c:104:3: error: contract assertion cannot be proven
+  104 |   hd (n);                       // { dg-error "contract assertion cannot be proven" }
+      |   ^~~
+Test_name.c:49:25: note: the predicate of the contract assertion
+   49 | void hd (U u) pre (u > 0) {}    // { dg-message "the predicate of the contract assertion" }
+      |                       ~~^~~
+Test_name.c:106:7: error: contract predicate is always false
+  106 |   SD b (0);                     // { dg-error "contract predicate is always false" }
+      |       ^
+Test_name.c:53:22: note: the predicate of the contract assertion
+   53 |   SD (U u) pre (u > 0) {}       // { dg-message "the predicate of the contract assertion" }
+      |                    ~~^~~
+Test_name.c:108:7: error: contract predicate is always false
+  108 |   TD d (0);                     // { dg-error "contract predicate is always false" }
+      |       ^
+Test_name.c:53:22: note: the predicate of the contract assertion
+   53 |   SD (U u) pre (u > 0) {}       // { dg-message "the predicate of the contract assertion" }
+      |                    ~~^~~
+Test_name.c:110:6: error: contract predicate is always false
+  110 |   pm->f (0L);                   // { dg-error "contract predicate is always false" }
+      |   ~~~^~~~~~
+Test_name.c:61:26: note: the predicate of the contract assertion
+   61 |   void f (U u) pre (u > 0) {}   // { dg-message "the predicate of the contract assertion" }
+      |                        ~~^~~
+Test_name.c:112:14: error: contract predicate is always false
+  112 |   CT<int> f (0);                // { dg-error "contract predicate is always false" }
+      |              ^
+Test_name.c:66:22: note: the predicate of the contract assertion
+   66 |   CT (T t) pre (t > 0) {}       // { dg-message "the predicate of the contract assertion" }
+      |                    ~~^~~
+Test_name.c:114:7: error: contract predicate is always false
+  114 |   CD h (0);                     // { dg-error "contract predicate is always false" }
+      |       ^
+Test_name.c:66:22: note: the predicate of the contract assertion
+   66 |   CT (T t) pre (t > 0) {}       // { dg-message "the predicate of the contract assertion" }
+      |                    ~~^~~
+Test_name.c:116:6: error: contract predicate is always false
+  116 |   pc->g (0);                    // { dg-error "contract predicate is always false" }
+      |   ~~~^~~
+Test_name.c:67:26: note: the predicate of the contract assertion
+   67 |   void g (T t) pre (t != 0) {}  // { dg-message "the predicate of the contract assertion" }
+      |                        ~~^~~~
+Test_name.c:118:6: error: contract predicate is always false
+  118 |   pc->h (2, 1L);                // { dg-error "contract predicate is always false" }
+      |   ~~~^~~~~~~
+Test_name.c:69:31: note: the predicate of the contract assertion
+   69 |   void h (T t, U u) pre (t < u) {}      // { dg-message "the predicate of the contract assertion" }
+      |                             ~~^~~
+Test_name.c:119:6: error: contract assertion cannot be proven
+  119 |   pc->h (n, 1L);                // { dg-error "contract assertion cannot be proven" }
+      |   ~~~^~~~~~~
+Test_name.c:69:31: note: the predicate of the contract assertion
+   69 |   void h (T t, U u) pre (t < u) {}      // { dg-message "the predicate of the contract assertion" }
+      |                             ~~^~~
+Test_name.c:121:5: error: contract predicate is always false
+  121 |   allp (1, 0, 3);               // { dg-error "contract predicate is always false" }
+      |   ~~^~~~~~~~~
+Test_name.c:76:41: note: the predicate of the contract assertion
+   76 | void allp (T... t) pre (((t > 0) && ...)) {}    // { dg-message "the predicate of the contract assertion" }
+      |                             ~~~~~~~~~~~~^~~~~~~~~~~
+Test_name.c:124:15: error: contract predicate is always false
+  124 |   dflt<int, 0> ();              // { dg-error "contract predicate is always false" }
+      |   ~~~~~~~~~~~~^~
+Test_name.c:79:31: note: the predicate of the contract assertion
+   79 | void dflt (U u = N) pre (u > 0) {}      // { dg-message "the predicate of the contract assertion" }
+      |                             ~~^~~
+Test_name.c:125:5: error: contract assertion cannot be proven
+  125 |   dflt (n);                     // { dg-error "contract assertion cannot be proven" }
+      |   ~~^~~
+Test_name.c:79:31: note: the predicate of the contract assertion
+   79 | void dflt (U u = N) pre (u > 0) {}      // { dg-message "the predicate of the contract assertion" }
+      |                             ~~^~~
+Test_name.c:127:11: error: contract predicate is always false
+  127 |   below<5> (7);                 // { dg-error "contract predicate is always false" }
+      |   ~~~~~~~~^~~
+Test_name.c:82:30: note: the predicate of the contract assertion
+   82 | void below (int x) pre (x < N) {}       // { dg-message "the predicate of the contract assertion" }
+      |                            ~~^~~
+Test_name.c:128:4: error: contract predicate is always false
+  128 |   big (n);                      // { dg-error "contract predicate is always false" }
+      |   ~^~~
+Test_name.c:85:35: note: the predicate of the contract assertion
+   85 | void big (U) pre (sizeof (U) > 64) {}   // { dg-message "the predicate of the contract assertion" }
+      |                      ~~~~~~~~~~~~~^~~~~~
+Test_name.c:130:3: error: contract assertion cannot be proven
+  130 |   rq (Val {1});                 // { dg-error "contract assertion cannot be proven" }
+      |   ^~~~~~~~
+Test_name.c:91:59: note: the predicate of the contract assertion
+   91 | void rq (T x) pre requires (HasVal<T>) (x.val > 0) {}   // { dg-message "the predicate of the contract assertion" }
+      |                                                 ~~~~~~~~~~^~~
+Test_name.c:131:4: error: contract assertion cannot be proven
+  131 |   lam (1);                      // { dg-error "contract assertion cannot be proven" }
+      |   ~^~~
+Test_name.c:94:54: note: the predicate of the contract assertion
+   94 | void lam (U u) pre ([] (U v) { return v > 0; } (u)) {}  // { dg-message "the predicate of the contract assertion" }
+      |                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+Test_name.c:132:4: error: contract assertion cannot be proven
+  132 |   cls (Val {1});                // { dg-error "contract assertion cannot be proven" }
+      |   ~^~~~~~~~
+Test_name.c:97:32: note: the predicate of the contract assertion
+   97 | void cls (U u) pre (u.val > 0) {}       // { dg-message "the predicate of the contract assertion" }
+      |                        ~~~~~~~~^~~~~~~~~

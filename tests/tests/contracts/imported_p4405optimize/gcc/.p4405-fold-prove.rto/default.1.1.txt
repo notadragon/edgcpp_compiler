@@ -1,0 +1,53 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p4405 --contract_evaluation_semantic=prove --contracts_prove_optimize=0 Test_name.c
+"Test_name.c", line 52: warning: pointless comparison of unsigned integer with zero
+    pre (u >= 0u)				// { dg-bogus "(cannot be proven|always false)" }
+           ^
+
+"Test_name.c", line 54: warning: pointless comparison of unsigned integer with zero
+    pre (u < 0u)				// { dg-message "the predicate of the contract assertion" }
+           ^
+
+Test_name.c: In function 'int f(int)':
+Test_name.c:42:1: error: contract predicate is always false
+   42 |   contract_assert (false);              // { dg-error "contract predicate is always false" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:43:1: error: contract predicate is always false
+   43 |   contract_assert (sizeof (int) == 0);  // { dg-error "contract predicate is always false" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:44:1: error: contract predicate is always false
+   44 |   contract_assert (positive (-N));      // { dg-error "contract predicate is always false" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:44:25: note: the predicate of the contract assertion
+   44 |   contract_assert (positive (-N));      // { dg-error "contract predicate is always false" }
+      |                 ~~~~~~~~^~~~
+Test_name.c:45:1: error: contract assertion cannot be proven
+   45 |   contract_assert (x != 3);             // { dg-error "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:45:19: note: the predicate of the contract assertion
+   45 |   contract_assert (x != 3);             // { dg-error "contract assertion cannot be proven" }
+      |                 ~~^~~~
+Test_name.c:38:2: error: contract assertion cannot be proven
+   38 |   post (r: r > 0)                       // { dg-error "contract assertion cannot be proven" }
+      |  ^~~~~~~~~~~~~~
+Test_name.c:38:12: note: the predicate of the contract assertion
+   38 |   post (r: r > 0)                       // { dg-error "contract assertion cannot be proven" }
+      |          ~~^~~
+Test_name.c: In function 'int use(int, unsigned int, int*)':
+Test_name.c:64:9: error: contract assertion cannot be proven
+   64 |   return f (y)                          // { dg-error "contract assertion cannot be proven" }
+      |        ~^~~
+Test_name.c:36:8: note: the predicate of the contract assertion
+   36 |   pre (x > 0)                           // { dg-message "the predicate of the contract assertion" }
+      |      ~~^~~
+Test_name.c:64:24: error: contract predicate is always false
+   64 |   return f (y)                          // { dg-error "contract assertion cannot be proven" }
+      |               ~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:53:8: note: the predicate of the contract assertion
+   53 |   pre (x != x)                          // { dg-message "the predicate of the contract assertion" }
+      |      ~~^~~~
+Test_name.c:64:24: error: contract predicate is always false
+   64 |   return f (y)                          // { dg-error "contract assertion cannot be proven" }
+      |               ~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Test_name.c:54:8: note: the predicate of the contract assertion
+   54 |   pre (u < 0u)                          // { dg-message "the predicate of the contract assertion" }
+      |      ~~^~~~~~

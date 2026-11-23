@@ -62,6 +62,9 @@
 # virtual functions are g++'s, which proves them with that strategy.
 # -f[no-]contracts-prove-callee-premises goes to both; the proof shadow that
 # takes a callee's observe and ignore evaluations as premises is g++'s.
+# -fcontracts-prove-optimize= goes to both; the proof optimization level
+# chooses g++'s strategies and how its proof shadows are optimized (the
+# front end's folding is on at every level).
 # -f[no-]contracts-p4451 goes to both; g++ gets the specifier the front
 # end puts out for a terminating contract assertion, the qualified name.
 #
@@ -254,6 +257,9 @@ while [ $# -gt 0 ] ; do
       edg_args+=("--contracts_prove_callee_premises"); gxx_args+=("$arg") ;;
     -fno-contracts-prove-callee-premises)
       edg_args+=("--no_contracts_prove_callee_premises"); gxx_args+=("$arg") ;;
+    -fcontracts-prove-optimize=*)
+      edg_args+=("--contracts_prove_optimize=${arg#*=}")
+      gxx_args+=("$arg") ;;
     -fcontracts-p4451)
       edg_args+=("--contracts_p4451"); gxx_args+=("$arg") ;;
     -fno-contracts-p4451)

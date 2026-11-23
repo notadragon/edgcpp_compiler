@@ -939,6 +939,7 @@ check_abbreviation()
 --contracts_p4451
 --contracts_prove_callee_premises
 --contracts_prove_fold
+--contracts_prove_optimize
 --contracts_prove_override
 --cpfe_only
 --cppcli
@@ -2154,6 +2155,7 @@ process_option()
          --contract_configuration | \
          --contract_configuration_file | \
          --contract_group_evaluation_semantic | \
+         --contracts_prove_optimize | \
          --wdir)
       used_two_params=1
 #     See if an instantiation mode was specified
@@ -2288,6 +2290,7 @@ process_option()
           --contract_configuration=* | \
           --contract_configuration_file=* | \
           --contract_group_evaluation_semantic=* | \
+          --contracts_prove_optimize=* | \
           --wdir=* | \
           --create_header_unit=* | \
           --create_module_interface=* | \

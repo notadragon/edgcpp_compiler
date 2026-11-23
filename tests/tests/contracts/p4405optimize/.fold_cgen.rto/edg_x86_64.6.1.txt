@@ -1,0 +1,12 @@
+fe_only -DTEST_NUMBER=6 --c++26 --contracts_p3097 --contracts_p4405 --contract_evaluation_semantic=ignore --contract_analysis_semantic=prove --contracts_prove_optimize=3 --no_contracts_prove_fold Test_name.c
+"Test_name.c", line 19: error: contract assertion cannot be proven for a call through "B::f"
+            the predicate of the contract assertion at line 12
+  int D::f(int x) { return x + 1; }       // B::f's post: not folded.
+         ^
+
+"Test_name.c", line 20: error: contract assertion cannot be proven for a call through "B::g"
+            the predicate of the contract assertion at line 13
+  int D::g(int x) { return x; }           // B::g's post: folded.
+         ^
+
+2 errors detected in the compilation of "Test_name.c".
