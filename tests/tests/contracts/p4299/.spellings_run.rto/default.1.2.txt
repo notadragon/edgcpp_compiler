@@ -1,0 +1,15 @@
+./a.out
+end
+kind 1 line 22
+kind 3 line 23
+kind 2 line 22
+kind 1 line 27
+kind 2 line 27
+kind 1 line 29
+kind 3 line 30
+kind 2 line 29
+kind 1 line 33
+kind 3 line 33
+kind 1 line 40
+kind 3 line 40
+end

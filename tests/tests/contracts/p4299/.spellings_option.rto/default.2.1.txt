@@ -1,0 +1,1 @@
+fe_only -DTEST_NUMBER=2 --c++26 --c++23 --contracts_p4299 Test_name.c
