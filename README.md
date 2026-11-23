@@ -1,3 +1,47 @@
+# C++ Contracts Implementation (P3850) in the EDG front end
+
+This fork of the EDG C/C++ front end is for implementing C++ Contracts
+(P2900) and the extensions proposed in P3850.
+
+Everything added here is prototype-quality, for implementation experience
+and as a foundation for future upstream integration.
+
+This branch is part of a larger project to implement Contracts features
+across C++ compilers, and details on the current status and scope of these
+changes can be found at https://github.com/notadragon/contracts-p3850.
+
+## Compiler Explorer
+
+A build of this branch is available on compiler explorer.  You can use it by
+selecting the "EDG P3850 contracts (GNU mode, notadragon gcc)" entry in the
+compiler dropdown when editing C++ code at https://godbolt.org/.
+
+Current nightly build status:
+[![Status](https://github.com/compiler-explorer/compiler-workflows/actions/workflows/build-daily-edg_notadragon_contracts_p3850.yml/badge.svg)](https://github.com/compiler-explorer/compiler-workflows/actions/workflows/build-daily-edg_notadragon_contracts_p3850.yml)![Last success](https://img.shields.io/badge/dynamic/json?color=success&label=Last+OK&query=%24.last_success.timestamp&url=https%3A%2F%2Flambda.compiler-explorer.com%2Fcompiler-build%2Fedg_notadragon_contracts_p3850)![Last build](https://img.shields.io/badge/dynamic/json?color=yellow&label=Last+build&query=%24.last_build.timestamp&url=https%3A%2F%2Flambda.compiler-explorer.com%2Fcompiler-build%2Fedg_notadragon_contracts_p3850)
+
+## Known Bugs and Open Issues
+
+Open issues with this branch are tracked in the branch itself so that
+consumers have one place to go to see the current state.  Details can be
+found in two distinct lists:
+
+- [open-issues/README.md](open-issues/README.md) -- **everything
+  contracts-related that is known to be broken on this branch**, whatever
+  its origin.  If you encounter issues, double-check here to see if they
+  are known.  Some of these are underlying issues that we have deferred,
+  others are in progress.
+- [bug-reports/README.md](bug-reports/README.md) -- bugs that exist
+  upstream, some of which have been fixed in this branch.
+
+Some items that exist upstream which we have not yet fixed are in both
+lists.
+
+## Contact
+
+Joshua Berne -- jberne4@bloomberg.net
+
+---
+
 # EDG Compiler Project
 
 Welcome to the open source EDG C/C++ compiler project!
