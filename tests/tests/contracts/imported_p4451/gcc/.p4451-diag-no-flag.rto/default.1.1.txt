@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --no_contracts_p4451 Test_name.c
+"Test_name.c", line 21: error: an assertion-control specifier naming enforced requires --contracts_p4451
+  void f (int x) pre<enforced> (x > 0);	// { dg-error "assertion-control-specifier naming .enforced. requires .-fcontracts-p4451." }
+                    ^
+
+"Test_name.c", line 22: error: assertion-control specifiers require --contracts_p3400
+  void g (int x) pre<other> (x > 0);	// { dg-error "assertion-control labels require .-fcontracts-p3400." }
+                    ^
+
+"Test_name.c", line 23: error: an assertion-control specifier naming enforced requires --contracts_p4451
+  void h (int x) { contract_assert<enforced> (x > 0); }	// { dg-error "requires .-fcontracts-p4451." }
+                                  ^
+
+"Test_name.c", line 24: error: an assertion-control specifier naming enforced requires --contracts_p4451
+  void i (int x) pre<std::contracts::controls::enforced> (x > 0);	// { dg-error "assertion-control-specifier naming .enforced. requires .-fcontracts-p4451." }
+                    ^
+
+"Test_name.c", line 25: error: an assertion-control specifier naming enforced requires --contracts_p4451
+  void j (int x) pre<::std::contracts::controls::enforced> (x > 0);	// { dg-error "assertion-control-specifier naming .enforced. requires .-fcontracts-p4451." }
+                    ^
+
+"Test_name.c", line 27: error: name followed by "::" must be a class or namespace name
+  auto t = std::contracts::controls::enforced;	// { dg-error "controls" }
+                           ^
+
+6 errors detected in the compilation of "Test_name.c".

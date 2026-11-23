@@ -1,0 +1,64 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts_p3400 Test_name.c
+"Test_name.c", line 11: error: an assertion-control expression must be of a class type with a nested type assertion_control_object
+  void f() pre<enforced>(true);
+               ^
+
+"Test_name.c", line 15: error: an assertion-control expression must be of a class type with a nested type assertion_control_object
+  void f() pre<enforced>(true);
+               ^
+
+"Test_name.c", line 19: error: type name is not allowed
+  void f() pre<enforced>(true);
+               ^
+
+"Test_name.c", line 24: error: an assertion-control expression must be of a class type with a nested type assertion_control_object
+    void f() pre<enforced>(true);
+                 ^
+
+"Test_name.c", line 36: error: expected an expression
+  void x4e(int x) pre<>(x > 0);
+                      ^
+
+"Test_name.c", line 37: error: expected an expression
+  void x4a(int x) { contract_assert<>(x > 0); }
+                                    ^
+
+"Test_name.c", line 44: error: no operator "+" matches these operands
+            operand types are: const std::contracts::controls::allowed_semantics_t<std::contracts::evaluation_semantic::enforce, std::contracts::evaluation_semantic::quick_enforce, std::contracts::evaluation_semantic::prove> + int
+  void g() pre<std::contracts::controls::enforced + 0>(true);
+                                                  ^
+"Test_name.c", line 44: note: built-in operator+(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter
+  void g() pre<std::contracts::controls::enforced + 0>(true);
+                                                  ^
+"Test_name.c", line 44: note: built-in operator+(<pointer to object>, <ptrdiff_t>) does not match because argument #1 does not match parameter
+  void g() pre<std::contracts::controls::enforced + 0>(true);
+                                                  ^
+"Test_name.c", line 44: note: built-in operator+(<ptrdiff_t>, <pointer to object>) does not match because argument #1 does not match parameter
+  void g() pre<std::contracts::controls::enforced + 0>(true);
+                                                  ^
+
+"Test_name.c", line 53: error: namespace "std::contracts::controls" has no member "enforce"
+  void x7(int x) pre<std::contracts::controls::enforce>(x > 0);
+                                               ^
+
+"Test_name.c", line 58: error: "enforced" is ambiguous
+    contract_assert<enforced>(x > 0);
+                    ^
+
+"Test_name.c", line 64: error: "x8n::enforced" is ambiguous
+  void f() pre<enforced>(true);
+               ^
+
+"Test_name.c", line 69: error: an assertion-control expression must be of a class type with a nested type assertion_control_object
+    void f() pre<enforced>(true);  // a private member: no access error
+                 ^
+
+"Test_name.c", line 54: warning: variable "x8a::enforced" was declared but never referenced
+  namespace x8a { constexpr int enforced = 0; }
+                                ^
+
+"Test_name.c", line 60: warning: variable "x8b::enforced" was declared but never referenced
+  namespace x8b { constexpr int enforced = 0; }
+                                ^
+
+11 errors detected in the compilation of "Test_name.c".

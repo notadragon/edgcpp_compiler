@@ -1,0 +1,54 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts_p3400 Test_name.c
+"Test_name.c", line 38: error: a parameter is not allowed
+    void f (int enforced) pre<enforced> (true);	// { dg-error "(must be a class type|is not a constant expression|is ambiguous|not usable in a constant expression|use of parameter outside function body|expected primary-expression)" }
+                              ^
+
+"Test_name.c", line 45: error: an assertion-control expression must be of a class type with a nested type assertion_control_object
+      void f () pre<enforced> (true);	// { dg-error "(must be a class type|is not a constant expression|is ambiguous|not usable in a constant expression|use of parameter outside function body|expected primary-expression)" }
+                    ^
+
+"Test_name.c", line 55: error: an assertion-control expression must be of a class type with a nested type assertion_control_object
+      void f () pre<enforced> (true);	// { dg-error "(must be a class type|is not a constant expression|is ambiguous|not usable in a constant expression|use of parameter outside function body|expected primary-expression)" }
+                    ^
+
+"Test_name.c", line 64: error: an assertion-control expression must be of a class type with a nested type assertion_control_object
+    void f () pre<enforced> (true);	// { dg-error "(must be a class type|is not a constant expression|is ambiguous|not usable in a constant expression|use of parameter outside function body|expected primary-expression)" }
+                  ^
+
+"Test_name.c", line 70: error: an assertion-control expression must be of a class type with a nested type assertion_control_object
+    void f () pre<enforced> (true);	// { dg-error "(must be a class type|is not a constant expression|is ambiguous|not usable in a constant expression|use of parameter outside function body|expected primary-expression)" }
+                  ^
+
+"Test_name.c", line 76: error: an assertion-control expression must be of a class type with a nested type assertion_control_object
+    void f () pre<enforced> (true);	// { dg-error "(must be a class type|is not a constant expression|is ambiguous|not usable in a constant expression|use of parameter outside function body|expected primary-expression)" }
+                  ^
+
+"Test_name.c", line 82: error: type name is not allowed
+    void f () pre<enforced> (true);	// { dg-error "(must be a class type|is not a constant expression|is ambiguous|not usable in a constant expression|use of parameter outside function body|expected primary-expression)" }
+                  ^
+
+"Test_name.c", line 103: error: "n7::enforced" is ambiguous
+    void f () pre<enforced> (true);	// { dg-error "(must be a class type|is not a constant expression|is ambiguous|not usable in a constant expression|use of parameter outside function body|expected primary-expression)" }
+                  ^
+
+"Test_name.c", line 111: error: an assertion-control expression must be of a class type with a nested type assertion_control_object
+    void f () pre<enforced> (true);	// { dg-error "(must be a class type|is not a constant expression|is ambiguous|not usable in a constant expression|use of parameter outside function body|expected primary-expression)" }
+                  ^
+
+"Test_name.c", line 120: error: an assertion-control expression must be of a class type with a nested type assertion_control_object
+      contract_assert<enforced> (x > 0);	// { dg-error "(must be a class type|is not a constant expression|is ambiguous|not usable in a constant expression|use of parameter outside function body|expected primary-expression)" }
+                      ^
+
+"Test_name.c", line 119: warning: variable "enforced" was set but never used
+      int enforced = x;
+          ^
+
+"Test_name.c", line 122: error: a parameter is not allowed
+    auto l = [] (int enforced) pre<enforced> (true) { };	// { dg-error "(must be a class type|is not a constant expression|is ambiguous|not usable in a constant expression|use of parameter outside function body|expected primary-expression)" }
+                                   ^
+
+"Test_name.c", line 99: warning: variable "n7::a::enforced" was declared but never referenced
+    namespace a { constexpr int enforced = 0; }
+                                ^
+
+11 errors detected in the compilation of "Test_name.c".

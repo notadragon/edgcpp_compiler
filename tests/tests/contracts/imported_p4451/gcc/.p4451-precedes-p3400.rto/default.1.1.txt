@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts_p3400 Test_name.c
+"Test_name.c", line 21: error: identifier "enforced" is undefined
+  void f (int x) pre<enforced> (x > 0);	// { dg-error "(was not declared in this scope|has not been declared)" }
+                     ^
+
+"Test_name.c", line 22: error: name followed by "::" must be a class or namespace name
+  struct S { void m (int x) pre<std::contracts::controls::enforced> (x > 0); };	// { dg-error "(was not declared in this scope|has not been declared)" }
+                                     ^
+
+"Test_name.c", line 25: error: name followed by "::" must be a class or namespace name
+    contract_assert<std::contracts::controls::enforced> (x > 0);	// { dg-error "(was not declared in this scope|has not been declared)" }
+                         ^
+
+"Test_name.c", line 27: error: name followed by "::" must be a class or namespace name
+  void f2 (int x) pre<::std::contracts::controls::enforced> (x > 0);	// { dg-error "(was not declared in this scope|has not been declared)" }
+                             ^
+
+4 errors detected in the compilation of "Test_name.c".

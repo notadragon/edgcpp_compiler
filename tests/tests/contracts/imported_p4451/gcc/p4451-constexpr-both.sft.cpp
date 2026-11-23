@@ -1,0 +1,43 @@
+//remark: imported from gcc:p4451-constexpr-both.C
+//type: fn
+//require: BACK_END_IS_CP_GEN_BE 1
+//options: --c++26 --contracts_p3400 --contracts_p4451 --contract_evaluation_semantic=ignore
+//match_regex: ", line 22: (?:catastrophic )?error
+//match_regex: ", line 23: (?:catastrophic )?error
+//match_regex: ", line 26: (?:catastrophic )?error
+//match_regex: ", line 31: (?:catastrophic )?error
+//match_regex: ", line 34: (?:catastrophic )?error
+//match_regex: ", line 35: (?:catastrophic )?error
+// P4451: constant evaluation of a terminating contract assertion uses a
+// terminating semantic too: with ignore configured, a false predicate makes
+// the evaluation fail.  Under -fcontracts-p3400 and -fcontracts-p4451 (the P3400 label).
+// { dg-do compile { target c++26 } }
+// { dg-additional-options "-fcontracts-p3400 -fcontracts-p4451 -fcontract-evaluation-semantic=ignore" }
+// { dg-skip-if "requires hosted libstdc++ for stdc++exp" { ! hostedlib } }
+
+#include <contracts>
+
+using namespace std::contracts::controls;
+
+constexpr int pre_f (int x) pre<enforced> (x > 0) { return x; }	// { dg-error "contract predicate is false" }
+constexpr int post_f (int x) post<enforced> (r : r > 0) { return x; }	// { dg-error "contract predicate is false" }
+constexpr int assert_f (int x)
+{
+  contract_assert<enforced> (x > 0);	// { dg-error "contract predicate is false" }
+  return x;
+}
+struct S
+{
+  static constexpr int mem (int x) pre<enforced> (x > 0) { return x; }	// { dg-error "contract predicate is false" }
+};
+template<typename T>
+constexpr T tmpl (T x) pre<enforced> (x > 0) { return x; }	// { dg-error "contract predicate is false" }
+constexpr auto lam = [] (int x) pre<enforced> (x > 0) { return x; };	// { dg-error "contract predicate is false" }
+
+constexpr int a = pre_f (1);
+constexpr int b = pre_f (-1);
+constexpr int c = post_f (-1);
+constexpr int d = assert_f (-1);
+constexpr int e = S::mem (-1);
+constexpr int f = tmpl (-1);
+constexpr int g = lam (-1);
