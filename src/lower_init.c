@@ -9763,6 +9763,7 @@ effect.
   } else {
     switch (statement->kind) {
       case stmk_empty:
+      case stmk_contract_assert:
       case stmk_block:
       case stmk_decl:
       case stmk_label:

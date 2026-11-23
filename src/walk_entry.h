@@ -1559,6 +1559,8 @@ handle_next_entry:
         }  /* if */
         walk_ptr(eptr->trailing_requires_clause, a_requires_clause_ptr,
                  iek_requires_clause);
+        walk_list(eptr->contract_specifiers, a_contract_specifier_ptr,
+                  iek_contract_specifier);
 #if MICROSOFT_EXTENSIONS_ALLOWED
         walk_list(eptr->overridden_functions, an_il_entity_list_entry_ptr,
                   iek_il_entity_list_entry);
@@ -2397,6 +2399,10 @@ do_set_proper_definition_needed_flag:
           case stmk_stmt_expr_result:
             walk_ptr(eptr->variant.stmt_expr_result.dynamic_init,
                      a_dynamic_init_ptr, iek_dynamic_init);
+            break;
+          case stmk_contract_assert:
+            walk_ptr(eptr->variant.contract_assert, a_contract_specifier_ptr,
+                     iek_contract_specifier);
             break;
           default:
             unexpected_condition_str(
@@ -4236,6 +4242,25 @@ handle_class_type_supplement_for_class:
       walk_ptr(eptr->type, a_type_ptr, iek_type);
       walk_string_ptr(eptr->name, iek_id_name, 0);
       walk_list(eptr->annotations, an_attribute_ptr, iek_attribute);
+#undef eptr
+      break;
+    case iek_contract_specifier:
+#define eptr ((a_contract_specifier_ptr)entry_ptr)
+      remap_next_ptr(eptr->next, a_contract_specifier_ptr,
+                     iek_contract_specifier);
+      walk_ptr(eptr->predicate, an_expr_node_ptr, iek_expr_node);
+      if (eptr->local_predicate) {
+        walk_ptr(eptr->predicate_sexpr, a_scoped_expression_ptr,
+                 iek_scoped_expression);
+      }  /* if */
+      /* The result-name variable is on no scope's variables list; the
+         specifier owns it. */
+      walk_ptr(eptr->result_name, a_variable_ptr, iek_variable);
+      /* So are the parameter proxies. */
+      walk_list(eptr->param_proxies, a_variable_ptr, iek_variable);
+      walk_string_ptr(eptr->comment, iek_other_text, 0);
+      /* The token cache pointer is for front end use only. */
+      conditionally_clear_fe_pointer(eptr->token_cache);
 #undef eptr
       break;
     case iek_id_name:
