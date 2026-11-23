@@ -1,0 +1,1 @@
+eccp -DTEST_NUMBER=2 --c++26 -g -ffile-prefix-map=Test_name=Mapped_name Test_name.c

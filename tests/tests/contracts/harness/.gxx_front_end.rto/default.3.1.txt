@@ -1,0 +1,1 @@
+cpfe -DTEST_NUMBER=3 --c++26 -DMODE=3 Test_name.c

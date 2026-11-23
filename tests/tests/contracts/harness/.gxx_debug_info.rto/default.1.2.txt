@@ -1,0 +1,2 @@
+./a.out
+compilation unit named after the source
