@@ -42,6 +42,8 @@
 #                                -> the g++ spelling (front end and g++)
 #   --[no_]contracts_prove_override
 #                                -> the g++ spelling (front end and g++)
+#   --[no_]contracts_prove_callee_premises
+#                                -> the g++ spelling (front end and g++)
 #   --[no_]contracts_p4451       -> the g++ spelling (front end and g++)
 #   -f[no-]canon-prefix-map     -> unchanged (edg_gxx.sh gives the prefix
 #                                   maps to the front end too, for __FILE__)
@@ -181,6 +183,10 @@ while [ $# -gt 0 ] ; do
       args+=(-fcontracts-prove-override) ;;
     --no_contracts_prove_override)
       args+=(-fno-contracts-prove-override) ;;
+    --contracts_prove_callee_premises)
+      args+=(-fcontracts-prove-callee-premises) ;;
+    --no_contracts_prove_callee_premises)
+      args+=(-fno-contracts-prove-callee-premises) ;;
     --contracts_p4451)
       args+=(-fcontracts-p4451) ;;
     --no_contracts_p4451)

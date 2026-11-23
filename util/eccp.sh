@@ -937,6 +937,7 @@ check_abbreviation()
 --contracts_p4298
 --contracts_p4405
 --contracts_p4451
+--contracts_prove_callee_premises
 --contracts_prove_fold
 --contracts_prove_override
 --cpfe_only
@@ -1123,6 +1124,7 @@ check_abbreviation()
 --no_contracts_p4298
 --no_contracts_p4405
 --no_contracts_p4451
+--no_contracts_prove_callee_premises
 --no_contracts_prove_fold
 --no_contract_analysis_skip_dead_calls
 --no_contracts_prove_override
@@ -1982,6 +1984,8 @@ process_option()
          --no_contract_analysis_skip_dead_calls | \
          --contracts_prove_override | \
          --no_contracts_prove_override | \
+         --contracts_prove_callee_premises | \
+         --no_contracts_prove_callee_premises | \
          --bit_precise_integers | \
          --no_bit_precise_integers | \
          --force_vtbl | \

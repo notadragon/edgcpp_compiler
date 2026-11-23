@@ -60,6 +60,8 @@
 # calls are never evaluated.
 # -f[no-]contracts-prove-override goes to both; the override obligations of
 # virtual functions are g++'s, which proves them with that strategy.
+# -f[no-]contracts-prove-callee-premises goes to both; the proof shadow that
+# takes a callee's observe and ignore evaluations as premises is g++'s.
 # -f[no-]contracts-p4451 goes to both; g++ gets the specifier the front
 # end puts out for a terminating contract assertion, the qualified name.
 #
@@ -248,6 +250,10 @@ while [ $# -gt 0 ] ; do
       edg_args+=("--contracts_prove_override"); gxx_args+=("$arg") ;;
     -fno-contracts-prove-override)
       edg_args+=("--no_contracts_prove_override"); gxx_args+=("$arg") ;;
+    -fcontracts-prove-callee-premises)
+      edg_args+=("--contracts_prove_callee_premises"); gxx_args+=("$arg") ;;
+    -fno-contracts-prove-callee-premises)
+      edg_args+=("--no_contracts_prove_callee_premises"); gxx_args+=("$arg") ;;
     -fcontracts-p4451)
       edg_args+=("--contracts_p4451"); gxx_args+=("$arg") ;;
     -fno-contracts-p4451)

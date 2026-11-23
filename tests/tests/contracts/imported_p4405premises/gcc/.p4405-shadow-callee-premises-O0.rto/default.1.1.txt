@@ -1,0 +1,22 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p3400 --contracts_p4405 --contract_evaluation_semantic=observe --contracts_prove_callee_premises -O0 --contracts_prove_optimize=0 Test_name.c
+Test_name.c: In function 'void h1(int)':
+Test_name.c:25:1: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   25 |   contract_assert<diagnose> (i == 0);   // { dg-warning "cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:25:31: note: the predicate of the contract assertion
+   25 |   contract_assert<diagnose> (i == 0);   // { dg-warning "cannot be proven" }
+      |                             ~~^~~~
+Test_name.c: In function 'void h3(int)':
+Test_name.c:36:1: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   36 |   contract_assert<diagnose> (i == 0);   // { dg-warning "cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:36:31: note: the predicate of the contract assertion
+   36 |   contract_assert<diagnose> (i == 0);   // { dg-warning "cannot be proven" }
+      |                             ~~^~~~
+Test_name.c: In function 'void h5(int)':
+Test_name.c:43:1: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   43 |   contract_assert<diagnose> (x == 0);   // { dg-warning "cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:43:31: note: the predicate of the contract assertion
+   43 |   contract_assert<diagnose> (x == 0);   // { dg-warning "cannot be proven" }
+      |                             ~~^~~~

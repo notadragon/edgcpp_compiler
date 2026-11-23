@@ -1,0 +1,127 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p4405 --contracts_p4298 --contracts_allow_assume --no_contracts_prove_callee_premises --contract_configuration_file=p4405-premise-semantic.json -O2 Test_name.c
+Test_name.c: In function 'int d_ignore_always(int)':
+Test_name.c:43:1: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   43 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:43:19: note: the predicate of the contract assertion
+   43 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      |                 ~~^~~
+Test_name.c: In function 'int d_ignore_never(int)':
+Test_name.c:62:1: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   62 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:62:19: note: the predicate of the contract assertion
+   62 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      |                 ~~^~~
+Test_name.c: In function 'int d_observe_always(int)':
+Test_name.c:81:1: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   81 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:81:19: note: the predicate of the contract assertion
+   81 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      |                 ~~^~~
+Test_name.c: In function 'int d_observe_never(int)':
+Test_name.c:100:1: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  100 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:100:19: note: the predicate of the contract assertion
+  100 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      |                 ~~^~~
+Test_name.c: In function 'int d_enforce_never(int)':
+Test_name.c:138:1: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  138 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:138:19: note: the predicate of the contract assertion
+  138 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      |                 ~~^~~
+Test_name.c: In function 'int d_quick_enforce_never(int)':
+Test_name.c:176:1: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  176 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:176:19: note: the predicate of the contract assertion
+  176 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      |                 ~~^~~
+Test_name.c: In function 'int d_assume_never(int)':
+Test_name.c:214:1: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  214 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:214:19: note: the predicate of the contract assertion
+  214 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      |                 ~~^~~
+Test_name.c: In function 'int d_noexcept_enforce_never(int)':
+Test_name.c:252:1: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  252 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:252:19: note: the predicate of the contract assertion
+  252 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      |                 ~~^~~
+Test_name.c: In function 'int d_noexcept_observe_always(int)':
+Test_name.c:271:1: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  271 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:271:19: note: the predicate of the contract assertion
+  271 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      |                 ~~^~~
+Test_name.c: In function 'int d_noexcept_observe_never(int)':
+Test_name.c:290:1: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  290 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:290:19: note: the predicate of the contract assertion
+  290 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      |                 ~~^~~
+Test_name.c: In function 'int d_prove_always(int)':
+Test_name.c:308:20: error: contract assertion cannot be proven
+  308 |   sem_prove_always::h (x);      // { dg-error "contract assertion cannot be proven" }
+      |   ~~~~~~~~~~~~~~~~~^~~
+Test_name.c:303:51: note: the predicate of the contract assertion
+  303 | [[gnu::always_inline]] inline void h (int x) pre (x > 0) { sink (x); }  // { dg-message "the predicate of the contract assertion" }
+      |                                                 ~~^~~
+Test_name.c: In function 'int i_prove_always(int, int)':
+Test_name.c:315:20: error: contract assertion cannot be proven
+  315 |   sem_prove_always::h (y);      // { dg-error "contract assertion cannot be proven" }
+      |   ~~~~~~~~~~~~~~~~~^~~
+Test_name.c:303:51: note: the predicate of the contract assertion
+  303 | [[gnu::always_inline]] inline void h (int x) pre (x > 0) { sink (x); }  // { dg-message "the predicate of the contract assertion" }
+      |                                                 ~~^~~
+Test_name.c: In function 'int d_prove_never(int)':
+Test_name.c:327:19: error: contract assertion cannot be proven
+  327 |   sem_prove_never::h (x);       // { dg-error "contract assertion cannot be proven" }
+      |   ~~~~~~~~~~~~~~~~^~~
+Test_name.c:322:46: note: the predicate of the contract assertion
+  322 | [[gnu::noinline]] inline void h (int x) pre (x > 0) { sink (x); }       // { dg-message "the predicate of the contract assertion" }
+      |                                            ~~^~~
+Test_name.c: In function 'int i_prove_never(int, int)':
+Test_name.c:334:19: error: contract assertion cannot be proven
+  334 |   sem_prove_never::h (y);       // { dg-error "contract assertion cannot be proven" }
+      |   ~~~~~~~~~~~~~~~~^~~
+Test_name.c:322:46: note: the predicate of the contract assertion
+  322 | [[gnu::noinline]] inline void h (int x) pre (x > 0) { sink (x); }       // { dg-message "the predicate of the contract assertion" }
+      |                                            ~~^~~
+Test_name.c: In function 'int d_diagnose_always(int)':
+Test_name.c:346:23: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  346 |   sem_diagnose_always::h (x);   // { dg-warning "contract assertion cannot be proven" }
+      |   ~~~~~~~~~~~~~~~~~~~~^~~
+Test_name.c:341:51: note: the predicate of the contract assertion
+  341 | [[gnu::always_inline]] inline void h (int x) pre (x > 0) { sink (x); }  // { dg-message "the predicate of the contract assertion" }
+      |                                                 ~~^~~
+Test_name.c: In function 'int i_diagnose_always(int, int)':
+Test_name.c:353:23: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  353 |   sem_diagnose_always::h (y);   // { dg-warning "contract assertion cannot be proven" }
+      |   ~~~~~~~~~~~~~~~~~~~~^~~
+Test_name.c:341:51: note: the predicate of the contract assertion
+  341 | [[gnu::always_inline]] inline void h (int x) pre (x > 0) { sink (x); }  // { dg-message "the predicate of the contract assertion" }
+      |                                                 ~~^~~
+Test_name.c: In function 'int d_diagnose_never(int)':
+Test_name.c:365:22: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  365 |   sem_diagnose_never::h (x);    // { dg-warning "contract assertion cannot be proven" }
+      |   ~~~~~~~~~~~~~~~~~~~^~~
+Test_name.c:360:46: note: the predicate of the contract assertion
+  360 | [[gnu::noinline]] inline void h (int x) pre (x > 0) { sink (x); }       // { dg-message "the predicate of the contract assertion" }
+      |                                            ~~^~~
+Test_name.c: In function 'int i_diagnose_never(int, int)':
+Test_name.c:372:22: warning: contract assertion cannot be proven [-Wcontract-unproven]
+  372 |   sem_diagnose_never::h (y);    // { dg-warning "contract assertion cannot be proven" }
+      |   ~~~~~~~~~~~~~~~~~~~^~~
+Test_name.c:360:46: note: the predicate of the contract assertion
+  360 | [[gnu::noinline]] inline void h (int x) pre (x > 0) { sink (x); }       // { dg-message "the predicate of the contract assertion" }
+      |                                            ~~^~~

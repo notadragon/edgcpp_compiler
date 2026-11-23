@@ -1,0 +1,29 @@
+cpfe -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p4405 --contracts_p4298 --contracts_allow_assume --contract_configuration_file=p4405-premise-semantic.json -O2 Test_name.c
+Test_name.c: In function 'int d_ignore_always(int)':
+Test_name.c:32:1: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   32 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:32:19: note: the predicate of the contract assertion
+   32 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      |                 ~~^~~
+Test_name.c: In function 'int d_ignore_never(int)':
+Test_name.c:43:1: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   43 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:43:19: note: the predicate of the contract assertion
+   43 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      |                 ~~^~~
+Test_name.c: In function 'int d_observe_never(int)':
+Test_name.c:65:1: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   65 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:65:19: note: the predicate of the contract assertion
+   65 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      |                 ~~^~~
+Test_name.c: In function 'int d_noexcept_observe_never(int)':
+Test_name.c:87:1: warning: contract assertion cannot be proven [-Wcontract-unproven]
+   87 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      | ^ ~~~~~~~~~~~~~
+Test_name.c:87:19: note: the predicate of the contract assertion
+   87 |   contract_assert (x > 0);      // { dg-warning "contract assertion cannot be proven" }
+      |                 ~~^~~
