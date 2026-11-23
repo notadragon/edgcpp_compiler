@@ -1,0 +1,14 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++17 Test_name.c
+"Test_name.c", line 17: error: expected a "{"
+  void f (int x) __pre (x > 0) {}			// { dg-error "expected initializer" }
+                 ^
+
+"Test_name.c", line 18: error: expected a "{"
+  void h (int x) __post (x > 0) {}		// { dg-error "expected initializer" }
+                 ^
+
+"Test_name.c", line 19: error: identifier "__contract_assert" is undefined
+  void g (int x) { __contract_assert (x > 0); }	// { dg-error "only available with '-fcontracts'" }
+                   ^
+
+3 errors detected in the compilation of "Test_name.c".

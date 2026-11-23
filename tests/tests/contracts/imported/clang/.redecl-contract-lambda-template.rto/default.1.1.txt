@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 23: error: mismatched contract condition in declaration (previous contract specifier declared at line 21)
+  template <class T> int S<T>::f(int x) pre([&] { return x > 0; }()) { return x; } // expected-error {{differs in contract specifier sequence}}
+                                        ^
+
+"Test_name.c", line 29: error: mismatched contract condition in declaration (previous contract specifier declared at line 27)
+  template <class T> T A::g(T x) pre([&] { return x > 0; }()) { return x; } // expected-error {{differs in contract specifier sequence}}
+                                 ^
+
+"Test_name.c", line 35: error: mismatched contract condition in declaration (previous contract specifier declared at line 33)
+  void B::h(int x) pre([&] { return x > 0; }()) {} // expected-error {{differs in contract specifier sequence}}
+                   ^
+
+"Test_name.c", line 39: error: mismatched contract condition in declaration (previous contract specifier declared at line 37)
+  void N::h(int x) pre([&] { return x > 0; }()) {} // expected-error {{differs in contract specifier sequence}}
+                   ^
+
+4 errors detected in the compilation of "Test_name.c".

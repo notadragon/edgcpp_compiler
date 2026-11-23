@@ -1,0 +1,76 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 42: error: expression must be a modifiable lvalue
+    auto l1 = [&] { (void)x; contract_assert([&] { return ++x; }()); }; // expected-error {{cannot assign to a variable captured by reference which was captured as const because it is inside a contract}}
+                                                            ^
+
+"Test_name.c", line 43: error: expression must be a modifiable lvalue
+    auto l2 = [&] { contract_assert([&] { return ++x; }()); (void)x; }; // expected-error {{cannot assign to a variable captured by reference which was captured as const because it is inside a contract}}
+                                                   ^
+
+"Test_name.c", line 44: error: expression must be a modifiable lvalue
+    auto l3 = [&x] { contract_assert([&] { return ++x; }()); };         // expected-error {{cannot assign to a variable captured by reference which was captured as const because it is inside a contract}}
+                                                    ^
+
+"Test_name.c", line 45: error: expression must be a modifiable lvalue
+    auto l4 = [&r = x] { contract_assert([&r] { return ++r; }()); };    // expected-error {{cannot assign to variable 'r' because it is considered 'const' inside of a contract}}
+                                                         ^
+
+"Test_name.c", line 46: error: expression must be a modifiable lvalue
+    auto l5 = [&] { (void)x; contract_assert([&] { return [&] { return ++x; }(); }()); }; // expected-error {{cannot assign to a variable captured by reference which was captured as const because it is inside a contract}}
+                                                                         ^
+
+"Test_name.c", line 51: error: expression must be a modifiable lvalue
+    auto l1 = [=]() mutable { ++x; contract_assert([&] { return ++x; }()); };       // expected-error {{cannot assign to a variable captured by reference which was captured as const because it is inside a contract}}
+                                                                  ^
+
+"Test_name.c", line 52: error: expression must be a modifiable lvalue
+    auto l2 = [y = x]() mutable { ++y; contract_assert([&] { return ++y; }()); };   // expected-error {{cannot assign to a variable captured by copy which was captured as const because it is inside a contract}}
+                                                                      ^
+
+"Test_name.c", line 53: error: expression must be a modifiable lvalue
+    auto l3 = [x]() mutable { ++x; contract_assert([&x] { return ++x; }()); };      // expected-error {{cannot assign to a variable captured by reference which was captured as const because it is inside a contract}}
+                                                                   ^
+
+"Test_name.c", line 62: error: expression must be a modifiable lvalue
+    auto l1 = [x]() mutable { contract_assert([&] { return [&] { return ++x; }(); }()); }; // expected-error {{cannot assign to a variable captured by reference which was captured as const because it is inside a contract}}
+                                                                          ^
+
+"Test_name.c", line 63: error: expression must be a modifiable lvalue
+    auto l2 = [x]() mutable pre([&] { return ++x; }()) {};                                 // expected-error {{cannot assign to a variable captured by reference which was captured as const because it is inside a contract}}
+                                               ^
+
+"Test_name.c", line 70: error: expression must be a modifiable lvalue
+    auto l1 = [&] { (void)a; contract_assert([&] { return ++a[0]; }()); };         // expected-error {{cannot assign to variable 'a'}}
+                                                            ^
+
+"Test_name.c", line 71: warning: variable "v" is used before its value is set
+    auto l2 = [&] { (void)v; contract_assert([&] { return ++v[0]; }()); };         // expected-error {{cannot assign to variable 'v'}}
+                                                            ^
+
+"Test_name.c", line 71: error: expression must be a modifiable lvalue
+    auto l2 = [&] { (void)v; contract_assert([&] { return ++v[0]; }()); };         // expected-error {{cannot assign to variable 'v'}}
+                                                            ^
+
+"Test_name.c", line 72: error: argument of type "const int *" is incompatible with parameter of type "int *"
+    auto l3 = [&] { (void)v; contract_assert([&] { return take(v); }()); };        // expected-error {{no matching function for call to 'take'}}
+                                                               ^
+
+"Test_name.c", line 73: error: argument of type "const int *" is incompatible with parameter of type "int *"
+    auto l4 = [&v] { contract_assert([&v] { return take(v); }()); };               // expected-error {{no matching function for call to 'take'}}
+                                                        ^
+
+"Test_name.c", line 74: error: argument of type "const int *" is incompatible with parameter of type "int *"
+    auto l5 = [=]() mutable { ++a[0]; contract_assert([&] { return take(a); }()); }; // expected-error {{no matching function for call to 'take'}}
+                                                                        ^
+
+"Test_name.c", line 79: error: expression must be a modifiable lvalue
+    auto l1 = [&] { (void)x; contract_assert([&] { return ++x; }()); }; // expected-error {{cannot assign to a variable captured by reference which was captured as const because it is inside a contract}} \
+                                                            ^
+          detected during instantiation of "void tby_ref(T) [with T=int]" at line 85
+
+"Test_name.c", line 81: error: expression must be a modifiable lvalue
+    auto l2 = [=]() mutable { ++x; contract_assert([&] { return ++x; }()); }; // expected-error {{cannot assign to a variable captured by reference which was captured as const because it is inside a contract}} \
+                                                                  ^
+          detected during instantiation of "void tby_ref(T) [with T=int]" at line 85
+
+17 errors detected in the compilation of "Test_name.c".

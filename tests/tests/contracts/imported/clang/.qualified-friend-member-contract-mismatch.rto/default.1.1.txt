@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contract_evaluation_semantic=enforce Test_name.c
+"Test_name.c", line 35: error: declaration adds contracts to "void Inner::fn5(int)"
+    friend void Inner::fn5(int n) pre(n > 0);  // expected-error {{function redeclaration differs in contract specifier sequence}}
+                                  ^
+
+"Test_name.c", line 34: error: mismatched contract condition in declaration (previous contract specifier declared at line 26)
+    friend void Inner::fn(int n) pre(n < 0);  // expected-error {{function redeclaration differs in contract specifier sequence}}
+                                 ^
+
+"Test_name.c", line 45: error: mismatched contract condition in declaration (previous contract specifier declared at line 42)
+    friend void In::fn2(int n) pre(n > 1);  // expected-error {{function redeclaration differs in contract specifier sequence}}
+                               ^
+
+"Test_name.c", line 55: error: declaration adds contracts to "void h(int)"
+    friend void h(int n) pre(n < 0);  // expected-error {{function redeclaration differs in contract specifier sequence}}
+                         ^
+
+"Test_name.c", line 54: error: mismatched contract condition in declaration (previous contract specifier declared at line 50)
+    friend void g(int n) pre(n < 0);  // expected-error {{function redeclaration differs in contract specifier sequence}}
+                         ^
+
+"Test_name.c", line 65: error: identifier "nope" is undefined
+    friend void In::fn(int n) pre(n > 0 && nope > 1);  // expected-error {{use of undeclared identifier 'nope'}}
+                                           ^
+
+6 errors detected in the compilation of "Test_name.c".

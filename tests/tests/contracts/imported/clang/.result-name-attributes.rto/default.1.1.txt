@@ -1,0 +1,21 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 15: warning: variable "r" was declared deprecated
+  int g(int x) post(r [[deprecated]] : r > 0) { return x; } // expected-warning {{'r' is deprecated}} expected-note {{'r' has been explicitly marked deprecated here}}
+                                       ^
+"Test_name.c", line 15: note: because of a "deprecated" attribute
+  int g(int x) post(r [[deprecated]] : r > 0) { return x; } // expected-warning {{'r' is deprecated}} expected-note {{'r' has been explicitly marked deprecated here}}
+                        ^
+
+"Test_name.c", line 17: error: two consecutive left square brackets always introduce an attribute list but an attribute list cannot appear here
+  int k(int x) pre(b [[maybe_unused]] ? x : 0) { return x; } // expected-error {{an attribute list cannot appear here}}
+                     ^
+
+"Test_name.c", line 17: error: identifier "maybe_unused" is undefined
+  int k(int x) pre(b [[maybe_unused]] ? x : 0) { return x; } // expected-error {{an attribute list cannot appear here}}
+                       ^
+
+"Test_name.c", line 17: error: expected a "{" introducing a lambda body
+  int k(int x) pre(b [[maybe_unused]] ? x : 0) { return x; } // expected-error {{an attribute list cannot appear here}}
+                                    ^
+
+3 errors detected in the compilation of "Test_name.c".

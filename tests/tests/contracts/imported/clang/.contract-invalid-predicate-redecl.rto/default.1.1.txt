@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 26: error: identifier "nonesuch" is undefined
+  void f() pre(nonesuch) { } // expected-error {{use of undeclared identifier 'nonesuch'}}
+               ^
+
+"Test_name.c", line 29: error: identifier "alsonone" is undefined
+  void g() pre(alsonone); // expected-error {{use of undeclared identifier 'alsonone'}}
+               ^
+
+"Test_name.c", line 34: error: identifier "neither" is undefined
+  void h() pre(neither);  // expected-error {{use of undeclared identifier 'neither'}}
+               ^
+
+"Test_name.c", line 35: error: identifier "norother" is undefined
+  void h() pre(norother); // expected-error {{use of undeclared identifier 'norother'}}
+               ^
+
+"Test_name.c", line 40: error: identifier "missing" is undefined
+    void m() pre(missing); // expected-error {{use of undeclared identifier 'missing'}}
+                 ^
+
+5 errors detected in the compilation of "Test_name.c".

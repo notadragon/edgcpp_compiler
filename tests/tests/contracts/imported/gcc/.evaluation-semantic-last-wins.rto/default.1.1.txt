@@ -1,0 +1,1 @@
+eccp -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contract_evaluation_semantic=enforce --contract_evaluation_semantic=observe Test_name.c

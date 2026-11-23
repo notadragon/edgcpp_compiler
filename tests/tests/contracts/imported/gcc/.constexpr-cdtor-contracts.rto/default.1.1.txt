@@ -1,0 +1,26 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 18: error: contract predicate is false in constant expression
+    constexpr S (int x) pre (x > 0) : v (x) {} // { dg-error "contract predicate is false in constant expression" }
+                        ^
+
+"Test_name.c", line 24: error: contract predicate is false in constant expression
+    constexpr T (int x) post (v == 99) : v (x) {} // { dg-error "contract predicate is false in constant expression" }
+                        ^
+
+"Test_name.c", line 30: error: contract predicate is false in constant expression
+    constexpr ~U () pre (v == 99) {} // { dg-error "contract predicate is false in constant expression" }
+                    ^
+
+"Test_name.c", line 20: warning: variable "s" was declared but never referenced
+  constexpr S s (-1);
+              ^
+
+"Test_name.c", line 26: warning: variable "t" was declared but never referenced
+  constexpr T t (1);
+              ^
+
+"Test_name.c", line 35: warning: variable "ok" was declared but never referenced
+  constexpr S ok (1);
+              ^
+
+3 errors detected in the compilation of "Test_name.c".

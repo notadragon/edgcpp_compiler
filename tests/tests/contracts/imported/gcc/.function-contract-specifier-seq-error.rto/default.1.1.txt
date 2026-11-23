@@ -1,0 +1,42 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 34: error: expected a "("
+  void fun2(int n)  pre  n > 0 ; // { dg-error {expected '\(' before } }
+                         ^
+
+"Test_name.c", line 36: error: expected a ")"
+  void fun2(int n)  pre (: n > 0 ]]; // { dg-error  }
+                                   ^
+
+"Test_name.c", line 36: error: expected an expression
+  void fun2(int n)  pre (: n > 0 ]]; // { dg-error  }
+                         ^
+
+"Test_name.c", line 42: warning: variable "x" is used before its value is set
+    contract_assert ( x >= 0 );
+                      ^
+
+"Test_name.c", line 47: error: expected a ")"
+    contract_assert ( x = 0 ); // { dg-error {expected '\)' before '=' token} }
+                        ^
+
+"Test_name.c", line 51: error: identifier "y" is undefined
+    contract_assert ( y == 0 ); // { dg-error ".y. was not declared in this scope" }
+                      ^
+
+"Test_name.c", line 58: error: expected a ")"
+    void f(int x) pre(x = 0); // { dg-error "expected conditional-expression" }
+                        ^
+
+"Test_name.c", line 59: error: expected a ")"
+    void g(int x) pre(x, x); // { dg-error "expected conditional-expression" }
+                       ^
+
+"Test_name.c", line 60: error: expected a ")"
+    void h(const int x) post(x = 0); // { dg-error "expected conditional-expression" }
+                               ^
+
+"Test_name.c", line 61: error: expected a ")"
+    void i(const int x) post(x, x); // { dg-error "expected conditional-expression" }
+                              ^
+
+9 errors detected in the compilation of "Test_name.c".

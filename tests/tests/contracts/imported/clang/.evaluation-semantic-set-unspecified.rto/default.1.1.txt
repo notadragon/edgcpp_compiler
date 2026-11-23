@@ -1,0 +1,5 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 18: warning: variable "s" was declared but never referenced
+  constexpr evaluation_semantic_set s(evaluation_semantic::unspecified);
+                                    ^
+

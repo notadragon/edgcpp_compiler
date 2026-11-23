@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 Test_name.c
+"Test_name.c", line 44: error: a requires-clause is not allowed here (not a templated function)
+    using G = int (int) requires C<T>;			// { dg-error "requires-clause on type-id" }
+                        ^
+
+"Test_name.c", line 44: error: identifier "T" is undefined
+    using G = int (int) requires C<T>;			// { dg-error "requires-clause on type-id" }
+                                   ^
+
+"Test_name.c", line 45: error: a requires-clause is not allowed here (not a templated function)
+    int (*p) (int) requires C<T>;				// { dg-error "requires-clause on declaration of non-function type" }
+                   ^
+
+"Test_name.c", line 46: error: a requires-clause is not allowed here (not a templated function)
+    void q (int bar () requires C<T>);			// { dg-error "requires-clause on parameter" }
+                       ^
+
+4 errors detected in the compilation of "Test_name.c".

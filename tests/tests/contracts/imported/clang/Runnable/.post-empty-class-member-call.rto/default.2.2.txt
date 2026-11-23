@@ -1,0 +1,11 @@
+./a.out
+all valid
+contract violation in function generator<int> val() at Test_name.c:33: ((const generator<int>*)(& g))->generator<int>::is_valid()
+[assertion_kind: post, semantic: observe, mode: predicate_false, terminating: no]
+contract violation in function G val2() at Test_name.c:44: ((const G*)(& g))->G::is_valid()
+[assertion_kind: post, semantic: observe, mode: predicate_false, terminating: no]
+contract violation in function T tval() [with T = G] at Test_name.c:49: ((const T)g).is_valid()
+[assertion_kind: post, semantic: observe, mode: predicate_false, terminating: no]
+contract violation in function T tval() [with T = generator<int>] at Test_name.c:49: ((const T)g).is_valid()
+[assertion_kind: post, semantic: observe, mode: predicate_false, terminating: no]
+done

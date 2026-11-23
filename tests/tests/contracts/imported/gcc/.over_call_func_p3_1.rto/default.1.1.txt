@@ -1,0 +1,19 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 19: error: in a precondition of a constructor or a postcondition of a destructor, a member must be accessed through an explicit "this"
+    S() pre(&k); // { dg-error "required when accessing a member" }
+             ^
+
+"Test_name.c", line 20: error: the object has type qualifiers that are not compatible with the member function "S::f"
+            object type is: const S
+    ~S()post(&f());  // { dg-error "required when accessing a member" }
+              ^
+
+"Test_name.c", line 20: error: expression must be an lvalue or a function designator
+    ~S()post(&f());  // { dg-error "required when accessing a member" }
+              ^
+
+"Test_name.c", line 26: error: in a precondition of a constructor or a postcondition of a destructor, a member must be accessed through an explicit "this"
+                SIn() pre(&i){}; // { dg-error "required when accessing a member" }
+                           ^
+
+4 errors detected in the compilation of "Test_name.c".

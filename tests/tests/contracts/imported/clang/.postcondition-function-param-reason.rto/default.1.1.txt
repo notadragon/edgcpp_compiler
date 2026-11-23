@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 18: error: value parameter "g" used in a postcondition must be declared const
+  void f2(int (*g)()) post(g != nullptr) {} // expected-error {{parameter 'g' referenced in contract postcondition must be declared const}} expected-note {{declared here}}
+                ^
+
+"Test_name.c", line 19: error: value parameter "g" used in a postcondition must be declared const
+  void f4(int g()) post(g != nullptr) {}    // expected-error {{parameter 'g' referenced in contract postcondition cannot have a function type}} expected-note {{declared here}}
+              ^
+
+2 errors detected in the compilation of "Test_name.c".

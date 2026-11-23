@@ -1,0 +1,21 @@
+//remark: imported from gcc:name_mangling.C
+//type: rp
+//require: BACK_END_IS_CP_GEN_BE 1
+//options: --c++26 --contracts --contract_evaluation_semantic=observe
+//use_system_includes: true
+//linker_options: -lcontracts
+// check that we do not have conflicts with post condition that includes a return value
+// identifier and post condition on an identically named void function with the
+// additional parameter that matches the returen value of the first function
+// { dg-do run { target c++23 } }
+// { dg-additional-options "-fcontracts -fcontract-evaluation-semantic=observe " }
+// { dg-skip-if "requires hosted libstdc++ for stdc++exp" { ! hostedlib } }
+
+int f() post(r:r>1){ return 2;}
+void f(int i) post(true){ }
+
+int main() {
+
+  f();
+  f(2);
+}

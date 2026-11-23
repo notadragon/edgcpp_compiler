@@ -1,0 +1,18 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 17: error: a parameter is not allowed
+  void f1 (int x) pre ([&] { struct Q { int m () { return x; } }; return true; } ()); // { dg-error "use of parameter from containing function" }
+                                                          ^
+
+"Test_name.c", line 18: error: a parameter is not allowed
+  void f2 (int x) pre ([&] { struct Q { int m () { return x; } }; return Q{}.m () > 0; } ()) {} // { dg-error "use of parameter from containing function" }
+                                                          ^
+
+"Test_name.c", line 19: error: reference to local variable of enclosing function is not allowed
+  void f3 (int x) { contract_assert ([&] { struct Q { int m () { return x; } }; return true; } ()); } // { dg-error "use of parameter from containing function" }
+                                                                        ^
+
+"Test_name.c", line 23: error: reference to local variable of enclosing function is not allowed
+    contract_assert ([&] { return [&] { struct Q { int m () { return x; } }; return true; } (); } ()); // { dg-error "use of parameter from containing function" }
+                                                                     ^
+
+4 errors detected in the compilation of "Test_name.c".

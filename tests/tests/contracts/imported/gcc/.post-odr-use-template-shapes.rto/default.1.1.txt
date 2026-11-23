@@ -1,0 +1,12 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 30: error: value parameter "x" used in a postcondition must be declared const
+  template <class T> bool t3 (T x) post (x > 0) { return true; }	// { dg-error "must be const" }
+                                ^
+          detected during instantiation of "bool t3(T) [with T=int]" at line 33
+
+"Test_name.c", line 31: error: value parameter "x" used in a postcondition must be declared const
+  template <class T> bool t4 (T x) post (typeid (x) == typeid (B)) { return true; } // { dg-error "must be const" }
+                                ^
+          detected during instantiation of "bool t4(T) [with T=B]" at line 35
+
+2 errors detected in the compilation of "Test_name.c".

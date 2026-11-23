@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contract_evaluation_semantic=ignore Test_name.c
+"Test_name.c", line 16: error: identifier "check" is undefined
+    pre (check(i)) // { dg-error "was not declared in this scope" }
+         ^
+
+"Test_name.c", line 18: error: incomplete type "S" is not allowed
+    contract_assert ( S{}.member ); // { dg-error "invalid use of incomplete type" }
+                      ^
+
+2 errors detected in the compilation of "Test_name.c".

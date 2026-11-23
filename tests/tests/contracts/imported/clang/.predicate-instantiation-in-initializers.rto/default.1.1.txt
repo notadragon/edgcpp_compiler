@@ -1,0 +1,79 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 32: error: name followed by "::" must be a class or namespace name
+    pre(T::type) { // expected-error 1+ {{'::'}}
+        ^
+          detected during:
+            instantiation of "T f<Ret,T>(T) [with Ret=EnableIf<false, long, 5>, T=int]" at line 46
+            instantiation of "int &is_reference_var [with T=long, Boom=EnableIf<false, long, 5>]" at line 59
+
+"Test_name.c", line 36: error: name followed by "::" must be a class or namespace name
+  template<typename T> constexpr int is_constexpr() pre(T::error) { return T::error; } // expected-error 2 {{'::'}}
+                                                        ^
+          detected during instantiation of "int is_constexpr<T>() [with T=int]" at line 65
+
+"Test_name.c", line 36: error: name followed by "::" must be a class or namespace name
+  template<typename T> constexpr int is_constexpr() pre(T::error) { return T::error; } // expected-error 2 {{'::'}}
+                                                                           ^
+          detected during instantiation of "int is_constexpr<T>() [with T=int]" at line 65
+
+"Test_name.c", line 32: error: name followed by "::" must be a class or namespace name
+    pre(T::type) { // expected-error 1+ {{'::'}}
+        ^
+          detected during:
+            instantiation of "T f<Ret,T>(T) [with Ret=EnableIf<false, int, 0>, T=int]" at line 39
+            instantiation of "int not_constexpr_var [with T=int, Boom=EnableIf<false, int, 0>]" at line 66
+
+"Test_name.c", line 32: error: name followed by "::" must be a class or namespace name
+    pre(T::type) { // expected-error 1+ {{'::'}}
+        ^
+          detected during:
+            instantiation of "T f<Ret,T>(T) [with Ret=EnableIf<false, int, 1>, T=int]" at line 40
+            instantiation of "const int is_constexpr_var [with T=int, Boom=EnableIf<false, int, 1>]" at line 67
+
+"Test_name.c", line 32: error: name followed by "::" must be a class or namespace name
+    pre(T::type) { // expected-error 1+ {{'::'}}
+        ^
+          detected during:
+            instantiation of "T f<Ret,T>(T) [with Ret=EnableIf<false, int, 2>, T=int]" at line 42
+            instantiation of "const int is_const_var [with T=int, Boom=EnableIf<false, int, 2>]" at line 68
+
+"Test_name.c", line 32: error: name followed by "::" must be a class or namespace name
+    pre(T::type) { // expected-error 1+ {{'::'}}
+        ^
+          detected during:
+            instantiation of "T f<Ret,T>(T) [with Ret=EnableIf<false, int, 3>, T=int]" at line 43
+            instantiation of "const volatile int is_const_volatile_var [with T=int, Boom=EnableIf<false, int, 3>]" at line 69
+
+"Test_name.c", line 32: error: name followed by "::" must be a class or namespace name
+    pre(T::type) { // expected-error 1+ {{'::'}}
+        ^
+          detected during:
+            instantiation of "T f<Ret,T>(T) [with Ret=EnableIf<false, int, 4>, T=int]" at line 44
+            instantiation of "T is_dependent_var [with T=int, Boom=EnableIf<false, int, 4>]" at line 70
+
+"Test_name.c", line 32: error: name followed by "::" must be a class or namespace name
+    pre(T::type) { // expected-error 1+ {{'::'}}
+        ^
+          detected during:
+            instantiation of "T f<Ret,T>(T) [with Ret=EnableIf<false, const int, 4>, T=int]" at line 44
+            instantiation of "T is_dependent_var [with T=const int, Boom=EnableIf<false, const int, 4>]" at line 71
+
+"Test_name.c", line 32: error: name followed by "::" must be a class or namespace name
+    pre(T::type) { // expected-error 1+ {{'::'}}
+        ^
+          detected during:
+            instantiation of "T f<Ret,T>(T) [with Ret=EnableIf<false, int, 5>, T=int]" at line 46
+            instantiation of "int &is_reference_var [with T=int, Boom=EnableIf<false, int, 5>]" at line 72
+
+"Test_name.c", line 73: warning: invalid narrowing conversion from "float" to "int"
+    (void)sizeof(int{is_float_var<int>}); // expected-warning {{narrowing}} expected-note {{insert an explicit cast to silence this issue}}
+                     ^
+
+"Test_name.c", line 32: error: name followed by "::" must be a class or namespace name
+    pre(T::type) { // expected-error 1+ {{'::'}}
+        ^
+          detected during:
+            instantiation of "T f<Ret,T>(T) [with Ret=EnableIf<false, int, 6>, T=double]" at line 47
+            instantiation of "float is_float_var [with T=int, Boom=EnableIf<false, int, 6>]" at line 73
+
+11 errors detected in the compilation of "Test_name.c".

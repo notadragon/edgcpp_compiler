@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 27: error: a function contract specifier can appear only on the declarator of a function declaration
+  FAlias g_alias pre(true); // expected-error {{'pre' can only appear on a function declaration}}
+                 ^
+
+"Test_name.c", line 30: error: a function contract specifier can appear only on the declarator of a function declaration
+  FTypedef g_typedef pre(true); // expected-error {{'pre' can only appear on a function declaration}}
+                     ^
+
+"Test_name.c", line 33: error: a function contract specifier can appear only on the declarator of a function declaration
+  FAlias g_alias_post post(r : true); // expected-error {{'post' can only appear on a function declaration}}
+                      ^
+
+"Test_name.c", line 38: error: a function contract specifier can appear only on the declarator of a function declaration
+  void takes_fn(int bar() pre(true)); // expected-error {{expected ')'}} expected-note {{to match this '('}}
+                          ^
+
+"Test_name.c", line 43: error: a function contract specifier can appear only on the declarator of a function declaration
+    FAlias m_alias pre(true); // expected-error {{'pre' can only appear on a function declaration}}
+                   ^
+
+5 errors detected in the compilation of "Test_name.c".

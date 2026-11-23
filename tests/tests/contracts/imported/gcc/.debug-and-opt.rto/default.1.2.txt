@@ -1,0 +1,3 @@
+./a.out
+contract violation in function int foo(int) at Test_name.c:13: (((int)i) > 3)
+[assertion_kind: pre, semantic: observe, mode: predicate_false, terminating: no]

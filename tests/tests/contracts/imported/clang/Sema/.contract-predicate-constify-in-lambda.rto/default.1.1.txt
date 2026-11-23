@@ -1,0 +1,38 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 58: error: expression must be a modifiable lvalue
+          ++n;
+            ^
+
+"Test_name.c", line 60: error: expression must be a modifiable lvalue
+          ++i;
+            ^
+
+"Test_name.c", line 74: error: expression must be a modifiable lvalue
+            ++i;
+              ^
+
+"Test_name.c", line 86: error: expression must be a modifiable lvalue
+    contract_assert([]() { ++n; return true; }());
+                             ^
+
+"Test_name.c", line 88: error: expression must be a modifiable lvalue
+    contract_assert([]() { ++t_n; return true; }());
+                             ^
+
+"Test_name.c", line 90: error: expression must be a modifiable lvalue
+    contract_assert([]() { ++HasStatic::s; return true; }());
+                             ^
+
+"Test_name.c", line 94: error: expression must be a modifiable lvalue
+    contract_assert([&]() { ++local_static; return true; }());
+                              ^
+
+"Test_name.c", line 103: error: expression must be a modifiable lvalue
+    contract_assert(++n);
+                      ^
+
+"Test_name.c", line 105: error: expression must be a modifiable lvalue
+    contract_assert(++local_static);
+                      ^
+
+9 errors detected in the compilation of "Test_name.c".

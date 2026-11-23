@@ -1,0 +1,22 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contract_evaluation_semantic=enforce Test_name.c
+"Test_name.c", line 22: error: parameter pack "xs" was referenced but not expanded
+  int f1 (T... xs) pre (xs > 0) { return 0; }		// { dg-error "not expanded" }
+                        ^
+
+"Test_name.c", line 24: error: parameter pack "xs" was referenced but not expanded
+  int f2 (T... xs) post (r: r > xs) { return 0; }		// { dg-error "not expanded" }
+                                ^
+
+"Test_name.c", line 26: error: parameter pack "xs" was referenced but not expanded
+  int f3 (T... xs) { contract_assert (xs > 0); return 0; }	// { dg-error "not expanded" }
+                                      ^
+
+"Test_name.c", line 28: error: parameter pack "xs" was referenced but not expanded
+  int f4 (T... xs) pre (xs > 0);				// { dg-error "not expanded" }
+                        ^
+
+"Test_name.c", line 30: error: parameter pack "xs" was referenced but not expanded
+  struct S { int m (T... xs) pre (xs > 0) { return 0; } };	// { dg-error "not expanded" }
+                                  ^
+
+5 errors detected in the compilation of "Test_name.c".

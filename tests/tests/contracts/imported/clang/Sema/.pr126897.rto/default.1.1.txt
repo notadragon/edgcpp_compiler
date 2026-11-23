@@ -1,0 +1,54 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 36: warning: expression has no effect
+  void f(bool b) post((b, true)) {}
+                       ^
+
+"Test_name.c", line 42: warning: expression has no effect
+  int h(int x) post(r : ((x, true) && r >= 0)) { return x; }
+                          ^
+
+"Test_name.c", line 45: warning: expression has no effect
+  void cls(S s) post((s, true)) {}
+                      ^
+
+"Test_name.c", line 49: warning: expression has no effect
+  int nested(int x, int y) post(r : ((x, y, true) && r >= 0)) { return x + y; }
+                                      ^
+
+"Test_name.c", line 49: warning: expression has no effect
+  int nested(int x, int y) post(r : ((x, y, true) && r >= 0)) { return x + y; }
+                                      ^
+
+"Test_name.c", line 55: warning: expression has no effect
+  int both(int x) post(r : ((x, true) && x == r)) { return x; }
+                             ^
+
+"Test_name.c", line 55: error: value parameter "x" used in a postcondition must be declared const
+  int both(int x) post(r : ((x, true) && x == r)) { return x; }
+               ^
+
+"Test_name.c", line 61: warning: expression has no effect
+  bool rhs(bool b) post((true, b)) { return b; }
+                         ^
+
+"Test_name.c", line 61: error: value parameter "b" used in a postcondition must be declared const
+  bool rhs(bool b) post((true, b)) { return b; }
+                ^
+
+"Test_name.c", line 68: error: value parameter "x" used in a postcondition must be declared const
+  int arg(int x) post(r : ((use(x), true) && r >= 0)) { return x; }
+              ^
+
+"Test_name.c", line 73: error: value parameter "s" used in a postcondition must be declared const
+  void memcall(S s) post((s.ok(), true)) {}
+                 ^
+
+"Test_name.c", line 79: warning: expression has no effect
+  void ref(int &r) post((r, true)) {}
+                         ^
+
+"Test_name.c", line 84: error: value parameter "x" used in a postcondition must be declared const
+  int plain(int x) post(r : x == r) { return x; }
+                ^
+
+5 errors detected in the compilation of "Test_name.c".

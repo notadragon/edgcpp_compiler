@@ -1,0 +1,10 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 16: error: deleted function "void del(int)" cannot have a function contract specifier
+  void del(int x) pre(x > 0) = delete; // expected-error {{deleted function 'del' cannot have a function-contract-specifier}}
+                  ^
+
+"Test_name.c", line 19: error: function "S::S()" defaulted on its first declaration cannot have a function contract specifier
+    S() pre(true) = default;           // expected-error {{function 'S' defaulted on its first declaration cannot have a function-contract-specifier}}
+        ^
+
+2 errors detected in the compilation of "Test_name.c".

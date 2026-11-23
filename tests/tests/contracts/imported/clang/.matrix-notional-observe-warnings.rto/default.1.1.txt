@@ -1,0 +1,749 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contract_evaluation_semantic=observe Test_name.c
+"Test_name.c", line 40: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 62: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 83: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 105: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 106: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 127: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 128: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 149: warning: contract condition is not constant
+    pre (v > 0)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 171: warning: contract condition is not constant
+    pre (v > 0)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 172: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 193: warning: contract condition is not constant
+    pre (v > 0)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 194: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 216: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 237: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 260: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 281: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 304: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 325: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 347: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 348: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 369: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 370: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 392: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 409: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 425: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 442: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 443: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 459: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 460: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 476: warning: contract condition is not constant
+    pre (v > 0)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 493: warning: contract condition is not constant
+    pre (v > 0)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 494: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 510: warning: contract condition is not constant
+    pre (v > 0)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 511: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 528: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 544: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 562: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 578: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 596: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 612: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 629: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 630: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 646: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 647: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 664: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 681: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 697: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 714: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 715: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 731: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 732: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 748: warning: contract condition is not constant
+    pre (v > 0)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 765: warning: contract condition is not constant
+    pre (v > 0)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 766: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 782: warning: contract condition is not constant
+    pre (v > 0)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 783: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 800: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 816: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 834: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 850: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 868: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 884: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 901: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 902: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 918: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 919: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 936: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 958: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 979: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1001: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1002: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1023: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1024: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1045: warning: contract condition is not constant
+    pre (v > 0)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1067: warning: contract condition is not constant
+    pre (v > 0)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1068: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1089: warning: contract condition is not constant
+    pre (v > 0)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1090: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1112: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1133: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1156: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1177: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1200: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1221: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1243: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1244: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1265: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1266: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1287: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1290: warning: contract condition is not constant
+    contract_assert (rt ());  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1310: warning: contract condition is not constant
+    pre (v > 0)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1313: warning: contract predicate is false in constant expression
+    contract_assert (false);  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1333: warning: contract condition is not constant
+    pre (v > 0)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1336: warning: contract condition is not constant
+    contract_assert (rt ());  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1356: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1357: warning: contract condition is not constant
+    post (r: rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1378: warning: contract condition is not constant
+    pre (v > 0)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1379: warning: contract predicate is false in constant expression
+    post (r: false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1400: warning: contract condition is not constant
+    pre (v > 0)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1401: warning: contract condition is not constant
+    post (r: rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1429: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1422: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1457: warning: contract condition is not constant
+    pre (v > 0)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1450: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1485: warning: contract condition is not constant
+    pre (v > 0)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1478: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1506: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1509: warning: contract condition is not constant
+    contract_assert (rt ());  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1524: warning: contract condition is not constant
+    pre (v > 0)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1527: warning: contract predicate is false in constant expression
+    contract_assert (false);  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1542: warning: contract condition is not constant
+    pre (v > 0)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1545: warning: contract condition is not constant
+    contract_assert (rt ());  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1560: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1561: warning: contract condition is not constant
+    post (r: rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1577: warning: contract condition is not constant
+    pre (v > 0)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1578: warning: contract predicate is false in constant expression
+    post (r: false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1594: warning: contract condition is not constant
+    pre (v > 0)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1595: warning: contract condition is not constant
+    post (r: rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1618: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1611: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1641: warning: contract condition is not constant
+    pre (v > 0)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1634: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1664: warning: contract condition is not constant
+    pre (v > 0)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1657: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1680: warning: contract condition is not constant
+    pre (v > 0)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1681: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1701: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1702: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1722: warning: contract condition is not constant
+    pre (v > 0)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1723: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1740: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1741: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1758: warning: contract condition is not constant
+    pre (v > 0)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1759: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1775: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1776: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1792: warning: contract condition is not constant
+    pre (v > 0)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1793: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1809: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1810: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1826: warning: contract condition is not constant
+    pre (v > 0)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1827: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1843: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1844: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1860: warning: contract condition is not constant
+    pre (v > 0)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1861: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1878: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1879: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1896: warning: contract condition is not constant
+    pre (v > 0)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1897: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1913: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1914: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1930: warning: contract condition is not constant
+    pre (v > 0)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1931: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1956: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1957: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1982: warning: contract condition is not constant
+    pre (v > 0)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1983: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 1994: warning: statement is unreachable
+    return 0;
+    ^
+
+"Test_name.c", line 2005: warning: contract predicate is false in constant expression
+    pre (false)  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 2006: warning: contract condition is not constant
+    pre (rt ())  // expected-warning {{contract failed during execution of constexpr function}}
+    ^
+
+"Test_name.c", line 2017: warning: statement is unreachable
+    return 0;
+    ^
+
+"Test_name.c", line 670: warning: variable "constexpr_var_pp_T_F_u_const_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 687: warning: variable "constexpr_var_pp_T_NC_u_const_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 704: warning: variable "constexpr_var_pp_F_T_u_const_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 721: warning: variable "constexpr_var_pp_F_F_u_const_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 738: warning: variable "constexpr_var_pp_F_NC_u_const_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 755: warning: variable "constexpr_var_pp_NR_T_u_const_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 772: warning: variable "constexpr_var_pp_NR_F_u_const_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 789: warning: variable "constexpr_var_pp_NR_NC_u_const_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 806: warning: variable "constexpr_var_pp_CD_F_k_const_observe::k" was declared but never referenced
+  constexpr int k = f (1);
+                ^
+
+"Test_name.c", line 823: warning: variable "constexpr_var_pp_F_CD_k_const_observe::k" was declared but never referenced
+  constexpr int k = f (1);
+                ^
+
+"Test_name.c", line 840: warning: variable "constexpr_var_pp_CD_NC_k_const_observe::k" was declared but never referenced
+  constexpr int k = f (1);
+                ^
+
+"Test_name.c", line 857: warning: variable "constexpr_var_pp_NC_CD_k_const_observe::k" was declared but never referenced
+  constexpr int k = f (1);
+                ^
+
+"Test_name.c", line 874: warning: variable "constexpr_var_pp_NR_NC_k_const_observe::k" was declared but never referenced
+  constexpr int k = f (1);
+                ^
+
+"Test_name.c", line 891: warning: variable "constexpr_var_pp_NC_NR_k_const_observe::k" was declared but never referenced
+  constexpr int k = f (1);
+                ^
+
+"Test_name.c", line 908: warning: variable "constexpr_var_pp_F_NC_k_const_observe::k" was declared but never referenced
+  constexpr int k = f (1);
+                ^
+
+"Test_name.c", line 925: warning: variable "constexpr_var_pp_NC_F_k_const_observe::k" was declared but never referenced
+  constexpr int k = f (1);
+                ^
+
+"Test_name.c", line 1514: warning: variable "constexpr_var_pa_F_NC_u_const_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 1532: warning: variable "constexpr_var_pa_NR_F_u_const_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 1550: warning: variable "constexpr_var_pa_NR_NC_u_const_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 1567: warning: variable "constexpr_var_pq_F_NC_u_const_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 1584: warning: variable "constexpr_var_pq_NR_F_u_const_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 1601: warning: variable "constexpr_var_pq_NR_NC_u_const_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 1624: warning: variable "constexpr_var_nest_F_NC_u_const_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 1647: warning: variable "constexpr_var_nest_NR_F_u_const_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+
+"Test_name.c", line 1670: warning: variable "constexpr_var_nest_NR_NC_u_const_observe::k" was declared but never referenced
+  constexpr int k = f (g);
+                ^
+

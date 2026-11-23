@@ -1,0 +1,46 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contracts --c++26 Test_name.c
+"Test_name.c", line 97: error: "co_await" cannot appear in a contract predicate other than in a lambda-expression
+    contract_assert((co_await a, true)); // expected-error {{'co_await' cannot be used inside a contract}}
+                     ^
+
+"Test_name.c", line 97: error: no instance of function "awaitable::await_ready" matches the argument list and object (the object has type qualifiers that prevent a match)
+            object type is: const awaitable
+    contract_assert((co_await a, true)); // expected-error {{'co_await' cannot be used inside a contract}}
+                              ^
+
+"Test_name.c", line 97: error: no instance of function "awaitable::await_resume" matches the argument list and object (the object has type qualifiers that prevent a match)
+            object type is: const awaitable
+    contract_assert((co_await a, true)); // expected-error {{'co_await' cannot be used inside a contract}}
+                              ^
+
+"Test_name.c", line 97: error: no instance of function template "awaitable::await_suspend" matches the argument list and object (the object has type qualifiers that prevent a match)
+            argument types are: (std::coroutine_handle<promise>)
+            object type is: const awaitable
+    contract_assert((co_await a, true)); // expected-error {{'co_await' cannot be used inside a contract}}
+                              ^
+
+"Test_name.c", line 98: error: "co_yield" cannot appear in a contract predicate other than in a lambda-expression
+    contract_assert((co_yield 3, true)); // expected-error {{'co_yield' cannot be used inside a contract}}
+                     ^
+
+"Test_name.c", line 98: warning: expression has no effect
+    contract_assert((co_yield 3, true)); // expected-error {{'co_yield' cannot be used inside a contract}}
+                              ^
+
+"Test_name.c", line 98: error: expression must have bool type (or be convertible to bool)
+    contract_assert((co_yield 3, true)); // expected-error {{'co_yield' cannot be used inside a contract}}
+                    ^
+
+"Test_name.c", line 96: warning: missing co_return statement while "std::coroutine_traits<void, int>::promise_type" (aka "promise") has no "return_void" at end of function "coreturn"
+  void coreturn(int n) {
+       ^
+
+"Test_name.c", line 103: error: "co_await" cannot appear in a contract predicate other than in a lambda-expression
+    contract_assert((co_await n, true)); // expected-error {{'co_await' cannot be used inside a contract}}
+                     ^
+
+"Test_name.c", line 104: error: "co_yield" cannot appear in a contract predicate other than in a lambda-expression
+    contract_assert((co_yield n, true)); // expected-error {{'co_yield' cannot be used inside a contract}}
+                     ^
+
+8 errors detected in the compilation of "Test_name.c".

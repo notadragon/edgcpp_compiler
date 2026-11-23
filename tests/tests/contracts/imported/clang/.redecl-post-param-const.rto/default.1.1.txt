@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 16: error: value parameter "x" used in a postcondition must be declared const
+  void f(int x); // expected-error {{parameter 'x' referenced in contract postcondition must be declared const}}
+             ^
+
+1 error detected in the compilation of "Test_name.c".
