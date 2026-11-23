@@ -1,0 +1,8 @@
+./a.out
+kind 1 semantic 6 file [Test_name.c] function [int pre_f(int)] line 37 column nonzero comment [(((int)((const int)x)) > 0)]
+kind 2 semantic 6 file [Test_name.c] function [int post_f(int)] line 38 column nonzero comment [(((int)((const int)r)) > 0)]
+kind 3 semantic 6 file [Test_name.c] function [void assert_f(int)] line 39 column nonzero comment [(((int)((const int)x)) > 0)]
+kind 1 semantic 6 file [Test_name.c] function [int c_pre_f(int)] line 40 column nonzero comment [(((int)((const int)x)) > 0)]
+kind 2 semantic 6 file [Test_name.c] function [int c_post_f(int)] line 41 column nonzero comment [(((int)((const int)r)) > 0)]
+kind 3 semantic 6 file [Test_name.c] function [void c_assert_f(int)] line 42 column nonzero comment [(((int)((const int)x)) > 0)]
+end

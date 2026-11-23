@@ -3789,6 +3789,7 @@ ec_contract_override_predicate;INTERNAL;"the predicate of the contract assertion
 ec_contract_nested_unproven;INTERNAL;"precondition of a call in the predicate cannot be proven %p"
 ec_contract_nested_always_false;INTERNAL;"precondition of a call in the predicate is always false %p"
 ec_contract_always_false_warning;contract_always_false;"contract predicate is always false"
+ec_cl_invalid_contract_violation_information;;"unrecognized contract violation information (must be full or none): %s"
 ec_contract_terminating_needs_option;;"an assertion-control specifier naming enforced requires --contracts_p4451"
 ec_contract_terminating_not_id_expression;;"assertion-control-specifier must name std::contracts::controls::enforced; it is not an id-expression naming a declaration"
 ec_contract_terminating_not_declared;;"assertion-control-specifier must name std::contracts::controls::enforced; no declaration of it precedes this point; <contracts> declares it"

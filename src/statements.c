@@ -6650,6 +6650,11 @@ value str, for an argument of a call made on a contract violation.
 {
   an_expr_node_ptr  node;
 
+  if (contract_violation_information_none) {
+    /* --contract_violation_information=none: each string of the record
+       (its comment, file name and function name) is empty. */
+    str = "";
+  }  /* if */
   node = alloc_node_for_allocated_constant(shareable_fs_string_constant(
                         copy_string_to_region(file_scope_region_number, str)));
   node->is_lvalue = TRUE;
@@ -6784,6 +6789,12 @@ Return NULL (after an error) if that function is not available.
   (void)conv_seq_to_file_and_line(csp->position.seq, &file_name,
                                   &full_name, &line_number,
                                   &at_end_of_source);
+  if (contract_violation_information_none) {
+    /* --contract_violation_information=none: the record's line is 0 (its
+       strings are empty, see string_arg_for_contract_check, and its
+       column is always 0). */
+    line_number = 0;
+  }  /* if */
   switch (csp->kind) {
     case ctk_pre:  kind = 1; break;  /* CXA_AK_PRE */
     case ctk_post: kind = 2; break;  /* CXA_AK_POST */
