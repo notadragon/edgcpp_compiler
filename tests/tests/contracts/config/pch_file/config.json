@@ -1,0 +1,4 @@
+[
+  {"match": {"namespace": "obs", "constexpr": true},
+   "output": {"semantic": "observe"}}
+]

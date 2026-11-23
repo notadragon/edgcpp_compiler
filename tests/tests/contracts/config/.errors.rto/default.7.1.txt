@@ -1,0 +1,5 @@
+fe_only -DTEST_NUMBER=7 --c++26 --contract_configuration_file=no_such_file.json Test_name.c
+Command-line error: cannot read contract configuration file: no_such_file.json
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation terminated.

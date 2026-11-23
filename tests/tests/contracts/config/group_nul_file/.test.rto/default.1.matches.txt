@@ -1,0 +1,4 @@
+Matches for "Command-line error: invalid contract configuration \(group_nul\.json:2:[0-9]+\): "group" must not contain a null character$":
+  <-----------------------------------------------------------------------------
+  Command-line error: invalid contract configuration (group_nul.json:2:25): "group" must not contain a null character
+  ----------------------------------------------------------------------------->

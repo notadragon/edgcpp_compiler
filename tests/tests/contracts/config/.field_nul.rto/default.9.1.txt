@@ -1,0 +1,5 @@
+fe_only -DTEST_NUMBER=9 --c++26 --contract_configuration=[{"output":{"semantic":"ignore","dynamic":{"name":"sel","linkage":"C\u0000x"}}}] Test_name.c
+Command-line error: invalid contract configuration (<command-line>:1:67): "linkage" must not contain a null character
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation terminated.

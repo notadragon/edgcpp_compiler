@@ -1,0 +1,5 @@
+fe_only -DTEST_NUMBER=3 --c++26 --contract_configuration=[{"match":{"kind":"pre"}}] Test_name.c
+Command-line error: invalid contract configuration (<command-line>:1:2): contract configuration entry is missing required "output" field
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation terminated.

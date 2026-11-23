@@ -1,0 +1,5 @@
+fe_only -DTEST_NUMBER=2 --c++26 --contract_configuration=[1] Test_name.c
+Command-line error: invalid contract configuration (<command-line>:1:2): contract configuration entry must be a JSON object
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation terminated.

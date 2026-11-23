@@ -1,0 +1,12 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contract_configuration_file=p3595-config-diagnostic-main-file-location.json Test_name.c
+Command-line warning: contract configuration (p3595-config-diagnostic-main-file-location.json:2:24): unknown key "module" in "match" object; the entry is skipped
+
+"Test_name.c", line 32: warning: #warning directive: "located"
+  #warning "located"
+   ^
+
+"Test_name.c", line 35: error: expected an expression
+  int x = ;			// { dg-error "expected primary-expression" }
+          ^
+
+1 error detected in the compilation of "Test_name.c".

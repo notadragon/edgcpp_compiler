@@ -1,0 +1,4 @@
+Matches for "Command-line error: invalid contract configuration \(<command-line>:1:[0-9]+\): "group" must not contain a null character$":
+  <-----------------------------------------------------------------------------
+  Command-line error: invalid contract configuration (<command-line>:1:20): "group" must not contain a null character
+  ----------------------------------------------------------------------------->

@@ -1,0 +1,12 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contract_configuration=[{"output":{"semantic":"enforce","x":1}}] Test_name.c
+Command-line warning: contract configuration (<command-line>:1:38): unknown key "x" in "output" object; the entry is skipped
+
+"Test_name.c", line 30: warning: #warning directive: "located"
+  #warning "located"
+   ^
+
+"Test_name.c", line 33: error: expected an expression
+  int x = ;			// { dg-error "expected primary-expression" }
+          ^
+
+1 error detected in the compilation of "Test_name.c".

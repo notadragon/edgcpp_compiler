@@ -34,6 +34,7 @@ symbol_tbl.c - Symbol table management routines.
 #include "folding.h"
 #include "sys_predef.h"
 #include "interpret.h"
+#include "contract_config.h"
 
 /* Conditionally open the "edg" namespace. */
 BEGIN_EDG_NAMESPACE

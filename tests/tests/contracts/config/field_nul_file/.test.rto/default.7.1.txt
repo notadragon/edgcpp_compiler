@@ -1,0 +1,5 @@
+fe_only -DTEST_NUMBER=7 --c++26 --contract_configuration_file=semantic.json Test_name.c
+Command-line error: invalid contract configuration (semantic.json:2:25): "semantic" must not contain a null character
+
+1 catastrophic error detected in the compilation of "Test_name.c".
+Compilation terminated.

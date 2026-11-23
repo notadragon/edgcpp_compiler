@@ -1,0 +1,50 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contract_evaluation_semantic=quick_enforce --contract_configuration_file=config.json Test_name.c
+"Test_name.c", line 22: warning: contract predicate is false in constant expression
+    constexpr int f(int x) pre(x > 0) { return x; }       // observe
+                           ^
+
+"Test_name.c", line 24: warning: contract predicate is false in constant expression
+      constexpr int g(int x) pre(x > 0) { return x; }     // observe (nested)
+                             ^
+
+"Test_name.c", line 27: warning: contract predicate is false in constant expression
+      constexpr int u(int x) pre(x > 0) { return x; }     // observe (unnamed)
+                             ^
+
+"Test_name.c", line 30: warning: contract predicate is false in constant expression
+      constexpr int m(int x) const pre(x > 0) { return x; }  // observe
+                                   ^
+
+"Test_name.c", line 32: warning: contract predicate is false in constant expression
+    template<class T> constexpr T t(T x) pre(x > 0) { return x; }  // observe
+                                         ^
+
+"Test_name.c", line 34: warning: contract predicate is false in constant expression
+      auto l = [](int y) pre(y > 0) { return y; };        // observe (lambda)
+                         ^
+
+"Test_name.c", line 39: error: contract predicate is false in constant expression
+    constexpr int h(int x) pre(x > 0) { return x; }       // error
+                           ^
+
+"Test_name.c", line 44: error: contract predicate is false in constant expression
+  constexpr int e(int x) pre(x > 0) { return x; }         // error
+                         ^
+
+"Test_name.c", line 45: warning: contract predicate is false in constant expression
+  constexpr int a(int x) { contract_assert(x > 0); return x; }  // observe
+                           ^
+
+"Test_name.c", line 62: warning: contract predicate is false in constant expression
+  constexpr int l1(int x) pre(x > 0) { return x; }        // observe (location)
+                          ^
+
+"Test_name.c", line 63: warning: contract predicate is false in constant expression
+  constexpr int l2(int x) pre(x > 0) { return x; }        // observe (location)
+                          ^
+
+"Test_name.c", line 64: error: contract predicate is false in constant expression
+  constexpr int l3(int x) pre(x > 0) { return x; }        // error
+                          ^
+
+3 errors detected in the compilation of "Test_name.c".

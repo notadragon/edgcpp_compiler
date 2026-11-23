@@ -1,0 +1,4 @@
+Matches for "Command-line error: invalid contract configuration \(<command-line>:1:[0-9]+\): "(kind|group|namespace|location|semantic|name|linkage)"( in "(caller|dynamic)")? must not contain a null character$":
+  <-----------------------------------------------------------------------------
+  Command-line error: invalid contract configuration (<command-line>:1:51): "name" in "dynamic" must not contain a null character
+  ----------------------------------------------------------------------------->

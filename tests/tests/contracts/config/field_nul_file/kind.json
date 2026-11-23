@@ -1,0 +1,3 @@
+[
+  {"match":{"kind":"pre\u0000x"},"output":{"semantic":"ignore"}}
+]

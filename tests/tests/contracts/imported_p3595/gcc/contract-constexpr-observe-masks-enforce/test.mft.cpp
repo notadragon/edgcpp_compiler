@@ -1,0 +1,31 @@
+//remark: imported from gcc:contract-constexpr-observe-masks-enforce.C
+//type: fn
+//require: BACK_END_IS_CP_GEN_BE 1
+//source_files: contract-constexpr-observe-masks-enforce.json
+//options: --c++26 --contracts --contracts_p3850 --contract_evaluation_semantic=enforce --contract_configuration_file=contract-constexpr-observe-masks-enforce.json
+//match_regex: ", line 26: (?:catastrophic )?error
+// F30: in constant evaluation, a non-terminating (observe) contract violation
+// must not mask a later terminating (enforce) violation.  Whether an ill-formed
+// program is rejected must not depend on left-to-right evaluation order.
+// Namespace A resolves to observe (config file); everything else (B) is enforce.
+// Evaluating A::obs(-1) (which fails, observe) first must NOT swallow the
+// subsequent B::enf(-1) enforce failure -- the initializer must still be
+// ill-formed.  Before the fix the enforce was short-circuited and `bad` was
+// accepted with only a warning.  Both are reported, each with its own
+// semantic's severity.
+// { dg-do compile { target c++26 } }
+// { dg-additional-options "-fcontracts -fcontracts-p3850 -fcontract-evaluation-semantic=enforce -fcontract-configuration-file=${srcdir}/g++.dg/contracts/cpp26/contract-constexpr-observe-masks-enforce.json" }
+#include <contracts>
+
+namespace A { constexpr int obs (int x) { contract_assert (x > 0);   return x; } } // { dg-warning "contract predicate is false in constant expression" }
+namespace B
+{
+  constexpr int
+  enf (int x)
+  {
+    contract_assert (x > 100); // { dg-error "contract predicate is false in constant expression" }
+    return x;
+  }
+}
+
+constexpr int bad = A::obs (-1) + B::enf (-1);

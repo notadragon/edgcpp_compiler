@@ -1,0 +1,1 @@
+eccp -DTEST_NUMBER=1 --c++26 --contract_configuration_file=config.json -DALLOW=1 --contracts_allow_assume Test_name.c
