@@ -1,0 +1,1 @@
+eccp -DTEST_NUMBER=1 --c++26 --contracts --contract_evaluation_semantic=observe --contracts_p3100 --contract_group_evaluation_semantic=ub:expr.mul.div.by.zero:observe -ffile-prefix-map==FILE-PREFIX Test_name.c

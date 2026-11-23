@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contracts_p3400 --contracts_allow_assume --contract_evaluation_semantic=assume Test_name.c
+"Test_name.c", line 43: warning: contract predicate is false in constant expression
+  constexpr int b(int x) pre<OnlyObserve{}>(x > 0) { return x; }
+                         ^
+
+"Test_name.c", line 46: error: contract predicate is false in constant expression
+  constexpr int e(int x) pre<EnforceFromAssume{}>(x > 0) { return x; }
+                         ^
+
+"Test_name.c", line 48: warning: variable "va" was declared but never referenced
+  constexpr int va = a(0);
+                ^
+
+"Test_name.c", line 49: warning: variable "vb" was declared but never referenced
+  constexpr int vb = b(0);
+                ^
+
+"Test_name.c", line 50: warning: variable "vc" was declared but never referenced
+  constexpr int vc = c(0);
+                ^
+
+"Test_name.c", line 51: warning: variable "vd" was declared but never referenced
+  constexpr int vd = d(0);
+                ^
+
+"Test_name.c", line 52: warning: variable "ve" was declared but never referenced
+  constexpr int ve = e(0);
+                ^
+
+1 error detected in the compilation of "Test_name.c".

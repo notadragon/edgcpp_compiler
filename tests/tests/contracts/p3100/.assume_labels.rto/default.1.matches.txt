@@ -1,0 +1,8 @@
+Matches for "line 43: warning: contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  line 43: warning: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->
+Matches for "line 46: error: contract predicate is false in constant expression":
+  <-----------------------------------------------------------------------------
+  line 46: error: contract predicate is false in constant expression
+  ----------------------------------------------------------------------------->

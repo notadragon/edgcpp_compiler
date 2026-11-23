@@ -1,0 +1,4 @@
+./a.out
+violation kind 7
+result 0
+end
