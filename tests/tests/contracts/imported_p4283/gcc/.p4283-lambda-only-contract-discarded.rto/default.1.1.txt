@@ -1,0 +1,6 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts --contracts_p4283 --contract_evaluation_semantic=enforce Test_name.c
+"Test_name.c", line 20: error: contract predicate is false in constant expression
+    auto a = [] (T x) pre requires Int<T> (x > 0) { return 1; };  // { dg-error "contract predicate is false" }
+                      ^
+
+1 error detected in the compilation of "Test_name.c".

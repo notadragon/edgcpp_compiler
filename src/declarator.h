@@ -379,6 +379,18 @@ extern void add_to_derived_type_list(a_type_ptr          new_type_ptr,
                                      a_decl_parse_state  *dps,
                                      a_boolean           parameter_type);
 
+extern void skip_contract_operand(void);
+extern void skip_rest_of_contract_specifier(void);
+extern a_boolean cache_contract_requires_clause(
+                                           a_contract_specifier_ptr  csp,
+                                           a_boolean                 skip);
+extern a_boolean contract_requires_clause_satisfied(
+                                              an_expr_node_ptr  constraint);
+extern a_boolean scan_cached_contract_requires_clause(
+                                           a_contract_specifier_ptr  csp);
+extern void remove_discarded_contract_specifiers(
+                                    a_contract_specifier_ptr  *p_specifiers);
+
 extern void report_bad_return_type_qualifier(a_type_ptr          type,
                                              a_decl_parse_state  *dps,
                                              a_source_position   *diag_pos,

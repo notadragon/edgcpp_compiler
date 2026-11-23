@@ -1,0 +1,16 @@
+Matches for "line 9: error: requires clause on contract assertions requires --contracts_p4283":
+  <-----------------------------------------------------------------------------
+  line 9: error: requires clause on contract assertions requires --contracts_p4283
+  ----------------------------------------------------------------------------->
+Matches for "line 10: error: requires clause on contract assertions requires --contracts_p4283":
+  <-----------------------------------------------------------------------------
+  line 10: error: requires clause on contract assertions requires --contracts_p4283
+  ----------------------------------------------------------------------------->
+Matches for "line 11: error: requires clause on contract assertions requires --contracts_p4283":
+  <-----------------------------------------------------------------------------
+  line 11: error: requires clause on contract assertions requires --contracts_p4283
+  ----------------------------------------------------------------------------->
+Matches for "line 14: error: static assertion failed with "P4283 is off"":
+  <-----------------------------------------------------------------------------
+  line 14: error: static assertion failed with "P4283 is off"
+  ----------------------------------------------------------------------------->

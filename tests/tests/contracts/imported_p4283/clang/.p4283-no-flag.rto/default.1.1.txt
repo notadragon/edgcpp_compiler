@@ -1,0 +1,30 @@
+fe_only -DTEST_NUMBER=1 --c++26 --c++26 --contracts Test_name.c
+"Test_name.c", line 22: error: requires clause on contract assertions requires --contracts_p4283
+    pre requires(true) (x > 0) // expected-error {{requires clauses on contract assertions require '-fcontracts-p4283'}}
+        ^
+
+"Test_name.c", line 23: error: requires clause on contract assertions requires --contracts_p4283
+    post requires(true) (x > 0); // expected-error {{requires clauses on contract assertions require '-fcontracts-p4283'}}
+         ^
+
+"Test_name.c", line 28: error: requires clause on contract assertions requires --contracts_p4283
+    pre requires C<T> (x > 0) // expected-error {{requires clauses on contract assertions require '-fcontracts-p4283'}}
+        ^
+
+"Test_name.c", line 29: error: requires clause on contract assertions requires --contracts_p4283
+    pre requires C<T> (x > 1); // expected-error {{requires clauses on contract assertions require '-fcontracts-p4283'}}
+        ^
+
+"Test_name.c", line 34: error: requires clause on contract assertions requires --contracts_p4283
+    post requires(true) (r: r > 0) // expected-error {{requires clauses on contract assertions require '-fcontracts-p4283'}}
+         ^
+
+"Test_name.c", line 41: error: requires clause on contract assertions requires --contracts_p4283
+    contract_assert requires(true) (x > 0); // expected-error {{requires clauses on contract assertions require '-fcontracts-p4283'}}
+                    ^
+
+"Test_name.c", line 42: error: requires clause on contract assertions requires --contracts_p4283
+    contract_assert requires C<T> (x > 0); // expected-error {{requires clauses on contract assertions require '-fcontracts-p4283'}}
+                    ^
+
+7 errors detected in the compilation of "Test_name.c".
