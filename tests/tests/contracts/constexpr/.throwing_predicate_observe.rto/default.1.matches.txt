@@ -1,0 +1,24 @@
+Matches for "line 35: warning: contract condition is not constant":
+  <-----------------------------------------------------------------------------
+  line 35: warning: contract condition is not constant
+  ----------------------------------------------------------------------------->
+Matches for "line 39: warning: contract condition is not constant":
+  <-----------------------------------------------------------------------------
+  line 39: warning: contract condition is not constant
+  ----------------------------------------------------------------------------->
+Matches for "line 43: warning: contract condition is not constant":
+  <-----------------------------------------------------------------------------
+  line 43: warning: contract condition is not constant
+  ----------------------------------------------------------------------------->
+Matches for "line 47: warning: contract condition is not constant":
+  <-----------------------------------------------------------------------------
+  line 47: warning: contract condition is not constant
+  ----------------------------------------------------------------------------->
+Matches for "line 52: warning: contract condition is not constant":
+  <-----------------------------------------------------------------------------
+  line 52: warning: contract condition is not constant
+  ----------------------------------------------------------------------------->
+Matches for "line 68: warning: contract condition is not constant":
+  <-----------------------------------------------------------------------------
+  line 68: warning: contract condition is not constant
+  ----------------------------------------------------------------------------->

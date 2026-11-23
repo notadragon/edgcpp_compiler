@@ -1,0 +1,12 @@
+Matches for "line 58: error: contract condition is not constant":
+  <-----------------------------------------------------------------------------
+  line 58: error: contract condition is not constant
+  ----------------------------------------------------------------------------->
+Matches for "line 60: error: contract condition is not constant":
+  <-----------------------------------------------------------------------------
+  line 60: error: contract condition is not constant
+  ----------------------------------------------------------------------------->
+Matches for "line 70: error: expression must have a constant value":
+  <-----------------------------------------------------------------------------
+  line 70: error: expression must have a constant value
+  ----------------------------------------------------------------------------->

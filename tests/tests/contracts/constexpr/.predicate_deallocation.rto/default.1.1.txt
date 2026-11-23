@@ -1,0 +1,20 @@
+fe_only -DTEST_NUMBER=1 --c++26 --contract_evaluation_semantic=quick_enforce Test_name.c
+"Test_name.c", line 60: error: contract condition is not constant
+      contract_assert(use_after(p));
+      ^
+
+"Test_name.c", line 58: error: contract condition is not constant
+      contract_assert(twice(p));
+      ^
+
+"Test_name.c", line 70: error: expression must have a constant value
+  static_assert(leak() == 0);
+                ^
+"Test_name.c", line 70: note: some dynamic allocations (total number = 1) were not deallocated
+  static_assert(leak() == 0);
+                       ^
+"Test_name.c", line 69: note: allocation occurred here
+  constexpr int leak() { int *p = new int(1); return r(p); }
+                                  ^
+
+3 errors detected in the compilation of "Test_name.c".
