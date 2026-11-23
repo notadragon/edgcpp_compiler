@@ -1,0 +1,2 @@
+cpfe -DTEST_NUMBER=1 --c++26 --contract_evaluation_semantic=quick_enforce --keep_gen_c Test_name.c
+3

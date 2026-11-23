@@ -1,0 +1,1 @@
+eccp -DTEST_NUMBER=7 --c++26 --contract_evaluation_semantic=quick_enforce -DVIOLATE=6 Test_name.c

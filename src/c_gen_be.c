@@ -9749,7 +9749,18 @@ Generate C for a statement.
         }  /* if */
 #endif /* ADD_BRACES_TO_AVOID_DANGLING_ELSE_IN_GENERATED_C */
         write_tok_str("if ");
-        dump_boolean_controlling_expression(statement->expr);
+        if (statement->is_contract_check &&
+            gcc_or_clang_is_generated_code_target) {
+          /* The check of a contract assertion (see statements.c's
+             make_contract_check_statement), whose "then" part handles a
+             violation: mark it unlikely, as GCC and Clang mark the
+             violation arm of their own checks. */
+          write_tok_str("(__builtin_expect(");
+          dump_boolean_controlling_expression(statement->expr);
+          write_tok_str(", 0))");
+        } else {
+          dump_boolean_controlling_expression(statement->expr);
+        }  /* if */
         /* Dump the "then" part. */
         indent += 2;
         dump_statement(then_statement);

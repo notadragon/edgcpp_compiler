@@ -1,0 +1,1 @@
+cpfe -DTEST_NUMBER=1 --c++26 --contract_evaluation_semantic=quick_enforce -O2 -Wall -Wextra Test_name.c

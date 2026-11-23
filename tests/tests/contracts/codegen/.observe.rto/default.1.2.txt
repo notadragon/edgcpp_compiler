@@ -1,0 +1,42 @@
+./a.out
+-- 1
+-- 2
+contract violation in function int pres(int) at Test_name.c:13: (((int)((const int)x)) > 0)
+[assertion_kind: pre, semantic: observe, mode: predicate_false, terminating: no]
+contract violation in function int pres(int) at Test_name.c:13: (((int)((const int)x)) < 10)
+[assertion_kind: pre, semantic: observe, mode: predicate_false, terminating: no]
+-- 3
+contract violation in function int posts(int) at Test_name.c:14: (((int)((const int)r)) > ((int)x))
+[assertion_kind: post, semantic: observe, mode: predicate_false, terminating: no]
+-- 4
+contract violation in function int posts(int) at Test_name.c:14: (((int)((const int)r)) > ((int)x))
+[assertion_kind: post, semantic: observe, mode: predicate_false, terminating: no]
+contract violation in function int posts(int) at Test_name.c:14: (((int)x) != 7)
+[assertion_kind: post, semantic: observe, mode: predicate_false, terminating: no]
+-- 5
+contract violation in function void post_void(int) at Test_name.c:18: (((int)x) != 3)
+[assertion_kind: post, semantic: observe, mode: predicate_false, terminating: no]
+-- 6
+post_void_expr(4)
+contract violation in function void post_void_expr(int) at Test_name.c:21: (((int)x) != 4)
+[assertion_kind: post, semantic: observe, mode: predicate_false, terminating: no]
+-- 7
+contract violation in function P post_class(int) at Test_name.c:25: (((int)((const P)r).P::b) == (((int)a) + 1))
+[assertion_kind: post, semantic: observe, mode: predicate_false, terminating: no]
+contract violation in function P post_class_var(int) at Test_name.c:26: (((int)((const P)r).P::a) == ((int)a))
+[assertion_kind: post, semantic: observe, mode: predicate_false, terminating: no]
+-- 8
+contract violation in function int declared(int) at Test_name.c:30: (((int)((const int)x)) != 0)
+[assertion_kind: pre, semantic: observe, mode: predicate_false, terminating: no]
+-- 9
+contract violation in function bool temps(const std::string&) at Test_name.c:32: ! std::operator==<char, char_traits<char>, allocator<char> >(std::operator+<char, char_traits<char>, allocator<char> >((* & s), ((const char*)("!"))), ((const char*)("a!")))
+[assertion_kind: pre, semantic: observe, mode: predicate_false, terminating: no]
+-- 10
+contract violation in function void asserts(int) at Test_name.c:34: (((int)((const int)z)) > 0)
+[assertion_kind: assert, semantic: observe, mode: predicate_false, terminating: no]
+contract violation in function void asserts(int) at Test_name.c:35: (((int)((const int)z)) > -6)
+[assertion_kind: assert, semantic: observe, mode: predicate_false, terminating: no]
+-- 11
+contract violation in function main()::<lambda(int)> at Test_name.c:39: (((int)y) != 0)
+[assertion_kind: pre, semantic: observe, mode: predicate_false, terminating: no]
+-- 12
