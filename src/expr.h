@@ -1056,6 +1056,17 @@ extern void resolve_contract_label_facets(a_contract_specifier_ptr  csp);
 extern void apply_contract_label_message_facet(a_contract_specifier_ptr  csp);
 extern void resolve_contract_label_groups(a_contract_specifier_ptr  csp,
                                           a_constant_ptr            label_con);
+extern an_expr_node_ptr contract_label_violation_call(
+                                      a_contract_specifier_ptr  csp,
+                                      a_const_char              *comment,
+                                      a_const_char              *message,
+                                      a_boolean                 compute,
+                                      a_const_char              *file,
+                                      a_const_char              *function,
+                                      unsigned long             line,
+                                      unsigned                  kind,
+                                      unsigned                  semantic,
+                                      unsigned                  mode);
 
 extern a_boolean current_mode_allows_field_selection_folding(void);
 

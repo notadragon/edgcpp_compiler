@@ -1,0 +1,2 @@
+eccp -DTEST_NUMBER=1 --c++26 --contracts_p4298 --contract_evaluation_semantic=noexcept_observe --driver_debug Test_name.c
+-lstdc++exp -lcontracts -lstdc++

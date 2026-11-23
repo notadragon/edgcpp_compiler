@@ -1,0 +1,1 @@
+eccp -DTEST_NUMBER=5 --c++26 --contracts_p4298 --contract_configuration=[{"match":{"kind":"contract_assert"},"output":{"semantic":"noexcept_observe"}},{"output":{"semantic":"ignore"}}] -DTHROWS=0 Test_name.c

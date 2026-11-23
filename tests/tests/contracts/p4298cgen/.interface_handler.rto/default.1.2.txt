@@ -1,0 +1,3 @@
+./a.out
+kind 1 function virtual int B::f(int) comment (((int)((const int)x)) > 0)
+end

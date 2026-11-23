@@ -1,0 +1,11 @@
+./a.out
+local handler: "x > 0", mode 1
+handler: comment "x > 0", message "(none)", owner "(none)", mode 1
+handler: comment "computed comment", message "computed message", owner "(none)", mode 1
+handler: comment "x > 0", message "plain message", owner "(none)", mode 1
+handler: comment "x > 0", message "(none)", owner "review_committee", mode 1
+claimed
+local handler: "throws ( )", mode 2
+handler: comment "throws ( )", message "(none)", owner "(none)", mode 2
+handler: comment "computed comment", message "given message", owner "(none)", mode 1
+end

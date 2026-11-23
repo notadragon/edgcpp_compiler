@@ -1,0 +1,11 @@
+./a.out
+local handler: "", mode 1
+handler: comment "", message "(none)", owner "(none)", mode 1
+handler: comment "", message "(none)", owner "(none)", mode 1
+handler: comment "", message "(none)", owner "(none)", mode 1
+handler: comment "", message "(none)", owner "review_committee", mode 1
+claimed
+local handler: "", mode 2
+handler: comment "", message "(none)", owner "(none)", mode 2
+handler: comment "", message "(none)", owner "(none)", mode 1
+end

@@ -1,0 +1,3 @@
+./a.out
+kind 1 semantic 6 mode 2
+C++ runtime abort: terminate() called by the exception handling mechanism
